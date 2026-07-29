@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+/*
+  FXB Rwanda design tokens.
+
+  The Brand Guiding Tool sanctions exactly four values. No fifth hue exists
+  anywhere in this system — every other colour token below is alpha of one of
+  those four. See fxbdesign.pen, section 02.
+*/
+@theme {
+  --color-blue: #0472c2;
+  --color-green: #008d00;
+  --color-gray: #535353;
+  --color-white: #ffffff;
+
+  /* Permitted extensions: alpha of the same four. */
+  --color-blue-08: #0472c214;
+  --color-blue-16: #0472c229;
+  --color-blue-90: #0472c2e6;
+  --color-green-10: #008d001a;
+  --color-gray-15: #53535326;
+  --color-gray-40: #53535366;
+  --color-white-12: #ffffff1f;
+  --color-white-40: #ffffff66;
+  --color-white-70: #ffffffb3;
+
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+
+  /* Condensed display face — impact numerals only, never text. */
+  --font-display: var(--font-display-family), var(--font-poppins), sans-serif;
+
+  /* One corner dropped square — the wedge, after the X in the FXB mark. */
+  --radius-wedge: 32px;
+
+  --ease-header: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-white);
+    color: var(--color-gray);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Green focus ring, so it never reads as an error state. */
+  :focus-visible {
+    outline: 3px solid var(--color-green);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* The wedge card: bottom-right corner squared off. */
+  .wedge {
+    border-radius: var(--radius-wedge) var(--radius-wedge) 0
+      var(--radius-wedge);
+  }
+
+  /*
+    A carousel that starts on the measure and runs off the right edge.
+
+    The track has to be full-bleed for cards to bleed past the viewport, so it
+    cannot sit inside Container — instead it reproduces Container's own left
+    offset: half the leftover width once the 80rem measure is centred, plus the
+    gutter. The result lines the first card up with the headline above it while
+    the rest of the track keeps going.
+  */
+  .carousel-inset {
+    --carousel-gutter: 1.25rem;
+    --carousel-offset: calc(
+      max(0px, (100vw - 80rem) / 2) + var(--carousel-gutter)
+    );
+    padding-inline-start: var(--carousel-offset);
+    /*
+      Without this the snapport starts at the scrollport edge, so snapping the
+      first card to `start` scrolls the padding straight back off and the card
+      sits flush against the viewport. The scroll padding moves the snapport in
+      to match, which is what keeps the first card under the headline.
+    */
+    scroll-padding-inline-start: var(--carousel-offset);
+  }
+
+  @media (width >= 40rem) {
+    .carousel-inset {
+      --carousel-gutter: 1.5rem;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .carousel-inset {
+      --carousel-gutter: 2.5rem;
+    }
+  }
+
+  /* The track scrolls; the scrollbar itself would cut across the photographs. */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /*
+    The partner logo rows.
+
+    The track holds its content twice over, so translating it exactly -50%
+    lands the copy precisely where the original started and the loop is
+    seamless. Duration is set per row from the content width, so every row
+    moves at the same speed however many logos it carries.
+  */
+  .marquee {
+    overflow: hidden;
+    /* Fade at both ends rather than cutting a logo in half at the edge. The
+       fade is narrower on a phone, where 4rem would eat a third of the row. */
+    --marquee-fade: 1.5rem;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--marquee-fade),
+      #000 calc(100% - var(--marquee-fade)),
+      transparent
+    );
+  }
+
+  @media (width >= 48rem) {
+    .marquee {
+      --marquee-fade: 4rem;
+    }
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee var(--marquee-duration) linear infinite;
+  }
+
+  .marquee-track[data-direction="reverse"] {
+    animation-direction: reverse;
+  }
+
+  /* Pausable — a moving target is unusable for anyone who reads slowly, and
+     focus-within covers keyboard users tabbing through the row. */
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /*
+    Background, colour and border changes still apply under reduced motion —
+    those carry legibility, not decoration. Only transforms and size
+    transitions are dropped.
+  */
+  .motion-transform,
+  .motion-size {
+    transition-property: background-color, color, border-color, box-shadow,
+      opacity !important;
+  }
+
+  /*
+    The logo rows stop entirely and become an ordinary scrollable strip, so
+    every logo is still reachable — just under the reader's own control.
+  */
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .marquee {
+    overflow-x: auto;
+  }
+}

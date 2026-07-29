@@ -1,0 +1,274 @@
+[
+  {
+    "src": "images/partners/bk-foundation.png",
+    "slug": "bk-foundation",
+    "category": "corporate",
+    "width": 600,
+    "height": 135,
+    "bytes": 31474
+  },
+  {
+    "src": "images/partners/skol.png",
+    "slug": "skol",
+    "category": "corporate",
+    "width": 456,
+    "height": 298,
+    "bytes": 175185
+  },
+  {
+    "src": "images/partners/e4impact.png",
+    "slug": "e4impact",
+    "category": "development",
+    "width": 600,
+    "height": 96,
+    "bytes": 17624
+  },
+  {
+    "src": "images/partners/fxb-global.png",
+    "slug": "fxb-global",
+    "category": "development",
+    "width": 600,
+    "height": 233,
+    "bytes": 112712
+  },
+  {
+    "src": "images/partners/givedirectly.png",
+    "slug": "givedirectly",
+    "category": "development",
+    "width": 600,
+    "height": 106,
+    "bytes": 32519
+  },
+  {
+    "src": "images/partners/rngof.png",
+    "slug": "rngof",
+    "category": "development",
+    "width": 424,
+    "height": 296,
+    "bytes": 73223
+  },
+  {
+    "src": "images/partners/rrp-plus.png",
+    "slug": "rrp-plus",
+    "category": "development",
+    "width": 600,
+    "height": 218,
+    "bytes": 82182
+  },
+  {
+    "src": "images/partners/solid-africa.png",
+    "slug": "solid-africa",
+    "category": "development",
+    "width": 306,
+    "height": 299,
+    "bytes": 104215
+  },
+  {
+    "src": "images/partners/ada.png",
+    "slug": "ada",
+    "category": "donor",
+    "width": 600,
+    "height": 239,
+    "bytes": 103589
+  },
+  {
+    "src": "images/partners/augusta.png",
+    "slug": "augusta",
+    "category": "donor",
+    "width": 600,
+    "height": 207,
+    "bytes": 76609
+  },
+  {
+    "src": "images/partners/boston.png",
+    "slug": "boston",
+    "category": "donor",
+    "width": 600,
+    "height": 113,
+    "bytes": 65144
+  },
+  {
+    "src": "images/partners/echidna-giving.png",
+    "slug": "echidna-giving",
+    "category": "donor",
+    "width": 600,
+    "height": 241,
+    "bytes": 46648
+  },
+  {
+    "src": "images/partners/elma.png",
+    "slug": "elma",
+    "category": "donor",
+    "width": 500,
+    "height": 291,
+    "bytes": 64759
+  },
+  {
+    "src": "images/partners/european-union.png",
+    "slug": "european-union",
+    "category": "donor",
+    "width": 600,
+    "height": 168,
+    "bytes": 35716
+  },
+  {
+    "src": "images/partners/famille-lacoste.png",
+    "slug": "famille-lacoste",
+    "category": "donor",
+    "width": 600,
+    "height": 162,
+    "bytes": 32272
+  },
+  {
+    "src": "images/partners/grand-challenge-canada.png",
+    "slug": "grand-challenge-canada",
+    "category": "donor",
+    "width": 600,
+    "height": 186,
+    "bytes": 46273
+  },
+  {
+    "src": "images/partners/juanma.png",
+    "slug": "juanma",
+    "category": "donor",
+    "width": 600,
+    "height": 185,
+    "bytes": 48482
+  },
+  {
+    "src": "images/partners/michele-bercet.png",
+    "slug": "michele-bercet",
+    "category": "donor",
+    "width": 600,
+    "height": 183,
+    "bytes": 60123
+  },
+  {
+    "src": "images/partners/oak-foundation.png",
+    "slug": "oak-foundation",
+    "category": "donor",
+    "width": 535,
+    "height": 282,
+    "bytes": 96890
+  },
+  {
+    "src": "images/partners/the-global-fund.png",
+    "slug": "the-global-fund",
+    "category": "donor",
+    "width": 600,
+    "height": 216,
+    "bytes": 69103
+  },
+  {
+    "src": "images/partners/the-lego-foundation.png",
+    "slug": "the-lego-foundation",
+    "category": "donor",
+    "width": 600,
+    "height": 56,
+    "bytes": 16412
+  },
+  {
+    "src": "images/partners/the-light-foundation.png",
+    "slug": "the-light-foundation",
+    "category": "donor",
+    "width": 600,
+    "height": 163,
+    "bytes": 58629
+  },
+  {
+    "src": "images/partners/unaids.png",
+    "slug": "unaids",
+    "category": "donor",
+    "width": 600,
+    "height": 88,
+    "bytes": 45788
+  },
+  {
+    "src": "images/partners/valais-solidaire.png",
+    "slug": "valais-solidaire",
+    "category": "donor",
+    "width": 600,
+    "height": 211,
+    "bytes": 148599
+  },
+  {
+    "src": "images/partners/ville-de-paris.png",
+    "slug": "ville-de-paris",
+    "category": "donor",
+    "width": 290,
+    "height": 288,
+    "bytes": 31316
+  },
+  {
+    "src": "images/partners/gmo.png",
+    "slug": "gmo",
+    "category": "government",
+    "width": 600,
+    "height": 116,
+    "bytes": 46917
+  },
+  {
+    "src": "images/partners/loda.png",
+    "slug": "loda",
+    "category": "government",
+    "width": 600,
+    "height": 248,
+    "bytes": 66393
+  },
+  {
+    "src": "images/partners/migeprof.png",
+    "slug": "migeprof",
+    "category": "government",
+    "width": 600,
+    "height": 229,
+    "bytes": 161829
+  },
+  {
+    "src": "images/partners/minaloc.png",
+    "slug": "minaloc",
+    "category": "government",
+    "width": 600,
+    "height": 219,
+    "bytes": 100528
+  },
+  {
+    "src": "images/partners/ncda.png",
+    "slug": "ncda",
+    "category": "government",
+    "width": 600,
+    "height": 187,
+    "bytes": 70198
+  },
+  {
+    "src": "images/partners/nirda.png",
+    "slug": "nirda",
+    "category": "government",
+    "width": 221,
+    "height": 296,
+    "bytes": 83631
+  },
+  {
+    "src": "images/partners/rab.png",
+    "slug": "rab",
+    "category": "government",
+    "width": 296,
+    "height": 293,
+    "bytes": 60012
+  },
+  {
+    "src": "images/partners/rbc.png",
+    "slug": "rbc",
+    "category": "government",
+    "width": 600,
+    "height": 239,
+    "bytes": 56542
+  },
+  {
+    "src": "images/partners/republic-of-rwanda.png",
+    "slug": "republic-of-rwanda",
+    "category": "government",
+    "width": 600,
+    "height": 273,
+    "bytes": 114491
+  }
+]

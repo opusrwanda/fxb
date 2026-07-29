@@ -1,0 +1,346 @@
+[
+  {
+    "src": "images/fostering/fostering-01.jpg",
+    "group": "fostering",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 468687
+  },
+  {
+    "src": "images/fostering/fostering-02.jpg",
+    "group": "fostering",
+    "width": 2400,
+    "height": 1602,
+    "orientation": "landscape",
+    "bytes": 330447
+  },
+  {
+    "src": "images/fostering/fostering-03.jpg",
+    "group": "fostering",
+    "width": 2400,
+    "height": 1602,
+    "orientation": "landscape",
+    "bytes": 444075
+  },
+  {
+    "src": "images/fostering/fostering-04.jpg",
+    "group": "fostering",
+    "width": 2048,
+    "height": 1228,
+    "orientation": "landscape",
+    "bytes": 360668
+  },
+  {
+    "src": "images/fostering/fostering-05.jpg",
+    "group": "fostering",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 727910
+  },
+  {
+    "src": "images/fostering/fostering-06.jpg",
+    "group": "fostering",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 787219
+  },
+  {
+    "src": "images/fxbvillage-mageragere/fxbvillage-mageragere-01.jpg",
+    "group": "fxbvillage-mageragere",
+    "width": 1000,
+    "height": 666,
+    "orientation": "landscape",
+    "bytes": 91674
+  },
+  {
+    "src": "images/fxbvillage-mageragere/fxbvillage-mageragere-02.jpg",
+    "group": "fxbvillage-mageragere",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 170383
+  },
+  {
+    "src": "images/fxbvillage-mageragere/fxbvillage-mageragere-03.jpg",
+    "group": "fxbvillage-mageragere",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 456498
+  },
+  {
+    "src": "images/fxbvillage-mageragere/fxbvillage-mageragere-04.jpg",
+    "group": "fxbvillage-mageragere",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 234343
+  },
+  {
+    "src": "images/fxbvillage-mageragere/fxbvillage-mageragere-05.jpg",
+    "group": "fxbvillage-mageragere",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 351918
+  },
+  {
+    "src": "images/fxbvillage-mageragere/fxbvillage-mageragere-06.jpg",
+    "group": "fxbvillage-mageragere",
+    "width": 2400,
+    "height": 1350,
+    "orientation": "landscape",
+    "bytes": 876344
+  },
+  {
+    "src": "images/fxbvillage-mageragere/fxbvillage-mageragere-07.jpg",
+    "group": "fxbvillage-mageragere",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 1427140
+  },
+  {
+    "src": "images/fxbvillage-musambira/fxbvillage-musambira-01.jpg",
+    "group": "fxbvillage-musambira",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 954447
+  },
+  {
+    "src": "images/fxbvillage-musambira/fxbvillage-musambira-02.jpg",
+    "group": "fxbvillage-musambira",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 500104
+  },
+  {
+    "src": "images/fxbvillage-musambira/fxbvillage-musambira-03.jpg",
+    "group": "fxbvillage-musambira",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 363189
+  },
+  {
+    "src": "images/fxbvillage-musambira/fxbvillage-musambira-04.jpg",
+    "group": "fxbvillage-musambira",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 730118
+  },
+  {
+    "src": "images/fxbvillage-musambira/fxbvillage-musambira-05.jpg",
+    "group": "fxbvillage-musambira",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 706012
+  },
+  {
+    "src": "images/fxbvillage-musambira/fxbvillage-musambira-06.jpg",
+    "group": "fxbvillage-musambira",
+    "width": 1000,
+    "height": 666,
+    "orientation": "landscape",
+    "bytes": 61759
+  },
+  {
+    "src": "images/fxbvillage-musambira/fxbvillage-musambira-07.jpg",
+    "group": "fxbvillage-musambira",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 657565
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-01.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 244186
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-02.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 735012
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-03.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 926585
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-04.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 220031
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-05.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 1600,
+    "height": 2400,
+    "orientation": "portrait",
+    "bytes": 196293
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-06.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2000,
+    "height": 1333,
+    "orientation": "landscape",
+    "bytes": 333693
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-07.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 643427
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-08.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 971415
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-09.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 473555
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-10.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 742965
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-11.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2000,
+    "height": 1333,
+    "orientation": "landscape",
+    "bytes": 310151
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-12.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 347573
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-13.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 1249463
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-14.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 679886
+  },
+  {
+    "src": "images/fxbvillage-tlf/fxbvillage-tlf-15.jpg",
+    "group": "fxbvillage-tlf",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 605713
+  },
+  {
+    "src": "images/itap-closing-rwamagana/itap-closing-rwamagana-01.jpg",
+    "group": "itap-closing-rwamagana",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 790005
+  },
+  {
+    "src": "images/sugira-muryango/sugira-muryango-01.jpg",
+    "group": "sugira-muryango",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 515393
+  },
+  {
+    "src": "images/sugira-muryango/sugira-muryango-02.jpg",
+    "group": "sugira-muryango",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 932589
+  },
+  {
+    "src": "images/sugira-muryango/sugira-muryango-03.jpg",
+    "group": "sugira-muryango",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 299002
+  },
+  {
+    "src": "images/sugira-muryango/sugira-muryango-04.jpg",
+    "group": "sugira-muryango",
+    "width": 2400,
+    "height": 1404,
+    "orientation": "landscape",
+    "bytes": 799511
+  },
+  {
+    "src": "images/sugira-muryango/sugira-muryango-05.jpg",
+    "group": "sugira-muryango",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 914427
+  },
+  {
+    "src": "images/sugira-muryango/sugira-muryango-06.jpg",
+    "group": "sugira-muryango",
+    "width": 2400,
+    "height": 1600,
+    "orientation": "landscape",
+    "bytes": 1177868
+  },
+  {
+    "src": "images/sugira-muryango/sugira-muryango-07.jpg",
+    "group": "sugira-muryango",
+    "width": 1103,
+    "height": 482,
+    "orientation": "landscape",
+    "bytes": 97707
+  }
+]
