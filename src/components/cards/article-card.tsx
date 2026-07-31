@@ -40,17 +40,17 @@ export function ArticleCard({
     <Reveal as="li" delay={delay}>
       {/* `relative` is what the stretched link below anchors to. */}
       <article className="group relative flex h-full flex-col">
-        <div className="relative aspect-16/10 overflow-hidden rounded-[20px]">
+        <div className="relative aspect-16/10 overflow-hidden rounded-card">
           <Image
             src={photo(photoId).url}
             alt={alt}
             fill
             sizes="(min-width: 1024px) 31vw, (min-width: 640px) 45vw, 90vw"
-            className="motion-transform object-cover transition-transform duration-[700ms] ease-out group-hover:scale-105"
+            className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
           />
         </div>
 
-        <p className="mt-6 text-sm text-gray-40">{date}</p>
+        <p className="mt-6 text-sm text-gray-80">{date}</p>
 
         <h3
           className="mt-2 text-xl leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-[22px]"

@@ -29,12 +29,12 @@ export function LatestNews() {
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
-              <span className="h-px w-10 bg-green" aria-hidden="true" />
-              <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+              <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 NEWS &amp; INSIGHTS
               </span>
             </div>
-            <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[44px] lg:leading-[1.1]">
+            <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               Latest from FXB Rwanda
             </h2>
           </div>
@@ -56,28 +56,28 @@ export function LatestNews() {
             <article className="flex flex-col gap-6">
               <Link
                 href={`/news-insights/news/${lead.slug}`}
-                className="group relative block aspect-16/10 overflow-hidden rounded-[20px]"
+                className="group relative block aspect-16/10 overflow-hidden rounded-card"
               >
                 <Image
                   src={photo(lead.photo).url}
                   alt={lead.alt}
                   fill
                   sizes="(min-width: 1024px) 58vw, 90vw"
-                  className="motion-transform object-cover transition-transform duration-[700ms] ease-out group-hover:scale-105"
+                  className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
                 />
               </Link>
 
               <div className="flex flex-col items-start gap-4">
                 <time
                   dateTime={lead.date}
-                  className="text-sm font-medium text-gray-40"
+                  className="text-sm font-medium text-gray-80"
                 >
                   {formatNewsDate(lead.date)}
                 </time>
 
                 <h3
                   lang={lead.language}
-                  className="text-2xl leading-snug font-semibold tracking-[-0.02em] text-gray lg:text-[30px] lg:leading-[1.2]"
+                  className="text-2xl leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-[28px] lg:leading-[1.2]"
                 >
                   <Link
                     href={`/news-insights/news/${lead.slug}`}
@@ -89,7 +89,7 @@ export function LatestNews() {
 
                 <p
                   lang={lead.language}
-                  className="max-w-[62ch] text-base leading-relaxed text-gray"
+                  className="max-w-[58ch] text-base leading-relaxed text-gray"
                 >
                   {lead.excerpt}
                 </p>
@@ -108,7 +108,7 @@ export function LatestNews() {
 
           <ul className="flex flex-col lg:col-span-5">
             {rest.map((item, index) => (
-              <Reveal as="li" key={item.slug} delay={120 + index * 80}>
+              <Reveal as="li" key={item.slug} delay={60 + Math.min(index, 3) * 60}>
                 {/* Rule above rather than below, so the list does not end on a
                     stray line under the last item. */}
                 <article
@@ -118,27 +118,27 @@ export function LatestNews() {
                 >
                   <Link
                     href={`/news-insights/news/${item.slug}`}
-                    className="group relative block aspect-4/3 w-28 shrink-0 overflow-hidden rounded-[14px] sm:w-32"
+                    className="group relative block aspect-4/3 w-28 shrink-0 overflow-hidden rounded-card sm:w-32"
                   >
                     <Image
                       src={photo(item.photo).url}
                       alt={item.alt}
                       fill
                       sizes="128px"
-                      className="motion-transform object-cover transition-transform duration-[700ms] ease-out group-hover:scale-105"
+                      className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
                     />
                   </Link>
 
                   <div className="flex flex-col gap-2.5">
                     <time
                       dateTime={item.date}
-                      className="text-sm font-medium text-gray-40"
+                      className="text-sm font-medium text-gray-80"
                     >
                       {formatNewsDate(item.date)}
                     </time>
                     <h3
                       lang={item.language}
-                      className="line-clamp-3 text-lg leading-snug font-semibold tracking-[-0.01em] text-gray"
+                      className="line-clamp-3 text-lg leading-snug font-semibold tracking-[-0.01em] text-blue"
                     >
                       <Link
                         href={`/news-insights/news/${item.slug}`}

@@ -58,7 +58,7 @@ export default function NewsInsightsPage() {
         <Container>
           <ul className="grid gap-6 sm:grid-cols-2">
             {sections.map((section, index) => (
-              <Reveal as="li" key={section.href} delay={(index % 2) * 80}>
+              <Reveal as="li" key={section.href} delay={Math.min(index, 3) * 60}>
                 <Link
                   href={section.href}
                   className="wedge group flex h-full flex-col gap-4 bg-blue-08 p-8 transition-colors duration-300 hover:bg-blue-16 lg:p-10"

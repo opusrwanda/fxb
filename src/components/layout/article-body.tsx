@@ -54,11 +54,11 @@ export function ArticleBody({
       <section className="bg-white pb-24 lg:pb-32">
         <Container>
           <Reveal>
-            <p className="text-sm text-gray-40">{date}</p>
+            <p className="text-sm text-gray-80">{date}</p>
           </Reveal>
 
           <Reveal delay={60} className="mt-8">
-            <div className="relative aspect-16/9 overflow-hidden rounded-[24px]">
+            <div className="relative aspect-16/9 overflow-hidden rounded-card">
               <Image
                 src={image.url}
                 alt={alt}
@@ -73,7 +73,7 @@ export function ArticleBody({
           <div className="mt-14 lg:mt-20">
             <Reveal delay={80}>
               <p
-                className="max-w-[46ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[30px]"
+                className="max-w-[46ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]"
                 lang={language}
               >
                 {excerpt}
@@ -85,7 +85,7 @@ export function ArticleBody({
                 {body.map((paragraph, index) => (
                   <p
                     key={index}
-                    className="max-w-[70ch] text-base leading-relaxed text-gray lg:text-[17px]"
+                    className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]"
                     lang={language}
                   >
                     {paragraph}
@@ -100,7 +100,7 @@ export function ArticleBody({
                 <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
                   The full piece is being migrated
                 </h2>
-                <p className="max-w-[62ch] text-base leading-relaxed text-gray">
+                <p className="max-w-[58ch] text-base leading-relaxed text-gray">
                   We are moving our archive across from the old site. This
                   article&rsquo;s full text will appear here shortly — in the
                   meantime, the team is glad to send it to you.

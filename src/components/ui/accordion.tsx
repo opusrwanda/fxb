@@ -48,13 +48,17 @@ const palettes = {
     icon: "text-gray",
     iconOpen: "text-blue",
     ring: "border-gray-15 group-hover:border-blue",
+    // Not blue-08: the principles block sits on a blue-08 ground, so an 8%
+    // hover on an 8% ground is no hover at all.
+    row: "hover:bg-blue-16",
   },
   dark: {
     border: "border-white-12",
     title: "text-white",
-    icon: "text-white-70",
+    icon: "text-white-94",
     iconOpen: "text-white",
     ring: "border-white-40 group-hover:border-white",
+    row: "hover:bg-white-12",
   },
 } as const;
 
@@ -88,10 +92,14 @@ export function Accordion({
                 onClick={() => setOpen(isOpen ? null : item.id)}
                 aria-expanded={isOpen}
                 aria-controls={panelId}
-                className="group flex w-full items-center justify-between gap-6 py-7 text-left"
+                // The whole row is the target, not just the words: the title is
+                // 20–26px in a 76px row, so aiming at the text alone wasted
+                // most of the hit area. The tint makes the row read as one
+                // control and extends past the measure so the edges are live.
+                className={`group -mx-4 flex w-[calc(100%+2rem)] items-center justify-between gap-6 rounded-card px-4 py-6 text-left transition-colors duration-200 ${palette.row}`}
               >
                 <span
-                  className={`text-xl leading-snug font-semibold tracking-[-0.02em] lg:text-[26px] ${palette.title}`}
+                  className={`text-xl leading-snug font-semibold tracking-[-0.02em] lg:text-[28px] ${palette.title}`}
                 >
                   {item.title}
                 </span>
@@ -115,8 +123,19 @@ export function Accordion({
             >
               <div className="overflow-hidden">
                 {/* The padding lives here rather than on the row, so a
-                    collapsed panel really does measure zero. */}
-                <div className="pb-9">{item.content}</div>
+                    collapsed panel really does measure zero.
+
+                    The fade trails the unroll by 80ms. Without it the text is
+                    fully opaque while the container is still opening, so it
+                    reads as the panel sliding down over the copy rather than
+                    the copy arriving with the panel. */}
+                <div
+                  className={`pb-9 transition-opacity duration-[160ms] ${
+                    isOpen ? "opacity-100 delay-[80ms]" : "opacity-0"
+                  }`}
+                >
+                  {item.content}
+                </div>
               </div>
             </div>
           </li>

@@ -21,7 +21,7 @@ const poppins = Poppins({
 const oswald = Oswald({
   variable: "--font-display-family",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["600", "700"],
   display: "swap",
 });
 
@@ -59,7 +59,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <SiteHeader />
-        <main id="main" className="flex-1">
+        <main id="main" className="lg:col-span-7 lg:col-start-6">
           {children}
         </main>
         <SiteFooter />

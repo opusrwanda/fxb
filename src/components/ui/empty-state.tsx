@@ -32,7 +32,7 @@ export function EmptyState({
           {title}
         </h2>
 
-        <p className="max-w-[64ch] text-base leading-relaxed text-gray lg:text-[17px]">
+        <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
           {body}
         </p>
 

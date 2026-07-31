@@ -30,15 +30,15 @@ export function ModelPillars() {
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">
-            <span className="h-px w-10 bg-white-40" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-[0.22em] text-white-70">
+            <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
+            <span className="text-xs font-semibold tracking-[0.14em] text-white-94">
               THE PILLARS
             </span>
           </div>
-          <h2 className="max-w-[24ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[44px] lg:leading-[1.1]">
+          <h2 className="max-w-[24ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
             Five pillars, delivered together
           </h2>
-          <p className="max-w-[62ch] text-base leading-relaxed text-white-70 lg:text-[17px]">
+          <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
             The model integrates a set of mutually reinforcing pillars that work
             together to improve the overall well-being of families.
           </p>
@@ -54,15 +54,15 @@ export function ModelPillars() {
                 content: (
                   <div className="flex flex-col gap-7">
                     {pillar.lead && (
-                      <p className="max-w-[62ch] text-base leading-relaxed text-white-70 lg:text-[17px]">
+                      <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
                         {pillar.lead}
                       </p>
                     )}
 
                     <div>
-                      <h4 className="text-xs font-semibold tracking-[0.22em] text-white-40">
+                      <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
                         KEY INTERVENTIONS
-                      </h4>
+                      </p>
                       <dl className="mt-5 flex flex-col gap-5">
                         {pillar.interventions.map((intervention) => (
                           <div
@@ -72,7 +72,7 @@ export function ModelPillars() {
                             <dt className="text-base font-semibold text-white">
                               {intervention.name}
                             </dt>
-                            <dd className="mt-1.5 max-w-[58ch] text-[15px] leading-relaxed text-white-70">
+                            <dd className="mt-1.5 max-w-[58ch] text-[15px] leading-relaxed text-white-94">
                               {intervention.body}
                             </dd>
                           </div>

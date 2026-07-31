@@ -12,17 +12,17 @@ import { principles } from "@/lib/fxbvillage";
  */
 export function ModelPrinciples() {
   return (
-    <section className="bg-white py-24 lg:py-32">
+    <section className="bg-blue-08 py-24 lg:py-32">
       <Container>
-        <div className="flex flex-col gap-12 lg:flex-row lg:gap-24">
-          <Reveal className="lg:w-80 lg:shrink-0">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
+          <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
             <div className="flex items-center gap-4">
-              <span className="h-px w-10 bg-green" aria-hidden="true" />
-              <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+              <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 GUIDING PRINCIPLES
               </span>
             </div>
-            <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[40px] lg:leading-[1.1]">
+            <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               Built on three principles
             </h2>
             <p className="mt-6 max-w-[40ch] text-base leading-relaxed text-gray">
@@ -32,13 +32,13 @@ export function ModelPrinciples() {
             </p>
           </Reveal>
 
-          <Reveal delay={80} className="flex-1">
+          <Reveal delay={80} className="lg:col-span-7 lg:col-start-6">
             <Accordion
               items={principles.map((principle) => ({
                 id: principle.id,
                 title: principle.title,
                 content: (
-                  <p className="max-w-[62ch] text-base leading-relaxed text-gray lg:text-[17px]">
+                  <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
                     {principle.body}
                   </p>
                 ),

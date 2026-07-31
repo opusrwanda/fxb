@@ -73,10 +73,10 @@ export function ImpactStories() {
     <section id="impact-stories" className="overflow-hidden bg-blue py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-          <h2 className="max-w-[16ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[44px] lg:leading-[1.1]">
+          <h2 className="max-w-[16ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
             Behind every programme, a person
           </h2>
-          <p className="max-w-[46ch] text-base leading-relaxed text-white-70 lg:pt-2 lg:text-lg">
+          <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:pt-2 lg:text-lg">
             Programmes are counted in households reached. What they change is
             only ever visible one household at a time.
           </p>
@@ -102,21 +102,21 @@ export function ImpactStories() {
               <article className="flex h-full flex-col gap-6">
                 <Link
                   href={`/news-insights/stories/${story.slug}`}
-                  className="group relative block aspect-16/10 overflow-hidden rounded-[24px]"
+                  className="group relative block aspect-16/10 overflow-hidden rounded-card"
                 >
                   <Image
                     src={photo(story.photo).url}
                     alt={story.alt}
                     fill
                     sizes="(min-width: 1024px) 560px, (min-width: 640px) 62vw, 85vw"
-                    className="motion-transform object-cover transition-transform duration-[700ms] ease-out group-hover:scale-105"
+                    className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
                   />
                 </Link>
 
                 <div className="flex flex-1 flex-col items-start gap-5">
                   <time
                     dateTime={story.date}
-                    className="text-sm font-medium text-white-40"
+                    className="text-sm font-medium text-white-94"
                   >
                     {formatStoryDate(story.date)}
                   </time>

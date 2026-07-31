@@ -37,12 +37,12 @@ export function ModelIntro() {
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">
-            <span className="h-px w-10 bg-green" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+            <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+            <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               THE FXBVILLAGE MODEL
             </span>
           </div>
-          <h2 className="max-w-[20ch] text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[44px] lg:leading-[1.1]">
+          <h2 className="max-w-[20ch] text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
             A holistic route out of poverty
           </h2>
         </Reveal>
@@ -53,7 +53,7 @@ export function ModelIntro() {
             "However, economic support alone is not enough to ensure a lasting exit from poverty. The model therefore combines economic empowerment with access to basic services and the realisation of fundamental rights, while placing the improvement of children's and adults' quality of life at the heart of its action.",
             "By acting simultaneously on economic, social, and human dimensions, the FXBVillage model fosters lasting family transformation, improves children's wellbeing, and helps break the intergenerational cycle of poverty.",
           ].map((paragraph, index) => (
-            <Reveal key={index} delay={80 + index * 80}>
+            <Reveal key={index} delay={60 + Math.min(index, 3) * 60}>
               <p className="text-base leading-relaxed text-gray lg:text-[17px]">
                 {paragraph}
               </p>
@@ -62,9 +62,9 @@ export function ModelIntro() {
         </div>
 
         <Reveal delay={240} className="mt-20">
-          <h3 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+          <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
             MAIN CHALLENGES
-          </h3>
+          </p>
           <ul className="mt-8 grid gap-x-6 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
             {challenges.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-4">
@@ -78,7 +78,7 @@ export function ModelIntro() {
             ))}
           </ul>
 
-          <p className="mt-10 max-w-[70ch] text-base leading-relaxed text-gray lg:text-[17px]">
+          <p className="mt-10 max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
             In addition, the presence in both contexts of families affected by
             HIV further underscores the need for sustained psychosocial and
             health support.

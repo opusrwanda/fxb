@@ -42,7 +42,7 @@ export default function PhasedOutProjectsPage() {
           {phasedOutProjects.length > 0 ? (
             <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
               {phasedOutProjects.map((project, index) => (
-                <Reveal as="li" key={project.id} delay={80 + (index % 3) * 80}>
+                <Reveal as="li" key={project.id} delay={60 + Math.min(index, 3) * 60}>
                   {project.photo && (
                     <div className="wedge relative aspect-4/3 overflow-hidden">
                       <Image
@@ -58,7 +58,7 @@ export default function PhasedOutProjectsPage() {
                     {project.name}
                   </h2>
                   {project.period && (
-                    <p className="mt-1.5 text-sm text-gray-40">
+                    <p className="mt-1.5 text-sm text-gray-80">
                       {project.period}
                     </p>
                   )}
@@ -74,11 +74,11 @@ export default function PhasedOutProjectsPage() {
                   and separately that the model arrived in 2000, but it never
                   ties the two together, and "since 2000" would be our
                   inference presented as FXB's figure. */}
-              <p className="max-w-[52ch] text-2xl leading-[1.35] font-medium text-blue lg:text-[30px]">
+              <p className="max-w-[52ch] text-2xl leading-[1.35] font-medium text-blue lg:text-[28px]">
                 {projectsDelivered} FXBVillage projects have been delivered,
                 leaving thousands of families resilient from poverty.
               </p>
-              <p className="max-w-[62ch] text-base leading-relaxed text-gray lg:text-[17px]">
+              <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
                 We are preparing the full record of completed projects for
                 publication here, with the districts and period each one
                 covered. In the meantime, our current work is listed in full,

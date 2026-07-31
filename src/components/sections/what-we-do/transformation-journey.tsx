@@ -20,15 +20,15 @@ export function TransformationJourney() {
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">
-            <span className="h-px w-10 bg-white-40" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-[0.22em] text-white-70">
+            <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
+            <span className="text-xs font-semibold tracking-[0.14em] text-white-94">
               TRANSFORMATION JOURNEY
             </span>
           </div>
-          <h2 className="max-w-[22ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[44px] lg:leading-[1.1]">
+          <h2 className="max-w-[22ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
             36 months to change a life, sustainably
           </h2>
-          <p className="max-w-[62ch] text-base leading-relaxed text-white-70 lg:text-[17px]">
+          <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
             A complete 36-month journey toward dignity, access to fundamental
             rights, and lasting change for children and families.
           </p>
@@ -39,7 +39,7 @@ export function TransformationJourney() {
             <Reveal
               as="li"
               key={phase.step}
-              delay={120 + index * 100}
+              delay={60 + Math.min(index, 3) * 60}
               className="relative flex gap-6 lg:flex-col lg:gap-0"
             >
               {/* The rule: a vertical spine on narrow screens, and the
@@ -62,7 +62,7 @@ export function TransformationJourney() {
                 <h3 className="text-lg font-semibold tracking-[-0.02em] text-white lg:text-xl">
                   {phase.period}
                 </h3>
-                <p className="mt-3 max-w-[46ch] text-[15px] leading-relaxed text-white-70">
+                <p className="mt-3 max-w-[46ch] text-[15px] leading-relaxed text-white-94">
                   {phase.body}
                 </p>
               </div>

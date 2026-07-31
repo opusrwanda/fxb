@@ -24,8 +24,8 @@ export function PartnerLogos({ category }: { category: PartnerCategory }) {
         <Reveal
           as="li"
           key={partner.slug}
-          delay={Math.min(index, 7) * 50}
-          className="flex h-28 items-center justify-center rounded-2xl border border-gray-15 p-5 lg:h-32"
+          delay={Math.min(index, 3) * 60}
+          className="flex h-28 items-center justify-center rounded-card border border-gray-15 p-5 lg:h-32"
         >
           <Image
             src={partner.url}

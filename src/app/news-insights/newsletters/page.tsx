@@ -38,7 +38,7 @@ export default function NewslettersPage() {
           <Container>
             <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {newsletters.map((issue, index) => (
-                <Reveal as="li" key={issue.slug} delay={(index % 3) * 80}>
+                <Reveal as="li" key={issue.slug} delay={Math.min(index, 3) * 60}>
                   <a
                     href={issue.file}
                     download
@@ -47,7 +47,7 @@ export default function NewslettersPage() {
                     <span className="flex-1 text-lg leading-snug font-semibold text-blue">
                       {issue.title}
                     </span>
-                    <span className="text-sm text-gray-40">
+                    <span className="text-sm text-gray-80">
                       {formatPublicationDate(issue.date)}
                       {issue.bytes ? ` · PDF, ${formatBytes(issue.bytes)}` : ""}
                     </span>

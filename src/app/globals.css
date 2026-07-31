@@ -13,7 +13,26 @@
   --color-gray: #535353;
   --color-white: #ffffff;
 
-  /* Permitted extensions: alpha of the same four. */
+  /*
+    Permitted extensions: alpha of the same four.
+
+    These split into two groups, and mixing them up is how the site ended up
+    looking faint. Alpha is a fine way to make a hairline recede; it is not a
+    way to make text secondary, because a 40% grey on white is 1.96:1 and a
+    reader with ordinary eyesight on an ordinary phone in daylight simply
+    cannot see it.
+
+    TEXT-SAFE — the only two that may carry words. Both clear WCAG AA (4.5:1)
+    against their ground, so secondary text is set in these and hierarchy is
+    carried by size and weight instead of by fading the words out.
+  */
+  --color-gray-80: #535353cc; /* 4.58:1 on white */
+  --color-white-94: #fffffff0; /* 4.61:1 on blue */
+
+  /*
+    DECORATIVE ONLY — hairlines, rules, borders, tinted grounds. Never text.
+    Kept at their original values because a 1px rule is meant to recede.
+  */
   --color-blue-08: #0472c214;
   --color-blue-16: #0472c229;
   --color-blue-90: #0472c2e6;
@@ -32,6 +51,14 @@
   /* One corner dropped square — the wedge, after the X in the FXB mark. */
   --radius-wedge: 32px;
 
+  /*
+    The only other radius in the system. There were six — 14, 16, 20, 24, 24
+    and 32 — which is not a system, it is six people guessing. Photographic
+    containers get this; wedge surfaces get the wedge; controls get a full
+    round. Nothing else.
+  */
+  --radius-card: 20px;
+
   --ease-header: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
@@ -48,10 +75,18 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Green focus ring, so it never reads as an error state. */
+  /*
+    Green focus ring, so it never reads as an error state.
+
+    The white halo is load-bearing, not decoration: green on blue is 1.16:1, so
+    inside a blue room the ring on its own was effectively invisible and the
+    keyboard user lost their place entirely. The halo gives it an edge against
+    any of the four grounds without introducing a fifth colour.
+  */
   :focus-visible {
     outline: 3px solid var(--color-green);
     outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--color-white);
   }
 }
 
@@ -60,6 +95,26 @@
   .wedge {
     border-radius: var(--radius-wedge) var(--radius-wedge) 0
       var(--radius-wedge);
+  }
+
+  /*
+    The wedge, acknowledged in motion.
+
+    Nothing in the system ever referred to the signature shape once it was
+    drawn, which is why a squared corner on three rounded ones reads as a
+    rendering mistake rather than as the X in the mark. On hover the action
+    slides a few pixels toward that corner — the only direction the shape
+    points — so the geometry gets explained by the interaction.
+
+    Transform only, so `prefers-reduced-motion` drops it via `.motion-transform`
+    without also dropping the colour change that carries the state.
+  */
+  .wedge-nudge {
+    transition: transform 240ms ease-out;
+  }
+
+  .group:hover .wedge-nudge {
+    transform: translate3d(4px, 4px, 0);
   }
 
   /*
@@ -117,6 +172,20 @@
   */
   .marquee {
     overflow: hidden;
+
+    /*
+      The line animates forever, whether or not it is on screen — a permanent
+      compositor job, and this section sits near the bottom of a long page on a
+      device that is very often a low-end Android on mobile data.
+
+      `content-visibility: auto` lets the browser skip rendering work entirely
+      while the section is outside the viewport, animation included. It does
+      the job an IntersectionObserver would have done, without turning a
+      server-rendered, zero-JavaScript section into a client component.
+      `contain-intrinsic-size` holds the space so nothing jumps on approach.
+    */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 220px;
     /* Fade at both ends rather than cutting a logo in half at the edge. The
        fade is narrower on a phone, where 4rem would eat a third of the row. */
     --marquee-fade: 1.5rem;
@@ -176,6 +245,11 @@
   .motion-size {
     transition-property: background-color, color, border-color, box-shadow,
       opacity !important;
+  }
+
+  /* The nudge is pure decoration — the colour change still marks the hover. */
+  .group:hover .wedge-nudge {
+    transform: none;
   }
 
   /*

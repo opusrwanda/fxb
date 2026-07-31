@@ -64,10 +64,10 @@ export default function MediaGalleryPage() {
             return (
               <div key={group}>
                 <Reveal className="flex items-baseline gap-4">
-                  <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[30px]">
+                  <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                     {GROUP_LABELS[group]}
                   </h2>
-                  <span className="text-sm text-gray-40">
+                  <span className="text-sm text-gray-80">
                     {set.length}{" "}
                     {set.length === 1 ? "photograph" : "photographs"}
                   </span>
@@ -79,7 +79,7 @@ export default function MediaGalleryPage() {
                   {set.map((item, index) => (
                     <Reveal
                       key={item.src}
-                      delay={Math.min(index, 5) * 60}
+                      delay={Math.min(index, 3) * 60}
                       className="mb-5 break-inside-avoid"
                     >
                       <Image
@@ -92,7 +92,7 @@ export default function MediaGalleryPage() {
                         width={item.width}
                         height={item.height}
                         sizes="(min-width: 1024px) 31vw, (min-width: 640px) 46vw, 92vw"
-                        className="w-full rounded-[20px]"
+                        className="w-full rounded-card"
                       />
                     </Reveal>
                   ))}

@@ -46,15 +46,15 @@ export function OurStory() {
   return (
     <section id="story" className="scroll-mt-32 bg-white py-24 lg:py-32">
       <Container>
-        <div className="flex flex-col gap-12 lg:flex-row lg:gap-24">
-          <Reveal className="lg:w-72 lg:shrink-0">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
+          <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
             <div className="flex items-center gap-4">
-              <span className="h-px w-10 bg-green" aria-hidden="true" />
-              <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+              <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 OUR STORY
               </span>
             </div>
-            <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[40px] lg:leading-[1.1]">
+            <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               Four decades, one promise
             </h2>
             <p className="mt-6 max-w-[38ch] text-base leading-relaxed text-gray">
@@ -65,12 +65,12 @@ export function OurStory() {
 
           {/* The rule sits on the list itself rather than on each row, so it
               reads as one continuous line the milestones hang from. */}
-          <ol className="relative flex-1 border-l border-gray-15 pl-8 sm:pl-12">
+          <ol className="relative border-l border-gray-15 pl-8 sm:pl-12 lg:col-span-7 lg:col-start-6">
             {milestones.map((milestone, index) => (
               <Reveal
                 as="li"
                 key={milestone.year}
-                delay={index * 80}
+                delay={Math.min(index, 3) * 60}
                 className="relative pb-12 last:pb-0"
               >
                 {/* Centred on the rule: half the dot's width, plus the border. */}
@@ -88,7 +88,7 @@ export function OurStory() {
                 >
                   {milestone.year}
                 </h3>
-                <p className="mt-3 max-w-[64ch] text-base leading-relaxed text-gray lg:text-[17px]">
+                <p className="mt-3 max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
                   {milestone.body}
                 </p>
               </Reveal>

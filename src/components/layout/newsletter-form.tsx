@@ -18,6 +18,11 @@ import { useState } from "react";
  * as a hole punched in the surface, while a single rule carries the affordance
  * without adding another shape.
  *
+ * The placeholder deliberately stays at the dimmer `white-70` rather than the
+ * text-safe token. It duplicates the (screen-reader-only) label, so it is a
+ * hint rather than content — and at full strength it reads as a value already
+ * typed into the field, which is the worse failure.
+ *
  * Posts to /api/newsletter, which refuses rather than pretends when no mailing
  * provider is configured — see the route for what needs setting.
  */
@@ -68,7 +73,7 @@ export function NewsletterForm() {
           autoComplete="email"
           placeholder="Your email address"
           // Right padding clears the button sitting on top of the field.
-          className="w-full border-b border-white-40 bg-transparent pb-3 pr-12 text-base text-white transition-colors duration-200 outline-none placeholder:text-white-40 focus:border-white"
+          className="w-full border-b border-white-40 bg-transparent pb-3 pr-12 text-base text-white transition-colors duration-200 outline-none placeholder:text-white-70 focus:border-white"
         />
         <button
           type="submit"
@@ -83,7 +88,7 @@ export function NewsletterForm() {
         </button>
       </div>
 
-      <label className="flex items-start gap-2.5 text-xs leading-relaxed text-white-40">
+      <label className="flex items-start gap-2.5 text-xs leading-relaxed text-white-94">
         <input
           type="checkbox"
           name="consent"
@@ -109,7 +114,7 @@ export function NewsletterForm() {
           role="status"
           aria-live="polite"
           className={`text-xs leading-relaxed ${
-            state.status === "error" ? "text-white" : "text-white-70"
+            state.status === "error" ? "text-white" : "text-white-94"
           }`}
         >
           {state.message}

@@ -37,7 +37,7 @@ const faqs = [
     id: "partner",
     title: "How can I partner with FXB Rwanda?",
     body: (
-      <p className="max-w-[62ch] text-base leading-relaxed text-gray">
+      <p className="max-w-[58ch] text-base leading-relaxed text-gray">
         Please contact us through the form above, or email us at{" "}
         <a
           href={`mailto:${org.email}`}
@@ -60,7 +60,7 @@ const faqs = [
     id: "donate",
     title: "How can I make a donation?",
     body: (
-      <p className="max-w-[62ch] text-base leading-relaxed text-gray">
+      <p className="max-w-[58ch] text-base leading-relaxed text-gray">
         Our{" "}
         <Link
           href="/get-involved/donate"
@@ -78,7 +78,7 @@ const faqs = [
     id: "jobs",
     title: "How do I apply for a job?",
     body: (
-      <p className="max-w-[62ch] text-base leading-relaxed text-gray">
+      <p className="max-w-[58ch] text-base leading-relaxed text-gray">
         All available vacancies are published on the{" "}
         <Link
           href="/get-involved/careers"
@@ -95,7 +95,7 @@ const faqs = [
     id: "procurement",
     title: "Where can I find procurement opportunities?",
     body: (
-      <p className="max-w-[62ch] text-base leading-relaxed text-gray">
+      <p className="max-w-[58ch] text-base leading-relaxed text-gray">
         Current opportunities are published on the{" "}
         <Link
           href="/get-involved/procurement"
@@ -124,7 +124,7 @@ export default function ContactPage() {
             {/* Get in touch */}
             <Reveal className="flex flex-col gap-8">
               <div>
-                <h2 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                   GET IN TOUCH
                 </h2>
                 <p className="mt-4 text-2xl font-bold tracking-[-0.02em] text-blue">
@@ -143,7 +143,7 @@ export default function ContactPage() {
                     <MapPin className="size-5 text-blue" aria-hidden="true" />
                   </span>
                   <span>
-                    <span className="block text-sm text-gray-40">
+                    <span className="block text-sm text-gray-80">
                       Office address
                     </span>
                     <span className="block text-base leading-snug text-gray transition-colors duration-200 group-hover:text-blue">
@@ -161,7 +161,7 @@ export default function ContactPage() {
                     <Phone className="size-5 text-blue" aria-hidden="true" />
                   </span>
                   <span>
-                    <span className="block text-sm text-gray-40">Phone</span>
+                    <span className="block text-sm text-gray-80">Phone</span>
                     <span className="block text-base text-gray transition-colors duration-200 group-hover:text-blue">
                       {org.phone}
                     </span>
@@ -176,7 +176,7 @@ export default function ContactPage() {
                     <Mail className="size-5 text-blue" aria-hidden="true" />
                   </span>
                   <span>
-                    <span className="block text-sm text-gray-40">Email</span>
+                    <span className="block text-sm text-gray-80">Email</span>
                     <span className="block text-base text-gray transition-colors duration-200 group-hover:text-blue">
                       {org.email}
                     </span>
@@ -188,13 +188,13 @@ export default function ContactPage() {
                     <Clock className="size-5 text-blue" aria-hidden="true" />
                   </span>
                   <span>
-                    <span className="block text-sm text-gray-40">
+                    <span className="block text-sm text-gray-80">
                       Office hours
                     </span>
                     <span className="block text-base text-gray">
                       {org.officeHours}
                     </span>
-                    <span className="block text-sm text-gray-40">
+                    <span className="block text-sm text-gray-80">
                       Closed on weekends and public holidays.
                     </span>
                   </span>
@@ -203,7 +203,7 @@ export default function ContactPage() {
 
               {/* Connect with us */}
               <div className="border-t border-gray-15 pt-8">
-                <h2 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                   CONNECT WITH US
                 </h2>
                 <p className="mt-4 max-w-[42ch] text-base leading-relaxed text-gray">
@@ -239,7 +239,7 @@ export default function ContactPage() {
             {/* Send us a message */}
             <Reveal delay={100} className="flex flex-col gap-8">
               <div>
-                <h2 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                   SEND US A MESSAGE
                 </h2>
                 <p className="mt-4 max-w-[46ch] text-base leading-relaxed text-gray">
@@ -259,8 +259,8 @@ export default function ContactPage() {
           <Reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex flex-col gap-5">
               <div className="flex items-center gap-4">
-                <span className="h-px w-10 bg-green" aria-hidden="true" />
-                <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+                <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+                <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                   FIND US
                 </span>
               </div>
@@ -282,20 +282,20 @@ export default function ContactPage() {
       {/* FAQ */}
       <section className="bg-white pb-24 lg:pb-32">
         <Container>
-          <div className="flex flex-col gap-10 lg:flex-row lg:gap-24">
-            <Reveal className="lg:w-80 lg:shrink-0">
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-10">
+            <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
               <div className="flex items-center gap-4">
-                <span className="h-px w-10 bg-green" aria-hidden="true" />
-                <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+                <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+                <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                   FAQ
                 </span>
               </div>
-              <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[40px] lg:leading-[1.1]">
+              <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
                 Frequently asked questions
               </h2>
             </Reveal>
 
-            <Reveal delay={80} className="flex-1">
+            <Reveal delay={80} className="lg:col-span-7 lg:col-start-6">
               <Accordion
                 defaultOpen={null}
                 items={faqs.map((faq) => ({
@@ -310,7 +310,7 @@ export default function ContactPage() {
       </section>
 
       {/* Call to action */}
-      <section className="bg-blue py-20 lg:py-24">
+      <section className="bg-blue py-16 lg:py-20">
         <Container>
           <Reveal className="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
             <h2 className="max-w-[32ch] text-2xl font-bold tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[1.2]">

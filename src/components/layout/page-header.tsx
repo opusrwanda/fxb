@@ -32,7 +32,7 @@ export function PageHeader({
       <Container className="flex flex-col gap-6">
         {breadcrumbs.length > 0 && (
           <nav aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-1.5 text-sm text-gray-40">
+            <ol className="flex flex-wrap items-center gap-1.5 text-sm text-gray-80">
               {breadcrumbs.map((crumb, index) => (
                 <li key={crumb.href} className="flex items-center gap-1.5">
                   <Link
@@ -55,8 +55,8 @@ export function PageHeader({
 
         {eyebrow && (
           <div className="flex items-center gap-4">
-            <span className="h-px w-10 bg-green" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+            <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+            <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               {eyebrow}
             </span>
           </div>
@@ -67,7 +67,7 @@ export function PageHeader({
         </h1>
 
         {intro && (
-          <p className="max-w-[62ch] text-base leading-relaxed text-gray lg:text-lg">
+          <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-lg">
             {intro}
           </p>
         )}

@@ -62,7 +62,7 @@ export default function DonatePage() {
               </p>
 
               <div>
-                <h2 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                   YOUR GENEROSITY HELPS US
                 </h2>
                 <ul className="mt-5 flex flex-col gap-3.5">
@@ -103,7 +103,7 @@ export default function DonatePage() {
                       key={label}
                       className="flex flex-col gap-1 border-t border-gray-15 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
                     >
-                      <dt className="text-sm text-gray-40">{label}</dt>
+                      <dt className="text-sm text-gray-80">{label}</dt>
                       <dd className="text-base font-semibold text-blue tabular-nums">
                         {value}
                       </dd>
@@ -146,13 +146,13 @@ export default function DonatePage() {
         </Container>
       </section>
 
-      <section className="bg-blue py-20 lg:py-24">
+      <section className="bg-blue py-16 lg:py-20">
         <Container>
           <Reveal className="flex flex-col gap-5">
             <h2 className="max-w-[26ch] text-2xl font-bold tracking-[-0.02em] text-white lg:text-[36px] lg:leading-[1.15]">
               Together, we can build a world fit for children.
             </h2>
-            <p className="max-w-[64ch] text-base leading-relaxed text-white-70 lg:text-[17px]">
+            <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
               Thank you for standing with vulnerable children, families and
               communities. Your generosity helps restore dignity, strengthen
               resilience, and create lasting opportunities for generations to

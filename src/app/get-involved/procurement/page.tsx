@@ -40,7 +40,7 @@ export default function ProcurementPage() {
                 <Reveal
                   as="li"
                   key={tender.slug}
-                  delay={index * 60}
+                  delay={Math.min(index, 3) * 60}
                   className="border-t border-gray-15 last:border-b"
                 >
                   <div className="flex flex-col gap-6 py-9 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
@@ -48,7 +48,7 @@ export default function ProcurementPage() {
                       <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                         {tender.title}
                       </h2>
-                      <p className="text-sm text-gray-40">
+                      <p className="text-sm text-gray-80">
                         Ref. {tender.reference} · {tender.category}
                       </p>
                       <p className="text-base text-gray">
@@ -70,7 +70,7 @@ export default function ProcurementPage() {
                             <Download className="size-4" aria-hidden="true" />
                             {document.label}
                             {document.bytes && (
-                              <span className="text-gray-40">
+                              <span className="text-gray-80">
                                 ({formatBytes(document.bytes)})
                               </span>
                             )}

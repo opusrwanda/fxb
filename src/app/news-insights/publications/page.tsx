@@ -50,10 +50,10 @@ export default function PublicationsPage() {
                 className="scroll-mt-32"
               >
                 <Reveal className="flex flex-col gap-3">
-                  <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[30px]">
+                  <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                     {category.label}
                   </h2>
-                  <p className="max-w-[62ch] text-base leading-relaxed text-gray">
+                  <p className="max-w-[58ch] text-base leading-relaxed text-gray">
                     {category.description}
                   </p>
                 </Reveal>
@@ -64,7 +64,7 @@ export default function PublicationsPage() {
                       <Reveal
                         as="li"
                         key={item.slug}
-                        delay={(index % 3) * 80}
+                        delay={Math.min(index, 3) * 60}
                         className="h-full"
                       >
                         <a
@@ -79,7 +79,7 @@ export default function PublicationsPage() {
                           <span className="flex-1 text-lg leading-snug font-semibold text-blue">
                             {item.title}
                           </span>
-                          <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-40">
+                          <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-80">
                             <span>{formatPublicationDate(item.date)}</span>
                             {item.bytes && (
                               <>
@@ -101,7 +101,7 @@ export default function PublicationsPage() {
                     delay={60}
                     className="wedge mt-8 flex flex-col gap-5 bg-blue-08 p-8"
                   >
-                    <p className="text-sm font-semibold tracking-[0.16em] text-gray-40">
+                    <p className="text-sm font-semibold tracking-[0.16em] text-gray-80">
                       COMING TO THIS PAGE
                     </p>
                     <ul className="flex flex-wrap gap-2.5">
@@ -114,7 +114,7 @@ export default function PublicationsPage() {
                         </li>
                       ))}
                     </ul>
-                    <p className="max-w-[62ch] text-[15px] leading-relaxed text-gray">
+                    <p className="max-w-[58ch] text-[15px] leading-relaxed text-gray">
                       These are being prepared for publication. To request a
                       copy in the meantime, email{" "}
                       <a

@@ -22,7 +22,7 @@ type State =
   | { status: "ok" | "error"; message: string };
 
 const field =
-  "w-full rounded-2xl border border-gray-15 bg-white px-5 py-3.5 text-base text-gray transition-colors duration-200 outline-none placeholder:text-gray-40 focus:border-blue";
+  "w-full rounded-card border border-gray-15 bg-white px-5 py-3.5 text-base text-gray transition-colors duration-200 outline-none placeholder:text-gray-80 focus:border-blue";
 
 export function ContactForm() {
   const [state, setState] = useState<State>({ status: "idle" });
@@ -105,7 +105,7 @@ export function ContactForm() {
             className="text-sm font-medium text-blue"
           >
             Phone number{" "}
-            <span className="font-normal text-gray-40">(optional)</span>
+            <span className="font-normal text-gray-80">(optional)</span>
           </label>
           <input
             id="contact-phone"
@@ -154,7 +154,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={state.status === "sending"}
-          className="inline-flex items-center justify-center rounded-full bg-blue px-7 py-3 text-base font-medium whitespace-nowrap text-white transition-[filter,opacity] duration-200 hover:brightness-110 disabled:opacity-60"
+          className="inline-flex items-center justify-center rounded-full bg-blue px-7 py-3 text-base font-medium whitespace-nowrap text-white transition-colors duration-200 hover:bg-blue-90 disabled:opacity-60"
         >
           {state.status === "sending" ? "Sending…" : "Send Message"}
         </button>

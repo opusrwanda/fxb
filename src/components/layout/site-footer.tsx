@@ -42,7 +42,7 @@ export function SiteFooter() {
             <h2 className="text-xl font-bold tracking-[-0.02em] lg:text-2xl">
               Sign up for our newsletter
             </h2>
-            <p className="mt-3 max-w-[38ch] text-[15px] leading-relaxed text-white-70">
+            <p className="mt-3 max-w-[38ch] text-[15px] leading-relaxed text-white-94">
               Stories from the districts and the occasional annual report. A few
               times a year, no more.
             </p>
@@ -64,7 +64,7 @@ export function SiteFooter() {
                   <li key={child.href}>
                     <Link
                       href={child.href}
-                      className="text-[15px] leading-snug text-white-70 transition-colors duration-200 hover:text-white"
+                      className="text-[15px] leading-snug text-white-94 transition-colors duration-200 hover:text-white"
                     >
                       {child.label}
                     </Link>
@@ -89,7 +89,7 @@ export function SiteFooter() {
                 href={org.mapUrl}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="flex items-start gap-2.5 text-white-70 transition-colors duration-200 hover:text-white"
+                className="flex items-start gap-2.5 text-white-94 transition-colors duration-200 hover:text-white"
               >
                 <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <span>
@@ -99,14 +99,14 @@ export function SiteFooter() {
               </a>
               <a
                 href={`tel:${org.phoneHref}`}
-                className="flex items-center gap-2.5 text-white-70 transition-colors duration-200 hover:text-white"
+                className="flex items-center gap-2.5 text-white-94 transition-colors duration-200 hover:text-white"
               >
                 <Phone className="size-4 shrink-0" aria-hidden="true" />
                 {org.phone}
               </a>
               <a
                 href={`mailto:${org.email}`}
-                className="flex items-center gap-2.5 text-white-70 transition-colors duration-200 hover:text-white"
+                className="flex items-center gap-2.5 text-white-94 transition-colors duration-200 hover:text-white"
               >
                 <Mail className="size-4 shrink-0" aria-hidden="true" />
                 {org.email}
@@ -115,18 +115,18 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col gap-6 border-t border-white-12 pt-8 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mt-12 flex flex-col gap-6 border-t border-white-12 pt-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3">
             {/* self-start, or the flex column stretches the lockup to the full
                 column width and squashes it out of its 2.95:1 ratio. */}
             <Logo variant="white" alt={org.name} className="h-10 self-start" />
-            <p className="text-sm text-white-40">{org.endorsement}</p>
+            <p className="text-sm text-white-94">{org.endorsement}</p>
           </div>
 
           {/* The external systems (Sugira Muryango, POMC) are deliberately not
               here — they are staff tools and the header's utility strip is
               where they belong. */}
-          <div className="flex flex-col gap-4 text-sm text-white-40">
+          <div className="flex flex-col gap-4 text-sm text-white-94">
             <ul className="flex flex-wrap items-center gap-x-7 gap-y-2">
               <li>
                 <Link

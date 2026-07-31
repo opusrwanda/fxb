@@ -45,11 +45,11 @@ export function OfficeMap() {
           <button
             type="button"
             onClick={() => setShown(true)}
-            className="rounded-full bg-blue px-6 py-3 text-sm font-medium text-white transition-[filter] duration-200 hover:brightness-110"
+            className="rounded-full bg-blue px-6 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-90"
           >
             Show map
           </button>
-          <p className="max-w-[38ch] text-xs leading-relaxed text-gray-40">
+          <p className="max-w-[38ch] text-xs leading-relaxed text-gray-80">
             The map is loaded from Google only when you ask for it.
           </p>
         </div>

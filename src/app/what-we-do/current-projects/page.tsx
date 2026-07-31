@@ -48,12 +48,12 @@ export default function CurrentProjectsPage() {
               <Reveal
                 as="li"
                 key={project.id}
-                delay={index * 60}
+                delay={Math.min(index, 3) * 60}
                 className="border-t border-gray-15 last:border-b"
               >
                 <div className="flex flex-col gap-5 py-9 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
                   <div className="flex flex-col gap-4 lg:max-w-[42ch]">
-                    <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[30px]">
+                    <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                       {project.href ? (
                         <Link
                           href={project.href}
@@ -64,7 +64,7 @@ export default function CurrentProjectsPage() {
                         >
                           {project.name}
                           <ArrowUpRight
-                            className="mt-1 size-5 shrink-0 text-gray-40 transition-colors duration-200 group-hover:text-green"
+                            className="mt-1 size-5 shrink-0 text-gray-80 transition-colors duration-200 group-hover:text-green"
                             aria-hidden="true"
                           />
                         </Link>
@@ -73,18 +73,18 @@ export default function CurrentProjectsPage() {
                       )}
                     </h2>
                     {project.period && (
-                      <p className="text-sm text-gray-40">{project.period}</p>
+                      <p className="text-sm text-gray-80">{project.period}</p>
                     )}
                   </div>
 
                   <div className="flex flex-1 flex-col gap-3">
-                    <h3 className="flex items-center gap-2 text-xs font-semibold tracking-[0.22em] text-gray-40">
+                    <p className="flex items-center gap-2 text-xs font-semibold tracking-[0.14em] text-gray-80">
                       <MapPin className="size-3.5" aria-hidden="true" />
                       {project.districts.length}{" "}
                       {project.districts.length === 1
                         ? "DISTRICT"
                         : "DISTRICTS"}
-                    </h3>
+                    </p>
                     <ul className="flex flex-wrap gap-2">
                       {project.districts.map((district) => (
                         <li

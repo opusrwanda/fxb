@@ -50,21 +50,27 @@ const stats = [
 
 export function ImpactCounters() {
   return (
-    <section id="our-impact" className="bg-white py-24 lg:py-32">
+    <section id="our-impact" className="bg-white py-32 lg:py-48">
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">
-            <span className="h-px w-10 bg-green" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+            <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+            <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               OUR IMPACT
             </span>
           </div>
-          <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[44px] lg:leading-[1.1]">
+          <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
             Measured in lives, not activities
           </h2>
         </Reveal>
 
-        <dl className="mt-16 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 xl:grid-cols-4">
+        {/* One rule for the whole band, rather than a stub under each figure.
+            Four short green rules repeated across a row read as four separate
+            objects; one rule spanning the measure says these four figures are
+            one statement. */}
+        <div className="mt-14 h-0.5 w-full bg-green" aria-hidden="true" />
+
+        <dl className="mt-12 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 xl:grid-cols-4">
           {/* Column-reverse so the figure sits above its caption while the term
               still precedes the description in the DOM. The caption is the dt
               itself — an extra sr-only copy would have every screen reader
@@ -79,7 +85,7 @@ export function ImpactCounters() {
           {stats.map((stat, index) => (
             <Reveal
               key={stat.exact}
-              delay={index * 80}
+              delay={Math.min(index, 3) * 60}
               className="flex flex-col-reverse justify-end"
             >
               <dt className="max-w-[28ch] text-base leading-snug text-gray">
@@ -93,9 +99,12 @@ export function ImpactCounters() {
                   // Steps back down at xl, where the grid goes to four columns
                   // and the measure is capped at 1200: a 276px column cannot
                   // hold "505K+" at 124px, and the figures ran into each other.
-                  className="font-display text-[80px] leading-[0.85] font-semibold tracking-[-0.01em] whitespace-nowrap text-gray tabular-nums sm:text-[104px] lg:text-[124px] xl:text-[104px]"
+                  // Blue, not grey. This band's own docstring calls the figures
+                  // the loudest gesture in the system, and they were set in the
+                  // quietest colour on the page — quieter than the heading above
+                  // them, so a 124px numeral was losing to 44px of type.
+                  className="font-display text-[80px] leading-[0.85] font-semibold tracking-[-0.01em] whitespace-nowrap text-blue tabular-nums sm:text-[104px] lg:text-[124px] xl:text-[104px]"
                 />
-                <span className="h-1 w-12 bg-green" aria-hidden="true" />
               </dd>
             </Reveal>
           ))}

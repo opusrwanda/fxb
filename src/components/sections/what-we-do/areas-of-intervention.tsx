@@ -23,16 +23,16 @@ export function AreasOfIntervention() {
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
-              <span className="h-px w-10 bg-green" aria-hidden="true" />
-              <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+              <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 AREAS OF INTERVENTION
               </span>
             </div>
-            <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[44px] lg:leading-[1.1]">
+            <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               Four areas, one household
             </h2>
           </div>
-          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-right lg:text-[17px]">
+          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
             The model is delivered through four areas of intervention. A family
             rarely needs only one of them, which is why we never run them apart.
           </p>
@@ -40,7 +40,7 @@ export function AreasOfIntervention() {
 
         <ul className="mt-14 grid gap-8 lg:grid-cols-2 lg:gap-10">
           {areas.map((area, index) => (
-            <Reveal as="li" key={area.id} delay={80 + (index % 2) * 80}>
+            <Reveal as="li" key={area.id} delay={60 + Math.min(index, 3) * 60}>
               {/* The anchor sits on the article rather than the Reveal
                   wrapper, which takes no id — and it is what the home page's
                   four pillars jump to, so it needs the header offset. */}

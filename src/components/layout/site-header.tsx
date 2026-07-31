@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, Menu, Phone, Plus, Search, X } from "lucide-react";
+import { ArrowUpRight, Mail, Menu, Phone, Plus, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
@@ -139,7 +139,7 @@ export function SiteHeader() {
         ].join(" ")}
         aria-hidden={solid}
       >
-        <Container className="hidden items-center gap-9 border-b border-white-12 pt-5 pb-4 text-base font-medium text-white-40 lg:flex">
+        <Container className="hidden items-center gap-9 border-b border-white-12 pt-5 pb-4 text-base font-medium text-white-94 lg:flex">
           {externalSystems.map((system) => (
             <a
               key={system.label}
@@ -230,27 +230,24 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-3 lg:ml-0 lg:gap-5">
-          <button
-            type="button"
-            aria-label="Search"
-            className={[
-              "hidden size-11 shrink-0 items-center justify-center rounded-full border transition-colors duration-[240ms] ease-out lg:flex",
-              solid
-                ? "border-gray-15 text-gray hover:border-blue hover:text-blue"
-                : "border-white-40 text-white hover:border-white",
-            ].join(" ")}
-          >
-            <Search className="size-5" aria-hidden="true" />
-          </button>
+          {/* The search control was removed rather than restyled: it had no
+              handler, so it sat in the keyboard tab order announcing itself as
+              a button and then doing nothing — worse than absent. There is no
+              search index behind this site yet. Reinstate it here when there
+              is one. */}
 
-          {/* Donate is the one control that never changes and never moves. */}
+          {/* Donate is the one control that never changes and never moves.
+              Set at 19px bold because white on #008d00 is 4.37:1: below the
+              4.5:1 body-text threshold, but comfortably past the 3:1 that
+              large bold text is held to. The primary conversion action wanting
+              to be bigger is not exactly a hardship. */}
           <Link
             href="/get-involved/donate"
             className={[
-              "rounded-full px-5 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors duration-200 sm:px-6 sm:py-3 lg:px-7 lg:py-3.5 xl:text-base",
+              "rounded-full px-5 py-2.5 text-[19px] font-bold whitespace-nowrap transition-colors duration-200 sm:px-6 sm:py-3 lg:px-7 lg:py-3.5",
               drawerOpen
                 ? "bg-white text-blue hover:bg-white-70"
-                : "bg-green text-white hover:brightness-110",
+                : "bg-green text-white hover:bg-green/90",
             ].join(" ")}
           >
             Donate
@@ -305,7 +302,7 @@ export function SiteHeader() {
                       }
                       aria-expanded={expanded === item.href}
                       aria-label={`${expanded === item.href ? "Collapse" : "Expand"} ${item.label}`}
-                      className="text-white-40 transition-colors duration-200 hover:text-white"
+                      className="text-white-94 transition-colors duration-200 hover:text-white"
                     >
                       <Plus
                         className={`size-6 transition-transform duration-[240ms] ease-out ${
@@ -322,7 +319,7 @@ export function SiteHeader() {
                       <li key={child.href}>
                         <Link
                           href={child.href}
-                          className="block py-2.5 text-lg text-white-70"
+                          className="block py-2.5 text-lg text-white-94"
                         >
                           {child.label}
                         </Link>
@@ -342,12 +339,33 @@ export function SiteHeader() {
               href={system.href}
               target="_blank"
               rel="noreferrer noopener"
-              className="flex items-center gap-2.5 text-[17px] font-medium text-white-40"
+              className="flex items-center gap-2.5 text-[17px] font-medium text-white-94"
             >
               {system.label}
               <ArrowUpRight className="size-4" aria-hidden="true" />
             </a>
           ))}
+        </div>
+
+        {/* The drawer used to end with ~150px of empty blue under the staff
+            links. On a phone that is the most valuable space in the menu — the
+            thumb is already there — so it carries the number to call and the
+            address to write to instead of nothing. */}
+        <div className="mt-10 flex flex-col gap-4 border-t border-white-12 pt-8">
+          <a
+            href={`tel:${org.phoneHref}`}
+            className="flex items-center gap-3 text-[17px] font-medium text-white"
+          >
+            <Phone className="size-5 shrink-0" aria-hidden="true" />
+            {org.phone}
+          </a>
+          <a
+            href={`mailto:${org.email}`}
+            className="flex items-center gap-3 text-[17px] font-medium text-white"
+          >
+            <Mail className="size-5 shrink-0" aria-hidden="true" />
+            {org.email}
+          </a>
         </div>
       </Container>
     </header>

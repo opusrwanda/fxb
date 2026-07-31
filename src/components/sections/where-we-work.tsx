@@ -149,17 +149,17 @@ export function WhereWeWork() {
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
-              <span className="h-px w-10 bg-green" aria-hidden="true" />
-              <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+              <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 WHERE WE WORK
               </span>
             </div>
-            <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[40px] lg:leading-[1.1]">
+            <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               {byDistrict.size} districts, {visible.length}{" "}
               {visible.length === 1 ? "project" : "projects"}
             </h2>
           </div>
-          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-right lg:text-[17px]">
+          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
             Across all four provinces and the City of Kigali. Select a district
             to see what runs there, or filter by project.
           </p>
@@ -258,7 +258,7 @@ export function WhereWeWork() {
               })}
             </svg>
 
-            <p className="text-xs leading-relaxed text-gray-40">
+            <p className="text-xs leading-relaxed text-gray-80">
               {districtsAttribution}
             </p>
           </Reveal>
@@ -276,7 +276,7 @@ export function WhereWeWork() {
                   <h3 className="text-2xl font-bold tracking-[-0.02em] text-blue">
                     {activeDistrict.name}
                   </h3>
-                  <p className="mt-1 text-sm text-gray-40">
+                  <p className="mt-1 text-sm text-gray-80">
                     {activeDistrict.province}
                     {activeDistrict.province === "City of Kigali"
                       ? ""
@@ -302,7 +302,7 @@ export function WhereWeWork() {
             </div>
 
             <fieldset>
-              <legend className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <legend className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 OUR PROJECTS
               </legend>
 
@@ -322,7 +322,7 @@ export function WhereWeWork() {
                         <span className="flex flex-col gap-1">
                           <span
                             className={`text-base font-semibold transition-colors duration-200 ${
-                              shown ? "text-blue" : "text-gray-40"
+                              shown ? "text-blue" : "text-gray-80"
                             }`}
                           >
                             {project.name}

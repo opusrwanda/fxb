@@ -46,7 +46,7 @@ export default function CareersPage() {
                 <Reveal
                   as="li"
                   key={vacancy.slug}
-                  delay={index * 60}
+                  delay={Math.min(index, 3) * 60}
                   className="border-t border-gray-15 last:border-b"
                 >
                   <div className="flex flex-col gap-6 py-9 lg:flex-row lg:items-start lg:justify-between lg:gap-16">

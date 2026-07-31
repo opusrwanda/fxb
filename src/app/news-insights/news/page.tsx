@@ -40,7 +40,7 @@ export default function NewsPage() {
                 photo={item.photo}
                 alt={item.alt}
                 language={item.language}
-                delay={(index % 3) * 80}
+                delay={Math.min(index, 3) * 60}
               />
             ))}
           </ul>

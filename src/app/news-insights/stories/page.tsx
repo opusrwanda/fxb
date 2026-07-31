@@ -42,7 +42,7 @@ export default function StoriesPage() {
                 date={formatStoryDate(story.date)}
                 photo={story.photo}
                 alt={story.alt}
-                delay={(index % 3) * 80}
+                delay={Math.min(index, 3) * 60}
               />
             ))}
           </ul>

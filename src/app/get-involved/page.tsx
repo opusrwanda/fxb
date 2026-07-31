@@ -54,27 +54,27 @@ export default function GetInvolvedPage() {
 
       <section className="bg-white py-24 lg:py-32">
         <Container>
-          <div className="flex flex-col gap-12 lg:flex-row lg:gap-24">
-            <Reveal className="lg:w-72 lg:shrink-0">
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
+            <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
               <div className="flex items-center gap-4">
-                <span className="h-px w-10 bg-green" aria-hidden="true" />
-                <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+                <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+                <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                   GET INVOLVED
                 </span>
               </div>
-              <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[40px] lg:leading-[1.1]">
+              <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
                 Four ways in
               </h2>
             </Reveal>
 
-            <Reveal delay={80} className="flex flex-1 flex-col gap-6">
-              <p className="max-w-[64ch] text-base leading-relaxed text-gray lg:text-[17px]">
+            <Reveal delay={80} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
+              <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
                 For more than three decades, FXB Rwanda has partnered with local
                 and international stakeholders to design and implement
                 evidence-based programmes that improve the lives of vulnerable
                 children, families and communities across Rwanda.
               </p>
-              <p className="max-w-[64ch] text-base leading-relaxed text-gray lg:text-[17px]">
+              <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
                 Through strong partnerships, we combine resources, expertise,
                 innovation and local knowledge to create solutions that
                 strengthen resilience and promote sustainable development.
@@ -82,7 +82,7 @@ export default function GetInvolvedPage() {
                 fit for children.
               </p>
               <div className="mt-2 flex flex-wrap gap-4">
-                <Pill href="/what-we-do" variant="outline" size="lg">
+                <Pill href="/what-we-do" variant="primary" size="lg">
                   Explore Our Work
                 </Pill>
                 <Pill href="/contact" variant="outline" size="lg">
@@ -94,7 +94,7 @@ export default function GetInvolvedPage() {
 
           <ul className="mt-16 grid gap-6 sm:grid-cols-2">
             {routes.map((route, index) => (
-              <Reveal as="li" key={route.href} delay={(index % 2) * 80}>
+              <Reveal as="li" key={route.href} delay={Math.min(index, 3) * 60}>
                 <Link
                   href={route.href}
                   className="wedge group flex h-full flex-col gap-4 bg-blue-08 p-8 transition-colors duration-300 hover:bg-blue-16 lg:p-10"

@@ -27,26 +27,26 @@ export function WhoWeAre() {
   return (
     <section id="who-we-are" className="bg-white py-24 lg:py-32">
       <Container>
-        <div className="flex flex-col gap-12 lg:flex-row lg:gap-24">
-          <Reveal className="lg:w-72 lg:shrink-0">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
+          <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
             <div className="flex items-center gap-4">
-              <span className="h-px w-10 bg-green" aria-hidden="true" />
-              <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+              <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 WHO WE ARE
               </span>
             </div>
-            <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[40px] lg:leading-[1.1]">
+            <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               Rooted here since 1995
             </h2>
           </Reveal>
 
-          <Reveal delay={80} className="flex flex-1 flex-col items-start gap-9">
+          <Reveal delay={80} className="flex flex-col items-start gap-9 lg:col-span-7 lg:col-start-6">
             <p className="max-w-[38ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[32px]">
               A Rwandan NGO that began in the aftermath of the 1994 Genocide
               against the Tutsi, and never left.
             </p>
 
-            <p className="max-w-[62ch] text-base leading-relaxed text-gray lg:text-[17px]">
+            <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
               FXB International came to Rwanda in 1995 to walk with vulnerable
               children, widows and families on the road back to self-reliance.
               The FXBVillage model followed in 2000, and in 2012 we became a

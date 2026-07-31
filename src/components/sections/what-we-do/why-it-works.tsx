@@ -16,26 +16,26 @@ export function WhyItWorks() {
   return (
     <section className="bg-white py-24 lg:py-32">
       <Container>
-        <div className="flex flex-col gap-12 lg:flex-row lg:gap-24">
-          <Reveal className="lg:w-80 lg:shrink-0">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
+          <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
             <div className="flex items-center gap-4">
-              <span className="h-px w-10 bg-green" aria-hidden="true" />
-              <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+              <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 WHY IT WORKS
               </span>
             </div>
-            <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[40px] lg:leading-[1.1]">
+            <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               Integrated, and people-centred
             </h2>
           </Reveal>
 
-          <Reveal delay={80} className="flex flex-1 flex-col gap-6">
+          <Reveal delay={80} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
             <p className="max-w-[38ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
               The strength of the FXBVillage Model lies in its integrated and
               people-centred approach.
             </p>
 
-            <p className="max-w-[64ch] text-base leading-relaxed text-gray lg:text-[17px]">
+            <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
               Instead of addressing one challenge in isolation, the model
               recognises that lasting change requires coordinated action across
               multiple sectors. By empowering families with knowledge,
@@ -43,7 +43,7 @@ export function WhyItWorks() {
               long-term resilience and sustainable development.
             </p>
 
-            <p className="max-w-[64ch] text-base leading-relaxed text-gray lg:text-[17px]">
+            <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
               This holistic approach not only improves immediate living
               conditions but also enables communities to continue progressing
               long after project interventions have ended.
@@ -57,7 +57,7 @@ export function WhyItWorks() {
           <h3 className="mt-12 max-w-[30ch] text-2xl font-bold tracking-[-0.02em] text-blue lg:text-3xl">
             Contributing to national and global development
           </h3>
-          <p className="mt-5 max-w-[64ch] text-base leading-relaxed text-gray lg:text-[17px]">
+          <p className="mt-5 max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
             The FXBVillage Model aligns with Rwanda&rsquo;s national development
             priorities and contributes to several Sustainable Development Goals.
           </p>
@@ -68,7 +68,7 @@ export function WhyItWorks() {
                 key={goal.number}
                 className="wedge flex flex-col gap-2 bg-blue-08 p-5"
               >
-                <span className="text-xs font-semibold tracking-[0.16em] text-gray-40">
+                <span className="text-xs font-semibold tracking-[0.16em] text-gray-80">
                   SDG {goal.number}
                 </span>
                 <span className="text-[15px] leading-snug font-semibold text-blue">

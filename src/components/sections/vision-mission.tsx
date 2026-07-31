@@ -18,18 +18,18 @@ const values = ["Integrity", "Teamwork", "Honesty"];
 
 export function VisionMission() {
   return (
-    <section id="vision" className="scroll-mt-32 bg-blue py-24 lg:py-32">
+    <section id="vision" className="scroll-mt-32 bg-blue py-32 lg:py-48">
       <Container>
         <Reveal className="flex items-center gap-4">
-          <span className="h-px w-10 bg-white-40" aria-hidden="true" />
-          <span className="text-xs font-semibold tracking-[0.22em] text-white-70">
+          <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
+          <span className="text-xs font-semibold tracking-[0.14em] text-white-94">
             VISION, MISSION & VALUES
           </span>
         </Reveal>
 
         <div className="mt-14 grid gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal delay={80}>
-            <h2 className="text-xs font-semibold tracking-[0.22em] text-white-40">
+            <h2 className="text-xs font-semibold tracking-[0.14em] text-white-94">
               OUR VISION
             </h2>
             <p className="mt-5 text-3xl leading-[1.25] font-bold tracking-[-0.03em] text-white lg:text-[40px] lg:leading-[1.15]">
@@ -38,10 +38,10 @@ export function VisionMission() {
           </Reveal>
 
           <Reveal delay={160}>
-            <h2 className="text-xs font-semibold tracking-[0.22em] text-white-40">
+            <h2 className="text-xs font-semibold tracking-[0.14em] text-white-94">
               OUR MISSION
             </h2>
-            <p className="mt-5 text-lg leading-relaxed text-white-70 lg:text-xl lg:leading-relaxed">
+            <p className="mt-5 text-lg leading-relaxed text-white-94 lg:text-xl lg:leading-relaxed">
               {org.mission}
             </p>
           </Reveal>
@@ -49,14 +49,14 @@ export function VisionMission() {
 
         <Reveal delay={240} className="mt-16 lg:mt-24">
           <div className="h-px w-full bg-white-12" aria-hidden="true" />
-          <h2 className="mt-12 text-xs font-semibold tracking-[0.22em] text-white-40">
+          <h2 className="mt-12 text-xs font-semibold tracking-[0.14em] text-white-94">
             OUR GUIDING VALUES
           </h2>
           <ul className="mt-8 grid gap-8 sm:grid-cols-3 sm:gap-6">
             {values.map((value, index) => (
               <li key={value} className="flex items-baseline gap-5">
                 <span
-                  className="text-sm font-semibold text-white-40"
+                  className="text-sm font-semibold text-white-94"
                   aria-hidden="true"
                 >
                   {String(index + 1).padStart(2, "0")}

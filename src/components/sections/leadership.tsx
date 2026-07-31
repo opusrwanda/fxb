@@ -20,16 +20,16 @@ import { org } from "@/lib/site";
  */
 export function Leadership() {
   return (
-    <section id="leadership" className="scroll-mt-32 bg-white py-24 lg:py-32">
+    <section id="leadership" className="scroll-mt-32 bg-blue-08 py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">
-            <span className="h-px w-10 bg-green" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+            <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+            <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               LEADERSHIP
             </span>
           </div>
-          <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[40px] lg:leading-[1.1]">
+          <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
             Board of Directors
           </h2>
         </Reveal>
@@ -39,7 +39,7 @@ export function Leadership() {
         {board.length > 0 ? (
           <ul className="mt-14 grid grid-cols-2 gap-x-5 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
             {board.map((member, index) => (
-              <Reveal as="li" key={member.id} delay={80 + (index % 4) * 80}>
+              <Reveal as="li" key={member.id} delay={60 + Math.min(index, 3) * 60}>
                 <div className="wedge relative aspect-square overflow-hidden bg-blue-16">
                   <Image
                     src={member.src}
@@ -63,7 +63,7 @@ export function Leadership() {
           </ul>
         ) : (
           <Reveal delay={80} className="mt-10 flex flex-col items-start gap-7">
-            <p className="max-w-[60ch] text-lg leading-relaxed text-gray">
+            <p className="max-w-[58ch] text-lg leading-relaxed text-gray">
               FXB Rwanda is governed by a Board of Directors. Full profiles are
               being prepared for publication here.
             </p>

@@ -35,7 +35,15 @@ export function Hero({
     // fit inside what is left, so the section lands on 100svh rather than
     // growing past it. `min-h` rather than `h` so a very short or very narrow
     // device gets a taller hero instead of clipped copy.
-    <section className="relative isolate flex min-h-svh flex-col justify-center overflow-hidden bg-blue pt-[9.25rem] pb-12 lg:pt-[14.75rem] lg:pb-16">
+    <section
+      className={`relative isolate flex flex-col justify-center overflow-hidden bg-blue pt-[9.25rem] pb-12 lg:pt-[14.75rem] lg:pb-16 ${
+        // A full viewport is worth it for footage; it is not worth it for a
+        // plain blue rectangle. On the hero-only pages the full height left
+        // 200px of empty blue under the buttons and pushed the actual content
+        // below the fold to buy nothing.
+        withVideo ? "min-h-svh" : "min-h-[68svh]"
+      }`}
+    >
       <HeroSentinels />
 
       {withVideo && (
@@ -86,19 +94,28 @@ export function Hero({
         </h1>
 
         {body && (
-          <p className="max-w-[58ch] text-base leading-relaxed text-white-70 sm:text-[17px] lg:text-[19px]">
+          <p className="max-w-[58ch] text-base leading-relaxed text-white-94 sm:text-[17px] lg:text-[19px]">
             {body}
           </p>
         )}
 
+        {/* Full width while stacked, auto once they sit side by side. Two pills
+            of different label lengths stacked at their natural widths came out
+            ragged down the left of the phone. */}
         {ctas.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-3 lg:mt-4 lg:gap-4">
+          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:mt-4 lg:gap-4">
             {ctas.map((cta) => (
               <Pill
                 key={cta.href}
                 href={cta.href}
                 size="lg"
-                variant={cta.primary ? "primary" : "outlineLight"}
+                // `white`, not `primary`. The hero is always a blue room, so a
+                // blue-filled pill on a hero without footage behind it was a
+                // blue button on a blue ground — the primary call to action was
+                // literally invisible on /get-involved and /news-insights. A
+                // white fill is the primary treatment inside a colour room.
+                variant={cta.primary ? "white" : "outlineLight"}
+                className="w-full sm:w-auto"
               >
                 {cta.label}
               </Pill>

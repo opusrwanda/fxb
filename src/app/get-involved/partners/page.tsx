@@ -141,7 +141,7 @@ function Cards({
         <Reveal
           as="li"
           key={item.title}
-          delay={(index % 2) * 80}
+          delay={Math.min(index, 3) * 60}
           className={`wedge p-7 ${dark ? "bg-white-12" : "bg-blue-08"}`}
         >
           <h4
@@ -153,7 +153,7 @@ function Cards({
           </h4>
           <p
             className={`mt-2 text-[15px] leading-relaxed ${
-              dark ? "text-white-70" : "text-gray"
+              dark ? "text-white-94" : "text-gray"
             }`}
           >
             {item.body}
@@ -181,8 +181,8 @@ function SectionHeading({
           aria-hidden="true"
         />
         <span
-          className={`text-xs font-semibold tracking-[0.22em] ${
-            dark ? "text-white-70" : "text-gray-40"
+          className={`text-xs font-semibold tracking-[0.14em] ${
+            dark ? "text-white-94" : "text-gray-80"
           }`}
         >
           {eyebrow}
@@ -238,9 +238,9 @@ export default function PartnersPage() {
             </Reveal>
 
             <Reveal delay={160}>
-              <h3 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 WHY PARTNER WITH FXB RWANDA?
-              </h3>
+              </p>
               <div className="mt-6">
                 <Checklist items={whyPartner} />
               </div>
@@ -248,18 +248,18 @@ export default function PartnersPage() {
           </div>
 
           <Reveal delay={200} className="mt-14">
-            <h3 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+            <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               AREAS OF COLLABORATION
-            </h3>
+            </p>
           </Reveal>
           <Reveal delay={240} className="mt-6">
             <Checklist items={collaborationAreas} />
           </Reveal>
 
           <Reveal delay={280} className="mt-14">
-            <h3 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+            <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               OUR DEVELOPMENT PARTNERS
-            </h3>
+            </p>
           </Reveal>
           <div className="mt-6">
             <PartnerLogos category="development" />
@@ -280,7 +280,7 @@ export default function PartnersPage() {
           />
 
           <Reveal delay={80} className="mt-10 flex flex-col gap-6">
-            <p className="max-w-[70ch] text-base leading-relaxed text-white-70 lg:text-[17px]">
+            <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
               FXB Rwanda recognises government leadership as essential for
               sustainable development. With the Ministry of Gender and Family
               Promotion (MIGEPROF) as the line ministry, we work closely with
@@ -288,7 +288,7 @@ export default function PartnersPage() {
               with Rwanda&rsquo;s development priorities and contribute to
               national goals.
             </p>
-            <p className="max-w-[70ch] text-base leading-relaxed text-white-70 lg:text-[17px]">
+            <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
               Our collaboration with government ensures that interventions
               respond to community needs, complement existing systems, and
               contribute to long-term sustainability.
@@ -300,13 +300,13 @@ export default function PartnersPage() {
           </div>
 
           <Reveal delay={200} className="mt-14">
-            <h3 className="text-xs font-semibold tracking-[0.22em] text-white-40">
+            <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
               WORKING TOGETHER FOR SUSTAINABLE SOLUTIONS
-            </h3>
+            </p>
           </Reveal>
           {/* The logo tiles carry their own white ground, so the wall reads the
               same way in a colour room as it does on white. */}
-          <div className="mt-6 rounded-3xl bg-white p-6 lg:p-8">
+          <div className="mt-6 rounded-card bg-white p-6 lg:p-8">
             <PartnerLogos category="government" />
           </div>
         </Container>
@@ -330,9 +330,9 @@ export default function PartnersPage() {
                 reach communities most in need.
               </p>
               <div>
-                <h3 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+                <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                   YOUR INVESTMENT CONTRIBUTES TO
-                </h3>
+                </p>
                 <ul className="mt-5 flex flex-col gap-3">
                   {[
                     "Improving children's access to education and protection",
@@ -356,9 +356,9 @@ export default function PartnersPage() {
             </Reveal>
 
             <Reveal delay={160}>
-              <h3 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+              <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 OUR COMMITMENT TO DONORS
-              </h3>
+              </p>
               <ul className="mt-5 flex flex-col gap-3">
                 {donorCommitments.map((item) => (
                   <li key={item} className="flex gap-3.5">
@@ -376,9 +376,9 @@ export default function PartnersPage() {
           </div>
 
           <Reveal delay={200} className="mt-14">
-            <h3 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+            <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               OUR DONORS
-            </h3>
+            </p>
           </Reveal>
           <div className="mt-6">
             <PartnerLogos category="donor" />
@@ -396,7 +396,7 @@ export default function PartnersPage() {
           />
 
           <Reveal delay={80} className="mt-10">
-            <p className="max-w-[70ch] text-base leading-relaxed text-white-70 lg:text-[17px]">
+            <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
               Companies have an important role to play in creating a more
               inclusive and sustainable society. FXB Rwanda welcomes
               partnerships with businesses that share our commitment to
@@ -405,20 +405,20 @@ export default function PartnersPage() {
           </Reveal>
 
           <Reveal delay={120} className="mt-10">
-            <h3 className="text-xs font-semibold tracking-[0.22em] text-white-40">
+            <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
               WAYS COMPANIES CAN PARTNER WITH US
-            </h3>
+            </p>
           </Reveal>
           <div className="mt-6">
             <Cards items={corporateRoutes} dark />
           </div>
 
           <Reveal delay={200} className="mt-14">
-            <h3 className="text-xs font-semibold tracking-[0.22em] text-white-40">
+            <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
               LET&rsquo;S CREATE IMPACT TOGETHER
-            </h3>
+            </p>
           </Reveal>
-          <div className="mt-6 rounded-3xl bg-white p-6 lg:p-8">
+          <div className="mt-6 rounded-card bg-white p-6 lg:p-8">
             <PartnerLogos category="corporate" />
           </div>
         </Container>
@@ -433,7 +433,7 @@ export default function PartnersPage() {
           <SectionHeading eyebrow="BECOME A PARTNER" title="Let's work together" />
 
           <Reveal delay={80} className="mt-10">
-            <p className="max-w-[70ch] text-base leading-relaxed text-gray lg:text-[17px]">
+            <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
               Are you an organisation, institution, company or individual
               interested in supporting FXB Rwanda&rsquo;s mission? We welcome
               partnerships that bring together ideas, resources, expertise and
@@ -443,9 +443,9 @@ export default function PartnersPage() {
           </Reveal>
 
           <Reveal delay={120} className="mt-10">
-            <h3 className="text-xs font-semibold tracking-[0.22em] text-gray-40">
+            <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               PARTNERSHIP OPPORTUNITIES
-            </h3>
+            </p>
           </Reveal>
           <div className="mt-6">
             <Cards items={partnershipOpportunities} />
@@ -458,7 +458,7 @@ export default function PartnersPage() {
             <h3 className="max-w-[24ch] text-2xl font-bold tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[1.2]">
               Start a conversation
             </h3>
-            <p className="max-w-[56ch] text-base leading-relaxed text-white-70 lg:text-[17px]">
+            <p className="max-w-[56ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
               Tell us about your organisation and how you would like to
               collaborate.
             </p>
