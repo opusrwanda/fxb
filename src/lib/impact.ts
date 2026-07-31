@@ -35,6 +35,83 @@ export type ImpactArea = {
   href: string;
 };
 
+/**
+ * Our Reach (Since 2012) — the four aggregates reported on the Our Impact page.
+ *
+ * These are the figures exactly as the brief states them, with the "+" that
+ * travels with each one. The three programme aggregates do not sum to the
+ * total: they count reach per area and a household reached by two areas appears
+ * in both, which is why the fourth figure is reported separately rather than
+ * derived.
+ *
+ * The brief marks all of these "(Insert updated statistics from MEL/database)",
+ * so every one wants confirming before launch.
+ */
+export type ReachFigure = {
+  id: string;
+  label: string;
+  value: number;
+  caption: string;
+  /** Revealed on hover, per the client's note on this section. */
+  areas: string[];
+  photo: string;
+};
+
+export const reach: ReachFigure[] = [
+  {
+    id: "socio-economic-strengthening",
+    label: "Socio-Economic Strengthening",
+    value: 1090288,
+    caption:
+      "Individuals and households reached through economic empowerment, violence prevention & family strengthening, and climate & environment initiatives combined.",
+    areas: [
+      "Entrepreneurship, VSLA savings groups & startup capital",
+      "Family resilience & violence prevention",
+      "Climate adaptation & environmental conservation",
+    ],
+    photo: "fxbvillage-tlf-03",
+  },
+  {
+    id: "ecd-education",
+    label: "ECD & Education",
+    value: 505247,
+    caption:
+      "Children and young families supported through early childhood development and education combined.",
+    areas: [
+      "School support & scholastic materials",
+      "Vocational & youth training",
+      "Positive parenting & early stimulation",
+    ],
+    photo: "fxbvillage-tlf-04",
+  },
+  {
+    id: "health",
+    label: "Health",
+    value: 1389426,
+    caption:
+      "People reached through HIV/AIDS prevention and care, health, nutrition, and WASH interventions combined.",
+    areas: [
+      "HIV testing, counselling & prevention (incl. DREAMS)",
+      "Health insurance enrolment & referrals",
+      "Nutrition, maternal & child health, WASH infrastructure",
+    ],
+    photo: "fxbvillage-mageragere-02",
+  },
+  {
+    id: "children-families",
+    label: "Children & Families Reached",
+    value: 2984961,
+    caption:
+      "Children and vulnerable individuals supported through our programmes.",
+    areas: [
+      "All four provinces and the City of Kigali",
+      "54 FXBVillage projects delivered",
+      "Reached since 2012",
+    ],
+    photo: "fxbvillage-tlf-14",
+  },
+];
+
 export const impactAreas: ImpactArea[] = [
   {
     id: "children-families",

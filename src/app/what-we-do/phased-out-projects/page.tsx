@@ -1,0 +1,106 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import { Container } from "@/components/layout/container";
+import { PageHeader } from "@/components/layout/page-header";
+import { Pill } from "@/components/ui/pill";
+import { Reveal } from "@/components/ui/reveal";
+import { photo } from "@/lib/photos";
+import { projectsDelivered } from "@/lib/fxbvillage";
+import { phasedOutProjects } from "@/lib/projects";
+import { org } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Phased-out Projects",
+  description:
+    "Projects FXB Rwanda has completed, and the districts and periods they covered.",
+};
+
+/**
+ * Phased-out Projects.
+ *
+ * The brief gives this page a heading, a note that it should show "photo with
+ * title of the project and the period of implementation", and no projects. The
+ * grid below is built to that spec and renders the moment a project in
+ * `projects.ts` is marked `active: false`.
+ *
+ * Until then the page states the one thing that is actually known — 54
+ * FXBVillage projects delivered — rather than showing an empty grid under a
+ * heading. It is a real page with real content, not a stub.
+ */
+export default function PhasedOutProjectsPage() {
+  return (
+    <>
+      <PageHeader
+        breadcrumbs={[{ label: "What We Do", href: "/what-we-do" }]}
+        eyebrow="PHASED-OUT PROJECTS"
+        title="Work that has run its course"
+        intro="A project ending is the point of the model. Families exit when they no longer need us — with income, savings, school fees paid and health cover in place."
+      />
+
+      <section className="bg-white pb-24 lg:pb-32">
+        <Container>
+          {phasedOutProjects.length > 0 ? (
+            <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+              {phasedOutProjects.map((project, index) => (
+                <Reveal as="li" key={project.id} delay={80 + (index % 3) * 80}>
+                  {project.photo && (
+                    <div className="wedge relative aspect-4/3 overflow-hidden">
+                      <Image
+                        src={photo(project.photo).url}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  <h2 className="mt-6 text-xl font-bold tracking-[-0.02em] text-blue lg:text-2xl">
+                    {project.name}
+                  </h2>
+                  {project.period && (
+                    <p className="mt-1.5 text-sm text-gray-40">
+                      {project.period}
+                    </p>
+                  )}
+                  <p className="mt-3 text-[15px] leading-snug text-gray">
+                    {project.districts.join(", ")}
+                  </p>
+                </Reveal>
+              ))}
+            </ul>
+          ) : (
+            <Reveal className="wedge flex flex-col items-start gap-7 bg-blue-08 p-9 lg:p-14">
+              {/* No date on the count: the brief says 54 have been implemented
+                  and separately that the model arrived in 2000, but it never
+                  ties the two together, and "since 2000" would be our
+                  inference presented as FXB's figure. */}
+              <p className="max-w-[52ch] text-2xl leading-[1.35] font-medium text-blue lg:text-[30px]">
+                {projectsDelivered} FXBVillage projects have been delivered,
+                leaving thousands of families resilient from poverty.
+              </p>
+              <p className="max-w-[62ch] text-base leading-relaxed text-gray lg:text-[17px]">
+                We are preparing the full record of completed projects for
+                publication here, with the districts and period each one
+                covered. In the meantime, our current work is listed in full,
+                and the team is glad to answer questions about earlier
+                programmes.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Pill
+                  href="/what-we-do/current-projects"
+                  variant="primary"
+                  size="lg"
+                >
+                  Current Projects
+                </Pill>
+                <Pill href={`mailto:${org.email}`} size="lg">
+                  Ask about past projects
+                </Pill>
+              </div>
+            </Reveal>
+          )}
+        </Container>
+      </section>
+    </>
+  );
+}

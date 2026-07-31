@@ -19,6 +19,22 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
   },
 
+  async redirects() {
+    return [
+      {
+        // The nav lists "Success Stories" under Our Impact and "Stories" under
+        // News & Insights, but they are the same three stories. Rather than
+        // publish them at two URLs — which splits the ranking and doubles the
+        // maintenance — the Our Impact route redirects to the canonical one.
+        // Temporary, not permanent: which of the two should be canonical is
+        // FXB's call, and a 308 would be cached in browsers for good.
+        source: "/our-impact/success-stories",
+        destination: "/news-insights/stories",
+        permanent: false,
+      },
+    ];
+  },
+
   async headers() {
     // In development Turbopack reuses the same URL for a CSS chunk whose
     // contents keep changing, and serves it as `no-cache` — which Safari

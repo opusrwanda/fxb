@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
+import { areas } from "@/lib/areas";
 import { photo } from "@/lib/photos";
 
 /**
@@ -18,41 +19,14 @@ import { photo } from "@/lib/photos";
  *
  * Photography is the supplied FXB library, served from the Bunny pull zone.
  *
+ * The four areas live in `areas.ts` because the Areas of Intervention section
+ * on What We Do names and illustrates the same four; holding them in one place
+ * is what stops the two pages drifting apart.
+ *
  * NOTE: Herbal Medicine has no dedicated photograph in the supplied set — the
  * seedling nursery stands in for it, and it remains the one area with no
  * written content anywhere in the brief either.
  */
-
-const areas = [
-  {
-    label: "Socio-Economic Strengthening",
-    blurb: "Savings groups, startup capital and enterprise",
-    href: "/what-we-do#socio-economic-strengthening",
-    photo: "fxbvillage-tlf-10",
-    alt: "A woman standing in the shop she runs, stocked floor to ceiling",
-  },
-  {
-    label: "ECD & Education",
-    blurb: "Early childhood, school support and vocational training",
-    href: "/what-we-do#ecd-education",
-    photo: "fxbvillage-mageragere-01",
-    alt: "Two children in school uniform carrying their bags",
-  },
-  {
-    label: "Health",
-    blurb: "HIV care, nutrition, maternal health and WASH",
-    href: "/what-we-do#health",
-    photo: "fxbvillage-musambira-03",
-    alt: "A child drinking clean water beside an FXB Rwanda household filter",
-  },
-  {
-    label: "Herbal Medicine",
-    blurb: "Traditional practice, cultivated and applied",
-    href: "/what-we-do#herbal-medicine",
-    photo: "fostering-06",
-    alt: "Growers tending seedlings under a shade structure",
-  },
-];
 
 export function WhatWeDo() {
   return (

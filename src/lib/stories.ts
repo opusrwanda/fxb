@@ -18,6 +18,14 @@ export type Story = {
   date: string;
   photo: string;
   alt: string;
+  /**
+   * The story itself, one string per paragraph.
+   *
+   * PENDING: excerpts are truncated exactly as they appear on the current site
+   * and the full bodies still need migrating. A story without a body renders
+   * its excerpt and says so, rather than showing a blank article.
+   */
+  body?: string[];
 };
 
 export const stories: Story[] = [

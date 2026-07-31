@@ -30,6 +30,15 @@ export type NewsItem = {
   language?: string;
   photo: string;
   alt: string;
+  /**
+   * The article itself, one string per paragraph.
+   *
+   * PENDING: the proposal commits to migrating the full bodies from the current
+   * newsroom; only headlines, dates and excerpts came across so far. An item
+   * without a body renders its excerpt and says the full piece is on its way,
+   * rather than showing a blank article.
+   */
+  body?: string[];
 };
 
 export const news: NewsItem[] = [
