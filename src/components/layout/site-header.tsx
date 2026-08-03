@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ArrowUpRight, Mail, Menu, Phone, Plus, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/brand/logo";
+import { AnnualReportBanner } from "@/components/layout/annual-report-banner";
 import { Container } from "@/components/layout/container";
 import {
   externalSystems,
@@ -130,8 +131,17 @@ export function SiteHeader() {
             : "border-b border-transparent bg-transparent",
       ].join(" ")}
     >
-      {/* The utility strip belongs to the rest state only; once the page moves
-          it is gone until the visitor returns to the top. */}
+      {/* The announcement and the utility strip both belong to the rest state
+          only; once the page moves they are gone until the visitor returns to
+          the top.
+
+          The banner collapsing with them is deliberate rather than incidental.
+          A banner that stayed would make the pinned bar permanently taller, and
+          the two sticky navigation bars — SectionNav and SubNav — pin against
+          that height by number. Every one of them would have had to become
+          dynamic, and would still have jumped the moment anybody pressed the
+          dismiss button. The announcement is at the top of every page, which is
+          what it was asked to be; it is not also in the way of every scroll. */}
       <div
         className={[
           "overflow-hidden transition-[max-height,opacity] duration-[240ms] ease-out",
@@ -139,6 +149,8 @@ export function SiteHeader() {
         ].join(" ")}
         aria-hidden={solid}
       >
+        <AnnualReportBanner />
+
         <Container className="hidden items-center gap-9 border-b border-white-12 pt-5 pb-4 text-base font-medium text-white-94 lg:flex">
           {externalSystems.map((system) => (
             <a

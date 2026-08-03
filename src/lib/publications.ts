@@ -299,6 +299,18 @@ export const publicationsIn = (category: PublicationCategory) =>
  */
 export const newsletters = publicationsIn("newsletter");
 
+/**
+ * The newest annual report, or undefined while the shelf is empty.
+ *
+ * Sorted here rather than relying on the order entries happen to be written in:
+ * the banner in the header announces whatever this returns, and a report added
+ * out of order should still be the one announced. Undefined is a real answer —
+ * the banner simply does not render, which is correct until FXB supplies one.
+ */
+export const latestAnnualReport = publicationsIn("annual-report")
+  .slice()
+  .sort((a, b) => b.date.localeCompare(a.date))[0];
+
 const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   month: "long",
   year: "numeric",
