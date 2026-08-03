@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
+import sharp from "sharp";
 
 import { Board } from "./src/cms/collections/board";
 import { Media } from "./src/cms/collections/media";
@@ -88,6 +89,11 @@ export default buildConfig({
   globals: [SiteSettings, Impact],
 
   editor: lexicalEditor({}),
+
+  // Without this, uploads are stored at whatever size they were taken at and
+  // the browser is sent a 4MB camera file to display at 400px. It is what
+  // generates the thumbnail/card/wide sizes declared on the Media collection.
+  sharp,
 
   db: postgresAdapter({
     pool: {

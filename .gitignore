@@ -43,5 +43,10 @@ next-env.d.ts
 # local visual checks
 /.screenshots/
 
+# CMS uploads. These belong to the database, not to the source tree — the row
+# in `media` is the record and the file is its payload, so committing one
+# without the other only creates two things to keep in step.
+/media/
+
 # keep the template committed
 !.env.example

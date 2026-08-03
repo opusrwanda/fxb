@@ -374,6 +374,10 @@ export interface Programme {
    * Only if the programme has a system of its own, like the Sugira Muryango dashboard. Leave blank otherwise.
    */
   externalUrl?: string | null;
+  /**
+   * Shows a notice on the programme's page saying the description is being confirmed. Untick once FXB has approved the wording.
+   */
+  unconfirmed?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -692,6 +696,7 @@ export interface ProgrammesSelect<T extends boolean = true> {
   runs?: T;
   funder?: T;
   externalUrl?: T;
+  unconfirmed?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

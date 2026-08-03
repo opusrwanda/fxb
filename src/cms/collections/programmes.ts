@@ -118,5 +118,21 @@ export const Programmes: CollectionConfig = {
           "Only if the programme has a system of its own, like the Sugira Muryango dashboard. Leave blank otherwise.",
       },
     },
+    {
+      // The programme descriptions currently on the site were written to show
+      // what the template looks like carrying real copy — the brief supplies
+      // names and districts and nothing else. The page renders a notice while
+      // this is ticked, so nobody mistakes illustrative copy for FXB's own.
+      // Untick it once the programme lead has confirmed the wording.
+      name: "unconfirmed",
+      type: "checkbox",
+      defaultValue: false,
+      label: "Description not yet confirmed",
+      admin: {
+        position: "sidebar",
+        description:
+          "Shows a notice on the programme's page saying the description is being confirmed. Untick once FXB has approved the wording.",
+      },
+    },
   ],
 };
