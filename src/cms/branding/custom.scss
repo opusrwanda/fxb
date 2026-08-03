@@ -1,35 +1,179 @@
 /*
   FXB Rwanda, in the editor.
 
-  Payload's own interface, wearing the brand's four colours. The point is not
-  decoration: a team signing in to change their website should see their own
-  organisation, not a piece of software they have never heard of. An unfamiliar
-  login screen is the thing that makes people think they are in the wrong place.
+  Payload's interface wearing the site's own design language, so the team is not
+  crossing a visual border every time they move between the website and the
+  thing that edits it.
 
-  Only the accent is changed. Payload's greys carry its own contrast decisions
-  and are left alone — restyling an editor's every surface is how an upgrade
-  turns into a redesign.
+  WHAT IS RESTYLED, AND WHAT IS NOT
+
+  The sidebar, the primary actions, the type and the card shapes — the parts a
+  person looks at all day and recognises as "ours". Payload's form controls,
+  tables and dialogues are left alone: they carry its own contrast and focus
+  decisions, they change between releases, and restyling all of them is how an
+  upgrade turns into a redesign nobody asked for.
+
+  THE SIDEBAR
+
+  It was a column of blue links on white under grey labels, with no separation
+  and nothing to say which group you were in. It is a blue room now, which is
+  the site's own device for a navigational surface — the header at rest, the
+  footer, the What We Do band. Group headings take the site's eyebrow treatment,
+  tracked capitals and quiet; the current item takes the green marker the site
+  uses for "you are here" in the header and in both sticky navigation bars.
+
+  Every colour below is one of the four the Brand Guiding Tool sanctions, or an
+  alpha of one. No fifth hue enters through the back door here either.
 */
-:root {
-  --color-base-0: #ffffff;
-  --theme-elevation-0: #ffffff;
 
-  /* Brand blue, and the tints Payload derives buttons and links from. */
-  --color-success-500: #008d00;
-  --theme-success-500: #008d00;
+// The sanctioned four, restated rather than imported: Payload compiles this
+// outside the site's Tailwind pipeline and cannot reach the `globals.css`
+// tokens.
+$blue: #0472c2;
+$blue-dark: #03588f;
+$green: #008d00;
+$gray: #535353;
+$white: #ffffff;
+
+html[data-theme="light"],
+html[data-theme="dark"] {
+  --theme-success-500: #{$green};
+  --color-success-500: #{$green};
 }
 
-html[data-theme="light"] {
-  --theme-baseline: 20px;
-
-  /* Primary actions — Save, Publish, Create — in FXB blue rather than default. */
-  --color-base-800: #0472c2;
-  --color-base-850: #0472c2;
-  --theme-elevation-800: #0472c2;
-  --theme-elevation-850: #0366ae;
+/* Poppins, loaded by the route group's own layout. Falls back to a system stack
+   if it has not arrived, so text never renders invisible. */
+body {
+  font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* The login card: give it the brand's ground rather than flat grey. */
+/* ── The sidebar ─────────────────────────────────────────────────────────── */
+
+.nav {
+  background: $blue;
+  border-right: none;
+
+  .nav-group__toggle,
+  .nav-group__label {
+    color: rgba($white, 0.7);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .nav-group__indicator svg {
+    color: rgba($white, 0.7);
+  }
+
+  a,
+  .nav__link {
+    color: rgba($white, 0.94);
+    font-weight: 500;
+    border-radius: 999px;
+    padding: 0.5rem 0.75rem;
+    margin-inline: -0.25rem;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
+
+    &:hover {
+      background: rgba($white, 0.12);
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
+  /* You are here — the same green marker the site uses everywhere else, so the
+     signal means one thing across both. */
+  .nav__link--active,
+  a[aria-current="page"] {
+    background: rgba($white, 0.16);
+    color: $white;
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 0 $green;
+  }
+
+  .nav__controls a,
+  .nav__controls button,
+  .nav__log-out a,
+  .nav__log-out button {
+    color: rgba($white, 0.94);
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  svg .stroke,
+  svg .fill {
+    stroke: rgba($white, 0.94);
+  }
+}
+
+.nav-toggler,
+.hamburger {
+  color: $white;
+}
+
+/* ── Type ────────────────────────────────────────────────────────────────── */
+
+.dashboard__label,
+.dashboard h2,
+.list-header h1,
+.collection-list h1,
+.document-header h1 {
+  color: $blue;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ── Surfaces ────────────────────────────────────────────────────────────── */
+
+/* The dashboard tiles take the wedge — the site's signature shape, one corner
+   dropped square, after the X in the mark. */
+.dashboard__card,
+.card {
+  border-radius: 20px 20px 0 20px;
+  border: 1px solid rgba($gray, 0.15);
+  background: $white;
+  transition: border-color 300ms ease;
+
+  &:hover {
+    border-color: $blue;
+  }
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────────── */
+
+.btn--style-primary {
+  background: $blue;
+  border-radius: 999px;
+
+  &:hover:not(:disabled) {
+    background: $blue-dark;
+  }
+}
+
+.btn--style-secondary {
+  border-radius: 999px;
+  border-color: $blue;
+  color: $blue;
+}
+
+/* ── Focus ───────────────────────────────────────────────────────────────── */
+
+/* The site's focus ring: green, with a white halo so it survives against the
+   blue sidebar as well as white. Green on blue alone is 1.16:1, and a keyboard
+   user loses their place entirely. */
+:focus-visible {
+  outline: 3px solid $green;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px $white;
+}
+
+/* ── The login screen ────────────────────────────────────────────────────── */
+
 .template-minimal {
   background: linear-gradient(180deg, #f3f7fb 0%, #ffffff 60%);
 }
