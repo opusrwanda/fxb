@@ -261,7 +261,11 @@ export function SiteHeader() {
             aria-controls="mobile-nav"
             aria-label={drawerOpen ? "Close menu" : "Open menu"}
             className={[
-              "flex size-8 shrink-0 items-center justify-center lg:hidden",
+              // 44px, not 32. This is the only way through the site on a
+              // phone and it was a third under the minimum comfortable touch
+              // target — the negative margin keeps the glyph optically where it
+              // was, so the target grows without the bar shifting.
+              "-mr-2.5 flex size-11 shrink-0 items-center justify-center lg:hidden",
               solid && !drawerOpen ? "text-blue" : "text-white",
             ].join(" ")}
           >
@@ -285,10 +289,14 @@ export function SiteHeader() {
           <ul>
             {primaryNav.map((item) => (
               <li key={item.href} className="border-b border-white-12">
-                <div className="flex items-center gap-4 py-5">
+                {/* Padding on the anchor, not on this row. It used to sit
+                    here, which made the row look 68px tall while the actual
+                    tap target was only the height of the text — a miss above
+                    or below the words did nothing. */}
+                <div className="flex items-center gap-4">
                   <Link
                     href={item.href}
-                    className="flex-1 text-[28px] font-medium text-white"
+                    className="flex-1 py-5 text-[28px] font-medium text-white"
                   >
                     {item.label}
                   </Link>
@@ -302,7 +310,11 @@ export function SiteHeader() {
                       }
                       aria-expanded={expanded === item.href}
                       aria-label={`${expanded === item.href ? "Collapse" : "Expand"} ${item.label}`}
-                      className="text-white-94 transition-colors duration-200 hover:text-white"
+                      // 44px around a 24px glyph. It was the bare icon, which
+                      // put a 24px target next to an 82px one on the same row —
+                      // and this is the control that reveals the section pages,
+                      // so missing it looks like the menu simply has no depth.
+                      className="-mr-2.5 flex size-11 shrink-0 items-center justify-center text-white-94 transition-colors duration-200 hover:text-white"
                     >
                       <Plus
                         className={`size-6 transition-transform duration-[240ms] ease-out ${
@@ -319,7 +331,7 @@ export function SiteHeader() {
                       <li key={child.href}>
                         <Link
                           href={child.href}
-                          className="block py-2.5 text-lg text-white-94"
+                          className="block py-3 text-lg text-white-94"
                         >
                           {child.label}
                         </Link>
@@ -339,7 +351,9 @@ export function SiteHeader() {
               href={system.href}
               target="_blank"
               rel="noreferrer noopener"
-              className="flex items-center gap-2.5 text-[17px] font-medium text-white-94"
+              // Padded to a 44px row like the nav links above. These were
+              // the last two 26px targets left in the drawer.
+              className="flex items-center gap-2.5 py-2.5 text-[17px] font-medium text-white-94"
             >
               {system.label}
               <ArrowUpRight className="size-4" aria-hidden="true" />
@@ -351,17 +365,17 @@ export function SiteHeader() {
             links. On a phone that is the most valuable space in the menu — the
             thumb is already there — so it carries the number to call and the
             address to write to instead of nothing. */}
-        <div className="mt-10 flex flex-col gap-4 border-t border-white-12 pt-8">
+        <div className="mt-10 flex flex-col gap-1 border-t border-white-12 pt-6">
           <a
             href={`tel:${org.phoneHref}`}
-            className="flex items-center gap-3 text-[17px] font-medium text-white"
+            className="flex items-center gap-3 py-2.5 text-[17px] font-medium text-white"
           >
             <Phone className="size-5 shrink-0" aria-hidden="true" />
             {org.phone}
           </a>
           <a
             href={`mailto:${org.email}`}
-            className="flex items-center gap-3 text-[17px] font-medium text-white"
+            className="flex items-center gap-3 py-2.5 text-[17px] font-medium text-white"
           >
             <Mail className="size-5 shrink-0" aria-hidden="true" />
             {org.email}

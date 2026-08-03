@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArticleCard } from "@/components/cards/article-card";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { SubNav, newsInsightsNav } from "@/components/layout/sub-nav";
 import { formatStoryDate, stories } from "@/lib/stories";
 
 export const metadata: Metadata = {
@@ -30,7 +31,9 @@ export default function StoriesPage() {
         intro="Behind every programme is a story of hope, resilience and transformation. Discover how the lives of children, families and communities are changing through the support of FXB Rwanda and its partners."
       />
 
-      <section className="bg-white pb-24 lg:pb-32">
+      <SubNav items={newsInsightsNav} ariaLabel="News and Insights" />
+
+      <section className="bg-white pt-14 pb-24 lg:pt-16 lg:pb-32">
         <Container>
           <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
             {stories.map((story, index) => (

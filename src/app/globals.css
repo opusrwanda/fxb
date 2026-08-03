@@ -118,6 +118,149 @@
   }
 
   /*
+    ── The hero room ──────────────────────────────────────────────────────────
+
+    The scrim, shaped rather than flat.
+
+    A single vertical gradient darkened the footage evenly across its width,
+    which cost the picture everything and bought contrast in the right-hand
+    third where no type ever lands. These two layers spend the darkness where
+    the words are instead.
+
+    `hero-scrim` runs on the diagonal: heaviest at the lower left under the
+    headline, body and buttons, lifting to 28% through the upper right so the
+    footage actually reads as a photograph of somebody. `hero-scrim-edges` then
+    re-anchors the two horizontal bands that carry type regardless of column —
+    the transparent header along the top, the stat rail along the bottom.
+
+    Worst case for legibility is white footage under the lightest stop, which
+    still leaves white type at 6.4:1 — comfortably past AA. Under the headline
+    the combined layers sit near 0.85 alpha. The scrim rising is still the
+    answer if a clip ever breaks this; the lockup does not switch early.
+  */
+  .hero-scrim {
+    background-image: linear-gradient(
+      104deg,
+      rgb(0 0 0 / 0.84) 0%,
+      rgb(0 0 0 / 0.64) 34%,
+      rgb(0 0 0 / 0.3) 66%,
+      rgb(0 0 0 / 0.44) 100%
+    );
+  }
+
+  .hero-scrim-edges {
+    background-image: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.5) 0%,
+      rgb(0 0 0 / 0) 24%,
+      rgb(0 0 0 / 0) 54%,
+      rgb(0 0 0 / 0.72) 100%
+    );
+  }
+
+  /*
+    Grain.
+
+    Two jobs, one 140px tile. Hard-compressed 720p footage under a wide, slow
+    gradient bands visibly on an 8-bit panel — a few percent of noise breaks the
+    banding up. It also gives the scrim a surface, so the hero reads as film
+    rather than as a photograph with a grey rectangle sitting on it.
+
+    Inlined as a data URI: a texture this small is cheaper as bytes in the
+    stylesheet than as a request, and it must not arrive after the image.
+
+    Not hero-only: any full-bleed photograph under a scrim wants it, which is
+    why it is named for what it is rather than for where it first appeared.
+  */
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.16;
+    mix-blend-mode: overlay;
+  }
+
+  /*
+    The band scrim.
+
+    Deliberately much flatter than the hero's, because the layout is different.
+    The hero puts every word in one column and can afford to let the opposite
+    third of the frame run bright; a band carries type at both ends — a figure
+    hard left, a paragraph and two buttons hard right — so there is no third of
+    it that is safe to leave open.
+
+    A first cut reused the hero's shape and got it exactly backwards: heaviest
+    under the figure, lightest at the top right, which is precisely where the
+    body copy sits. It also stacked a second vertical layer on top, taking the
+    frame to between 61% and 91% black, at which point the photograph might as
+    well not have been there.
+
+    One layer, 74% to 56% on a shallow diagonal. The floor is what matters: 56%
+    over the worst case — a blown-out white area of the photograph — still puts
+    white type at 4.95:1, so the guarantee holds wherever the words land, and
+    everything above the floor is picture the reader gets back.
+  */
+  .band-scrim {
+    background-image: linear-gradient(
+      100deg,
+      rgb(0 0 0 / 0.74) 0%,
+      rgb(0 0 0 / 0.62) 45%,
+      rgb(0 0 0 / 0.56) 100%
+    );
+  }
+
+  /*
+    The entrance.
+
+    Deliberately CSS and not the `Reveal` component. Reveal waits for an
+    IntersectionObserver, which waits for hydration — on the one section that is
+    already on screen at nought that means the headline pops in whenever the
+    JavaScript happens to land. This starts the moment the stylesheet parses,
+    before React exists, so the first thing a visitor sees arrives on the frame
+    the page paints rather than on the frame the bundle finishes.
+
+    Same expo-out curve as Reveal, run slightly longer: the hero moves once, at
+    display scale, and a 500ms settle that reads as crisp on a card reads as
+    hurried on a 88px headline.
+
+    `both` fill is what holds the pre-state, so nothing flashes at full opacity
+    before its delay elapses.
+  */
+  .hero-rise {
+    animation: hero-rise 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /*
+    A very slow push on the footage.
+
+    32 seconds for 6% of scale is about 2px a second at 1512 wide — under the
+    threshold where the eye reads it as movement, over the threshold where the
+    frame reads as dead. `alternate` so it breathes back out instead of
+    snapping to the start of the loop.
+  */
+  .hero-drift {
+    animation: hero-drift 32s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  /* The scroll cue: a lit segment falling down an unlit rule, on a long pause. */
+  .hero-scroll-line {
+    animation: hero-scroll-line 2600ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  /*
+    The live node on the timeline.
+
+    Only "Today" carries it, and that is the whole point: five of the six
+    milestones are finished history and one of them is still happening. A halo
+    breathing out of the last node is the cheapest way to say so without adding
+    a word of copy. Slow — 2.8s, with two thirds of the cycle spent invisible —
+    because a marker that pulses at a readable rate is a notification, and this
+    is a piece of punctuation.
+  */
+  .node-pulse {
+    animation: node-pulse 2800ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  /*
     A carousel that starts on the measure and runs off the right edge.
 
     The track has to be full-bleed for cards to bleed past the viewport, so it
@@ -150,6 +293,30 @@
   @media (width >= 64rem) {
     .carousel-inset {
       --carousel-gutter: 2.5rem;
+    }
+  }
+
+  /*
+    The impact stories track.
+
+    Snapping and the page-scroll pan cannot both be in charge. With
+    `scroll-snap-type` set, every `scrollLeft` the pan writes is pulled straight
+    back to the nearest card edge, so a smooth pan came out as a jump between
+    the first card and the last with nothing in between — measured as 0 or 372
+    and never a value between.
+
+    So they are split by input. A pointer device gets the pan and no snapping; a
+    touch device gets snapping and no pan, which is the right way round — a
+    thumb flicking a strip wants to land on a card, and a mouse does not flick
+    at all. Reduced motion turns the pan off too, and gets snapping back with it.
+  */
+  .stories-track {
+    scroll-snap-type: x mandatory;
+  }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .stories-track {
+      scroll-snap-type: none;
     }
   }
 
@@ -231,6 +398,47 @@
   }
 }
 
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-drift {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes node-pulse {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.75;
+  }
+  60%,
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+@keyframes hero-scroll-line {
+  from {
+    transform: translate3d(0, -100%, 0);
+  }
+  to {
+    transform: translate3d(0, 240%, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -250,6 +458,23 @@
   /* The nudge is pure decoration — the colour change still marks the hover. */
   .group:hover .wedge-nudge {
     transform: none;
+  }
+
+  /*
+    The hero arrives already arrived.
+
+    Dropping the animation entirely — rather than shortening it — is what makes
+    this safe: with no animation there is no `both` fill holding the pre-state,
+    so opacity falls back to 1 and the transform to none. The content is simply
+    present in its final position on the first frame.
+
+    The drift and the scroll cue are pure decoration and just stop.
+  */
+  .hero-rise,
+  .hero-drift,
+  .hero-scroll-line,
+  .node-pulse {
+    animation: none !important;
   }
 
   /*

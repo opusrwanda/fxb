@@ -8,7 +8,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata(
-  props: PageProps<"/news-insights/stories/[slug]">
+  props: PageProps<"/news-insights/stories/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
   const story = stories.find((entry) => entry.slug === slug);
@@ -18,7 +18,7 @@ export async function generateMetadata(
 }
 
 export default async function StoryPage(
-  props: PageProps<"/news-insights/stories/[slug]">
+  props: PageProps<"/news-insights/stories/[slug]">,
 ) {
   const { slug } = await props.params;
   const story = stories.find((entry) => entry.slug === slug);

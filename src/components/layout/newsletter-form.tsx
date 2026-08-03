@@ -42,7 +42,13 @@ export function NewsletterForm() {
       const response = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: data.get("email") }),
+        // Consent is sent, not assumed. The tick is `required` so the browser
+        // will not submit without it, but the route checks rather than infers
+        // it — it is the one value here with legal weight.
+        body: JSON.stringify({
+          email: data.get("email"),
+          consent: data.get("consent") === "on",
+        }),
       });
       const body = await response.json();
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { SectionNav } from "@/components/layout/section-nav";
 import { PartnerLogos } from "@/components/sections/get-involved/partner-logos";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
@@ -209,10 +210,31 @@ export default function PartnersPage() {
         intro="At FXB Rwanda, we believe that meaningful and lasting impact is achieved when communities, governments, donors, institutions, businesses and development organisations work together toward a shared vision."
       />
 
-      {/* Development partners */}
+      {/* Five kinds of partner, five sections, and the page runs long enough
+          that reaching the last of them meant scrolling past the other four.
+          Every section already carried an anchor — `#become-a-partner` is
+          linked from Get Involved and from the programme pages — so this is
+          navigation over ids that already existed rather than new structure. */}
+      <SectionNav
+        sections={[
+          { id: "development-partners", label: "Development Partners" },
+          { id: "government", label: "Government" },
+          { id: "donors", label: "Institutional Donors" },
+          { id: "corporate", label: "Corporate" },
+          { id: "become-a-partner", label: "Become a Partner" },
+        ]}
+      />
+
+      {/* Development partners.
+
+          Top padding, unlike the four sections below it, which carry `py`.
+          This one used to sit straight under the page header and took its
+          space from the header's own bottom padding; the tab bar now sits
+          between them and ends on a hairline, so without this the first
+          section began hard against that line. */}
       <section
         id="development-partners"
-        className="scroll-mt-32 bg-white pb-24 lg:pb-32"
+        className="scroll-mt-36 bg-white pt-14 pb-24 lg:pt-16 lg:pb-32"
       >
         <Container>
           <SectionHeading
@@ -270,7 +292,7 @@ export default function PartnersPage() {
       {/* Government */}
       <section
         id="government"
-        className="scroll-mt-32 bg-blue py-24 lg:py-32"
+        className="scroll-mt-36 bg-blue py-24 lg:py-32"
       >
         <Container>
           <SectionHeading
@@ -313,7 +335,7 @@ export default function PartnersPage() {
       </section>
 
       {/* Institutional donors */}
-      <section id="donors" className="scroll-mt-32 bg-white py-24 lg:py-32">
+      <section id="donors" className="scroll-mt-36 bg-white py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow="INSTITUTIONAL DONORS"
@@ -387,7 +409,7 @@ export default function PartnersPage() {
       </section>
 
       {/* Corporate */}
-      <section id="corporate" className="scroll-mt-32 bg-blue py-24 lg:py-32">
+      <section id="corporate" className="scroll-mt-36 bg-blue py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow="CORPORATE PARTNERSHIPS"
@@ -427,7 +449,7 @@ export default function PartnersPage() {
       {/* Become a partner */}
       <section
         id="become-a-partner"
-        className="scroll-mt-32 bg-white py-24 lg:py-32"
+        className="scroll-mt-36 bg-white py-24 lg:py-32"
       >
         <Container>
           <SectionHeading eyebrow="BECOME A PARTNER" title="Let's work together" />

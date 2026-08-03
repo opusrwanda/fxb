@@ -9,10 +9,16 @@ import { org } from "@/lib/site";
  * Leadership — the Board of Directors.
  *
  * The portraits are cut-outs on transparency, so each one sits on a tinted
- * wedge rather than on the white of the page: without a ground behind them the
- * shoulders end in mid-air and the row reads as eight floating heads. The tint
- * is blue at 8%, the lightest step in the palette, so it holds the figure
- * without competing with it.
+ * ground rather than on the white of the page: without one behind them the
+ * shoulders end in mid-air and the row reads as eight floating heads.
+ *
+ * That ground is a circle, because the portraits already are. FXB supplied them
+ * masked to a circle inscribed in a square frame — `prepare-board.mjs` only
+ * re-encodes and keeps the alpha, it does not cut the shape. Sitting a circular
+ * cut-out on a rounded square put two different silhouettes on top of each
+ * other, and the portrait's own bottom arc, with tint either side of it, read
+ * as a torso sliced off by the tile. One shape, and the ground now ends exactly
+ * where the photograph does.
  *
  * Portraits carry an empty alt. The name is the next thing in the DOM, and a
  * screen reader announcing "Emmanuel KAYITANA" immediately before the heading
@@ -37,10 +43,21 @@ export function Leadership() {
         {/* Two up even on the narrowest phone. Eight full-bleed squares
             stacked one per row turns a board of directors into a scroll. */}
         {board.length > 0 ? (
-          <ul className="mt-14 grid grid-cols-2 gap-x-5 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
+          <ul className="mt-14 grid grid-cols-2 gap-x-5 gap-y-12 sm:gap-x-6 lg:grid-cols-4">
             {board.map((member, index) => (
-              <Reveal as="li" key={member.id} delay={60 + Math.min(index, 3) * 60}>
-                <div className="wedge relative aspect-square overflow-hidden bg-blue-16">
+              <Reveal
+                as="li"
+                key={member.id}
+                delay={60 + Math.min(index, 3) * 60}
+                // Portrait, name and role are three tracks of the list's own
+                // grid rather than three blocks stacked inside a card, so the
+                // roles line up across a row because the rows themselves line
+                // up. `gap-y-0` because a subgrid inherits its parent's gutters
+                // — without it the 48px between rows would also open up between
+                // each portrait and its name.
+                className="row-span-3 grid grid-rows-subgrid gap-y-0"
+              >
+                <div className="relative mb-5 aspect-square overflow-hidden rounded-full bg-blue-16">
                   <Image
                     src={member.src}
                     alt=""
@@ -50,14 +67,32 @@ export function Leadership() {
                     className="size-full object-cover"
                   />
                 </div>
-                {/* Two lines' worth of room whether or not the name needs it,
-                    so one long name — "Fr. Pierre Celestin NGOBOKA (PhD)" —
-                    does not push its role out of line with the rest of the
-                    row. Browsers without `lh` simply lose the alignment. */}
-                <h3 className="mt-5 min-h-[2lh] text-base leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-lg">
+                {/* Ranged to the bottom of its track, which is what keeps a name
+                    and its role together.
+
+                    Exactly one name on this board runs to two lines — "Fr.
+                    Pierre Celestin NGOBOKA (PhD)" — and it sets the height of
+                    the name track for its whole row. Left ranged to the top, the
+                    other three names sat against the portrait and left a blank
+                    line between themselves and their role, so one long name put
+                    a hole under three short ones.
+
+                    Ranged to the bottom, the slack moves above the name instead,
+                    where it reads as breathing room under a portrait rather than
+                    as a gap in the middle of a caption. The three short names
+                    land on the same baseline as NGOBOKA's second line, and every
+                    role sits 4px under its own name.
+
+                    This is also why the earlier `min-h-[2lh]` had to go: it
+                    reserved the second line on every card in the section, so the
+                    four advisors — all one-line names — each paid for a blank
+                    line the row never needed. */}
+                <h3 className="self-end text-center text-base leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-lg">
                   {member.name}
                 </h3>
-                <p className="mt-1 text-sm text-gray">{member.role}</p>
+                <p className="mt-1 text-center text-sm text-gray">
+                  {member.role}
+                </p>
               </Reveal>
             ))}
           </ul>

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowUpRight, Eye, EyeOff } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
@@ -23,15 +25,24 @@ import { activeProjects, projectsByDistrict } from "@/lib/projects";
  * boundaries — see `scripts/prepare-districts.mjs`. The CC BY 4.0 licence
  * requires the attribution rendered beneath the map.
  *
- * The map is not the only way to read this section. Every project lists its
- * districts in words in the panel beside it, so the same information survives
- * without a pointer, without sight, and without JavaScript. The map paths are
- * focusable in turn, and the readout is announced politely so tabbing through
- * them is as informative as hovering.
+ * Two things were wrong with the first build of this section, and both are
+ * about information rather than decoration:
  *
- * A note on hit areas: the paths are the hit areas, so a small district like
- * Nyarugenge is a small target. That is why the panel is a list of projects
- * rather than a list of districts — the coarse control is always reachable.
+ *   The panel was empty until you touched something. A quarter of the section
+ *   was a box that said "hover a district" — prime space spent on an
+ *   instruction, on a section whose whole job is to answer "where do you work".
+ *   The readout now answers that before anyone moves the pointer.
+ *
+ *   It only worked one way. You could ask a district what runs there and never
+ *   ask a project where it runs, which is the more common question and the one
+ *   the six project names invite. Both directions now light the same map.
+ *
+ * The map is not the only way to read this. Every project spells out its own
+ * districts, so the same information survives without a pointer, without sight,
+ * and without a map at all — including Nyarugenge, which sits eight units from
+ * Kamonyi, loses the label collision on the map every time, and is therefore
+ * named nowhere else. The readout is announced politely, so tabbing the map is
+ * as informative as hovering it.
  */
 
 /**
@@ -62,9 +73,69 @@ function labelBox(name: string, cx: number, cy: number): Box {
 
 const overlaps = (a: Box, b: Box) =>
   a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+
+/**
+ * A project name that goes somewhere.
+ *
+ * Two of the six have a destination in `projects.ts` — the FXBVillage model
+ * section on What We Do, and Sugira Muryango's own dashboard — and neither was
+ * reachable from this section. The arrow only appears where there is genuinely
+ * something on the other end, so it stays a signal rather than a decoration
+ * every row wears.
+ */
+function ProjectLink({
+  href,
+  external,
+  shown,
+  children,
+  ...handlers
+}: {
+  href: string;
+  external?: boolean;
+  shown: boolean;
+  children: React.ReactNode;
+  onFocus: () => void;
+  onBlur: () => void;
+}) {
+  const className = `group/link inline-flex items-center gap-1.5 text-base leading-snug font-semibold transition-colors duration-200 ${
+    shown ? "text-blue" : "text-gray-80"
+  }`;
+
+  const label = (
+    <>
+      {children}
+      <ArrowUpRight
+        className="size-4 shrink-0 transition-transform duration-200 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
+        aria-hidden="true"
+      />
+    </>
+  );
+
+  // An external dashboard is a different promise from an in-site anchor, so it
+  // opens in its own tab and says so to a screen reader.
+  return external ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer noopener"
+      className={className}
+      {...handlers}
+    >
+      {label}
+      <span className="sr-only">(opens in a new tab)</span>
+    </a>
+  ) : (
+    <Link href={href} className={className} {...handlers}>
+      {label}
+    </Link>
+  );
+}
+
 export function WhereWeWork() {
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [active, setActive] = useState<string | null>(null);
+  /** The project row under the pointer, which previews its districts. */
+  const [preview, setPreview] = useState<string | null>(null);
 
   const visible = useMemo(
     () => activeProjects.filter((project) => !hidden.has(project.id)),
@@ -82,69 +153,67 @@ export function WhereWeWork() {
   }
 
   /**
-   * Only the district that is leaving clears the readout. Without the guard, a
+   * Only the thing that is leaving clears the readout. Without the guard, a
    * pointer crossing from one district straight into its neighbour fires the
    * leave after the enter, and the panel blanks out mid-move.
    */
-  function clear(name: string) {
-    setActive((current) => (current === name ? null : current));
-  }
+  const clearIf = <T,>(value: T) =>
+    (current: T | null) => (current === value ? null : current);
 
   const activeDistrict = active
     ? districts.find((district) => district.name === active)
     : undefined;
   const activeProjectsHere = active ? (byDistrict.get(active) ?? []) : [];
+  const previewProject = preview
+    ? visible.find((project) => project.id === preview)
+    : undefined;
+
+  /**
+   * The districts painted solid right now — either the one being pointed at, or
+   * every district of the project being pointed at. One set drives the map, so
+   * the two directions cannot disagree about what "highlighted" means.
+   */
+  const highlighted = useMemo(() => {
+    if (previewProject) return new Set(previewProject.districts);
+    return new Set(active ? [active] : []);
+  }, [previewProject, active]);
 
   /**
    * Which districts get a name printed on the map.
    *
    * Rwanda's districts are small and unevenly sized, and several of the ones we
-   * work in sit shoulder to shoulder — Kamonyi and Nyarugenge are eight units
-   * apart vertically, so their names would sit on top of each other. Largest
-   * first, keep a label only where it clears everything already placed. The
-   * dropped names are not lost: they are on every path's accessible name, in
-   * the readout, and spelled out under each project in the panel.
-   *
-   * The active district always gets its label, and anything it would collide
-   * with steps aside for it, so pointing at a small district still names it.
+   * work in sit shoulder to shoulder, so their names would sit on top of each
+   * other. Highlighted first, then largest first, keeping a label only where it
+   * clears everything already placed — so pointing at a district always names
+   * it, and pointing at a project names as many of its districts as will fit.
+   * Whatever is dropped is still on the path's accessible name, in the readout,
+   * and spelled out under each project in the panel.
    */
   const labelled = useMemo(() => {
     const placed: Box[] = [];
     const keep = new Set<string>();
 
-    const activeGeometry = activeDistrict && byDistrict.has(activeDistrict.name)
-      ? activeDistrict
-      : undefined;
+    const worked = districts.filter((district) => byDistrict.has(district.name));
+    const byArea = (a: (typeof districts)[number], b: typeof a) =>
+      b.area - a.area;
 
-    if (activeGeometry) {
-      placed.push(
-        labelBox(activeGeometry.name, activeGeometry.cx, activeGeometry.cy)
-      );
-      keep.add(activeGeometry.name);
-    }
+    const ordered = [
+      ...worked.filter((d) => highlighted.has(d.name)).sort(byArea),
+      ...worked.filter((d) => !highlighted.has(d.name)).sort(byArea),
+    ];
 
-    const candidates = districts
-      .filter((district) => byDistrict.has(district.name))
-      .sort((a, b) => b.area - a.area);
-
-    for (const district of candidates) {
-      if (keep.has(district.name)) continue;
-
+    for (const district of ordered) {
       const box = labelBox(district.name, district.cx, district.cy);
       if (placed.some((other) => overlaps(box, other))) continue;
-
       placed.push(box);
       keep.add(district.name);
     }
 
     return keep;
-  }, [byDistrict, activeDistrict]);
+  }, [byDistrict, highlighted]);
 
   return (
-    <section
-      id="where-we-work"
-      className="scroll-mt-32 bg-white py-24 lg:py-32"
-    >
+    <section id="where-we-work" className="scroll-mt-32 bg-white py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
@@ -160,8 +229,8 @@ export function WhereWeWork() {
             </h2>
           </div>
           <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
-            Across all four provinces and the City of Kigali. Select a district
-            to see what runs there, or filter by project.
+            Across all four provinces and the City of Kigali. Point at a district
+            to see what runs there, or at a project to see where it runs.
           </p>
         </Reveal>
 
@@ -175,7 +244,6 @@ export function WhereWeWork() {
             >
               {districts.map((district) => {
                 const here = byDistrict.get(district.name);
-                const isActive = district.name === active;
 
                 if (!here) {
                   return (
@@ -201,9 +269,9 @@ export function WhereWeWork() {
                       .map((project) => project.name)
                       .join(", ")}`}
                     onMouseEnter={() => setActive(district.name)}
-                    onMouseLeave={() => clear(district.name)}
+                    onMouseLeave={() => setActive(clearIf(district.name))}
                     onFocus={() => setActive(district.name)}
-                    onBlur={() => clear(district.name)}
+                    onBlur={() => setActive(clearIf(district.name))}
                     // A phone has no hover, so a tap has to do the selecting.
                     // It sets rather than toggles: a touch also fires an
                     // emulated mouseenter first, and a toggle here would undo
@@ -217,7 +285,9 @@ export function WhereWeWork() {
                       setActive(district.name);
                     }}
                     className={`cursor-pointer outline-offset-2 transition-colors duration-200 ${
-                      isActive ? "fill-blue stroke-blue" : "fill-blue-16 stroke-blue"
+                      highlighted.has(district.name)
+                        ? "fill-blue stroke-blue"
+                        : "fill-blue-16 stroke-blue"
                     }`}
                     strokeWidth={1.5}
                   />
@@ -226,10 +296,10 @@ export function WhereWeWork() {
 
               {/* Labels last, so no neighbouring shape paints over them. They
                   are decorative here: the name is already in each path's
-                  accessible name and in the readout below. */}
+                  accessible name, in the readout, and under each project. */}
               {districts.map((district) => {
                 if (!labelled.has(district.name)) return null;
-                const isActive = district.name === active;
+                const isHot = highlighted.has(district.name);
 
                 return (
                   <text
@@ -240,7 +310,7 @@ export function WhereWeWork() {
                     dominantBaseline="middle"
                     aria-hidden="true"
                     className={`pointer-events-none font-semibold ${
-                      isActive ? "fill-white" : "fill-blue"
+                      isHot ? "fill-white" : "fill-blue"
                     }`}
                     // A casing in the opposite colour, so a name stays readable
                     // where it crosses a border into a neighbouring district.
@@ -248,7 +318,7 @@ export function WhereWeWork() {
                     style={{
                       fontSize: LABEL_SIZE,
                       paintOrder: "stroke",
-                      stroke: isActive ? "#0472c2" : "#ffffff",
+                      stroke: isHot ? "#0472c2" : "#ffffff",
                       strokeWidth: 4,
                     }}
                   >
@@ -264,16 +334,32 @@ export function WhereWeWork() {
           </Reveal>
 
           <Reveal delay={160} className="flex flex-col gap-8">
-            {/* The readout. Announced politely so tabbing the map is as
-                informative as pointing at it. */}
+            {/* The readout. Announced politely so tabbing is as informative as
+                pointing. It answers whichever question was asked last — what
+                runs in this district, or where does this project run. */}
             <div
               role="status"
               aria-live="polite"
-              className="wedge min-h-40 bg-blue-08 p-7"
+              className="wedge min-h-36 bg-blue-08 p-7"
             >
-              {activeDistrict ? (
+              {previewProject ? (
                 <>
-                  <h3 className="text-2xl font-bold tracking-[-0.02em] text-blue">
+                  <h3 className="text-xl font-bold tracking-[-0.02em] text-blue lg:text-2xl">
+                    {previewProject.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-80">
+                    Running in {previewProject.districts.length}{" "}
+                    {previewProject.districts.length === 1
+                      ? "district"
+                      : "districts"}
+                  </p>
+                  <p className="mt-4 text-base leading-relaxed font-medium text-blue">
+                    {previewProject.districts.join(" · ")}
+                  </p>
+                </>
+              ) : activeDistrict ? (
+                <>
+                  <h3 className="text-xl font-bold tracking-[-0.02em] text-blue lg:text-2xl">
                     {activeDistrict.name}
                   </h3>
                   <p className="mt-1 text-sm text-gray-80">
@@ -282,7 +368,7 @@ export function WhereWeWork() {
                       ? ""
                       : " Province"}
                   </p>
-                  <ul className="mt-5 flex flex-col gap-2">
+                  <ul className="mt-4 flex flex-col gap-2">
                     {activeProjectsHere.map((project) => (
                       <li
                         key={project.id}
@@ -294,14 +380,30 @@ export function WhereWeWork() {
                   </ul>
                 </>
               ) : (
-                <p className="text-base leading-relaxed text-gray">
-                  Hover or focus a highlighted district to see which projects
-                  run there.
-                </p>
+                // Not an instruction. The section is asked "where do you work",
+                // and this is the shortest true answer to it.
+                <>
+                  <h3 className="text-xl font-bold tracking-[-0.02em] text-blue lg:text-2xl">
+                    Every province, and Kigali
+                  </h3>
+                  <p className="mt-3 text-base leading-relaxed text-gray">
+                    Point at any district on the map, or any project below, and
+                    this panel will tell you the rest.
+                  </p>
+                </>
               )}
             </div>
 
-            <fieldset>
+            {/* The project list.
+
+                It was six checkboxes with a bare numeral hanging off the right
+                of each — a settings form standing in for the section's main
+                navigation, and a "4" with nothing to say what it counted. Three
+                things are true of a project here and all three are now visible:
+                what it is called, how many districts and which, and whether
+                there is more of it to read. The `href` in `projects.ts` had
+                never been surfaced anywhere on this page. */}
+            <fieldset onMouseLeave={() => setPreview(null)} className="min-w-0">
               <legend className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 OUR PROJECTS
               </legend>
@@ -309,29 +411,103 @@ export function WhereWeWork() {
               <ul className="mt-5 flex flex-col">
                 {activeProjects.map((project) => {
                   const shown = !hidden.has(project.id);
+                  const previewing = preview === project.id;
+                  const external = project.href?.startsWith("http");
 
                   return (
                     <li key={project.id} className="border-b border-gray-15">
-                      <label className="flex cursor-pointer items-start gap-3.5 py-4">
-                        <input
-                          type="checkbox"
-                          checked={shown}
-                          onChange={() => toggle(project.id)}
-                          className="mt-1 size-4 shrink-0 accent-blue"
-                        />
-                        <span className="flex flex-col gap-1">
-                          <span
-                            className={`text-base font-semibold transition-colors duration-200 ${
-                              shown ? "text-blue" : "text-gray-80"
+                      <div
+                        // A tap fires an emulated mouseenter, so touch gets the
+                        // preview from the same handler the pointer uses.
+                        onMouseEnter={() => shown && setPreview(project.id)}
+                        className={`flex items-start gap-3 border-l-2 py-4 pr-1 pl-4 transition-colors duration-200 ${
+                          // The accent is the row saying which districts on the
+                          // map are currently its own — the same job the solid
+                          // fill is doing up there, at the other end of the
+                          // gesture.
+                          previewing
+                            ? "border-blue bg-blue-08"
+                            : "border-transparent"
+                        }`}
+                      >
+                        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                            {project.href ? (
+                              <ProjectLink
+                                href={project.href}
+                                external={external}
+                                shown={shown}
+                                onFocus={() => shown && setPreview(project.id)}
+                                onBlur={() => setPreview(clearIf(project.id))}
+                              >
+                                {project.name}
+                              </ProjectLink>
+                            ) : (
+                              <span
+                                className={`text-base leading-snug font-semibold transition-colors duration-200 ${
+                                  shown ? "text-blue" : "text-gray-80"
+                                }`}
+                              >
+                                {project.name}
+                              </span>
+                            )}
+
+                            {/* The count, with its unit. A numeral on its own
+                                at the end of a row could have been districts,
+                                years, beneficiaries or a rank. */}
+                            <span
+                              className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold tabular-nums transition-colors duration-200 ${
+                                shown
+                                  ? "bg-blue-08 text-blue"
+                                  : "bg-gray-15 text-gray-80"
+                              }`}
+                            >
+                              {project.districts.length}{" "}
+                              {project.districts.length === 1
+                                ? "district"
+                                : "districts"}
+                            </span>
+                          </div>
+
+                          {/* Middot rather than commas, so each district reads
+                              as one of a set rather than as a sentence. */}
+                          <p
+                            className={`text-sm leading-snug transition-colors duration-200 ${
+                              shown ? "text-gray" : "text-gray-80"
                             }`}
                           >
-                            {project.name}
-                          </span>
-                          <span className="text-sm leading-snug text-gray">
-                            {project.districts.join(", ")}
-                          </span>
-                        </span>
-                      </label>
+                            {project.districts.join(" · ")}
+                          </p>
+                        </div>
+
+                        {/* An eye, not a tick box. The state being toggled is
+                            "on the map or not", which is what an eye means and
+                            is not what a checkbox means — and the two icon
+                            colours are both text-safe tokens, where a switch
+                            track would have needed a grey too faint to clear
+                            3:1 against white. */}
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={shown}
+                          aria-label={`Show ${project.name} on the map`}
+                          onClick={() => {
+                            toggle(project.id);
+                            setPreview(null);
+                          }}
+                          onFocus={() => shown && setPreview(project.id)}
+                          onBlur={() => setPreview(clearIf(project.id))}
+                          className={`mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors duration-200 hover:bg-blue-16 ${
+                            shown ? "text-blue" : "text-gray-80"
+                          }`}
+                        >
+                          {shown ? (
+                            <Eye className="size-[18px]" aria-hidden="true" />
+                          ) : (
+                            <EyeOff className="size-[18px]" aria-hidden="true" />
+                          )}
+                        </button>
+                      </div>
                     </li>
                   );
                 })}
@@ -339,6 +515,7 @@ export function WhereWeWork() {
             </fieldset>
           </Reveal>
         </div>
+
       </Container>
     </section>
   );

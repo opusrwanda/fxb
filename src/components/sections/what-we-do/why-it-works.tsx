@@ -1,20 +1,30 @@
+import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { sdgs } from "@/lib/fxbvillage";
+import { sdgs } from "@/lib/sdg";
 
 /**
  * Why the model works, and what it contributes to.
  *
- * The SDGs are a numbered set with gaps — 1, 2, 3, 4, 5, 6, 8, 13, 16, 17 —
- * and the gaps matter: this is the list FXB claims, not a run from one to
- * seventeen. Each goal keeps its own number rather than being re-indexed by
- * position, which is why they are rendered from the data rather than a loop
- * counter.
+ * The goals were ten tinted boxes reading "SDG 13 / Climate Action" in the
+ * site's own type. That is a paraphrase of a mark that already exists: every
+ * goal has an official tile carrying its number, its title and its colour, and
+ * those tiles are recognised on sight by exactly the donors and institutional
+ * partners this section is addressed to. Re-typesetting them in brand blue
+ * threw away the recognition and gained nothing.
+ *
+ * They are drawn unaltered and untinted — see `lib/sdg.ts` for why that is a
+ * requirement rather than a preference. Ten saturated colours are a long way
+ * outside this site's four-value palette, and that is correct: they are
+ * somebody else's marks, and the page is quoting them, not absorbing them.
+ *
+ * The set has gaps — 1, 2, 3, 4, 5, 6, 8, 13, 16, 17 — and the gaps matter:
+ * this is the list FXB claims, not a run from one to seventeen.
  */
 export function WhyItWorks() {
   return (
-    <section className="bg-white py-24 lg:py-32">
+    <section id="why-it-works" className="scroll-mt-36 bg-white py-24 lg:py-32">
       <Container>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
           <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
@@ -62,18 +72,27 @@ export function WhyItWorks() {
             priorities and contributes to several Sustainable Development Goals.
           </p>
 
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {/* Square, and no radius. The wedge is this site's shape and these
+              are not this site's marks — rounding the corners of an official
+              tile crops its artwork, which is the one thing the guidelines
+              rule out. Five across is what keeps the lettering inside each
+              tile large enough to read at all. */}
+          <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
             {sdgs.map((goal) => (
-              <li
-                key={goal.number}
-                className="wedge flex flex-col gap-2 bg-blue-08 p-5"
-              >
-                <span className="text-xs font-semibold tracking-[0.16em] text-gray-80">
-                  SDG {goal.number}
-                </span>
-                <span className="text-[15px] leading-snug font-semibold text-blue">
-                  {goal.title}
-                </span>
+              <li key={goal.number}>
+                <Image
+                  src={goal.src}
+                  // The number and title are inside the artwork, so the tile
+                  // is content rather than decoration and carries a real
+                  // description — at 200px the lettering on "Peace, Justice
+                  // and Strong Institutions" is small enough that a reader may
+                  // be relying on this instead.
+                  alt={`Sustainable Development Goal ${goal.number}: ${goal.title}`}
+                  width={goal.width}
+                  height={goal.height}
+                  sizes="(min-width: 1024px) 15vw, (min-width: 640px) 30vw, 45vw"
+                  className="h-auto w-full"
+                />
               </li>
             ))}
           </ul>

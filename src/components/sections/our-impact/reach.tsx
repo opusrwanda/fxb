@@ -22,7 +22,7 @@ import { photo } from "@/lib/photos";
  */
 export function Reach() {
   return (
-    <section id="results" className="scroll-mt-32 bg-white py-32 lg:py-48">
+    <section id="results" className="scroll-mt-36 bg-white py-32 lg:py-48">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">

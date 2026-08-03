@@ -1,73 +1,163 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import { Container } from "@/components/layout/container";
-import { Reveal } from "@/components/ui/reveal";
 import { journey } from "@/lib/fxbvillage";
 
 /**
  * The 36-month transformation journey.
  *
- * The brief asks for a progressive timeline diagram. On desktop it runs
- * horizontally — four phases along one rule, which is the shape that says
- * "journey" rather than "list" — and each phase rises in turn as the band
- * crosses the fold. Below `lg` the rule turns vertical, because four columns of
- * body copy on a phone is four columns of two-word lines.
+ * Four phases along one rule on desktop — the shape that says "journey" rather
+ * than "list" — turning vertical below `lg`, because four columns of body copy
+ * on a phone is four columns of two-word lines.
+ *
+ * The brief asks for a *progressive* timeline, and that word is doing work: the
+ * rule is not drawn until the reader arrives at it. A track carries the whole 36
+ * months, and the white line on top is the part travelled — it draws from phase
+ * one to phase four, each node landing as the line reaches it and each phase
+ * arriving just behind its own node. The reader watches the journey happen
+ * instead of being handed four paragraphs at once.
+ *
+ * One observer, on the list, rather than one per phase. On a desktop all four
+ * phases cross the fold in the same frame, so four observers would fire together
+ * and there would be nothing progressive about it. The stagger is a transition
+ * delay per index instead. Under prefers-reduced-motion everything is present
+ * from the first frame with nothing to animate.
+ *
+ * An earlier attempt alternated the phases above and below the axis. It bought
+ * each card more width and was worse: on a four-phase timeline the stagger reads
+ * as decoration, and the eye has to zigzag to follow a sequence that is already
+ * perfectly linear.
  *
  * The step numerals are set in the condensed display face. They are the one
- * thing on this page that face is for: figures, large, doing structural work.
+ * thing on this page that face is for: figures doing structural work.
  */
+
+/** Milliseconds between one phase starting and the next. */
+const STEP = 170;
+
 export function TransformationJourney() {
+  const ref = useRef<HTMLOListElement>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const id = window.setTimeout(() => setShown(true), 0);
+      return () => window.clearTimeout(id);
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        setShown(true);
+      },
+      { threshold: 0, rootMargin: "0px 0px -15% 0px" }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const delay = (index: number, offset: number) =>
+    shown ? `${index * STEP + offset}ms` : "0ms";
+
   return (
-    <section className="bg-blue py-24 lg:py-32">
+    <section id="journey" className="scroll-mt-36 bg-blue py-24 lg:py-32">
       <Container>
-        <Reveal className="flex flex-col gap-5">
-          <div className="flex items-center gap-4">
-            <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-[0.14em] text-white-94">
-              TRANSFORMATION JOURNEY
-            </span>
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+          <div className="flex flex-col gap-5">
+            <div className="flex items-center gap-4">
+              <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
+              <span className="text-xs font-semibold tracking-[0.14em] text-white-94">
+                TRANSFORMATION JOURNEY
+              </span>
+            </div>
+            <h2 className="max-w-[22ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
+              36 months to change a life, sustainably
+            </h2>
           </div>
-          <h2 className="max-w-[22ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
-            36 months to change a life, sustainably
-          </h2>
-          <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
+          <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
             A complete 36-month journey toward dignity, access to fundamental
             rights, and lasting change for children and families.
           </p>
-        </Reveal>
+        </div>
 
-        <ol className="mt-16 grid gap-y-10 lg:grid-cols-4 lg:gap-x-8">
-          {journey.map((phase, index) => (
-            <Reveal
-              as="li"
-              key={phase.step}
-              delay={60 + Math.min(index, 3) * 60}
-              className="relative flex gap-6 lg:flex-col lg:gap-0"
-            >
-              {/* The rule: a vertical spine on narrow screens, and the
-                  horizontal track the phases hang from at `lg`. It stops short
-                  on the last phase so the line ends with the journey. */}
-              <span
-                className={`absolute bg-white-12 ${
-                  index === journey.length - 1
-                    ? "left-6 top-12 hidden h-0 w-0 lg:block lg:h-px lg:w-0"
-                    : "left-6 top-12 bottom-0 w-px lg:top-6 lg:left-12 lg:h-px lg:w-full"
-                }`}
-                aria-hidden="true"
-              />
+        <ol
+          ref={ref}
+          className="mt-16 grid gap-y-10 lg:mt-20 lg:grid-cols-4 lg:gap-x-10"
+        >
+          {journey.map((phase, index) => {
+            const last = index === journey.length - 1;
 
-              <span className="relative flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-xl font-bold text-blue font-[family-name:var(--font-display)]">
-                {phase.step}
-              </span>
+            return (
+              <li
+                key={phase.step}
+                className="relative flex gap-6 lg:flex-col lg:gap-0"
+              >
+                {/* Track and progress, two layers.
 
-              <div className="pb-2 lg:mt-8">
-                <h3 className="text-lg font-semibold tracking-[-0.02em] text-white lg:text-xl">
-                  {phase.period}
-                </h3>
-                <p className="mt-3 max-w-[46ch] text-[15px] leading-relaxed text-white-94">
-                  {phase.body}
-                </p>
-              </div>
-            </Reveal>
-          ))}
+                    The old rule was a single hairline in `white-12` — a 12%
+                    alpha, which is a token for a border on a tinted surface and
+                    was never going to carry a diagram. On blue it was very
+                    nearly invisible, so the one element tying the four phases
+                    together did not read at all. The track is `white-40` now and
+                    the travelled part is solid white. */}
+                {!last && (
+                  <>
+                    <span
+                      className="absolute top-12 bottom-0 left-6 w-px bg-white-40 lg:top-6 lg:bottom-auto lg:left-12 lg:h-px lg:w-full"
+                      aria-hidden="true"
+                    />
+                    <span
+                      className="absolute top-12 bottom-0 left-6 w-px overflow-hidden lg:top-6 lg:bottom-auto lg:left-12 lg:h-px lg:w-full"
+                      aria-hidden="true"
+                    >
+                      <span
+                        className={`motion-transform block size-full origin-top bg-white transition-transform duration-[420ms] ease-out lg:origin-left ${
+                          shown
+                            ? "scale-100"
+                            : "scale-y-0 lg:scale-x-0 lg:scale-y-100"
+                        }`}
+                        style={{ transitionDelay: delay(index, 0) }}
+                      />
+                    </span>
+                  </>
+                )}
+
+                <span
+                  className={`motion-transform relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full bg-white transition-transform duration-[420ms] ease-out ${
+                    shown ? "scale-100" : "scale-0"
+                  }`}
+                  style={{ transitionDelay: delay(index, 140) }}
+                >
+                  <span className="font-display text-xl leading-none font-semibold text-blue tabular-nums">
+                    {phase.step}
+                  </span>
+                </span>
+
+                <div
+                  className={`motion-transform pb-2 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:mt-9 ${
+                    shown ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                  }`}
+                  style={{ transitionDelay: delay(index, 220) }}
+                >
+                  {/* The period is the phase's name, and at 18px in the same
+                      weight as the copy under it, it was reading as the first
+                      line of the paragraph rather than as a heading. */}
+                  <h3 className="text-[22px] leading-none font-bold tracking-[-0.02em] text-white lg:text-[26px]">
+                    {phase.period}
+                  </h3>
+                  <p className="mt-4 max-w-[46ch] text-[15px] leading-relaxed text-white-94">
+                    {phase.body}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
         </ol>
       </Container>
     </section>

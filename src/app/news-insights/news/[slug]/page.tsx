@@ -9,7 +9,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata(
-  props: PageProps<"/news-insights/news/[slug]">
+  props: PageProps<"/news-insights/news/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
   const item = news.find((entry) => entry.slug === slug);
@@ -19,7 +19,7 @@ export async function generateMetadata(
 }
 
 export default async function NewsArticlePage(
-  props: PageProps<"/news-insights/news/[slug]">
+  props: PageProps<"/news-insights/news/[slug]">,
 ) {
   const { slug } = await props.params;
   const item = news.find((entry) => entry.slug === slug);

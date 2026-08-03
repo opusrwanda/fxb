@@ -28,6 +28,16 @@ const nextConfig: NextConfig = {
         // maintenance — the Our Impact route redirects to the canonical one.
         // Temporary, not permanent: which of the two should be canonical is
         // FXB's call, and a 308 would be cached in browsers for good.
+        // The section landing showed a three-item teaser under a tab bar whose
+        // lit tab said "Latest News" — so arriving at News & Insights gave you
+        // a preview of the news and a control you still had to click to reach
+        // the actual news. Two pages for one job, and the first one was in the
+        // way. The listing is the landing now.
+        source: "/news-insights",
+        destination: "/news-insights/news",
+        permanent: false,
+      },
+      {
         source: "/our-impact/success-stories",
         destination: "/news-insights/stories",
         permanent: false,

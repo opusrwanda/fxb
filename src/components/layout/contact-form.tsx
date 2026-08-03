@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { field } from "@/components/ui/field";
 
 /**
  * The contact form.
@@ -20,9 +21,6 @@ import { useState } from "react";
 type State =
   | { status: "idle" | "sending" }
   | { status: "ok" | "error"; message: string };
-
-const field =
-  "w-full rounded-card border border-gray-15 bg-white px-5 py-3.5 text-base text-gray transition-colors duration-200 outline-none placeholder:text-gray-80 focus:border-blue";
 
 export function ContactForm() {
   const [state, setState] = useState<State>({ status: "idle" });

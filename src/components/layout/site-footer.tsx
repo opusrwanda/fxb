@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { SocialIcon } from "@/components/brand/social-icon";
 import { Container } from "@/components/layout/container";
-import { NewsletterForm } from "@/components/layout/newsletter-form";
+import { FooterNewsletter } from "@/components/layout/footer-newsletter";
 import { org, primaryNav, socials } from "@/lib/site";
 
 /**
@@ -38,16 +38,7 @@ export function SiteFooter() {
         {/* The single row only resolves at xl, where there is width for five
             blocks. Below that it falls back to an ordinary wrapping grid. */}
         <div className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-12">
-          <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
-            <h2 className="text-xl font-bold tracking-[-0.02em] lg:text-2xl">
-              Sign up for our newsletter
-            </h2>
-            <p className="mt-3 max-w-[38ch] text-[15px] leading-relaxed text-white-94">
-              Stories from the districts and the occasional annual report. A few
-              times a year, no more.
-            </p>
-            <NewsletterForm />
-          </div>
+          <FooterNewsletter />
 
           {columns.map((column) => (
             <div key={column.href} className="flex flex-col gap-5 xl:col-span-2">

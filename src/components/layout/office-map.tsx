@@ -1,59 +1,58 @@
-"use client";
-
-import { MapPin } from "lucide-react";
-import { useState } from "react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import { org } from "@/lib/site";
 
 /**
- * The office location, on a map the visitor asks for.
+ * The office, on Google's own map.
  *
- * A Google Maps embed is well over a megabyte of scripts and tiles, and it sets
- * third-party cookies the moment it loads. This site's audience is largely on
- * Rwandan mobile data — the same reasoning that keeps the hero video off the
- * critical path applies here, with a privacy argument on top.
+ * This was a click-to-load placeholder: a pin, the address and a "Show map"
+ * button that swapped in the iframe only when pressed. The reasoning was sound
+ * — a Maps embed is around a megabyte of scripts and tiles and it sets
+ * third-party cookies the moment it loads, and this audience is largely on
+ * Rwandan mobile data. But it meant the contact page of an organisation with a
+ * head office did not show where the head office is, and someone trying to
+ * drive there had to ask twice.
  *
- * So the map is a button until it is wanted. The address, the directions link
- * and the office hours are all present without it; pressing Show map swaps in
- * the iframe. Nothing is lost by never pressing it.
+ * The map is shown. What is kept from the old approach is `loading="lazy"`, so
+ * the embed is not fetched until it is close to the viewport — a visitor who
+ * only came for the phone number, at the top of the page, still never pays for
+ * it. That is most of the saving for none of the cost.
+ *
+ * The embed URL comes from Google's own Share > Embed a map and carries the
+ * place id, so the pin is FXB Rwanda Headquarters rather than a guess at the
+ * address string. See `site.ts`.
+ *
+ * No longer a client component: there is no state left to hold.
  */
 export function OfficeMap() {
-  const [shown, setShown] = useState(false);
-
-  const query = encodeURIComponent(
-    `FXB Rwanda, ${org.address.line}, ${org.address.district}, ${org.address.country}`
-  );
-
   return (
-    <div className="wedge relative aspect-4/3 overflow-hidden bg-blue-08 sm:aspect-16/10">
-      {shown ? (
+    <div className="flex flex-col gap-4">
+      <div className="wedge relative aspect-4/3 overflow-hidden bg-blue-08 sm:aspect-16/10">
         <iframe
-          // No API key needed for the plain embed, and no account tied to it.
-          src={`https://www.google.com/maps?q=${query}&output=embed`}
-          title={`Map showing ${org.name}, ${org.address.district}`}
+          src={org.mapEmbedUrl}
+          title={`Map showing ${org.name} headquarters in ${org.address.district}`}
           loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
           className="size-full border-0"
         />
-      ) : (
-        <div className="flex size-full flex-col items-center justify-center gap-5 p-8 text-center">
-          <span className="flex size-14 items-center justify-center rounded-full bg-blue">
-            <MapPin className="size-6 text-white" aria-hidden="true" />
-          </span>
-          <p className="max-w-[34ch] text-base leading-relaxed text-gray">
-            {org.address.line}, {org.address.district}, {org.address.country}
-          </p>
-          <button
-            type="button"
-            onClick={() => setShown(true)}
-            className="rounded-full bg-blue px-6 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-90"
-          >
-            Show map
-          </button>
-          <p className="max-w-[38ch] text-xs leading-relaxed text-gray-80">
-            The map is loaded from Google only when you ask for it.
-          </p>
-        </div>
-      )}
+      </div>
+
+      {/* The embed pans and zooms but will not route. Anyone who actually needs
+          to get here wants the app, not the picture. */}
+      <a
+        href={org.mapUrl}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="group inline-flex items-center gap-2.5 text-base font-semibold text-blue"
+      >
+        <MapPin className="size-4 shrink-0" aria-hidden="true" />
+        Get directions
+        <ArrowUpRight
+          className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          aria-hidden="true"
+        />
+        <span className="sr-only">(opens in a new tab)</span>
+      </a>
     </div>
   );
 }

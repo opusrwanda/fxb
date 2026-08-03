@@ -1,33 +1,74 @@
+import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { Counter } from "@/components/ui/counter";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 import { projectsDelivered } from "@/lib/fxbvillage";
+import { photo } from "@/lib/photos";
 
 /**
- * FXBVillage projects implemented.
+ * FXBVillage projects implemented — the photographic band.
  *
- * One figure, and the two routes off it. The numeral is the condensed display
- * face doing the job it exists for, and it counts up on arrival like the
- * figures on the home page — the same `Counter`, so the behaviour under
- * reduced motion is the same too.
+ * This was a flat blue rectangle with a number on it, sitting between two other
+ * flat rectangles on a page made entirely of them. The page's problem was never
+ * any single section: it was ten rooms of eyebrow, heading and grey prose on
+ * alternating grounds, with five photographs across ten thousand pixels. A page
+ * about what an organisation does, containing almost no pictures of it being
+ * done, reads as a document rather than a site.
+ *
+ * So this room stops being a colour and becomes a photograph. It is the natural
+ * one to convert first: a number is the only content here, and a number wants a
+ * ground rather than a column.
+ *
+ * The frame is a project closing ceremony in Rwamagana — participants and staff
+ * standing together at the end of a village. That is what "54 implemented"
+ * actually looks like, which is why it is this frame rather than a general field
+ * photograph, and its lower third is empty paving, which is where the figure
+ * sits.
+ *
+ * The numeral counts up on arrival like the figures on the home page — the same
+ * `Counter`, so the behaviour under reduced motion is the same too.
  */
 export function ProjectsDelivered() {
+  const image = photo("itap-closing-rwamagana-01");
+
   return (
-    <section className="bg-blue py-24 lg:py-32">
-      <Container>
-        <div className="flex flex-col items-start gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
-          <Reveal className="flex items-center gap-7">
-            <span className="text-[64px] leading-none font-bold tracking-[-0.04em] text-white font-[family-name:var(--font-display)] lg:text-[110px]">
-              <Counter value={projectsDelivered} />
-            </span>
-            <span className="max-w-[16ch] text-lg leading-snug font-semibold text-white lg:text-2xl">
-              FXBVillage projects implemented
-            </span>
+    <section id="projects" className="relative isolate scroll-mt-36 overflow-hidden bg-blue">
+      <Image
+        src={image.url}
+        alt="Participants and staff standing together at the closing of an FXB Rwanda project in Rwamagana"
+        fill
+        sizes="100vw"
+        className="-z-20 object-cover object-[50%_38%]"
+      />
+      <div className="band-scrim absolute inset-0 -z-10" aria-hidden="true" />
+      <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
+
+      <Container className="py-24 lg:py-36">
+        <div className="flex flex-col gap-12 lg:flex-row lg:items-end lg:justify-between lg:gap-20">
+          <Reveal className="flex flex-col gap-6">
+            <div className="flex items-center gap-4">
+              <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+              <span className="text-xs font-semibold tracking-[0.14em] text-white">
+                FXBVILLAGE PROJECTS
+              </span>
+            </div>
+
+            {/* Bigger than it was, because it can be now. On flat blue the
+                numeral was competing with nothing and still only reached 110px;
+                over a photograph it is the thing holding the frame together. */}
+            <div className="flex items-end gap-6">
+              <span className="font-display text-[86px] leading-[0.8] font-semibold tracking-[-0.02em] text-white tabular-nums lg:text-[150px]">
+                <Counter value={projectsDelivered} />
+              </span>
+              <span className="max-w-[10ch] pb-2 text-lg leading-snug font-semibold text-white lg:text-2xl">
+                projects implemented
+              </span>
+            </div>
           </Reveal>
 
           <Reveal delay={100} className="flex flex-col items-start gap-7">
-            <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
+            <p className="max-w-[42ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
               As of now, 54 FXBVillage projects have been implemented, leaving
               thousands of families resilient from poverty.
             </p>

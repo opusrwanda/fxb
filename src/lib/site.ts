@@ -9,6 +9,21 @@ export const org = {
   legalName: "Francois Xavier Bagnoud",
   endorsement: "Member of FXB Global",
   vision: "Empowered and resilient communities shaping their own future.",
+  /**
+   * The three phrases the client sets in capitals when they write the vision
+   * out: EMPOWERED and RESILIENT COMMUNITIES shaping their OWN FUTURE.
+   *
+   * Held as phrases rather than as a pre-marked-up string so there is still
+   * exactly one copy of the wording. A second, tagged version of the sentence
+   * would be a second thing to keep in step, and the two would drift the first
+   * time anyone edited one of them.
+   *
+   * Capitals are the deck's way of marking emphasis, not a request to shout:
+   * three all-caps runs inside a 40px display line read as a legal notice. The
+   * section renders them at full weight and full white against the connective
+   * words, which says the same thing in the register the rest of the site uses.
+   */
+  visionEmphasis: ["Empowered", "resilient communities", "own future"],
   mission:
     "To strengthen families, children and youth resilience through holistic interventions that create pathways from vulnerability to dignity and self-reliance.",
   email: "info@fxbrwanda.org",
@@ -20,6 +35,20 @@ export const org = {
     country: "Rwanda",
   },
   mapUrl: "https://maps.app.goo.gl/C6Mekkrr3KqzMuj78",
+  /**
+   * The embed URL, taken from Google Maps' own Share > Embed a map.
+   *
+   * It carries the place id — `0x19dca5c9d779b0f5:0x3a2052323f9490d4` — so the
+   * pin lands on FXB Rwanda Headquarters with its own label. The embed used to
+   * search on the address string instead, which asked Google to guess at
+   * "Ruyenzi, Kamonyi District" every time and drop the pin wherever that
+   * landed. A head office is somewhere people are trying to drive to.
+   *
+   * No API key, and no billing account tied to it. `mapUrl` above is the same
+   * place as a short link, for the "get directions" action.
+   */
+  mapEmbedUrl:
+    "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1993.729852895924!2d29.9884125!3d-1.9702029!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca5c9d779b0f5%3A0x3a2052323f9490d4!2sFXB%20Rwanda%20Headquarters!5e0!3m2!1sen!2srw!4v1785744356502!5m2!1sen!2srw",
   linktree: "https://linktr.ee/fxbrwanda",
   officeHours: "Monday – Friday, 8:00 AM – 5:00 PM",
 } as const;

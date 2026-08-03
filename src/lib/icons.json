@@ -1,0 +1,47 @@
+[
+  {
+    "id": "socio-economic-strengthening",
+    "group": "areas",
+    "src": "/img/icons/socio-economic-strengthening.png"
+  },
+  {
+    "id": "ecd-education",
+    "group": "areas",
+    "src": "/img/icons/ecd-education.png"
+  },
+  {
+    "id": "health",
+    "group": "areas",
+    "src": "/img/icons/health.png"
+  },
+  {
+    "id": "herbal-medicine",
+    "group": "areas",
+    "src": "/img/icons/herbal-medicine.png"
+  },
+  {
+    "id": "home-visits-and-coaching",
+    "group": "pillars",
+    "src": "/img/icons/home-visits-and-coaching.png"
+  },
+  {
+    "id": "economic-empowerment",
+    "group": "pillars",
+    "src": "/img/icons/economic-empowerment.png"
+  },
+  {
+    "id": "nutrition-and-food-security",
+    "group": "pillars",
+    "src": "/img/icons/nutrition-and-food-security.png"
+  },
+  {
+    "id": "education-and-access-to-information",
+    "group": "pillars",
+    "src": "/img/icons/education-and-access-to-information.png"
+  },
+  {
+    "id": "wash-and-health",
+    "group": "pillars",
+    "src": "/img/icons/wash-and-health.png"
+  }
+]

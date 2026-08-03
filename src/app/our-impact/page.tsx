@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
+import { SectionNav } from "@/components/layout/section-nav";
 import { Hero } from "@/components/sections/hero";
 import { ImpactStories } from "@/components/sections/impact-stories";
 import { Reach } from "@/components/sections/our-impact/reach";
@@ -36,7 +37,20 @@ export default function OurImpactPage() {
         ]}
       />
 
-      <section className="bg-white py-24 lg:py-32">
+      {/* Four entries for a five-thousand-pixel page. "Explore" is the last
+          band rather than a section of argument, but it is where the reports,
+          the annual reports and the gallery are reached from, so it earns a
+          line — that band is the answer to "where is the actual evidence". */}
+      <SectionNav
+        sections={[
+          { id: "measuring", label: "How We Measure" },
+          { id: "results", label: "Results at a Glance" },
+          { id: "impact-stories", label: "Success Stories" },
+          { id: "explore", label: "Reports & Gallery" },
+        ]}
+      />
+
+      <section id="measuring" className="scroll-mt-36 bg-white py-24 lg:py-32">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
             <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
@@ -85,7 +99,7 @@ export default function OurImpactPage() {
           footer below is blue, so a third blue band in between made an
           unbroken ~900px slab in which this call to action read as part of
           the footer rather than as the end of the page. */}
-      <section className="bg-blue-08 py-16 lg:py-20">
+      <section id="explore" className="scroll-mt-36 bg-blue-08 py-16 lg:py-20">
         <Container>
           <Reveal className="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
             <h2 className="max-w-[24ch] text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[32px] lg:leading-[1.2]">
@@ -99,6 +113,16 @@ export default function OurImpactPage() {
                 size="lg"
               >
                 Publications
+              </Pill>
+              {/* The brief files four things under Our Impact — success
+                  stories, publications, annual reports and the media gallery.
+                  Three of them were reachable from this page and the annual
+                  reports were not, even though they are the single document a
+                  donor or institutional partner comes to an impact page
+                  looking for. They live on the publications page under their
+                  own anchor. */}
+              <Pill href="/news-insights/publications#annual-reports" size="lg">
+                Annual Reports
               </Pill>
               <Pill href="/our-impact/media-gallery" size="lg">
                 Media Gallery

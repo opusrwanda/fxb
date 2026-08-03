@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BrandIcon, type IconId } from "@/components/brand/icon";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
 import { areas } from "@/lib/areas";
@@ -18,7 +19,7 @@ import { photo } from "@/lib/photos";
  */
 export function AreasOfIntervention() {
   return (
-    <section id="areas" className="scroll-mt-32 bg-white py-24 lg:py-32">
+    <section id="areas" className="scroll-mt-36 bg-white py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
@@ -55,9 +56,25 @@ export function AreasOfIntervention() {
                   />
                 </div>
 
-                <h3 className="mt-7 text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
-                  {area.label}
-                </h3>
+                {/* The guide draws one icon per area of intervention, keyed by
+                    the same ids `areas.ts` uses, so the pairing is the data's
+                    rather than a lookup table's. It sits on the heading line
+                    because that is the line it illustrates — floated above the
+                    photograph it would have read as a badge on the picture. */}
+                <div className="mt-7 flex items-center gap-4 text-blue">
+                  {/* A real container with real padding. The icon used to sit
+                      bare on the card and looked like it had a tinted box
+                      behind it whose artwork ran to the edges — that box was an
+                      extraction artefact, not a container, and is gone. This is
+                      the container it looked like it wanted: 56px, tinted, with
+                      the drawing inset 12px on every side. */}
+                  <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-blue-08">
+                    <BrandIcon id={area.id as IconId} className="size-8" />
+                  </span>
+                  <h3 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
+                    {area.label}
+                  </h3>
+                </div>
                 <p className="mt-2 text-base text-gray lg:text-[17px]">
                   {area.blurb}
                 </p>

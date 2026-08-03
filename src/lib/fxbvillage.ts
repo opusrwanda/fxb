@@ -183,23 +183,5 @@ export const pillars: Pillar[] = [
   },
 ];
 
-/**
- * The Sustainable Development Goals the model contributes to.
- *
- * Numbers and titles are the UN's own; the brief lists exactly these ten.
- */
-export const sdgs = [
-  { number: 1, title: "No Poverty" },
-  { number: 2, title: "Zero Hunger" },
-  { number: 3, title: "Good Health and Well-being" },
-  { number: 4, title: "Quality Education" },
-  { number: 5, title: "Gender Equality" },
-  { number: 6, title: "Clean Water and Sanitation" },
-  { number: 8, title: "Decent Work and Economic Growth" },
-  { number: 13, title: "Climate Action" },
-  { number: 16, title: "Peace, Justice and Strong Institutions" },
-  { number: 17, title: "Partnerships for the Goals" },
-] as const;
-
 /** FXBVillage projects delivered to date, per the brief. */
 export const projectsDelivered = 54;

@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
+import { SectionNav } from "@/components/layout/section-nav";
 import { Hero } from "@/components/sections/hero";
 import { Approach } from "@/components/sections/what-we-do/approach";
 import { AreasOfIntervention } from "@/components/sections/what-we-do/areas-of-intervention";
 import { ModelIntro } from "@/components/sections/what-we-do/model-intro";
 import { ModelPillars } from "@/components/sections/what-we-do/model-pillars";
 import { ModelPrinciples } from "@/components/sections/what-we-do/model-principles";
+import { Programmes } from "@/components/sections/what-we-do/programmes";
 import { ProjectsDelivered } from "@/components/sections/what-we-do/projects-delivered";
 import { TransformationJourney } from "@/components/sections/what-we-do/transformation-journey";
 import { WhyItWorks } from "@/components/sections/what-we-do/why-it-works";
+import { activeProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "What We Do",
   description:
-    "The FXBVillage model: a 36-month, holistic route out of poverty delivered across child protection, education, health, nutrition, economic empowerment, WASH and climate resilience.",
+    "Integrated programmes across child protection, education, health, nutrition, economic empowerment, WASH and climate resilience — guided by the FXBVillage model, a 36-month route out of poverty.",
 };
 
 /**
@@ -32,14 +35,51 @@ export const metadata: Metadata = {
  * see the note in `site.ts`.
  */
 export default function WhatWeDoPage() {
+  // Derived, not written down. The hero makes a claim about how much of this
+  // organisation's work the page covers, and a hand-typed "6 programmes across
+  // 13 districts" would be wrong the first time a project ends — the same two
+  // figures the Current Projects page and the Who We Are map already compute
+  // from `projects.ts`.
+  const districtCount = new Set(
+    activeProjects.flatMap((project) => project.districts)
+  ).size;
+
   return (
     <>
       <Hero
         headline="Families never face one problem at a time."
-        body="So we never treat one at a time. The FXBVillage model works on income, health, education, nutrition, protection and shelter together — over 36 months, until a household no longer needs us."
+        // The old body read "The FXBVillage model works on income, health,
+        // education…", which handed the whole page to one project. FXBVillage
+        // is the model that guides the work and by some distance the largest
+        // thing here — but five other programmes run alongside it, and the
+        // brief's own wording is "Guided by the FXBVillage Model, we work
+        // across multiple sectors", not "the FXBVillage model is the work".
+        // The scope comes first now and the model is named as chief among the
+        // programmes rather than as the sum of them.
+        body={`So we never treat one at a time. Across ${districtCount} districts, our ${activeProjects.length} programmes work on income, health, education, nutrition, child protection, WASH and climate resilience together — the FXBVillage model chief among them.`}
         ctas={[
           { label: "The FXBVillage Model", href: "#fxbvillage-model", primary: true },
-          { label: "Our Impact", href: "/our-impact" },
+          // Was "Our Impact". A hero that has just claimed six programmes
+          // should offer the list of them, and Our Impact is already reachable
+          // from the nav and from the buttons further down this page.
+          { label: "Current Projects", href: "/what-we-do/current-projects" },
+        ]}
+      />
+
+      {/* Six entries, not ten. The challenge, the principles and the count are
+          beats inside the argument rather than destinations, and a bar with a
+          line for every section is a table of contents — it stops being
+          navigation the moment it stops fitting on one row. Sections without an
+          entry leave the previous one lit, which is the honest answer. */}
+      <SectionNav
+        sections={[
+          { id: "approach", label: "Our Approach" },
+          { id: "fxbvillage-model", label: "The Model" },
+          { id: "journey", label: "36-Month Journey" },
+          { id: "pillars", label: "The Pillars" },
+          { id: "why-it-works", label: "Why It Works" },
+          { id: "programmes", label: "Our Programmes" },
+          { id: "areas", label: "Areas of Intervention" },
         ]}
       />
 
@@ -50,6 +90,7 @@ export default function WhatWeDoPage() {
       <ModelPillars />
       <WhyItWorks />
       <ProjectsDelivered />
+      <Programmes />
       <AreasOfIntervention />
     </>
   );
