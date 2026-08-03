@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container } from "@/components/layout/container";
 import { latestAnnualReport } from "@/lib/publications";
 
@@ -26,28 +26,45 @@ import { latestAnnualReport } from "@/lib/publications";
  *
  * `localStorage` would have got the first of those and broken the second.
  *
- * NO FLASH
+ * WITHIN A VISIT vs A FULL RELOAD
  *
- * The banner is server-rendered, so a visitor who dismissed it two pages ago
- * would otherwise see it paint and then vanish on every subsequent page. The
- * inline script below runs while the parser is still on this element — before
- * anything is painted and long before React hydrates — and hides it in place.
- * React never learns, because `hidden` set outside its render is not a prop it
- * diffs. The alternative, rendering nothing until an effect confirms it is
- * wanted, pushes the whole page down a frame after paint on every load.
+ * Moving between pages keeps the header mounted, so the dismissal is instant
+ * and invisible — React state carries it. A *full* page load re-renders the
+ * banner from the server, which cannot know what is in session storage, so it
+ * paints for one frame before the effect below hides it.
+ *
+ * Two attempts to remove that frame were abandoned. An inline script inside
+ * this component is never executed on a client navigation and React 19 reports
+ * it as an error; the same script moved to the root layout reaches the HTML but
+ * does not survive hydration. Both were fighting the framework to save a single
+ * frame on a repeat visit, which is not a trade worth making — so the effect
+ * stays, and the flash is the honest cost.
  */
-const KEY = "fxb:annual-report-dismissed";
+export const DISMISS_KEY = "fxb:annual-report-dismissed";
 
 export function AnnualReportBanner() {
   const report = latestAnnualReport;
   const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    if (!report) return;
+    try {
+      if (window.sessionStorage.getItem(DISMISS_KEY) === report.slug) {
+        const id = window.setTimeout(() => setDismissed(true), 0);
+        return () => window.clearTimeout(id);
+      }
+    } catch {
+      // Storage unavailable. The banner simply stays, which is the safe way
+      // round — an announcement shown twice beats one that cannot be shown.
+    }
+  }, [report]);
 
   if (!report) return null;
 
   function dismiss() {
     setDismissed(true);
     try {
-      window.sessionStorage.setItem(KEY, report!.slug);
+      window.sessionStorage.setItem(DISMISS_KEY, report!.slug);
     } catch {
       // Private mode, or storage disabled. Closing it for this page is still
       // better than refusing to close it at all.
@@ -87,12 +104,6 @@ export function AnnualReportBanner() {
           </button>
         </Container>
       </div>
-
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `(function(){try{var b=document.getElementById('annual-report-banner');if(b&&sessionStorage.getItem('${KEY}')===${JSON.stringify(report.slug)})b.hidden=true}catch(e){}})()`,
-        }}
-      />
     </>
   );
 }
