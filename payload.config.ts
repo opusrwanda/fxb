@@ -54,8 +54,22 @@ export default buildConfig({
 
   admin: {
     user: Users.slug,
+
+    // The editor wears the brand. A team signing in to change their own website
+    // should see their own organisation, not a piece of software they have
+    // never heard of — an unfamiliar login screen is what makes people think
+    // they are in the wrong place, or that they are being phished.
+    components: {
+      graphics: {
+        Logo: "/src/cms/branding/logo#Logo",
+        Icon: "/src/cms/branding/icon#Icon",
+      },
+    },
+
     meta: {
       titleSuffix: " — FXB Rwanda",
+      icons: [{ rel: "icon", type: "image/png", url: "/icon.png" }],
+      openGraph: { title: "FXB Rwanda", description: "Website editor" },
     },
   },
 

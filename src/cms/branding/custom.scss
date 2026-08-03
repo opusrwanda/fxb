@@ -1,0 +1,40 @@
+/*
+  FXB Rwanda, in the editor.
+
+  Payload's own interface, wearing the brand's four colours. The point is not
+  decoration: a team signing in to change their website should see their own
+  organisation, not a piece of software they have never heard of. An unfamiliar
+  login screen is the thing that makes people think they are in the wrong place.
+
+  Only the accent is changed. Payload's greys carry its own contrast decisions
+  and are left alone — restyling an editor's every surface is how an upgrade
+  turns into a redesign.
+*/
+:root {
+  --color-base-0: #ffffff;
+  --theme-elevation-0: #ffffff;
+
+  /* Brand blue, and the tints Payload derives buttons and links from. */
+  --color-success-500: #008d00;
+  --theme-success-500: #008d00;
+}
+
+html[data-theme="light"] {
+  --theme-baseline: 20px;
+
+  /* Primary actions — Save, Publish, Create — in FXB blue rather than default. */
+  --color-base-800: #0472c2;
+  --color-base-850: #0472c2;
+  --theme-elevation-800: #0472c2;
+  --theme-elevation-850: #0366ae;
+}
+
+/* The login card: give it the brand's ground rather than flat grey. */
+.template-minimal {
+  background: linear-gradient(180deg, #f3f7fb 0%, #ffffff 60%);
+}
+
+.login__brand,
+.graphic-logo {
+  margin-bottom: 1.5rem;
+}

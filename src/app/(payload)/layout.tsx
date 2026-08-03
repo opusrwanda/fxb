@@ -10,6 +10,8 @@ import config from "@payload-config";
 import { RootLayout, handleServerFunctions } from "@payloadcms/next/layouts";
 import { importMap } from "./staff/importMap";
 import "@payloadcms/next/css";
+// FXB colours over Payload's own stylesheet — must come after it.
+import "../../cms/branding/custom.scss";
 
 const serverFunction: ServerFunctionClient = async function (args) {
   "use server";
