@@ -86,10 +86,10 @@ export async function getMediaOptions() {
 /**
  * Plain paragraphs, as the Lexical document the database stores.
  *
- * The editor is a textarea for now — one blank line between paragraphs — and
- * this is what turns that into the tree. It deliberately produces the same
- * shape a real Lexical editor would, so the day one is wired in, everything
- * written before it stays readable and nothing needs converting.
+ * The editor writes Lexical's JSON directly, so this is the fallback path: text
+ * pasted into the field by anything that is not the editor — a script, an older
+ * form — still arrives as a document the site can render rather than as a
+ * string nothing knows how to display.
  */
 export function paragraphsToRichText(text: string): RichText | null {
   const paragraphs = text
@@ -129,15 +129,39 @@ export function paragraphsToRichText(text: string): RichText | null {
   };
 }
 
-/** The reverse, for putting an existing document back in the textarea. */
-export function richTextToParagraphs(data: RichText | null | undefined): string {
-  if (!data?.root?.children) return "";
-  return data.root.children
-    .map((node) =>
-      (node.children ?? []).map((child) => child.text ?? "").join(""),
-    )
-    .filter((line) => line.trim().length > 0)
-    .join("\n\n");
+/**
+ * What the form sent, as a stored document.
+ *
+ * The editor posts Lexical's own JSON. Anything else — a paste into a plain
+ * textarea, an older form, a script — is treated as paragraphs separated by
+ * blank lines, so no route into this field can produce something the site
+ * cannot render.
+ */
+export function parseRichText(raw: string): RichText | null {
+  const text = raw.trim();
+  if (text === "") return null;
+
+  if (text.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(text) as RichText;
+      // An empty editor still serialises to a root with one empty paragraph.
+      // Storing that would make `isEmpty` false and print a blank line on the
+      // site, so it is normalised back to null.
+      const children = parsed?.root?.children ?? [];
+      const hasText = JSON.stringify(children).includes('"text":"');
+      return hasText ? parsed : null;
+    } catch {
+      // Not JSON after all — fall through and treat it as plain text.
+    }
+  }
+
+  return paragraphsToRichText(text);
+}
+
+/** The reverse, for putting an existing document back in the editor. */
+export function richTextToEditorJson(data: RichText | null | undefined): string {
+  if (!data?.root?.children?.length) return "";
+  return JSON.stringify(data);
 }
 
 /** A form value, converted to what the column expects. */
@@ -173,7 +197,7 @@ function coerce(
         .filter(Boolean);
 
     case "richtext":
-      return paragraphsToRichText(String(raw ?? ""));
+      return parseRichText(String(raw ?? ""));
 
     case "date": {
       const value = String(raw ?? "").trim();

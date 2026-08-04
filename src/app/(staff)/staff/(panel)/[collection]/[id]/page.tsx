@@ -8,7 +8,7 @@ import {
   getDocument,
   getMediaOptions,
   isCollection,
-  richTextToParagraphs,
+  richTextToEditorJson,
   saveDocument,
 } from "@/staff/queries/document";
 import { FormField } from "@/staff/ui/fields";
@@ -67,7 +67,7 @@ export default async function EditPage({
   /** The value a control should start with, converted for display. */
   const valueOf = (name: string, type: string): unknown => {
     const raw = document?.[name];
-    if (type === "richtext") return richTextToParagraphs(raw as RichText | null);
+    if (type === "richtext") return richTextToEditorJson(raw as RichText | null);
     return raw;
   };
 

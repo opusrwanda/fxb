@@ -1,4 +1,5 @@
 import type { Field } from "../fields";
+import { RichTextEditor } from "./editor";
 
 /**
  * The form controls, in the site's design language.
@@ -89,13 +90,14 @@ function Control({
       );
 
     case "richtext":
+      // The editor posts its own hidden field, so `shared` — which carries
+      // `required` and would put a browser validation bubble on an invisible
+      // input — is deliberately not spread onto it.
       return (
-        <textarea
-          {...shared}
-          rows={16}
-          defaultValue={(value as string) ?? ""}
-          placeholder="One paragraph per block, separated by a blank line."
-          className={`${inputClass} font-normal leading-relaxed`}
+        <RichTextEditor
+          name={field.name}
+          initialJson={(value as string) ?? ""}
+          ariaLabelledBy={id}
         />
       );
 
