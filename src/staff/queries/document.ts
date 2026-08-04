@@ -191,6 +191,40 @@ function coerce(
 
 export type SaveResult = { ok: true; id: number } | { ok: false; error: string };
 
+/**
+ * What to tell the editor when the database refuses a write.
+ *
+ * Never the raw error. Drizzle wraps a failure as "Failed query: insert into
+ * …" with every parameter appended, so putting `error.message` on the screen
+ * shows somebody a page of SQL and their own content quoted back at them — and
+ * tells them nothing about what to change.
+ *
+ * The useful part is Postgres' `code`, and it is on the *cause*, not the error
+ * Drizzle threw, so the chain has to be walked. The real message is logged for
+ * us; the editor gets a sentence about what to do.
+ */
+function readableError(error: unknown): string {
+  let current: unknown = error;
+
+  for (let depth = 0; current && depth < 5; depth += 1) {
+    const code = (current as { code?: string }).code;
+    const constraint = (current as { constraint?: string }).constraint;
+
+    if (code === "23505") {
+      return constraint?.includes("slug")
+        ? "That web address is already in use. Try a different one."
+        : "One of these values is already used by another entry.";
+    }
+    if (code === "23503") return "That refers to something that has been deleted.";
+    if (code === "23502") return "Something required was left empty.";
+    if (code === "22001") return "One of the values is too long.";
+
+    current = (current as { cause?: unknown }).cause;
+  }
+
+  return "Could not save. Please check the fields and try again.";
+}
+
 export async function saveDocument(
   collection: Key,
   id: number | null,
@@ -200,8 +234,19 @@ export async function saveDocument(
   const values: Record<string, unknown> = {};
 
   for (const field of definitions) {
-    // Media rows are created by uploading, not by this form; their filename and
-    // dimensions are not editable and must not be nulled by a save.
+    // A field the form did not send is left alone rather than written as null.
+    // Two reasons: a column like `language` is NOT NULL with a default, so
+    // nulling it fails outright; and a form that renders a subset of the fields
+    // should edit that subset, not blank the rest. Media rows are the case in
+    // point — their filename and dimensions come from the upload, never from
+    // this form.
+    //
+    // The exceptions are the two controls that say "nothing" by being absent: an
+    // unchecked checkbox and a group of checkboxes with none ticked both send
+    // no value at all, and both genuinely mean false and empty.
+    const alwaysWrite = field.type === "checkbox" || field.type === "multiselect";
+    if (!alwaysWrite && !form.has(field.name)) continue;
+
     values[field.name] = coerce(field, form);
   }
 
@@ -238,13 +283,8 @@ export async function saveDocument(
     bust(collection);
     return { ok: true, id };
   } catch (error) {
-    // A unique slug collision is the one an editor actually hits, and the raw
-    // Postgres text is not something to put in front of them.
-    const message = error instanceof Error ? error.message : String(error);
-    if (message.includes("duplicate key")) {
-      return { ok: false, error: "That web address is already in use." };
-    }
-    return { ok: false, error: message };
+    console.error(`[staff] save failed for ${collection}`, error);
+    return { ok: false, error: readableError(error) };
   }
 }
 
