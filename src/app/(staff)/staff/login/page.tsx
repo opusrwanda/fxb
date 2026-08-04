@@ -9,6 +9,7 @@ import {
   currentUser,
   pruneExpiredSessions,
 } from "@/staff/auth/session";
+import { PasswordField } from "@/staff/ui/password-field";
 
 export const metadata: Metadata = { title: "Sign in" };
 
@@ -99,13 +100,7 @@ export default async function LoginPage({
             autoComplete="username"
             required
           />
-          <Field
-            label="Password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-          />
+          <PasswordField required />
 
           <button
             type="submit"

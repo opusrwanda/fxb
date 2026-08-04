@@ -49,7 +49,7 @@ export const getPublications = cached("publications:all", "publications", async 
     slug: row.publication.slug,
     title: row.publication.title,
     category: row.publication.category as PublicationCategory,
-    date: row.publication.date.toISOString(),
+    date: row.publication.date,
     file: file(row.doc),
     cover: image(row.cover),
   }));

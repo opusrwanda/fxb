@@ -162,6 +162,22 @@ async function migrateMedia() {
 const ref = (id: number | null | undefined) =>
   id == null ? null : (mediaIds.get(id) ?? null);
 
+/**
+ * A Payload timestamp, as the calendar date it was meant to be.
+ *
+ * Payload stored "2025-07-09" as midnight in the server's zone, which is
+ * 2025-07-08 22:00 UTC. Reading the UTC day back gives the 8th. Formatting in
+ * the zone it was written in — Africa/Kigali, +02 and no DST — recovers the 9th.
+ */
+function calendarDate(value: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Africa/Kigali",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(value));
+}
+
 /** Payload's `_status` is the whole of what we keep from its versioning. */
 const status = (value: string | null | undefined): schema.Status =>
   value === "published" ? "published" : "draft";
@@ -174,7 +190,7 @@ async function migrateNews() {
       title: row["title"] as string,
       excerpt: row["excerpt"] as string,
       body: row["body"] as schema.RichText | null,
-      date: new Date(row["date"] as string),
+      date: calendarDate(row["date"] as string),
       language: (row["language"] as string) ?? "en",
       photoId: ref(row["photo_id"] as number),
       status: status(row["_status"] as string),
@@ -196,7 +212,7 @@ async function migrateStories() {
       title: row["title"] as string,
       excerpt: row["excerpt"] as string,
       body: row["body"] as schema.RichText | null,
-      date: new Date(row["date"] as string),
+      date: calendarDate(row["date"] as string),
       photoId: ref(row["photo_id"] as number),
       status: status(row["_status"] as string),
       updatedAt: new Date(),
@@ -248,7 +264,7 @@ async function migratePublications() {
       slug: row["slug"] as string,
       title: row["title"] as string,
       category: row["category"] as string,
-      date: new Date(row["date"] as string),
+      date: calendarDate(row["date"] as string),
       fileId: ref(row["file_id"] as number),
       coverId: ref(row["cover_id"] as number),
       status: status(row["_status"] as string),
@@ -311,7 +327,7 @@ async function migrateOpportunities() {
     await db.insert(schema.opportunities).values({
       title: row["title"] as string,
       kind: row["kind"] as string,
-      closesAt: new Date(row["closes_at"] as string),
+      closesAt: calendarDate(row["closes_at"] as string),
       location: row["location"] as string | null,
       body: row["body"] as schema.RichText | null,
       documentId: ref(row["document_id"] as number),

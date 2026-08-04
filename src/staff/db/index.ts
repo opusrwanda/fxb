@@ -1,7 +1,21 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { Pool, types } from "pg";
 
 import * as schema from "./schema";
+
+/**
+ * A `date` column is a calendar date, and stays a string.
+ *
+ * `node-postgres` parses DATE into a JavaScript `Date` at midnight *local*
+ * time, so "2025-07-09" arrives as 2025-07-08T22:00:00Z on a +02 machine. Every
+ * date on the site was then formatted in UTC and printed a day early.
+ *
+ * Returning the raw text is the fix, and it is the honest type: a publication
+ * date has no time and no zone, so it should never become an instant that one
+ * of them can move. This covers raw queries too, not just Drizzle's own
+ * mapping.
+ */
+types.setTypeParser(types.builtins.DATE, (value) => value);
 
 /**
  * The connection pool.

@@ -35,7 +35,7 @@ type Row = {
   slug: string;
   title: string;
   excerpt: string;
-  date: Date;
+  date: string;
   body: RichText | null;
   photo: typeof media.$inferSelect | null;
 };
@@ -44,7 +44,7 @@ const toStory = (row: Row): Story => ({
   slug: row.slug,
   title: row.title,
   excerpt: row.excerpt,
-  date: row.date.toISOString(),
+  date: row.date,
   image: image(row.photo),
   body: row.body,
 });

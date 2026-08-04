@@ -1,5 +1,6 @@
 import {
   boolean,
+  date,
   integer,
   jsonb,
   pgTable,
@@ -136,6 +137,22 @@ export type RichTextNode = {
   [key: string]: unknown;
 };
 
+/**
+ * ── A note on dates ───────────────────────────────────────────────────────
+ *
+ * Publication dates are `date`, not `timestamp`. An article is published on a
+ * day, not at an instant, and storing a day as an instant is how it moves.
+ *
+ * It had already moved. The seed wrote "2025-07-09", Postgres read it as
+ * midnight in the server's own zone, and stored 2025-07-08 22:00 UTC — so a
+ * site that formats in UTC, as this one does to keep server and client
+ * agreeing, printed the 8th. Every date on the site was a day early.
+ *
+ * A `date` column has no time and no zone, so there is nothing to convert and
+ * nothing to get wrong. It comes back as "2025-07-09" and is formatted as
+ * written.
+ */
+
 /* ── Publishing ───────────────────────────────────────────────────────────── */
 
 export const news = pgTable("news", {
@@ -144,7 +161,7 @@ export const news = pgTable("news", {
   title: text("title").notNull(),
   excerpt: text("excerpt").notNull(),
   body: jsonb("body").$type<RichText>(),
-  date: timestamp("date", { withTimezone: true }).notNull(),
+  date: date("date", { mode: "string" }).notNull(),
   /**
    * BCP 47. FXB Rwanda publishes in English and French, and a French headline
    * needs marking so a screen reader switches voice rather than reading it as
@@ -163,7 +180,7 @@ export const stories = pgTable("stories", {
   title: text("title").notNull(),
   excerpt: text("excerpt").notNull(),
   body: jsonb("body").$type<RichText>(),
-  date: timestamp("date", { withTimezone: true }).notNull(),
+  date: date("date", { mode: "string" }).notNull(),
   photoId: integer("photo_id").references(() => media.id, { onDelete: "set null" }),
   status: varchar("status", { length: 20 }).notNull().default("draft").$type<Status>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -205,7 +222,7 @@ export const publications = pgTable("publications", {
   title: text("title").notNull(),
   /** annual-report | project-report | policy | brochure | newsletter */
   category: varchar("category", { length: 40 }).notNull(),
-  date: timestamp("date", { withTimezone: true }).notNull(),
+  date: date("date", { mode: "string" }).notNull(),
   fileId: integer("file_id").references(() => media.id, { onDelete: "set null" }),
   coverId: integer("cover_id").references(() => media.id, { onDelete: "set null" }),
   status: varchar("status", { length: 20 }).notNull().default("draft").$type<Status>(),
@@ -243,7 +260,7 @@ export const opportunities = pgTable("opportunities", {
   /** career | procurement */
   kind: varchar("kind", { length: 20 }).notNull(),
   /** The site stops showing it the day after this. */
-  closesAt: timestamp("closes_at", { withTimezone: true }).notNull(),
+  closesAt: date("closes_at", { mode: "string" }).notNull(),
   location: text("location"),
   body: jsonb("body").$type<RichText>(),
   documentId: integer("document_id").references(() => media.id, { onDelete: "set null" }),

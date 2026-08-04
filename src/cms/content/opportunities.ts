@@ -30,7 +30,7 @@ const getAll = cached("opportunities", "opportunities", async (): Promise<Openin
     id: opening.id,
     title: opening.title,
     kind: opening.kind as "career" | "procurement",
-    closesAt: opening.closesAt.toISOString(),
+    closesAt: opening.closesAt,
     location: opening.location ?? undefined,
     body: opening.body,
     document: file(document),

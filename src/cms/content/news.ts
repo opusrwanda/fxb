@@ -51,7 +51,7 @@ type Row = {
   slug: string;
   title: string;
   excerpt: string;
-  date: Date;
+  date: string;
   language: string;
   body: RichText | null;
   photo: typeof media.$inferSelect | null;
@@ -62,7 +62,7 @@ function toNewsItem(row: Row): NewsItem {
     slug: row.slug,
     title: row.title,
     excerpt: row.excerpt,
-    date: row.date.toISOString(),
+    date: row.date,
     language: row.language === "fr" ? "fr" : undefined,
     image: image(row.photo),
     body: row.body,
