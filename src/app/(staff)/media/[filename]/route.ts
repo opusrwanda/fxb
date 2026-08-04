@@ -10,6 +10,12 @@ import { NextResponse } from "next/server";
  * in Postgres, the file is on disk under `./media`. This is what joins them
  * back up for a browser.
  *
+ * Served from `/media/…` rather than `/staff/media/…`, because the panel routes
+ * every collection at `/staff/<collection>/<id>` — and `/staff/media/1` would
+ * then mean both "edit media row 1" and "serve the file named 1". The more
+ * specific route wins in Next, so the edit page silently 404'd. Files are not
+ * part of the panel's namespace and should never have been inside it.
+ *
  * The filename is taken apart and reassembled with `path.basename` before it
  * touches the filesystem. Without that, a request for
  * `..%2F..%2F.env.local` would be a request for the environment file — path

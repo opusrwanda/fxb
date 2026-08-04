@@ -118,7 +118,7 @@ async function migrateMedia() {
   for (const row of all) {
     // Payload computes `url` at read time rather than storing it, so it comes
     // back null here. Ours is a real column, and it points at our own route.
-    const url = `/staff/media/${row.filename}`;
+    const url = `/media/${row.filename}`;
 
     const sizes: Record<string, schema.MediaSize> = {};
     for (const name of ["thumbnail", "card", "wide"] as const) {
@@ -127,7 +127,7 @@ async function migrateMedia() {
       if (!filename) continue;
       sizes[name] = {
         filename,
-        url: `/staff/media/${filename}`,
+        url: `/media/${filename}`,
         width: (record[`sizes_${name}_width`] as number) ?? 0,
         height: (record[`sizes_${name}_height`] as number) ?? 0,
       };
