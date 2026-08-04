@@ -15,6 +15,13 @@
       "when": 1785845507138,
       "tag": "0001_calendar_dates",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785852494252,
+      "tag": "0002_mailing_list",
+      "breakpoints": true
     }
   ]
 }

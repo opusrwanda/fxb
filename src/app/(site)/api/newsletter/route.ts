@@ -1,14 +1,10 @@
 /**
  * Newsletter signup.
  *
- * There is no mailing provider wired up yet, and an address typed into a form
- * that quietly goes nowhere is worse than no form at all. So this fails loudly:
- * without `NEWSLETTER_ENDPOINT` configured it returns 503 and both forms say so
- * in plain words, rather than showing a thank-you and dropping the address.
- *
- * Set `NEWSLETTER_ENDPOINT` to the provider's subscribe URL (Mailchimp,
- * Brevo, Listmonk — whatever FXB settles on) and this forwards to it. If that
- * provider needs a key, add it as `NEWSLETTER_TOKEN`.
+ * The list is ours now — the address goes into the `subscribers` table and the
+ * team manages it at /staff/subscribers. There is no third-party provider in
+ * the path, so nothing here can silently drop an address into somebody else's
+ * system.
  *
  * Two callers, deliberately asking for different amounts:
  *
@@ -26,6 +22,8 @@
  * subscription — so it is checked rather than inferred from the fact that a
  * request arrived at all.
  */
+import { subscribe } from "@/staff/mail/subscribers";
+
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /** Trimmed, length-capped, and never trusted to be a string in the first place. */
@@ -75,34 +73,25 @@ export async function POST(request: Request) {
     );
   }
 
-  const endpoint = process.env.NEWSLETTER_ENDPOINT;
-
-  if (!endpoint) {
-    return Response.json(
-      {
-        error:
-          "Newsletter signup is not connected yet. Please email info@fxbrwanda.org and we will add you.",
-      },
-      { status: 503 }
-    );
-  }
-
-  const token = process.env.NEWSLETTER_TOKEN;
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ email, name, firstName, lastName, consent: true }),
+  // The section sends first and last names; the footer sends neither. `source`
+  // records which, because "where did these addresses come from" is the first
+  // question anybody asks of a list.
+  const result = await subscribe({
+    email,
+    name,
+    source: firstName || lastName ? "signup" : "footer",
   });
 
-  if (!response.ok) {
-    return Response.json(
-      { error: "We could not sign you up just now. Please try again later." },
-      { status: 502 }
-    );
+  if (!result.ok) {
+    return Response.json({ error: result.error }, { status: 400 });
   }
 
-  return Response.json({ message: "Thank you — you are on the list." });
+  // Somebody signing up twice is told they are on the list, not that something
+  // went wrong — because nothing did.
+  return Response.json({
+    message:
+      result.status === "already"
+        ? "You are already on the list — thank you."
+        : "Thank you — you are on the list.",
+  });
 }

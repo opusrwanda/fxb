@@ -1,14 +1,16 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  AtSign,
+  Briefcase,
   Building2,
   FileText,
   Image as ImageIcon,
   Map,
   Newspaper,
+  Send,
   Settings,
   Sparkles,
   Users,
-  Briefcase,
 } from "lucide-react";
 
 /**
@@ -45,7 +47,7 @@ export type Entry = {
   singular: string;
   description: string;
   icon: LucideIcon;
-  group: "Publishing" | "Programmes" | "People" | "Library" | "Settings";
+  group: "Publishing" | "Programmes" | "People" | "Mailing list" | "Library" | "Settings";
 };
 
 export const collections: Entry[] = [
@@ -144,13 +146,51 @@ export const globals: Entry[] = [
   },
 ];
 
+/**
+ * The mailing list is its own group, not a corner of Publishing.
+ *
+ * Publications already contains newsletters — the quarterly PDFs — and an email
+ * campaign is a different object with different consequences: one is a file on a
+ * page, the other goes to several hundred inboxes and cannot be taken back.
+ * Keeping them apart in the sidebar is the cheapest way to stop somebody
+ * conflating the two.
+ */
 export const GROUPS = [
   "Publishing",
   "Programmes",
   "People",
+  "Mailing list",
   "Library",
   "Settings",
 ] as const;
+
+/**
+ * The mailing list pages.
+ *
+ * Listed separately from `collections` because neither is a plain document
+ * list: subscribers are rows nobody writes by hand, and a campaign has a Send
+ * button, which is not something the generic edit form should ever grow.
+ */
+export const mailing: Entry[] = [
+  {
+    key: "subscribers",
+    slug: "subscribers",
+    label: "Subscribers",
+    singular: "subscriber",
+    description: "Everyone who has asked to receive the newsletter.",
+    icon: AtSign,
+    group: "Mailing list",
+  },
+  {
+    key: "campaigns",
+    slug: "campaigns",
+    label: "Email campaigns",
+    singular: "campaign",
+    description: "Write a newsletter and send it to the list.",
+    icon: Send,
+    group: "Mailing list",
+  },
+];
 
 export function findCollection(slug: string): Entry | undefined {
   return collections.find((entry) => entry.slug === slug);

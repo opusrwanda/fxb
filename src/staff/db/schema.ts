@@ -314,3 +314,86 @@ export const globals = pgTable("globals", {
   data: jsonb("data").notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/* ── The mailing list ─────────────────────────────────────────────────────── */
+
+/**
+ * Somebody who has asked to hear from FXB Rwanda.
+ *
+ * `consentAt` is the point of this table. Under Rwanda's data protection law —
+ * and under GDPR for the European donors on this list — a subscription without
+ * a recorded moment of consent is not a subscription, and "we think they signed
+ * up at some point" is not a defence. It is stamped when they tick the box and
+ * never overwritten.
+ *
+ * Unsubscribing sets the status rather than deleting the row. A deleted address
+ * can be re-imported from an old spreadsheet by somebody meaning well; a row
+ * that says "unsubscribed" cannot be signed up again by accident.
+ */
+export const subscribers = pgTable("subscribers", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  name: varchar("name", { length: 200 }),
+  /** subscribed | unsubscribed | bounced */
+  status: varchar("status", { length: 20 }).notNull().default("subscribed"),
+  /** Where they came from: footer, signup, manual, import. */
+  source: varchar("source", { length: 20 }).notNull().default("footer"),
+  /** When they consented. Never overwritten — it is the legal record. */
+  consentAt: timestamp("consent_at", { withTimezone: true }),
+  /**
+   * Secret in the unsubscribe link.
+   *
+   * A random token rather than the address, so an unsubscribe URL cannot be
+   * guessed for somebody else and one leaked link exposes only one person.
+   */
+  unsubscribeToken: varchar("unsubscribe_token", { length: 64 }).notNull().unique(),
+  unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * One email to the list.
+ *
+ * Called a campaign rather than a newsletter because the site already has
+ * newsletters — the quarterly PDFs in Publications — and two different things
+ * sharing a name in the same panel is how somebody attaches a report to an
+ * email blast by mistake.
+ */
+export const campaigns = pgTable("campaigns", {
+  id: serial("id").primaryKey(),
+  subject: text("subject").notNull(),
+  /** The grey line after the subject in an inbox. Worth writing; often is not. */
+  preheader: text("preheader"),
+  body: jsonb("body").$type<RichText>(),
+  /** draft | sending | sent */
+  status: varchar("status", { length: 20 }).notNull().default("draft"),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
+  /** How many it actually reached, filled in as it sends. */
+  sentCount: integer("sent_count").notNull().default(0),
+  failedCount: integer("failed_count").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * One row per person per campaign.
+ *
+ * The reason this exists rather than a counter: when a send fails halfway —
+ * and with Gmail's daily cap it will — this is what says who already has it.
+ * Resuming without it would mean either sending the whole list twice or
+ * guessing where it stopped.
+ */
+export const campaignSends = pgTable("campaign_sends", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id")
+    .notNull()
+    .references(() => campaigns.id, { onDelete: "cascade" }),
+  subscriberId: integer("subscriber_id")
+    .notNull()
+    .references(() => subscribers.id, { onDelete: "cascade" }),
+  /** sent | failed */
+  status: varchar("status", { length: 20 }).notNull(),
+  error: text("error"),
+  sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+});
