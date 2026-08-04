@@ -1,13 +1,15 @@
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
-import { org } from "@/lib/site";
+import type { SiteDetails } from "@/cms/content/settings";
 
 /**
  * Vision, Mission & Values — the blue room.
  *
  * Vision and mission are the revised wording the client supplied in the margin
- * of the content brief, not the older statements in the body text; both live in
- * `site.ts` so nothing that quotes them can drift out of step.
+ * of the content brief, not the older statements in the body text. Both are in
+ * the Site details global now — they are the two sentences a board is most
+ * likely to revise — and read from one place, so nothing that quotes them can
+ * drift out of step.
  *
  * The vision carries emphasis, the mission does not. The client writes the
  * vision as EMPOWERED and RESILIENT COMMUNITIES shaping their OWN FUTURE — three
@@ -53,7 +55,7 @@ function emphasise(text: string, phrases: readonly string[]) {
     );
 }
 
-export function VisionMission() {
+export function VisionMission({ details }: { details: SiteDetails }) {
   return (
     <section id="vision" className="scroll-mt-32 bg-blue py-32 lg:py-48">
       <Container>
@@ -74,7 +76,7 @@ export function VisionMission() {
                 one is `white-94` at 4.61:1, not one of the decorative alphas,
                 because these are words and not a hairline. */}
             <p className="mt-5 text-3xl leading-[1.25] tracking-[-0.03em] lg:text-[40px] lg:leading-[1.15]">
-              {emphasise(org.vision, org.visionEmphasis)}
+              {emphasise(details.vision, details.visionEmphasis)}
             </p>
           </Reveal>
 
@@ -83,7 +85,7 @@ export function VisionMission() {
               OUR MISSION
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-white-94 lg:text-xl lg:leading-relaxed">
-              {org.mission}
+              {details.mission}
             </p>
           </Reveal>
         </div>

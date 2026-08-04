@@ -1,4 +1,15 @@
 /**
+ * ───────────────────────────────────────────────────────────────────────────
+ *  SEED INPUT ONLY. THE SITE NO LONGER READS THIS.
+ * ───────────────────────────────────────────────────────────────────────────
+ *
+ * The reach figures are the Impact figures global now.
+ *
+ * `scripts/seed-cms.ts` still reads it, because the migration has to be run
+ * once more against the production database. Editing it changes nothing that
+ * anybody can see — edit `/staff` instead.
+ */
+/**
  * Impact figures.
  *
  * Two views of the same data, and the relationship between them matters:

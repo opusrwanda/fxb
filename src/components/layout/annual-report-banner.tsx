@@ -4,14 +4,16 @@ import Link from "next/link";
 import { ArrowRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Container } from "@/components/layout/container";
-import { latestAnnualReport } from "@/lib/publications";
 
 /**
  * The annual report announcement, at the very top of every page.
  *
- * It names whatever `latestAnnualReport` returns and links to the annual
- * reports shelf, so publishing a new report changes the banner and nothing
+ * It names whichever Annual Report is newest and links to the annual reports
+ * shelf, so publishing a new one in `/staff` changes the banner and nothing
  * else. No report, no banner — which is the state until FXB supplies one.
+ *
+ * The report is passed in rather than read here: this is a client component and
+ * the CMS is only reachable from the server, so the layout does the asking.
  *
  * DISMISSAL
  *
@@ -42,8 +44,11 @@ import { latestAnnualReport } from "@/lib/publications";
  */
 export const DISMISS_KEY = "fxb:annual-report-dismissed";
 
-export function AnnualReportBanner() {
-  const report = latestAnnualReport;
+export function AnnualReportBanner({
+  report,
+}: {
+  report: { title: string; slug: string } | null;
+}) {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {

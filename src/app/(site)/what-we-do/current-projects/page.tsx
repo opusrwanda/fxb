@@ -5,7 +5,7 @@ import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { activeProjects } from "@/lib/projects";
+import { getCurrentProgrammes } from "@/cms/content/programmes";
 
 export const metadata: Metadata = {
   title: "Current Projects",
@@ -18,18 +18,19 @@ export const metadata: Metadata = {
  *
  * The brief leaves this heading empty, but the Where We Work table gives every
  * running project and the districts it covers — so the page is built from that
- * rather than left as a stub. Same `projects.ts` as the map on Who We Are, so
- * ending a project updates both.
+ * rather than left as a stub. Same Programmes collection as the map on Who We
+ * Are, so phasing a project out updates both.
  *
  * What is still missing is a paragraph per project: what it does, who funds it,
- * when it runs. Those are fields on `Project` waiting to be filled, not text to
- * be written here.
+ * when it runs. Those are fields on the collection waiting to be filled in from
+ * `/staff`, not text to be written here.
  *
  * Not a hero route: it opens on white with the header already solid.
  */
-export default function CurrentProjectsPage() {
+export default async function CurrentProjectsPage() {
+  const projects = await getCurrentProgrammes();
   const districtCount = new Set(
-    activeProjects.flatMap((project) => project.districts)
+    projects.flatMap((project) => project.districts)
   ).size;
 
   return (
@@ -38,16 +39,16 @@ export default function CurrentProjectsPage() {
         breadcrumbs={[{ label: "What We Do", href: "/what-we-do" }]}
         eyebrow="CURRENT PROJECTS"
         title="What we are running today"
-        intro={`${activeProjects.length} projects across ${districtCount} districts, delivered with government, donors and community partners.`}
+        intro={`${projects.length} projects across ${districtCount} districts, delivered with government, donors and community partners.`}
       />
 
       <section className="bg-white pb-24 lg:pb-32">
         <Container>
           <ul className="flex flex-col">
-            {activeProjects.map((project, index) => (
+            {projects.map((project, index) => (
               <Reveal
                 as="li"
-                key={project.id}
+                key={project.slug}
                 delay={Math.min(index, 3) * 60}
                 className="border-t border-gray-15 last:border-b"
               >
@@ -72,8 +73,8 @@ export default function CurrentProjectsPage() {
                         project.name
                       )}
                     </h2>
-                    {project.period && (
-                      <p className="text-sm text-gray-80">{project.period}</p>
+                    {project.runs && (
+                      <p className="text-sm text-gray-80">{project.runs}</p>
                     )}
                   </div>
 

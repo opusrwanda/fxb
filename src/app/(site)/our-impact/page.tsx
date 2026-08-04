@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { SectionNav } from "@/components/layout/section-nav";
+import { getStories } from "@/cms/content/stories";
 import { Hero } from "@/components/sections/hero";
 import { ImpactStories } from "@/components/sections/impact-stories";
 import { Reach } from "@/components/sections/our-impact/reach";
@@ -25,7 +26,9 @@ export const metadata: Metadata = {
  * it is the same three stories, and this is where the brief expects the full
  * carousel to live.
  */
-export default function OurImpactPage() {
+export default async function OurImpactPage() {
+  const stories = await getStories();
+
   return (
     <>
       <Hero
@@ -93,7 +96,7 @@ export default function OurImpactPage() {
       </section>
 
       <Reach />
-      <ImpactStories />
+      <ImpactStories stories={stories} />
 
       {/* Tinted, not solid blue. The stories carousel above is blue and the
           footer below is blue, so a third blue band in between made an

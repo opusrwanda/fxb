@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
+
 import { districts } from "../../lib/districts";
+import { revalidates } from "../revalidate";
 
 /**
  * The programmes FXB Rwanda runs.
@@ -21,6 +23,7 @@ export const Programmes: CollectionConfig = {
     group: "Programmes",
     description: "What FXB Rwanda runs, where, and for how long.",
   },
+  hooks: revalidates("programmes"),
   access: { read: () => true },
   versions: { drafts: true },
   fields: [

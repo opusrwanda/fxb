@@ -93,8 +93,14 @@ export const categories: {
 
 /**
  * ───────────────────────────────────────────────────────────────────────────
- *  EVERY ENTRY BELOW IS DRAFT. THESE DOCUMENTS DO NOT EXIST. DO NOT PUBLISH.
+ *  SEED INPUT ONLY. THE SITE NO LONGER READS THIS.
+ *  EVERY ENTRY IS DRAFT. THESE DOCUMENTS DO NOT EXIST. DO NOT PUBLISH.
  * ───────────────────────────────────────────────────────────────────────────
+ *
+ * The shelves are filled from the Publications collection now. This array is
+ * what `scripts/seed-cms.ts` carries across, as Payload drafts, so the team
+ * finds the titles waiting for them with a file to attach. Editing it changes
+ * nothing anybody can see.
  *
  * The brief names the categories and what each entry should carry — cover,
  * title, date, file size, download — but ships no files and no metadata. These
@@ -287,49 +293,3 @@ export const publications: Publication[] = [
     draft: true,
   },
 ];
-
-export const publicationsIn = (category: PublicationCategory) =>
-  publications.filter((item) => item.category === category);
-
-/**
- * Quarterly newsletters.
- *
- * The brief notes "the previous ones need to be migrated" — none have been
- * supplied yet, so this is deliberately empty rather than seeded with guesses.
- */
-export const newsletters = publicationsIn("newsletter");
-
-/**
- * The newest annual report, or undefined while the shelf is empty.
- *
- * Sorted here rather than relying on the order entries happen to be written in:
- * the banner in the header announces whatever this returns, and a report added
- * out of order should still be the one announced. Undefined is a real answer —
- * the banner simply does not render, which is correct until FXB supplies one.
- */
-export const latestAnnualReport = publicationsIn("annual-report")
-  .slice()
-  .sort((a, b) => b.date.localeCompare(a.date))[0];
-
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
-export function formatPublicationDate(iso: string): string {
-  return dateFormatter.format(new Date(`${iso}T00:00:00Z`));
-}
-
-/** 4_194_304 -> "4.2 MB". Decimal units, as every download UI reports them. */
-export function formatBytes(bytes: number): string {
-  if (bytes < 1000) return `${bytes} B`;
-  const units = ["KB", "MB", "GB"];
-  let value = bytes / 1000;
-  let unit = 0;
-  while (value >= 1000 && unit < units.length - 1) {
-    value /= 1000;
-    unit += 1;
-  }
-  return `${value.toFixed(1)} ${units[unit]}`;
-}

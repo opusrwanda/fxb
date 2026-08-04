@@ -7,12 +7,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/brand/logo";
 import { AnnualReportBanner } from "@/components/layout/annual-report-banner";
 import { Container } from "@/components/layout/container";
-import {
-  externalSystems,
-  hasTransparentHeader,
-  org,
-  primaryNav,
-} from "@/lib/site";
+import type { SiteDetails } from "@/cms/content/settings";
+import { hasTransparentHeader, primaryNav } from "@/lib/site";
 
 /**
  * Site header — two states, one continuous transition.
@@ -28,7 +24,15 @@ import {
  * at any point in the visit, so reclaiming vertical space is not available to
  * us. See fxbdesign.pen, "HEADER — states & spec".
  */
-export function SiteHeader() {
+export function SiteHeader({
+  details,
+  report,
+}: {
+  /** The contact details and external systems, from the CMS. */
+  details: SiteDetails;
+  /** The newest annual report, for the announcement. Null when there is none. */
+  report: { title: string; slug: string } | null;
+}) {
   const pathname = usePathname();
   const [pinned, setPinned] = useState(() => !hasTransparentHeader(pathname));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -149,10 +153,10 @@ export function SiteHeader() {
         ].join(" ")}
         aria-hidden={solid}
       >
-        <AnnualReportBanner />
+        <AnnualReportBanner report={report} />
 
         <Container className="hidden items-center gap-9 border-b border-white-12 pt-5 pb-4 text-base font-medium text-white-94 lg:flex">
-          {externalSystems.map((system) => (
+          {details.externalSystems.map((system) => (
             <a
               key={system.label}
               href={system.href}
@@ -166,12 +170,12 @@ export function SiteHeader() {
             </a>
           ))}
           <a
-            href={`tel:${org.phoneHref}`}
+            href={`tel:${details.phoneHref}`}
             className="ml-auto flex items-center gap-2 transition-colors duration-200 hover:text-white"
             tabIndex={solid ? -1 : 0}
           >
             <Phone className="size-4" aria-hidden="true" />
-            {org.phone}
+            {details.phone}
           </a>
         </Container>
       </div>
@@ -186,7 +190,7 @@ export function SiteHeader() {
       >
         <Link
           href="/"
-          aria-label={`${org.name} — home`}
+          aria-label={`${details.name} — home`}
           className="motion-transform relative shrink-0 origin-left transition-transform duration-[280ms] ease-(--ease-header)"
           style={{ transform: solid ? "scale(0.68)" : "scale(1)" }}
         >
@@ -357,7 +361,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="mt-9 flex flex-col gap-4">
-          {externalSystems.map((system) => (
+          {details.externalSystems.map((system) => (
             <a
               key={system.label}
               href={system.href}
@@ -379,18 +383,18 @@ export function SiteHeader() {
             address to write to instead of nothing. */}
         <div className="mt-10 flex flex-col gap-1 border-t border-white-12 pt-6">
           <a
-            href={`tel:${org.phoneHref}`}
+            href={`tel:${details.phoneHref}`}
             className="flex items-center gap-3 py-2.5 text-[17px] font-medium text-white"
           >
             <Phone className="size-5 shrink-0" aria-hidden="true" />
-            {org.phone}
+            {details.phone}
           </a>
           <a
-            href={`mailto:${org.email}`}
+            href={`mailto:${details.email}`}
             className="flex items-center gap-3 py-2.5 text-[17px] font-medium text-white"
           >
             <Mail className="size-5 shrink-0" aria-hidden="true" />
-            {org.email}
+            {details.email}
           </a>
         </div>
       </Container>

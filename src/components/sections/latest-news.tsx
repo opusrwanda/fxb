@@ -4,8 +4,8 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { photo } from "@/lib/photos";
-import { formatNewsDate, news } from "@/lib/news";
+import { formatDate, isoDate } from "@/cms/content/date";
+import { getNews } from "@/cms/content/news";
 
 /**
  * Latest News.
@@ -19,9 +19,17 @@ import { formatNewsDate, news } from "@/lib/news";
  * Lead item plus a stacked list, rather than another row of equal cards. Three
  * matching cards would say all three are equally important; news has a running
  * order, and the newest item earns the photograph.
+ *
+ * Four items: the lead and three beside it. Asking for more would fill the
+ * column past the height of the photograph next to it.
  */
-export function LatestNews() {
-  const [lead, ...rest] = news;
+export async function LatestNews() {
+  const [lead, ...rest] = await getNews(4);
+
+  // Nothing published. The home page drops the band rather than heading an
+  // empty grid — unlike the news listing, this is not the page you came to for
+  // the news, so there is nothing to explain.
+  if (!lead) return null;
 
   return (
     <section id="news" className="bg-white py-24 lg:py-32">
@@ -54,25 +62,27 @@ export function LatestNews() {
         <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-7">
             <article className="flex flex-col gap-6">
-              <Link
-                href={`/news-insights/news/${lead.slug}`}
-                className="group relative block aspect-16/10 overflow-hidden rounded-card"
-              >
-                <Image
-                  src={photo(lead.photo).url}
-                  alt={lead.alt}
-                  fill
-                  sizes="(min-width: 1024px) 58vw, 90vw"
-                  className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
-                />
-              </Link>
+              {lead.image && (
+                <Link
+                  href={`/news-insights/news/${lead.slug}`}
+                  className="group relative block aspect-16/10 overflow-hidden rounded-card"
+                >
+                  <Image
+                    src={lead.image.url}
+                    alt={lead.image.alt}
+                    fill
+                    sizes="(min-width: 1024px) 58vw, 90vw"
+                    className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                  />
+                </Link>
+              )}
 
               <div className="flex flex-col items-start gap-4">
                 <time
-                  dateTime={lead.date}
+                  dateTime={isoDate(lead.date)}
                   className="text-sm font-medium text-gray-80"
                 >
-                  {formatNewsDate(lead.date)}
+                  {formatDate(lead.date)}
                 </time>
 
                 <h3
@@ -116,25 +126,27 @@ export function LatestNews() {
                     index === 0 ? "lg:pt-0" : "border-t border-gray-15"
                   }`}
                 >
-                  <Link
-                    href={`/news-insights/news/${item.slug}`}
-                    className="group relative block aspect-4/3 w-28 shrink-0 overflow-hidden rounded-card sm:w-32"
-                  >
-                    <Image
-                      src={photo(item.photo).url}
-                      alt={item.alt}
-                      fill
-                      sizes="128px"
-                      className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
-                    />
-                  </Link>
+                  {item.image && (
+                    <Link
+                      href={`/news-insights/news/${item.slug}`}
+                      className="group relative block aspect-4/3 w-28 shrink-0 overflow-hidden rounded-card sm:w-32"
+                    >
+                      <Image
+                        src={item.image.url}
+                        alt={item.image.alt}
+                        fill
+                        sizes="128px"
+                        className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                      />
+                    </Link>
+                  )}
 
                   <div className="flex flex-col gap-2.5">
                     <time
-                      dateTime={item.date}
+                      dateTime={isoDate(item.date)}
                       className="text-sm font-medium text-gray-80"
                     >
-                      {formatNewsDate(item.date)}
+                      {formatDate(item.date)}
                     </time>
                     <h3
                       lang={item.language}

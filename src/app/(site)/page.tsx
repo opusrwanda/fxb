@@ -1,3 +1,4 @@
+import { getStories } from "@/cms/content/stories";
 import { Hero } from "@/components/sections/hero";
 import { ImpactStories } from "@/components/sections/impact-stories";
 import { ImpactCounters } from "@/components/sections/impact-counters";
@@ -26,7 +27,9 @@ const heroStats = [
   { figure: "36", label: "months from crisis to self-reliance" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const stories = await getStories();
+
   return (
     <>
       <Hero
@@ -50,7 +53,7 @@ export default function Home() {
       <WhoWeAre />
       <WhatWeDo />
       <ImpactCounters />
-      <ImpactStories />
+      <ImpactStories stories={stories} />
       <Partners />
       <LatestNews />
       <NewsletterSignup />

@@ -3,7 +3,9 @@ import { ArticleCard } from "@/components/cards/article-card";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SubNav, newsInsightsNav } from "@/components/layout/sub-nav";
-import { formatStoryDate, stories } from "@/lib/stories";
+import { formatDate } from "@/cms/content/date";
+import { getStories } from "@/cms/content/stories";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = {
   title: "Stories",
@@ -21,7 +23,9 @@ export const metadata: Metadata = {
  * The brief's instruction for this section is one line and worth keeping in
  * view: "This section should focus on people, not projects."
  */
-export default function StoriesPage() {
+export default async function StoriesPage() {
+  const stories = await getStories();
+
   return (
     <>
       <PageHeader
@@ -34,22 +38,31 @@ export default function StoriesPage() {
       <SubNav items={newsInsightsNav} ariaLabel="News and Insights" />
 
       <section className="bg-white pt-14 pb-24 lg:pt-16 lg:pb-32">
-        <Container>
-          <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-            {stories.map((story, index) => (
-              <ArticleCard
-                key={story.slug}
-                href={`/news-insights/stories/${story.slug}`}
-                title={story.title}
-                excerpt={story.excerpt}
-                date={formatStoryDate(story.date)}
-                photo={story.photo}
-                alt={story.alt}
-                delay={Math.min(index, 3) * 60}
-              />
-            ))}
-          </ul>
-        </Container>
+        {stories.length > 0 ? (
+          <Container>
+            <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+              {stories.map((story, index) => (
+                <ArticleCard
+                  key={story.slug}
+                  href={`/news-insights/stories/${story.slug}`}
+                  title={story.title}
+                  excerpt={story.excerpt}
+                  date={formatDate(story.date)}
+                  image={story.image}
+                  delay={Math.min(index, 3) * 60}
+                />
+              ))}
+            </ul>
+          </Container>
+        ) : (
+          <EmptyState
+            title="Stories are on their way"
+            body="Accounts of the families and young people our programmes work with are being prepared for publication."
+            actions={[
+              { label: "Read our news", href: "/news-insights/news", primary: true },
+            ]}
+          />
+        )}
       </section>
     </>
   );

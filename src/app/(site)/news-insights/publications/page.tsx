@@ -6,15 +6,13 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PublicationTabs } from "@/components/layout/publication-tabs";
 import { SubNav, newsInsightsNav } from "@/components/layout/sub-nav";
 import { Reveal } from "@/components/ui/reveal";
-import { photo } from "@/lib/photos";
-import { org } from "@/lib/site";
 import {
-  categories,
   formatBytes,
   formatPublicationDate,
-  publications,
-  publicationsIn,
-} from "@/lib/publications";
+  getPublications,
+} from "@/cms/content/publications";
+import { getSiteDetails } from "@/cms/content/settings";
+import { categories } from "@/lib/publications";
 
 export const metadata: Metadata = {
   title: "Publications",
@@ -33,11 +31,18 @@ export const metadata: Metadata = {
  * Our Impact page both link to, and the filter reads it on arrival.
  *
  * Every entry shows what the brief asks for — cover, title, category, date,
- * file size, download. No files have been supplied yet, so each shelf instead
- * lists what belongs on it, which is real information (a visitor learns the
- * Safeguarding Policy exists and can ask for it) rather than a spinner.
+ * file size, download. A shelf with nothing published on it lists what belongs
+ * there instead, which is real information — a visitor learns the Safeguarding
+ * Policy exists and can ask for it — rather than a spinner. That is still most
+ * of them: the titles are in the CMS as drafts, waiting for FXB to attach the
+ * documents.
  */
-export default function PublicationsPage() {
+export default async function PublicationsPage() {
+  const [publications, details] = await Promise.all([
+    getPublications(),
+    getSiteDetails(),
+  ]);
+
   return (
     <>
       <PageHeader
@@ -51,17 +56,6 @@ export default function PublicationsPage() {
 
       <section className="bg-white pt-14 pb-24 lg:pt-16 lg:pb-32">
         <Container>
-          {publications.some((item) => item.draft) && (
-            <p className="wedge mb-10 border border-gray-15 bg-blue-08 px-6 py-4 text-[15px] leading-relaxed text-gray">
-              <strong className="font-semibold text-blue">
-                Draft listing.
-              </strong>{" "}
-              These entries are placeholders prepared for layout review. The
-              documents do not exist yet and the download links will not
-              resolve.
-            </p>
-          )}
-
           <PublicationTabs
             tabs={categories.map(({ id, label, anchor }) => ({
               id,
@@ -70,7 +64,9 @@ export default function PublicationsPage() {
             }))}
             shelves={Object.fromEntries(
               categories.map((category) => {
-                const items = publicationsIn(category.id);
+                const items = publications.filter(
+                  (item) => item.category === category.id,
+                );
 
                 return [
                   category.id,
@@ -98,7 +94,7 @@ export default function PublicationsPage() {
                             className="h-full"
                           >
                             <a
-                              href={item.file}
+                              href={item.file?.url ?? "#"}
                               download
                               className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-300 hover:border-blue"
                             >
@@ -112,7 +108,7 @@ export default function PublicationsPage() {
                               {item.cover ? (
                                 <span className="relative block aspect-3/4 overflow-hidden bg-blue-08">
                                   <Image
-                                    src={photo(item.cover).url}
+                                    src={item.cover.url}
                                     alt=""
                                     fill
                                     sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
@@ -136,11 +132,11 @@ export default function PublicationsPage() {
                                   <span>
                                     {formatPublicationDate(item.date)}
                                   </span>
-                                  {item.bytes && (
+                                  {item.file?.bytes && (
                                     <>
                                       <span aria-hidden="true">·</span>
                                       <span>
-                                        PDF, {formatBytes(item.bytes)}
+                                        PDF, {formatBytes(item.file.bytes)}
                                       </span>
                                     </>
                                   )}
@@ -179,10 +175,10 @@ export default function PublicationsPage() {
                           These are being prepared for publication. To request a
                           copy in the meantime, email{" "}
                           <a
-                            href={`mailto:${org.email}`}
+                            href={`mailto:${details.email}`}
                             className="font-medium text-blue underline underline-offset-4 hover:text-green"
                           >
-                            {org.email}
+                            {details.email}
                           </a>
                           .
                         </p>

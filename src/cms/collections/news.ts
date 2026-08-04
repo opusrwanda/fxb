@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { revalidates } from "../revalidate";
+
 /**
  * Announcements about the organisation.
  *
@@ -19,6 +21,7 @@ export const News: CollectionConfig = {
     group: "Publishing",
     description: "Programme launches, partnerships, project updates, awards.",
   },
+  hooks: revalidates("news"),
   access: { read: () => true },
   versions: { drafts: true },
   fields: [

@@ -4,7 +4,8 @@ import { Logo } from "@/components/brand/logo";
 import { SocialIcon } from "@/components/brand/social-icon";
 import { Container } from "@/components/layout/container";
 import { FooterNewsletter } from "@/components/layout/footer-newsletter";
-import { org, primaryNav, socials } from "@/lib/site";
+import type { SiteDetails } from "@/cms/content/settings";
+import { primaryNav } from "@/lib/site";
 
 /**
  * Site footer — the last blue room.
@@ -25,7 +26,7 @@ import { org, primaryNav, socials } from "@/lib/site";
 /** Which nav sections get a column. The rest are reachable from the header. */
 const COLUMNS = ["Who We Are", "What We Do", "Get Involved"];
 
-export function SiteFooter() {
+export function SiteFooter({ details }: { details: SiteDetails }) {
   const columns = COLUMNS.map((label) => {
     const item = primaryNav.find((entry) => entry.label === label);
     if (!item) throw new Error(`Footer column has no nav entry: ${label}`);
@@ -77,30 +78,30 @@ export function SiteFooter() {
 
             <address className="flex flex-col gap-3.5 text-[15px] leading-snug not-italic">
               <a
-                href={org.mapUrl}
+                href={details.mapUrl}
                 target="_blank"
                 rel="noreferrer noopener"
                 className="flex items-start gap-2.5 text-white-94 transition-colors duration-200 hover:text-white"
               >
                 <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <span>
-                  {org.address.line}, {org.address.district},{" "}
-                  {org.address.country}
+                  {details.address.line}, {details.address.district},{" "}
+                  {details.address.country}
                 </span>
               </a>
               <a
-                href={`tel:${org.phoneHref}`}
+                href={`tel:${details.phoneHref}`}
                 className="flex items-center gap-2.5 text-white-94 transition-colors duration-200 hover:text-white"
               >
                 <Phone className="size-4 shrink-0" aria-hidden="true" />
-                {org.phone}
+                {details.phone}
               </a>
               <a
-                href={`mailto:${org.email}`}
+                href={`mailto:${details.email}`}
                 className="flex items-center gap-2.5 text-white-94 transition-colors duration-200 hover:text-white"
               >
                 <Mail className="size-4 shrink-0" aria-hidden="true" />
-                {org.email}
+                {details.email}
               </a>
             </address>
           </div>
@@ -110,8 +111,8 @@ export function SiteFooter() {
           <div className="flex flex-col gap-3">
             {/* self-start, or the flex column stretches the lockup to the full
                 column width and squashes it out of its 2.95:1 ratio. */}
-            <Logo variant="white" alt={org.name} className="h-10 self-start" />
-            <p className="text-sm text-white-94">{org.endorsement}</p>
+            <Logo variant="white" alt={details.name} className="h-10 self-start" />
+            <p className="text-sm text-white-94">{details.endorsement}</p>
           </div>
 
           {/* The external systems (Sugira Muryango, POMC) are deliberately not
@@ -138,18 +139,18 @@ export function SiteFooter() {
             </ul>
             {/* Resolved when the page is built, so it advances on deploy. */}
             <p>
-              © {new Date().getFullYear()} {org.legalName}. All rights reserved.
+              © {new Date().getFullYear()} {details.legalName}. All rights reserved.
             </p>
           </div>
 
           <ul className="flex flex-wrap items-center gap-2.5 lg:justify-end">
-            {socials.map((social) => (
+            {details.socials.map((social) => (
               <li key={social.label}>
                 <a
                   href={social.href}
                   target="_blank"
                   rel="noreferrer noopener"
-                  aria-label={`${org.name} on ${social.label}`}
+                  aria-label={`${details.name} on ${social.label}`}
                   className="flex size-9 items-center justify-center rounded-full border border-white-40 text-white transition-colors duration-200 hover:border-white hover:bg-white hover:text-blue"
                 >
                   <SocialIcon name={social.icon} />

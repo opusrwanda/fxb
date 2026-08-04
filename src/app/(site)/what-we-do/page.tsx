@@ -10,7 +10,7 @@ import { Programmes } from "@/components/sections/what-we-do/programmes";
 import { ProjectsDelivered } from "@/components/sections/what-we-do/projects-delivered";
 import { TransformationJourney } from "@/components/sections/what-we-do/transformation-journey";
 import { WhyItWorks } from "@/components/sections/what-we-do/why-it-works";
-import { activeProjects } from "@/lib/projects";
+import { getCurrentProgrammes } from "@/cms/content/programmes";
 
 export const metadata: Metadata = {
   title: "What We Do",
@@ -34,14 +34,15 @@ export const metadata: Metadata = {
  * This route is in `TRANSPARENT_HEADER_ROUTES`, so it must open with `<Hero>` —
  * see the note in `site.ts`.
  */
-export default function WhatWeDoPage() {
+export default async function WhatWeDoPage() {
+  const programmes = await getCurrentProgrammes();
   // Derived, not written down. The hero makes a claim about how much of this
   // organisation's work the page covers, and a hand-typed "6 programmes across
   // 13 districts" would be wrong the first time a project ends — the same two
   // figures the Current Projects page and the Who We Are map already compute
-  // from `projects.ts`.
+  // from the Programmes collection.
   const districtCount = new Set(
-    activeProjects.flatMap((project) => project.districts)
+    programmes.flatMap((programme) => programme.districts)
   ).size;
 
   return (
@@ -56,7 +57,7 @@ export default function WhatWeDoPage() {
         // across multiple sectors", not "the FXBVillage model is the work".
         // The scope comes first now and the model is named as chief among the
         // programmes rather than as the sum of them.
-        body={`So we never treat one at a time. Across ${districtCount} districts, our ${activeProjects.length} programmes work on income, health, education, nutrition, child protection, WASH and climate resilience together — the FXBVillage model chief among them.`}
+        body={`So we never treat one at a time. Across ${districtCount} districts, our ${programmes.length} programmes work on income, health, education, nutrition, child protection, WASH and climate resilience together — the FXBVillage model chief among them.`}
         ctas={[
           { label: "The FXBVillage Model", href: "#fxbvillage-model", primary: true },
           // Was "Our Impact". A hero that has just claimed six programmes

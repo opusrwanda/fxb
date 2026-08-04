@@ -2,8 +2,8 @@ import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { board } from "@/lib/leadership";
-import { org } from "@/lib/site";
+import { getBoard } from "@/cms/content/people";
+import { getSiteDetails } from "@/cms/content/settings";
 
 /**
  * Leadership — the Board of Directors.
@@ -24,7 +24,9 @@ import { org } from "@/lib/site";
  * screen reader announcing "Emmanuel KAYITANA" immediately before the heading
  * that says Emmanuel KAYITANA is noise, not information.
  */
-export function Leadership() {
+export async function Leadership() {
+  const [board, details] = await Promise.all([getBoard(), getSiteDetails()]);
+
   return (
     <section id="leadership" className="scroll-mt-32 bg-blue-08 py-24 lg:py-32">
       <Container>
@@ -47,7 +49,7 @@ export function Leadership() {
             {board.map((member, index) => (
               <Reveal
                 as="li"
-                key={member.id}
+                key={member.name}
                 delay={60 + Math.min(index, 3) * 60}
                 // Portrait, name and role are three tracks of the list's own
                 // grid rather than three blocks stacked inside a card, so the
@@ -58,14 +60,16 @@ export function Leadership() {
                 className="row-span-3 grid grid-rows-subgrid gap-y-0"
               >
                 <div className="relative mb-5 aspect-square overflow-hidden rounded-full bg-blue-16">
-                  <Image
-                    src={member.src}
-                    alt=""
-                    width={member.width}
-                    height={member.height}
-                    sizes="(min-width: 1024px) 23vw, 45vw"
-                    className="size-full object-cover"
-                  />
+                  {member.portrait && (
+                    <Image
+                      src={member.portrait.url}
+                      alt=""
+                      width={member.portrait.width}
+                      height={member.portrait.height}
+                      sizes="(min-width: 1024px) 23vw, 45vw"
+                      className="size-full object-cover"
+                    />
+                  )}
                 </div>
                 {/* Ranged to the bottom of its track, which is what keeps a name
                     and its role together.
@@ -102,7 +106,7 @@ export function Leadership() {
               FXB Rwanda is governed by a Board of Directors. Full profiles are
               being prepared for publication here.
             </p>
-            <Pill href={`mailto:${org.email}`} variant="outline">
+            <Pill href={`mailto:${details.email}`} variant="outline">
               Ask about our governance
             </Pill>
           </Reveal>

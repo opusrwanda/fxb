@@ -1,4 +1,15 @@
 /**
+ * ───────────────────────────────────────────────────────────────────────────
+ *  SEED INPUT ONLY. THE SITE NO LONGER READS THIS.
+ * ───────────────────────────────────────────────────────────────────────────
+ *
+ * The programmes are the Programmes collection now.
+ *
+ * `scripts/seed-cms.ts` still reads it, because the migration has to be run
+ * once more against the production database. Editing it changes nothing that
+ * anybody can see — edit `/staff` instead.
+ */
+/**
  * Where we work: projects and the districts they run in.
  *
  * Transcribed exactly from the Where We Work table in the content brief

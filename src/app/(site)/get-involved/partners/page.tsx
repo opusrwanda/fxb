@@ -5,7 +5,7 @@ import { SectionNav } from "@/components/layout/section-nav";
 import { PartnerLogos } from "@/components/sections/get-involved/partner-logos";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { org } from "@/lib/site";
+import { getSiteDetails } from "@/cms/content/settings";
 
 export const metadata: Metadata = {
   title: "Partner With Us",
@@ -200,7 +200,9 @@ function SectionHeading({
   );
 }
 
-export default function PartnersPage() {
+export default async function PartnersPage() {
+  const details = await getSiteDetails();
+
   return (
     <>
       <PageHeader
@@ -486,16 +488,16 @@ export default function PartnersPage() {
             </p>
             <div className="flex flex-col gap-2 text-white">
               <a
-                href={`mailto:${org.email}`}
+                href={`mailto:${details.email}`}
                 className="text-lg font-semibold underline underline-offset-4 transition-opacity duration-200 hover:opacity-80"
               >
-                {org.email}
+                {details.email}
               </a>
               <a
-                href={`tel:${org.phoneHref}`}
+                href={`tel:${details.phoneHref}`}
                 className="text-lg font-semibold underline underline-offset-4 transition-opacity duration-200 hover:opacity-80"
               >
-                {org.phone}
+                {details.phone}
               </a>
             </div>
             <Pill href="/contact" variant="white" size="lg">

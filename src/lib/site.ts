@@ -2,8 +2,38 @@
  * Site-wide constants drawn from the content structure document
  * (OK_FXB_Rwanda_Revamped_Website_Content_Structure.docx, 23 July 2026) and
  * the Brand Guiding Tool (24 July 2026).
+ *
+ * The navigation and the brand identity live here. The contact details, the
+ * vision and mission and the social links moved to the CMS — read them with
+ * `getSiteDetails()` from `src/cms/content/settings.ts`, which returns them
+ * merged with `brand` below.
  */
 
+/**
+ * Who the organisation is, as opposed to how to reach it.
+ *
+ * Deliberately not in the CMS. Changing any of these would be a rebrand, not an
+ * edit, and it would need the logo files, the metadata and the domain to change
+ * with it — so putting them behind a text field would offer the team a change
+ * they cannot actually make from there.
+ */
+export const brand = {
+  name: "FXB Rwanda",
+  legalName: "Francois Xavier Bagnoud",
+  endorsement: "Member of FXB Global",
+  linktree: "https://linktr.ee/fxbrwanda",
+} as const;
+
+/**
+ * ───────────────────────────────────────────────────────────────────────────
+ *  SEED INPUT ONLY. THE SITE NO LONGER READS THIS.
+ * ───────────────────────────────────────────────────────────────────────────
+ *
+ * These were the site's contact details until they moved into the Site details
+ * global. `scripts/seed-cms.ts` still reads them, because it has to be run once
+ * more against the production database — editing them here changes nothing that
+ * anybody can see. Edit `/staff` instead.
+ */
 export const org = {
   name: "FXB Rwanda",
   legalName: "Francois Xavier Bagnoud",
@@ -111,12 +141,13 @@ export const primaryNav: NavItem[] = [
   { label: "Contact", href: "/contact" },
 ];
 
-/** External systems referenced in the footer quick links and header utility strip. */
+/** SEED INPUT ONLY — external systems now live in the Site details global. */
 export const externalSystems: NavChild[] = [
   { label: "Sugira Muryango Dashboard", href: "https://sugiramuryango.fxbrwanda.org" },
   { label: "POMC", href: "http://185.194.218.11" },
 ];
 
+/** SEED INPUT ONLY — the social links now live in the Site details global. */
 export const socials = [
   { label: "X", href: "https://x.com/fxbrwanda", icon: "x" },
   { label: "LinkedIn", href: "https://www.linkedin.com/company/fxb-rwanda", icon: "linkedin" },

@@ -1,10 +1,13 @@
 import Image from "next/image";
+import type { Img } from "@/cms/content/image";
+import type { RichText } from "@/cms/content/news";
+import { saysNoMoreThan } from "@/cms/content/richtext";
+import type { SiteDetails } from "@/cms/content/settings";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { Prose } from "@/components/layout/prose";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { photo } from "@/lib/photos";
-import { org } from "@/lib/site";
 import type { Crumb } from "@/components/layout/page-header";
 
 /**
@@ -13,11 +16,12 @@ import type { Crumb } from "@/components/layout/page-header";
  * Both are the same document — headline, date, lead photograph, body — so they
  * share this rather than each keeping a copy.
  *
- * The full bodies have not been migrated from the current site yet. Where one
- * is missing the page renders the excerpt as a standfirst and says plainly that
- * the rest is coming, instead of padding it out or pretending the excerpt is
- * the article. That is a temporary state with an obvious fix: fill `body` in
- * `news.ts` or `stories.ts`.
+ * Where the body says no more than the excerpt already did, the page renders
+ * the excerpt as a standfirst and says plainly that the rest is coming, instead
+ * of printing the same sentence twice. The migration seeded each article's
+ * excerpt as its opening paragraph so the team would have something to open
+ * rather than an empty editor; this is the state that leaves, and it clears
+ * itself the moment somebody writes a second sentence in `/staff`.
  */
 export function ArticleBody({
   eyebrow,
@@ -26,11 +30,11 @@ export function ArticleBody({
   date,
   excerpt,
   body,
-  photo: photoId,
-  alt,
+  image,
   language,
   backHref,
   backLabel,
+  details,
 }: {
   eyebrow: string;
   breadcrumbs: Crumb[];
@@ -38,14 +42,14 @@ export function ArticleBody({
   /** Already formatted for display. */
   date: string;
   excerpt: string;
-  body?: string[];
-  photo: string;
-  alt: string;
+  body: RichText | null;
+  image: Img | null;
   language?: string;
   backHref: string;
   backLabel: string;
+  details: SiteDetails;
 }) {
-  const image = photo(photoId);
+  const written = !saysNoMoreThan(body, excerpt);
 
   return (
     <>
@@ -57,18 +61,20 @@ export function ArticleBody({
             <p className="text-sm text-gray-80">{date}</p>
           </Reveal>
 
-          <Reveal delay={60} className="mt-8">
-            <div className="relative aspect-16/9 overflow-hidden rounded-card">
-              <Image
-                src={image.url}
-                alt={alt}
-                fill
-                priority
-                sizes="(min-width: 1280px) 1200px, 92vw"
-                className="object-cover"
-              />
-            </div>
-          </Reveal>
+          {image && (
+            <Reveal delay={60} className="mt-8">
+              <div className="relative aspect-16/9 overflow-hidden rounded-card">
+                <Image
+                  src={image.url}
+                  alt={image.alt}
+                  fill
+                  priority
+                  sizes="(min-width: 1280px) 1200px, 92vw"
+                  className="object-cover"
+                />
+              </div>
+            </Reveal>
+          )}
 
           <div className="mt-14 lg:mt-20">
             <Reveal delay={80}>
@@ -80,17 +86,9 @@ export function ArticleBody({
               </p>
             </Reveal>
 
-            {body && body.length > 0 ? (
-              <Reveal delay={140} className="mt-10 flex flex-col gap-6">
-                {body.map((paragraph, index) => (
-                  <p
-                    key={index}
-                    className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]"
-                    lang={language}
-                  >
-                    {paragraph}
-                  </p>
-                ))}
+            {written ? (
+              <Reveal delay={140} className="mt-10">
+                <Prose data={body} lang={language} />
               </Reveal>
             ) : (
               <Reveal
@@ -109,13 +107,15 @@ export function ArticleBody({
                   <Pill href={backHref} variant="primary">
                     {backLabel}
                   </Pill>
-                  <Pill href={`mailto:${org.email}`}>Request the full text</Pill>
+                  <Pill href={`mailto:${details.email}`}>
+                    Request the full text
+                  </Pill>
                 </div>
               </Reveal>
             )}
           </div>
 
-          {body && body.length > 0 && (
+          {written && (
             <Reveal delay={200} className="mt-14">
               <Pill href={backHref} variant="outline" size="lg">
                 {backLabel}

@@ -4,7 +4,10 @@ import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { formatDeadline, vacancies } from "@/lib/opportunities";
+import { formatDate } from "@/cms/content/date";
+import { getOpenings } from "@/cms/content/opportunities";
+import { formatBytes } from "@/cms/content/publications";
+import { Prose } from "@/components/layout/prose";
 
 export const metadata: Metadata = {
   title: "Careers",
@@ -17,12 +20,14 @@ export const metadata: Metadata = {
  *
  * The brief writes this page twice — once with vacancies and once without —
  * and the empty version is the one that runs today. Both states are built; the
- * page switches on `vacancies` in `opportunities.ts`.
+ * page switches on whether the Opportunities collection holds a job vacancy
+ * that has not passed its closing date.
  *
  * The heading and intro change with the state too, because "Join Our Team" over
  * "there are no open positions" reads as a broken page.
  */
-export default function CareersPage() {
+export default async function CareersPage() {
+  const vacancies = await getOpenings("career");
   const open = vacancies.length > 0;
 
   return (
@@ -45,7 +50,7 @@ export default function CareersPage() {
               {vacancies.map((vacancy, index) => (
                 <Reveal
                   as="li"
-                  key={vacancy.slug}
+                  key={vacancy.id}
                   delay={Math.min(index, 3) * 60}
                   className="border-t border-gray-15 last:border-b"
                 >
@@ -54,27 +59,24 @@ export default function CareersPage() {
                       <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                         {vacancy.title}
                       </h2>
-                      <p className="text-base text-gray">
-                        {vacancy.department} · {vacancy.location} ·{" "}
-                        {vacancy.employmentType}
-                      </p>
+                      {vacancy.location && (
+                        <p className="text-base text-gray">
+                          {vacancy.location}
+                        </p>
+                      )}
                       <p className="text-sm font-semibold text-blue">
-                        Apply by {formatDeadline(vacancy.deadline)}
+                        Apply by {formatDate(vacancy.closesAt)}
                       </p>
                     </div>
 
                     <div className="flex flex-1 flex-col items-start gap-5">
-                      {vacancy.howToApply.map((paragraph, i) => (
-                        <p
-                          key={i}
-                          className="max-w-[56ch] text-[15px] leading-relaxed text-gray"
-                        >
-                          {paragraph}
-                        </p>
-                      ))}
-                      {vacancy.file && (
-                        <Pill href={vacancy.file} variant="primary">
+                      <Prose data={vacancy.body} />
+                      {vacancy.document && (
+                        <Pill href={vacancy.document.url} variant="primary">
                           Download the full pack
+                          {vacancy.document.bytes
+                            ? ` (${formatBytes(vacancy.document.bytes)})`
+                            : ""}
                         </Pill>
                       )}
                     </div>

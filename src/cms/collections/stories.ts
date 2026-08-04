@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { revalidates } from "../revalidate";
+
 /**
  * Impact stories — one household at a time.
  *
@@ -15,6 +17,7 @@ export const Stories: CollectionConfig = {
     group: "Publishing",
     description: "Accounts of one family or person, and what changed for them.",
   },
+  hooks: revalidates("stories"),
   access: { read: () => true },
   versions: { drafts: true },
   fields: [

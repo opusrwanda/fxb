@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { revalidates } from "../revalidate";
+
 /**
  * Partners, donors and collaborators.
  *
@@ -16,6 +18,7 @@ export const Partners: CollectionConfig = {
     group: "People",
     description: "Organisations shown on the partner walls.",
   },
+  hooks: revalidates("partners"),
   access: { read: () => true },
   fields: [
     { name: "name", type: "text", required: true },

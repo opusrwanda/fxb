@@ -4,8 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { photo } from "@/lib/photos";
-import { activeProjects } from "@/lib/projects";
+import { getCurrentProgrammes } from "@/cms/content/programmes";
 
 /**
  * The programmes running today.
@@ -17,21 +16,23 @@ import { activeProjects } from "@/lib/projects";
  * problem the hero copy had, one level down: the model was standing in for the
  * whole organisation.
  *
- * Every programme is named here, with the districts it reaches, from
- * `projects.ts` — the same source as the map on Who We Are and the sub-page, so
- * ending a programme updates all three and cannot leave one of them stale.
+ * Every programme is named here, with the districts it reaches, from the
+ * Programmes collection — the same source as the map on Who We Are and the
+ * sub-page, so phasing one out in `/staff` updates all three and cannot leave
+ * one of them stale.
  *
  * The sub-page stays. It is the same six programmes, but it is where the
  * per-programme detail lands when FXB supplies it — the fields are already on
- * `Project` waiting — and a listing that grows a paragraph, a funder and a
+ * the collection waiting — and a listing that grows a paragraph, a funder and a
  * period each does not belong inside a section on another page.
  *
  * Counts are derived here rather than written down, for the reason the hero
  * gives: a hand-typed "six programmes" is wrong the first time one ends.
  */
-export function Programmes() {
+export async function Programmes() {
+  const programmes = await getCurrentProgrammes();
   const districtCount = new Set(
-    activeProjects.flatMap((project) => project.districts),
+    programmes.flatMap((programme) => programme.districts),
   ).size;
 
   return (
@@ -50,17 +51,17 @@ export function Programmes() {
             </h2>
           </div>
           <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
-            {activeProjects.length} programmes across {districtCount} districts,
+            {programmes.length} programmes across {districtCount} districts,
             delivered with government, donors and community partners. The
             FXBVillage model runs alongside all of them.
           </p>
         </Reveal>
 
         <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-          {activeProjects.map((project, index) => (
+          {programmes.map((project, index) => (
             <Reveal
               as="li"
-              key={project.id}
+              key={project.slug}
               delay={60 + Math.min(index, 3) * 60}
             >
               {/* The whole card is the link now. It used to be the name only,
@@ -69,14 +70,14 @@ export function Programmes() {
                     and the other two led somewhere that was not about the
                     programme. */}
               <Link
-                href={`/what-we-do/programmes/${project.id}`}
+                href={`/what-we-do/programmes/${project.slug}`}
                 className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-300 hover:border-blue"
               >
-                {project.photo && (
+                {project.image && (
                   <div className="relative aspect-16/10 overflow-hidden bg-blue-08">
                     <Image
-                      src={photo(project.photo).url}
-                      alt={project.photoAlt ?? ""}
+                      src={project.image.url}
+                      alt={project.image.alt}
                       fill
                       sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
                       className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"

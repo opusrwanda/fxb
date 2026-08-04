@@ -1,4 +1,15 @@
 /**
+ * ───────────────────────────────────────────────────────────────────────────
+ *  SEED INPUT ONLY. THE SITE NO LONGER READS THIS.
+ * ───────────────────────────────────────────────────────────────────────────
+ *
+ * The stories are the Stories collection now.
+ *
+ * `scripts/seed-cms.ts` still reads it, because the migration has to be run
+ * once more against the production database. Editing it changes nothing that
+ * anybody can see — edit `/staff` instead.
+ */
+/**
  * Impact stories.
  *
  * Seeded from FXB Rwanda's live site — these are real published stories, and

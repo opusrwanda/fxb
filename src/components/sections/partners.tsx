@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
-import { type Partner, orderedPartners } from "@/lib/partners";
+import { type Partner, getOrderedPartners } from "@/cms/content/people";
 
 /**
  * Partners — every logo on one continuously scrolling line.
@@ -40,8 +40,12 @@ const MIN_PASS = 3900;
  */
 const SPEED = 35;
 
-export function Partners() {
-  const logos = orderedPartners();
+export async function Partners() {
+  const logos = await getOrderedPartners();
+
+  // Every logo could be deleted from the library at once, and a marquee with
+  // nothing to carry is a band of empty tiles.
+  if (logos.length === 0) return null;
 
   // Repeat until one pass is wide enough to cover the screen, then lay that
   // pass down twice — the second copy is what the -50% translation lands on.
@@ -84,7 +88,7 @@ export function Partners() {
               <PartnerTile
                 // Every logo appears twice over; the index is the only thing
                 // that distinguishes one tile from the next.
-                key={`${partner.slug}-${index}`}
+                key={`${partner.name}-${index}`}
                 partner={partner}
                 // Only the first pass is announced. The rest are the same logos
                 // again, and a screen reader reading the list twice would be
@@ -109,17 +113,19 @@ function PartnerTile({
   return (
     <li className="shrink-0" {...(decorative ? { "aria-hidden": true } : {})}>
       <div className="flex h-24 w-44 items-center justify-center rounded-card border border-gray-15 bg-white p-5 transition-colors duration-200 hover:border-blue-16 md:h-32 md:w-56 md:p-6">
-        <Image
-          src={partner.url}
-          // The logos are trimmed flush to their own bounds and their aspect
-          // ratios run from 0.72 to 10.9, so each one is fitted to the tile
-          // rather than filling it.
-          alt={decorative ? "" : partner.name}
-          width={partner.width}
-          height={partner.height}
-          sizes="(min-width: 768px) 176px, 136px"
-          className="h-auto max-h-full w-auto max-w-full object-contain"
-        />
+        {partner.logo && (
+          <Image
+            src={partner.logo.url}
+            // The logos are trimmed flush to their own bounds and their aspect
+            // ratios run from 0.72 to 10.9, so each one is fitted to the tile
+            // rather than filling it.
+            alt={decorative ? "" : partner.name}
+            width={partner.logo.width}
+            height={partner.logo.height}
+            sizes="(min-width: 768px) 176px, 136px"
+            className="h-auto max-h-full w-auto max-w-full object-contain"
+          />
+        )}
       </div>
     </li>
   );

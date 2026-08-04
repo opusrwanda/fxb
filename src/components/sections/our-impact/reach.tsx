@@ -2,8 +2,7 @@ import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { Counter } from "@/components/ui/counter";
 import { Reveal } from "@/components/ui/reveal";
-import { reach } from "@/lib/impact";
-import { photo } from "@/lib/photos";
+import { getReach } from "@/cms/content/impact";
 
 /**
  * Our Reach (Since 2012).
@@ -18,9 +17,14 @@ import { photo } from "@/lib/photos";
  * floors, not exact counts.
  *
  * The three programme figures do not add up to the total, and are not meant
- * to — see the note in `impact.ts`.
+ * to: reach is counted per area, so a household supported in two of them
+ * appears in both. The note under the figures is edited alongside them in
+ * `/staff`, because a page of large numbers with no word on where they came
+ * from is a weaker claim, not a stronger one.
  */
-export function Reach() {
+export async function Reach() {
+  const reach = await getReach();
+
   return (
     <section id="results" className="scroll-mt-36 bg-white py-32 lg:py-48">
       <Container>
@@ -43,19 +47,21 @@ export function Reach() {
         </Reveal>
 
         <ul className="mt-14 grid gap-6 sm:grid-cols-2">
-          {reach.map((figure, index) => (
+          {reach.figures.map((figure, index) => (
             <Reveal as="li" key={figure.id} delay={60 + Math.min(index, 3) * 60}>
               <div
                 tabIndex={0}
                 className="wedge group relative flex min-h-[26rem] flex-col justify-end overflow-hidden p-8 lg:p-10"
               >
-                <Image
-                  src={photo(figure.photo).url}
-                  alt=""
-                  fill
-                  sizes="(min-width: 640px) 46vw, 90vw"
-                  className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
-                />
+                {figure.image && (
+                  <Image
+                    src={figure.image.url}
+                    alt=""
+                    fill
+                    sizes="(min-width: 640px) 46vw, 90vw"
+                    className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                  />
+                )}
                 {/* Load-bearing where the type is, and nowhere else. The scrim
                     used to hold 90% blue through the middle band too, which
                     turned four photographs into four muddy blue rectangles —
@@ -68,9 +74,15 @@ export function Reach() {
                 />
 
                 <div className="relative">
-                  <p className="text-[46px] leading-none font-bold tracking-[-0.03em] text-white font-[family-name:var(--font-display)] lg:text-[64px]">
-                    <Counter value={figure.value} />+
-                  </p>
+                  {/* No number where MEL has not supplied one. The figure keeps
+                      its block, its photograph and its caption and simply does
+                      not make a numeric claim — which is the whole reason the
+                      field is allowed to be empty. */}
+                  {figure.value !== null && (
+                    <p className="text-[46px] leading-none font-bold tracking-[-0.03em] text-white font-[family-name:var(--font-display)] lg:text-[64px]">
+                      <Counter value={figure.value} />+
+                    </p>
+                  )}
                   <h3 className="mt-3 text-xl font-semibold tracking-[-0.02em] text-white lg:text-2xl">
                     {figure.label}
                   </h3>
@@ -104,12 +116,13 @@ export function Reach() {
           ))}
         </ul>
 
-        <Reveal delay={240}>
-          <p className="mt-8 text-sm text-gray-80">
-            Figures are drawn from FXB Rwanda&rsquo;s monitoring and evaluation
-            records and are being updated for the 2026 reporting cycle.
-          </p>
-        </Reveal>
+        {reach.note && (
+          <Reveal delay={240}>
+            <p className="mt-8 max-w-[70ch] text-sm text-gray-80">
+              {reach.note}
+            </p>
+          </Reveal>
+        )}
       </Container>
     </section>
   );

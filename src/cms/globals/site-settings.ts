@@ -1,5 +1,7 @@
 import type { GlobalConfig } from "payload";
 
+import { revalidatesGlobal } from "../revalidate";
+
 /**
  * The details that appear on every page.
  *
@@ -19,6 +21,7 @@ export const SiteSettings: GlobalConfig = {
     group: "Settings",
     description: "Address, phone, email, social links, vision and mission.",
   },
+  hooks: revalidatesGlobal("site-settings"),
   access: { read: () => true },
   fields: [
     {

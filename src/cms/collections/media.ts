@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { EVERYTHING, revalidates } from "../revalidate";
+
 /**
  * Every photograph and file the team uploads.
  *
@@ -22,6 +24,10 @@ export const Media: CollectionConfig = {
     group: "Library",
     description: "Photographs and files. Upload once, use anywhere.",
   },
+  // Everything, not just the media library: a photograph is embedded in news
+  // cards, programme pages, the board and the reach figures, so replacing one
+  // image touches pages no single collection tag would reach.
+  hooks: revalidates(EVERYTHING),
   access: { read: () => true },
   upload: {
     // Sizes the site actually asks for, so the browser is never sent a 4MB

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { formatDate } from "@/cms/content/date";
+import { getSiteDetails } from "@/cms/content/settings";
+import { getStories, getStory } from "@/cms/content/stories";
 import { ArticleBody } from "@/components/layout/article-body";
-import { formatStoryDate, stories } from "@/lib/stories";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const stories = await getStories();
   return stories.map((story) => ({ slug: story.slug }));
 }
 
@@ -11,7 +14,7 @@ export async function generateMetadata(
   props: PageProps<"/news-insights/stories/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const story = stories.find((entry) => entry.slug === slug);
+  const story = await getStory(slug);
   if (!story) return {};
 
   return { title: story.title, description: story.excerpt };
@@ -21,7 +24,7 @@ export default async function StoryPage(
   props: PageProps<"/news-insights/stories/[slug]">,
 ) {
   const { slug } = await props.params;
-  const story = stories.find((entry) => entry.slug === slug);
+  const [story, details] = await Promise.all([getStory(slug), getSiteDetails()]);
   if (!story) notFound();
 
   return (
@@ -32,13 +35,13 @@ export default async function StoryPage(
         { label: "Stories", href: "/news-insights/stories" },
       ]}
       title={story.title}
-      date={formatStoryDate(story.date)}
+      date={formatDate(story.date)}
       excerpt={story.excerpt}
       body={story.body}
-      photo={story.photo}
-      alt={story.alt}
+      image={story.image}
       backHref="/news-insights/stories"
       backLabel="All stories"
+      details={details}
     />
   );
 }

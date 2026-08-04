@@ -1,3 +1,14 @@
+/**
+ * ───────────────────────────────────────────────────────────────────────────
+ *  SEED INPUT ONLY. THE SITE NO LONGER READS THIS.
+ * ───────────────────────────────────────────────────────────────────────────
+ *
+ * The partners are the Partners collection now.
+ *
+ * `scripts/seed-cms.ts` still reads it, because the migration has to be run
+ * once more against the production database. Editing it changes nothing that
+ * anybody can see — edit `/staff` instead.
+ */
 import manifest from "./partners.json";
 import { cdn } from "./media";
 

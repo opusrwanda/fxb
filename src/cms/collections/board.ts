@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { revalidates } from "../revalidate";
+
 /**
  * The Board of Directors.
  *
@@ -21,6 +23,7 @@ export const Board: CollectionConfig = {
     group: "People",
     description: "Board of Directors, in the order they should appear.",
   },
+  hooks: revalidates("board"),
   access: { read: () => true },
   fields: [
     {

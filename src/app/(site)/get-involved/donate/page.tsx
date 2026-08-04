@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/ui/reveal";
-import { org } from "@/lib/site";
+import { getSiteDetails } from "@/cms/content/settings";
 
 export const metadata: Metadata = {
   title: "Donate",
@@ -38,7 +38,9 @@ const bankDetails = [
   ["SWIFT Code", "RWRWRW"],
 ];
 
-export default function DonatePage() {
+export default async function DonatePage() {
+  const details = await getSiteDetails();
+
   return (
     <>
       <PageHeader
@@ -128,16 +130,16 @@ export default function DonatePage() {
                 </p>
                 <div className="mt-4 flex flex-col gap-1.5">
                   <a
-                    href={`mailto:${org.email}`}
+                    href={`mailto:${details.email}`}
                     className="text-base font-semibold text-blue underline underline-offset-4 transition-colors duration-200 hover:text-green"
                   >
-                    {org.email}
+                    {details.email}
                   </a>
                   <a
-                    href={`tel:${org.phoneHref}`}
+                    href={`tel:${details.phoneHref}`}
                     className="text-base font-semibold text-blue underline underline-offset-4 transition-colors duration-200 hover:text-green"
                   >
-                    {org.phone}
+                    {details.phone}
                   </a>
                 </div>
               </div>

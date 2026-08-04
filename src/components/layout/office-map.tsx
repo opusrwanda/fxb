@@ -1,5 +1,5 @@
 import { ArrowUpRight, MapPin } from "lucide-react";
-import { org } from "@/lib/site";
+import type { SiteDetails } from "@/cms/content/settings";
 
 /**
  * The office, on Google's own map.
@@ -23,13 +23,13 @@ import { org } from "@/lib/site";
  *
  * No longer a client component: there is no state left to hold.
  */
-export function OfficeMap() {
+export function OfficeMap({ details }: { details: SiteDetails }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="wedge relative aspect-4/3 overflow-hidden bg-blue-08 sm:aspect-16/10">
         <iframe
-          src={org.mapEmbedUrl}
-          title={`Map showing ${org.name} headquarters in ${org.address.district}`}
+          src={details.mapEmbedUrl}
+          title={`Map showing ${details.name} headquarters in ${details.address.district}`}
           loading="lazy"
           referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
@@ -40,7 +40,7 @@ export function OfficeMap() {
       {/* The embed pans and zooms but will not route. Anyone who actually needs
           to get here wants the app, not the picture. */}
       <a
-        href={org.mapUrl}
+        href={details.mapUrl}
         target="_blank"
         rel="noreferrer noopener"
         className="group inline-flex items-center gap-2.5 text-base font-semibold text-blue"

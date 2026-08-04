@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { revalidates } from "../revalidate";
+
 /**
  * Reports, policies, brochures and the quarterly newsletter.
  *
@@ -21,6 +23,7 @@ export const Publications: CollectionConfig = {
     group: "Publishing",
     description: "Anything with a file to download.",
   },
+  hooks: revalidates("publications"),
   access: { read: () => true },
   versions: { drafts: true },
   fields: [

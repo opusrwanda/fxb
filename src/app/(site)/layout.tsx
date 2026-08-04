@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Oswald, Poppins } from "next/font/google";
 import "./globals.css";
+import { getLatestAnnualReport } from "@/cms/content/publications";
+import { getSiteDetails } from "@/cms/content/settings";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 
@@ -41,11 +43,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+/**
+ * The header and footer are the two things on every page that read from the
+ * CMS, and both are client components — the header for its scroll states, the
+ * footer for nothing at all but it shares the nav. So the asking happens here,
+ * once per page, and the answers go down as props.
+ */
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [details, report] = await Promise.all([
+    getSiteDetails(),
+    getLatestAnnualReport(),
+  ]);
+
   return (
     <html
       lang="en"
@@ -58,11 +71,14 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <SiteHeader />
+        <SiteHeader
+          details={details}
+          report={report && { title: report.title, slug: report.slug }}
+        />
         <main id="main" className="lg:col-span-7 lg:col-start-6">
           {children}
         </main>
-        <SiteFooter />
+        <SiteFooter details={details} />
       </body>
     </html>
   );

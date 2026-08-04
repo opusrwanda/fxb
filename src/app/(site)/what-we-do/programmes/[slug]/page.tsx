@@ -7,9 +7,10 @@ import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { photo } from "@/lib/photos";
-import { projectBySlug, projects } from "@/lib/projects";
-import { org } from "@/lib/site";
+import { getProgramme, getProgrammes } from "@/cms/content/programmes";
+import { isEmpty } from "@/cms/content/richtext";
+import { getSiteDetails } from "@/cms/content/settings";
+import { Prose } from "@/components/layout/prose";
 
 /**
  * One programme.
@@ -26,13 +27,14 @@ import { org } from "@/lib/site";
  * description is being prepared, rather than padding itself out with paragraphs
  * written on FXB's behalf.
  *
- * The moment `summary` and `body` are filled in on `projects.ts`, the empty
- * state disappears and the copy takes its place. No component changes.
+ * The moment `summary` and `body` are filled in on the programme in `/staff`,
+ * the empty state disappears and the copy takes its place. No code changes.
  *
  * Not a hero route: it opens on white with the header already solid.
  */
-export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.id }));
+export async function generateStaticParams() {
+  const programmes = await getProgrammes();
+  return programmes.map((programme) => ({ slug: programme.slug }));
 }
 
 export async function generateMetadata({
@@ -41,7 +43,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = projectBySlug(slug);
+  const project = await getProgramme(slug);
   if (!project) return {};
 
   return {
@@ -58,10 +60,13 @@ export default async function ProgrammePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = projectBySlug(slug);
+  const [project, details] = await Promise.all([
+    getProgramme(slug),
+    getSiteDetails(),
+  ]);
 
-  // A programme that has been removed from the data should 404 rather than
-  // render an empty shell, so a stale link fails loudly.
+  // A programme that has been unpublished should 404 rather than render an
+  // empty shell, so a stale link fails loudly.
   if (!project) notFound();
 
   const external = project.href?.startsWith("http");
@@ -73,7 +78,7 @@ export default async function ProgrammePage({
           { label: "What We Do", href: "/what-we-do" },
           { label: "Programmes", href: "/what-we-do#programmes" },
         ]}
-        eyebrow={project.active ? "CURRENT PROGRAMME" : "PHASED-OUT PROGRAMME"}
+        eyebrow={project.current ? "CURRENT PROGRAMME" : "PHASED-OUT PROGRAMME"}
         title={project.name}
         intro={`Running in ${project.districts.length} ${
           project.districts.length === 1 ? "district" : "districts"
@@ -82,12 +87,12 @@ export default async function ProgrammePage({
 
       <section className="bg-white pb-24 lg:pb-32">
         <Container className="flex flex-col gap-12 lg:gap-16">
-          {project.photo && (
+          {project.image && (
             <Reveal>
               <div className="wedge relative aspect-16/9 overflow-hidden bg-blue-08">
                 <Image
-                  src={photo(project.photo).url}
-                  alt={project.photoAlt ?? ""}
+                  src={project.image.url}
+                  alt={project.image.alt}
                   fill
                   priority
                   sizes="(min-width: 1024px) 75vw, 100vw"
@@ -97,12 +102,13 @@ export default async function ProgrammePage({
             </Reveal>
           )}
 
-          {project.draft && (
+          {project.unconfirmed && (
             <Reveal>
               {/* Draft copy renders the real design and says so. Without this
                   the only thing distinguishing placeholder text from FXB's own
-                  words would be a comment in a file nobody reading the page can
-                  see. Clearing `draft` on the programme removes it. */}
+                  words would be a note nobody reading the page can see.
+                  Unticking "Description not yet confirmed" in /staff removes
+                  it. */}
               <p className="wedge border border-gray-15 bg-blue-08 px-6 py-4 text-[15px] leading-relaxed text-gray">
                 <strong className="font-semibold text-blue">
                   Draft description.
@@ -116,23 +122,16 @@ export default async function ProgrammePage({
 
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-16">
             <Reveal className="lg:col-span-7">
-              {project.summary || project.body ? (
+              {project.summary || !isEmpty(project.body) ? (
                 <div className="flex flex-col gap-6">
                   {project.summary && (
                     <p className="text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
                       {project.summary}
                     </p>
                   )}
-                  {project.body?.map((paragraph) => (
-                    <p
-                      key={paragraph.slice(0, 40)}
-                      className="max-w-[62ch] text-base leading-relaxed text-gray lg:text-[17px]"
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
+                  <Prose data={project.body} />
 
-                  {project.components && project.components.length > 0 && (
+                  {project.components.length > 0 && (
                     <div className="mt-6">
                       <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                         WHAT IT DELIVERS
@@ -160,7 +159,7 @@ export default async function ProgrammePage({
                   actions={[
                     {
                       label: "Ask about this programme",
-                      href: `mailto:${org.email}?subject=${encodeURIComponent(project.name)}`,
+                      href: `mailto:${details.email}?subject=${encodeURIComponent(project.name)}`,
                       primary: true,
                     },
                     {
@@ -256,5 +255,13 @@ export default async function ProgrammePage({
   );
 }
 
-/** Unlisted slugs 404 rather than rendering at request time. */
-export const dynamicParams = false;
+/**
+ * A programme published between deploys still resolves.
+ *
+ * This used to be `dynamicParams = false`, which was right when the six
+ * programmes were a checked-in array and any other slug was a typo. Now the
+ * collection is edited from `/staff`: a seventh programme published on a
+ * Tuesday would have 404'd until the next build, and `getProgramme` already
+ * calls `notFound()` for a slug that genuinely does not exist.
+ */
+export const dynamicParams = true;

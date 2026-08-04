@@ -7,8 +7,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Container } from "@/components/layout/container";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { photo } from "@/lib/photos";
-import { formatStoryDate, stories } from "@/lib/stories";
+import { formatDate, isoDate } from "@/cms/content/date";
+import type { Story } from "@/cms/content/stories";
 
 /**
  * Impact Stories — a blue room with a bleeding photographic carousel.
@@ -42,7 +42,7 @@ import { formatStoryDate, stories } from "@/lib/stories";
  * more, it is off entirely on touch and under reduced motion, and it does not
  * engage at all on a viewport wide enough to show every story at once.
  */
-export function ImpactStories() {
+export function ImpactStories({ stories }: { stories: Story[] }) {
   const trackRef = useRef<HTMLUListElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   /**
@@ -247,25 +247,27 @@ export function ImpactStories() {
                 {/* h-full so every card fills the tallest in the row, which is
                   what lets the buttons below line up. */}
                 <article className="flex h-full flex-col gap-6">
-                  <Link
-                    href={`/news-insights/stories/${story.slug}`}
-                    className="group relative block aspect-16/10 overflow-hidden rounded-card"
-                  >
-                    <Image
-                      src={photo(story.photo).url}
-                      alt={story.alt}
-                      fill
-                      sizes="(min-width: 1024px) 560px, (min-width: 640px) 62vw, 85vw"
-                      className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
-                    />
-                  </Link>
+                  {story.image && (
+                    <Link
+                      href={`/news-insights/stories/${story.slug}`}
+                      className="group relative block aspect-16/10 overflow-hidden rounded-card"
+                    >
+                      <Image
+                        src={story.image.url}
+                        alt={story.image.alt}
+                        fill
+                        sizes="(min-width: 1024px) 560px, (min-width: 640px) 62vw, 85vw"
+                        className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                      />
+                    </Link>
+                  )}
 
                   <div className="flex flex-1 flex-col items-start gap-5">
                     <time
-                      dateTime={story.date}
+                      dateTime={isoDate(story.date)}
                       className="text-sm font-medium text-white-94"
                     >
-                      {formatStoryDate(story.date)}
+                      {formatDate(story.date)}
                     </time>
 
                     {/* Clamped so one long headline cannot drag the row of

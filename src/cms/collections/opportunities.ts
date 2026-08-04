@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { revalidates } from "../revalidate";
+
 /**
  * Vacancies and procurement notices.
  *
@@ -16,6 +18,7 @@ export const Opportunities: CollectionConfig = {
     group: "Programmes",
     description: "Job openings and procurement notices.",
   },
+  hooks: revalidates("opportunities"),
   access: { read: () => true },
   fields: [
     { name: "title", type: "text", required: true },

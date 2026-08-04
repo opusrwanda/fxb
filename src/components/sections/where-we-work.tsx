@@ -10,7 +10,7 @@ import {
   districtsAttribution,
   districtsViewBox,
 } from "@/lib/districts";
-import { activeProjects, projectsByDistrict } from "@/lib/projects";
+import type { Programme } from "@/cms/content/programmes";
 
 /**
  * Where We Work — the district map.
@@ -57,6 +57,33 @@ const LABEL_SIZE = 20;
 const LABEL_ADVANCE = 0.58 * LABEL_SIZE;
 /** Breathing room between two labels before they count as colliding. */
 const LABEL_GUTTER = 8;
+
+/**
+ * District name -> the programmes running there.
+ *
+ * Derived rather than stored, so the map and the programme list can never
+ * disagree. Districts with no programme simply have no entry.
+ *
+ * It lives here rather than beside the query it indexes because this is the
+ * only thing that needs it, and this is a client component: importing a value
+ * from the content layer would pull Payload — and with it `node:fs` — into the
+ * browser bundle. The type comes across, because types are erased.
+ */
+function programmesByDistrict(
+  programmes: readonly Programme[],
+): Map<string, Programme[]> {
+  const index = new Map<string, Programme[]>();
+
+  for (const programme of programmes) {
+    for (const district of programme.districts) {
+      const existing = index.get(district);
+      if (existing) existing.push(programme);
+      else index.set(district, [programme]);
+    }
+  }
+
+  return index;
+}
 
 type Box = { x0: number; x1: number; y0: number; y1: number };
 
@@ -131,18 +158,18 @@ function ProjectLink({
   );
 }
 
-export function WhereWeWork() {
+export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [active, setActive] = useState<string | null>(null);
   /** The project row under the pointer, which previews its districts. */
   const [preview, setPreview] = useState<string | null>(null);
 
   const visible = useMemo(
-    () => activeProjects.filter((project) => !hidden.has(project.id)),
-    [hidden]
+    () => programmes.filter((project) => !hidden.has(project.slug)),
+    [hidden, programmes]
   );
 
-  const byDistrict = useMemo(() => projectsByDistrict(visible), [visible]);
+  const byDistrict = useMemo(() => programmesByDistrict(visible), [visible]);
 
   function toggle(id: string) {
     setHidden((current) => {
@@ -165,7 +192,7 @@ export function WhereWeWork() {
     : undefined;
   const activeProjectsHere = active ? (byDistrict.get(active) ?? []) : [];
   const previewProject = preview
-    ? visible.find((project) => project.id === preview)
+    ? visible.find((project) => project.slug === preview)
     : undefined;
 
   /**
@@ -371,7 +398,7 @@ export function WhereWeWork() {
                   <ul className="mt-4 flex flex-col gap-2">
                     {activeProjectsHere.map((project) => (
                       <li
-                        key={project.id}
+                        key={project.slug}
                         className="text-base font-medium text-blue"
                       >
                         {project.name}
@@ -409,17 +436,17 @@ export function WhereWeWork() {
               </legend>
 
               <ul className="mt-5 flex flex-col">
-                {activeProjects.map((project) => {
-                  const shown = !hidden.has(project.id);
-                  const previewing = preview === project.id;
+                {programmes.map((project) => {
+                  const shown = !hidden.has(project.slug);
+                  const previewing = preview === project.slug;
                   const external = project.href?.startsWith("http");
 
                   return (
-                    <li key={project.id} className="border-b border-gray-15">
+                    <li key={project.slug} className="border-b border-gray-15">
                       <div
                         // A tap fires an emulated mouseenter, so touch gets the
                         // preview from the same handler the pointer uses.
-                        onMouseEnter={() => shown && setPreview(project.id)}
+                        onMouseEnter={() => shown && setPreview(project.slug)}
                         className={`flex items-start gap-3 border-l-2 py-4 pr-1 pl-4 transition-colors duration-200 ${
                           // The accent is the row saying which districts on the
                           // map are currently its own — the same job the solid
@@ -437,8 +464,8 @@ export function WhereWeWork() {
                                 href={project.href}
                                 external={external}
                                 shown={shown}
-                                onFocus={() => shown && setPreview(project.id)}
-                                onBlur={() => setPreview(clearIf(project.id))}
+                                onFocus={() => shown && setPreview(project.slug)}
+                                onBlur={() => setPreview(clearIf(project.slug))}
                               >
                                 {project.name}
                               </ProjectLink>
@@ -492,11 +519,11 @@ export function WhereWeWork() {
                           aria-checked={shown}
                           aria-label={`Show ${project.name} on the map`}
                           onClick={() => {
-                            toggle(project.id);
+                            toggle(project.slug);
                             setPreview(null);
                           }}
-                          onFocus={() => shown && setPreview(project.id)}
-                          onBlur={() => setPreview(clearIf(project.id))}
+                          onFocus={() => shown && setPreview(project.slug)}
+                          onBlur={() => setPreview(clearIf(project.slug))}
                           className={`mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors duration-200 hover:bg-blue-16 ${
                             shown ? "text-blue" : "text-gray-80"
                           }`}

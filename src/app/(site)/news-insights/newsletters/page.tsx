@@ -7,12 +7,11 @@ import { SubNav, newsInsightsNav } from "@/components/layout/sub-nav";
 import { NewsletterSignup } from "@/components/sections/newsletter-signup";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Reveal } from "@/components/ui/reveal";
-import { photo } from "@/lib/photos";
 import {
   formatBytes,
   formatPublicationDate,
-  newsletters,
-} from "@/lib/publications";
+  getPublicationsIn,
+} from "@/cms/content/publications";
 
 export const metadata: Metadata = {
   title: "Newsletters",
@@ -33,12 +32,12 @@ export const metadata: Metadata = {
  * is the one place on the site it most obviously belongs.
  *
  * The archive shelf is the same card as Publications: cover, issue, date, file
- * size, download. It renders whatever `publications.ts` holds, and falls back
- * to the "on its way" panel when that is nothing — which is still the honest
- * state until FXB migrates the back issues the brief mentions.
+ * size, download. It renders whatever is published in the Newsletter category,
+ * and falls back to the "on its way" panel when that is nothing — which is
+ * still the honest state until FXB migrates the back issues the brief mentions.
  */
-export default function NewslettersPage() {
-  const draft = newsletters.some((issue) => issue.draft);
+export default async function NewslettersPage() {
+  const newsletters = await getPublicationsIn("newsletter");
 
   return (
     <>
@@ -54,29 +53,18 @@ export default function NewslettersPage() {
       <section className="bg-white pt-14 pb-20 lg:pt-16 lg:pb-24">
         {newsletters.length > 0 ? (
           <Container>
-            {draft && (
-              <p className="wedge mb-10 border border-gray-15 bg-blue-08 px-6 py-4 text-[15px] leading-relaxed text-gray">
-                <strong className="font-semibold text-blue">
-                  Draft archive.
-                </strong>{" "}
-                These issues are placeholders prepared for layout review. The
-                back issues have not been migrated yet and the downloads will not
-                resolve.
-              </p>
-            )}
-
             <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {newsletters.map((issue, index) => (
                 <Reveal as="li" key={issue.slug} delay={Math.min(index, 3) * 60}>
                   <a
-                    href={issue.file}
+                    href={issue.file?.url ?? "#"}
                     download
                     className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-300 hover:border-blue"
                   >
                     {issue.cover && (
                       <span className="relative block aspect-3/4 overflow-hidden bg-blue-08">
                         <Image
-                          src={photo(issue.cover).url}
+                          src={issue.cover.url}
                           alt=""
                           fill
                           sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
@@ -91,7 +79,9 @@ export default function NewslettersPage() {
                       </span>
                       <span className="text-sm text-gray-80">
                         {formatPublicationDate(issue.date)}
-                        {issue.bytes ? ` · PDF, ${formatBytes(issue.bytes)}` : ""}
+                        {issue.file?.bytes
+                          ? ` · PDF, ${formatBytes(issue.file.bytes)}`
+                          : ""}
                       </span>
                       <span className="flex items-center gap-2 text-sm font-semibold text-blue">
                         <Download className="size-4" aria-hidden="true" />

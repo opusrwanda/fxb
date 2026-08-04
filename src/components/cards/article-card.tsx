@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import type { Img } from "@/cms/content/image";
 import { Reveal } from "@/components/ui/reveal";
-import { photo } from "@/lib/photos";
 
 /**
  * One item in a news or stories listing.
@@ -21,8 +21,7 @@ export function ArticleCard({
   title,
   excerpt,
   date,
-  photo: photoId,
-  alt,
+  image,
   language,
   delay = 0,
 }: {
@@ -31,8 +30,8 @@ export function ArticleCard({
   excerpt: string;
   /** Already formatted for display. */
   date: string;
-  photo: string;
-  alt: string;
+  /** Null where the photograph has been removed from the library. */
+  image: Img | null;
   language?: string;
   delay?: number;
 }) {
@@ -40,15 +39,21 @@ export function ArticleCard({
     <Reveal as="li" delay={delay}>
       {/* `relative` is what the stretched link below anchors to. */}
       <article className="group relative flex h-full flex-col">
-        <div className="relative aspect-16/10 overflow-hidden rounded-card">
-          <Image
-            src={photo(photoId).url}
-            alt={alt}
-            fill
-            sizes="(min-width: 1024px) 31vw, (min-width: 640px) 45vw, 90vw"
-            className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
-          />
-        </div>
+        {/* The photograph is required in the editor, so its absence means the
+            file was deleted from the library out from under a published
+            article. The card carries on without it rather than rendering a
+            broken frame. */}
+        {image && (
+          <div className="relative aspect-16/10 overflow-hidden rounded-card">
+            <Image
+              src={image.url}
+              alt={image.alt}
+              fill
+              sizes="(min-width: 1024px) 31vw, (min-width: 640px) 45vw, 90vw"
+              className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+            />
+          </div>
+        )}
 
         <p className="mt-6 text-sm text-gray-80">{date}</p>
 

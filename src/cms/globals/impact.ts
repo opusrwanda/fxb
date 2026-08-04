@@ -1,5 +1,7 @@
 import type { GlobalConfig } from "payload";
 
+import { revalidatesGlobal } from "../revalidate";
+
 /**
  * The reach figures.
  *
@@ -20,6 +22,7 @@ export const Impact: GlobalConfig = {
     group: "Settings",
     description: "The reach figures on the home page and Our Impact.",
   },
+  hooks: revalidatesGlobal("impact"),
   access: { read: () => true },
   fields: [
     {

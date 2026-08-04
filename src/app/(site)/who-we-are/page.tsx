@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getCurrentProgrammes } from "@/cms/content/programmes";
+import { getSiteDetails } from "@/cms/content/settings";
 import { Hero } from "@/components/sections/hero";
 import { Leadership } from "@/components/sections/leadership";
 import { OurStory } from "@/components/sections/our-story";
@@ -23,7 +25,15 @@ export const metadata: Metadata = {
  * This route is listed in `TRANSPARENT_HEADER_ROUTES`, so it must open with a
  * `<Hero>` — see the note in `site.ts`.
  */
-export default function WhoWeArePage() {
+export default async function WhoWeArePage() {
+  // Fetched together rather than inside each section: the vision and the map
+  // are two bands of one page, and awaiting them one after the other would make
+  // the second query wait on the first for no reason.
+  const [details, programmes] = await Promise.all([
+    getSiteDetails(),
+    getCurrentProgrammes(),
+  ]);
+
   return (
     <>
       <Hero
@@ -36,8 +46,8 @@ export default function WhoWeArePage() {
       />
 
       <OurStory />
-      <VisionMission />
-      <WhereWeWork />
+      <VisionMission details={details} />
+      <WhereWeWork programmes={programmes} />
       <Leadership />
     </>
   );

@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Accordion } from "@/components/ui/accordion";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { org, socials } from "@/lib/site";
+import { getSiteDetails, type SiteDetails } from "@/cms/content/settings";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -32,7 +32,8 @@ export const metadata: Metadata = {
  * artwork from FXB, so the link itself is here in the meantime and the QR is
  * flagged.
  */
-const faqs = [
+function buildFaqs(details: SiteDetails) {
+  return [
   {
     id: "partner",
     title: "How can I partner with FXB Rwanda?",
@@ -40,10 +41,10 @@ const faqs = [
       <p className="max-w-[58ch] text-base leading-relaxed text-gray">
         Please contact us through the form above, or email us at{" "}
         <a
-          href={`mailto:${org.email}`}
+          href={`mailto:${details.email}`}
           className="font-medium text-blue underline underline-offset-4 hover:text-green"
         >
-          {org.email}
+          {details.email}
         </a>
         . You can also read about the ways to work with us on our{" "}
         <Link
@@ -107,9 +108,13 @@ const faqs = [
       </p>
     ),
   },
-];
+  ];
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const details = await getSiteDetails();
+  const faqs = buildFaqs(details);
+
   return (
     <>
       <PageHeader
@@ -128,13 +133,13 @@ export default function ContactPage() {
                   GET IN TOUCH
                 </h2>
                 <p className="mt-4 text-2xl font-bold tracking-[-0.02em] text-blue">
-                  {org.name}
+                  {details.name}
                 </p>
               </div>
 
               <address className="flex flex-col gap-6 not-italic">
                 <a
-                  href={org.mapUrl}
+                  href={details.mapUrl}
                   target="_blank"
                   rel="noreferrer noopener"
                   className="group flex items-start gap-4"
@@ -147,14 +152,14 @@ export default function ContactPage() {
                       Office address
                     </span>
                     <span className="block text-base leading-snug text-gray transition-colors duration-200 group-hover:text-blue">
-                      {org.address.line}, {org.address.district},{" "}
-                      {org.address.country}
+                      {details.address.line}, {details.address.district},{" "}
+                      {details.address.country}
                     </span>
                   </span>
                 </a>
 
                 <a
-                  href={`tel:${org.phoneHref}`}
+                  href={`tel:${details.phoneHref}`}
                   className="group flex items-start gap-4"
                 >
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-blue-08">
@@ -163,13 +168,13 @@ export default function ContactPage() {
                   <span>
                     <span className="block text-sm text-gray-80">Phone</span>
                     <span className="block text-base text-gray transition-colors duration-200 group-hover:text-blue">
-                      {org.phone}
+                      {details.phone}
                     </span>
                   </span>
                 </a>
 
                 <a
-                  href={`mailto:${org.email}`}
+                  href={`mailto:${details.email}`}
                   className="group flex items-start gap-4"
                 >
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-blue-08">
@@ -178,7 +183,7 @@ export default function ContactPage() {
                   <span>
                     <span className="block text-sm text-gray-80">Email</span>
                     <span className="block text-base text-gray transition-colors duration-200 group-hover:text-blue">
-                      {org.email}
+                      {details.email}
                     </span>
                   </span>
                 </a>
@@ -192,7 +197,7 @@ export default function ContactPage() {
                       Office hours
                     </span>
                     <span className="block text-base text-gray">
-                      {org.officeHours}
+                      {details.officeHours}
                     </span>
                     <span className="block text-sm text-gray-80">
                       Closed on weekends and public holidays.
@@ -211,13 +216,13 @@ export default function ContactPage() {
                   stories and opportunities.
                 </p>
                 <ul className="mt-5 flex flex-wrap items-center gap-2.5">
-                  {socials.map((social) => (
+                  {details.socials.map((social) => (
                     <li key={social.label}>
                       <a
                         href={social.href}
                         target="_blank"
                         rel="noreferrer noopener"
-                        aria-label={`${org.name} on ${social.label}`}
+                        aria-label={`${details.name} on ${social.label}`}
                         className="flex size-11 items-center justify-center rounded-full border border-gray-15 text-blue transition-colors duration-200 hover:border-blue hover:bg-blue hover:text-white"
                       >
                         <SocialIcon name={social.icon} />
@@ -226,7 +231,7 @@ export default function ContactPage() {
                   ))}
                 </ul>
                 <a
-                  href={org.linktree}
+                  href={details.linktree}
                   target="_blank"
                   rel="noreferrer noopener"
                   className="mt-5 inline-block text-[15px] font-medium text-blue underline underline-offset-4 transition-colors duration-200 hover:text-green"
@@ -268,13 +273,13 @@ export default function ContactPage() {
                 Ruyenzi, Kamonyi District
               </h2>
             </div>
-            <Pill href={org.mapUrl} variant="outline" size="lg">
+            <Pill href={details.mapUrl} variant="outline" size="lg">
               Get Directions
             </Pill>
           </Reveal>
 
           <Reveal delay={80} className="mt-10">
-            <OfficeMap />
+            <OfficeMap details={details} />
           </Reveal>
         </Container>
       </section>
