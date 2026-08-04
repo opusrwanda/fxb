@@ -80,19 +80,28 @@ export default async function EditPage({
     return entry!.singular;
   };
 
+  // Two plain strings, pulled out before the action is defined.
+  //
+  // A server action is serialised along with everything it closes over, and
+  // `entry` carries `icon` — a React component, which is a function and cannot
+  // be serialised. Closing over the whole entry threw "Functions cannot be
+  // passed directly to Client Components" on every render of this page, and
+  // would have broken every save from the browser.
+  const key = entry.key as Parameters<typeof saveDocument>[0];
+  const slugSegment = entry.slug;
+
   async function save(formData: FormData) {
     "use server";
 
-    const key = entry!.key as Parameters<typeof saveDocument>[0];
     const result = await saveDocument(key, numericId, formData);
 
     if (!result.ok) {
       redirect(
-        `/staff/${entry!.slug}/${id}?error=${encodeURIComponent(result.error)}`,
+        `/staff/${slugSegment}/${id}?error=${encodeURIComponent(result.error)}`,
       );
     }
 
-    redirect(`/staff/${entry!.slug}/${result.id}?saved=1`);
+    redirect(`/staff/${slugSegment}/${result.id}?saved=1`);
   }
 
   const title = creating ? `New ${entry.singular}` : nameOf();
