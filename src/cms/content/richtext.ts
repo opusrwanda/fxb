@@ -1,14 +1,7 @@
-import { convertLexicalToPlaintext } from "@payloadcms/richtext-lexical/plaintext";
-import type { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical";
-import type { RichText } from "./news";
+import { plainText } from "@/staff/lexical/plaintext";
+import type { RichText } from "@/staff/db/schema";
 
-/** The rich text as one string — for comparisons and meta descriptions. */
-export function plainText(data: RichText | null | undefined): string {
-  if (!data) return "";
-  return convertLexicalToPlaintext({
-    data: data as unknown as SerializedEditorState,
-  }).trim();
-}
+export { plainText };
 
 /** True when the editor is empty, or holds nothing but whitespace. */
 export function isEmpty(data: RichText | null | undefined): boolean {
@@ -22,8 +15,8 @@ export function isEmpty(data: RichText | null | undefined): boolean {
  * team had something to open and extend rather than an empty editor. Until
  * somebody does extend it, rendering both would print the same sentence twice —
  * once as the standfirst and once as the article. The page shows its "full
- * piece is on its way" panel instead, exactly as it did when the body was
- * genuinely absent, and stops the moment a second sentence is written.
+ * piece is on its way" panel instead, and stops the moment a second sentence is
+ * written.
  */
 export function saysNoMoreThan(
   data: RichText | null | undefined,

@@ -1,17 +1,17 @@
-import type { News } from "../payload-types";
-import { image, type Img } from "./image";
-import { cached, cms } from "./payload";
+import { and, desc, eq } from "drizzle-orm";
 
-export type RichText = News["body"];
+import { db, media, news } from "@/staff/db";
+import type { RichText } from "@/staff/db/schema";
+import { cached } from "./cache";
+import { image, type Img } from "./image";
+
+export type { RichText };
 
 /**
  * A news item, as the site renders it.
  *
- * The shape is the one the pages already used when this came from a TypeScript
- * module — slug, title, excerpt, date, photograph — so what changed underneath
- * is only where it is read from. `body` is the exception: rich text now, not an
- * array of paragraphs, because the team writes it in an editor with links and
- * headings rather than as string literals.
+ * The shape is the one the pages have always used — slug, title, excerpt,
+ * date, photograph — so what changed underneath is only where it is read from.
  */
 export type NewsItem = {
   slug: string;
@@ -27,53 +27,75 @@ export type NewsItem = {
    */
   language?: string;
   image: Img | null;
-  body: RichText;
+  body: RichText | null;
 };
 
-function toNewsItem(doc: News): NewsItem {
+/**
+ * The one query both reads share.
+ *
+ * A left join rather than a second round trip for the photograph: four news
+ * items would otherwise be five queries, and the join costs nothing on a table
+ * this size.
+ */
+const select = {
+  slug: news.slug,
+  title: news.title,
+  excerpt: news.excerpt,
+  date: news.date,
+  language: news.language,
+  body: news.body,
+  photo: media,
+};
+
+type Row = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: Date;
+  language: string;
+  body: RichText | null;
+  photo: typeof media.$inferSelect | null;
+};
+
+function toNewsItem(row: Row): NewsItem {
   return {
-    slug: doc.slug,
-    title: doc.title,
-    excerpt: doc.excerpt,
-    date: doc.date,
-    language: doc.language === "fr" ? "fr" : undefined,
-    image: image(doc.photo),
-    body: doc.body,
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt,
+    date: row.date.toISOString(),
+    language: row.language === "fr" ? "fr" : undefined,
+    image: image(row.photo),
+    body: row.body,
   };
 }
 
-/**
- * Published news, newest first.
- *
- * `_status` has to be filtered by hand: a document saved as a draft and never
- * published still sits in the collection, and Payload's `find` will hand it
- * over unless asked not to.
- */
+/** Published news, newest first. */
 export const getNews = cached("news:all", "news", async (limit?: number) => {
-  const payload = await cms();
-  const { docs } = await payload.find({
-    collection: "news",
-    where: { _status: { equals: "published" } },
-    sort: "-date",
-    limit: limit ?? 0,
-    depth: 1,
-    pagination: false,
-  });
-  return docs.map(toNewsItem);
+  const query = db
+    .select(select)
+    .from(news)
+    .leftJoin(media, eq(news.photoId, media.id))
+    .where(eq(news.status, "published"))
+    .orderBy(desc(news.date));
+
+  const rows = await (limit ? query.limit(limit) : query);
+  return rows.map(toNewsItem);
 });
 
 export const getNewsItem = cached(
   "news:one",
   "news",
   async (slug: string): Promise<NewsItem | null> => {
-    const payload = await cms();
-    const { docs } = await payload.find({
-      collection: "news",
-      where: { slug: { equals: slug }, _status: { equals: "published" } },
-      limit: 1,
-      depth: 1,
-      pagination: false,
-    });
-    return docs[0] ? toNewsItem(docs[0]) : null;
+    const rows = await db
+      .select(select)
+      .from(news)
+      .leftJoin(media, eq(news.photoId, media.id))
+      // A draft is indistinguishable from a missing slug on purpose: the page
+      // 404s either way, and telling an anonymous visitor that an unpublished
+      // article exists at this address is a small leak with no upside.
+      .where(and(eq(news.slug, slug), eq(news.status, "published")))
+      .limit(1);
+
+    return rows[0] ? toNewsItem(rows[0]) : null;
   },
 );

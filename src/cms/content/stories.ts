@@ -1,14 +1,16 @@
-import type { Story as StoryDoc } from "../payload-types";
+import { and, desc, eq } from "drizzle-orm";
+
+import { db, media, stories } from "@/staff/db";
+import type { RichText } from "@/staff/db/schema";
+import { cached } from "./cache";
 import { image, type Img } from "./image";
-import type { RichText } from "./news";
-import { cached, cms } from "./payload";
 
 /**
  * An impact story — one household at a time.
  *
  * Same shape as a news item minus the language tag, and deliberately a separate
- * collection: the brief draws the line between what FXB did and what changed
- * for one family, and so does the site.
+ * table: the brief draws the line between what FXB did and what changed for one
+ * family, and so does the site.
  */
 export type Story = {
   slug: string;
@@ -17,49 +19,59 @@ export type Story = {
   /** ISO timestamp, formatted at render. */
   date: string;
   image: Img | null;
-  body: RichText;
+  body: RichText | null;
 };
 
-function toStory(doc: StoryDoc): Story {
-  return {
-    slug: doc.slug,
-    title: doc.title,
-    excerpt: doc.excerpt,
-    date: doc.date,
-    image: image(doc.photo),
-    body: doc.body,
-  };
-}
+const select = {
+  slug: stories.slug,
+  title: stories.title,
+  excerpt: stories.excerpt,
+  date: stories.date,
+  body: stories.body,
+  photo: media,
+};
 
-export const getStories = cached(
-  "stories:all",
-  "stories",
-  async (limit?: number) => {
-    const payload = await cms();
-    const { docs } = await payload.find({
-      collection: "stories",
-      where: { _status: { equals: "published" } },
-      sort: "-date",
-      limit: limit ?? 0,
-      depth: 1,
-      pagination: false,
-    });
-    return docs.map(toStory);
-  },
-);
+type Row = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: Date;
+  body: RichText | null;
+  photo: typeof media.$inferSelect | null;
+};
+
+const toStory = (row: Row): Story => ({
+  slug: row.slug,
+  title: row.title,
+  excerpt: row.excerpt,
+  date: row.date.toISOString(),
+  image: image(row.photo),
+  body: row.body,
+});
+
+export const getStories = cached("stories:all", "stories", async (limit?: number) => {
+  const query = db
+    .select(select)
+    .from(stories)
+    .leftJoin(media, eq(stories.photoId, media.id))
+    .where(eq(stories.status, "published"))
+    .orderBy(desc(stories.date));
+
+  const rows = await (limit ? query.limit(limit) : query);
+  return rows.map(toStory);
+});
 
 export const getStory = cached(
   "stories:one",
   "stories",
   async (slug: string): Promise<Story | null> => {
-    const payload = await cms();
-    const { docs } = await payload.find({
-      collection: "stories",
-      where: { slug: { equals: slug }, _status: { equals: "published" } },
-      limit: 1,
-      depth: 1,
-      pagination: false,
-    });
-    return docs[0] ? toStory(docs[0]) : null;
+    const rows = await db
+      .select(select)
+      .from(stories)
+      .leftJoin(media, eq(stories.photoId, media.id))
+      .where(and(eq(stories.slug, slug), eq(stories.status, "published")))
+      .limit(1);
+
+    return rows[0] ? toStory(rows[0]) : null;
   },
 );

@@ -1,6 +1,8 @@
-import type { Publication as PublicationDoc } from "../payload-types";
+import { aliasedTable, desc, eq } from "drizzle-orm";
+
+import { db, media, publications } from "@/staff/db";
+import { cached } from "./cache";
 import { file, image, type Img } from "./image";
-import { cached, cms } from "./payload";
 
 export type PublicationCategory =
   | "annual-report"
@@ -20,49 +22,43 @@ export type Publication = {
   cover: Img | null;
 };
 
-function toPublication(doc: PublicationDoc): Publication {
-  return {
-    slug: doc.slug,
-    title: doc.title,
-    category: doc.category,
-    date: doc.date,
-    file: file(doc.file),
-    cover: image(doc.cover),
-  };
-}
+// The file and the cover are both media rows, so the table is joined twice and
+// needs a distinct name each time or Postgres cannot tell the two apart.
+const doc = aliasedTable(media, "doc");
+const cover = aliasedTable(media, "cover");
 
 /**
  * Everything published, newest first.
  *
- * Only genuinely published documents: the eighteen entries seeded from the
- * brief are Payload drafts, because they are titles FXB has not yet supplied
- * files for. The shelves stay empty and say so until the team attaches a PDF
- * and presses Publish, which is the honest state — an annual report the site
- * claims to have and cannot produce is worse than a page saying it is coming.
+ * Only genuinely published documents: the eighteen entries carried over from
+ * the brief are drafts, because they are titles FXB has not supplied files for.
+ * The shelves stay empty and say so until the team attaches a PDF and presses
+ * Publish, which is the honest state — an annual report the site claims to have
+ * and cannot produce is worse than a page saying it is coming.
  */
-export const getPublications = cached(
-  "publications:all",
-  "publications",
-  async () => {
-    const payload = await cms();
-    const { docs } = await payload.find({
-      collection: "publications",
-      where: { _status: { equals: "published" } },
-      sort: "-date",
-      depth: 1,
-      limit: 0,
-      pagination: false,
-    });
-    return docs.map(toPublication);
-  },
-);
+export const getPublications = cached("publications:all", "publications", async () => {
+  const rows = await db
+    .select({ publication: publications, doc, cover })
+    .from(publications)
+    .leftJoin(doc, eq(publications.fileId, doc.id))
+    .leftJoin(cover, eq(publications.coverId, cover.id))
+    .where(eq(publications.status, "published"))
+    .orderBy(desc(publications.date));
+
+  return rows.map((row): Publication => ({
+    slug: row.publication.slug,
+    title: row.publication.title,
+    category: row.publication.category as PublicationCategory,
+    date: row.publication.date.toISOString(),
+    file: file(row.doc),
+    cover: image(row.cover),
+  }));
+});
 
 export async function getPublicationsIn(
   category: PublicationCategory,
 ): Promise<Publication[]> {
-  return (await getPublications()).filter(
-    (publication) => publication.category === category,
-  );
+  return (await getPublications()).filter((p) => p.category === category);
 }
 
 /**
@@ -71,8 +67,7 @@ export async function getPublicationsIn(
  * having none takes the banner away rather than leaving a dead link.
  */
 export async function getLatestAnnualReport(): Promise<Publication | null> {
-  const reports = await getPublicationsIn("annual-report");
-  return reports[0] ?? null;
+  return (await getPublicationsIn("annual-report"))[0] ?? null;
 }
 
 const monthAndYear = new Intl.DateTimeFormat("en-GB", {

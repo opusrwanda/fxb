@@ -1,6 +1,8 @@
-import type { Board, Partner as PartnerDoc } from "../payload-types";
+import { asc, eq } from "drizzle-orm";
+
+import { board, db, media, partners } from "@/staff/db";
+import { cached } from "./cache";
 import { image, type Img } from "./image";
-import { cached, cms } from "./payload";
 
 /** A member of the Board of Directors. */
 export type BoardMember = {
@@ -13,30 +15,23 @@ export type BoardMember = {
 /**
  * The board, by office rather than alphabetically — Chairperson, Vice
  * Chairperson, Executive Director, Secretary, then advisors. That sequence is
- * meaningful, which is why `order` is a required field on the collection.
+ * meaningful, which is why order is a required field.
  */
 export const getBoard = cached("board", "board", async (): Promise<BoardMember[]> => {
-  const payload = await cms();
-  const { docs } = await payload.find({
-    collection: "board",
-    sort: "order",
-    depth: 1,
-    limit: 0,
-    pagination: false,
-  });
+  const rows = await db
+    .select({ member: board, portrait: media })
+    .from(board)
+    .leftJoin(media, eq(board.portraitId, media.id))
+    .orderBy(asc(board.order));
 
-  return docs.map((doc: Board) => ({
-    name: doc.name,
-    role: doc.role,
-    portrait: image(doc.portrait),
+  return rows.map(({ member, portrait }) => ({
+    name: member.name,
+    role: member.role,
+    portrait: image(portrait),
   }));
 });
 
-export type PartnerCategory =
-  | "development"
-  | "government"
-  | "donor"
-  | "corporate";
+export type PartnerCategory = "development" | "government" | "donor" | "corporate";
 
 export type Partner = {
   name: string;
@@ -57,31 +52,22 @@ export const partnerCategories: { id: PartnerCategory; label: string }[] = [
   { id: "corporate", label: "Corporate Partners" },
 ];
 
-export const getPartners = cached(
-  "partners",
-  "partners",
-  async (): Promise<Partner[]> => {
-    const payload = await cms();
-    const { docs } = await payload.find({
-      collection: "partners",
-      sort: "name",
-      depth: 1,
-      limit: 0,
-      pagination: false,
-    });
+export const getPartners = cached("partners", "partners", async (): Promise<Partner[]> => {
+  const rows = await db
+    .select({ partner: partners, logo: media })
+    .from(partners)
+    .leftJoin(media, eq(partners.logoId, media.id))
+    .orderBy(asc(partners.name));
 
-    return docs.map((doc: PartnerDoc) => ({
-      name: doc.name,
-      category: doc.category,
-      logo: image(doc.logo),
-      url: doc.url ?? undefined,
-    }));
-  },
-);
+  return rows.map(({ partner, logo }) => ({
+    name: partner.name,
+    category: partner.category as PartnerCategory,
+    logo: image(logo),
+    url: partner.url ?? undefined,
+  }));
+});
 
-export async function getPartnersIn(
-  category: PartnerCategory,
-): Promise<Partner[]> {
+export async function getPartnersIn(category: PartnerCategory): Promise<Partner[]> {
   return (await getPartners()).filter((partner) => partner.category === category);
 }
 
@@ -93,8 +79,8 @@ export async function getPartnersIn(
  * This walks the categories above instead, alphabetical within each.
  */
 export async function getOrderedPartners(): Promise<Partner[]> {
-  const partners = await getPartners();
+  const all = await getPartners();
   return partnerCategories.flatMap((category) =>
-    partners.filter((partner) => partner.category === category.id),
+    all.filter((partner) => partner.category === category.id),
   );
 }
