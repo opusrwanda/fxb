@@ -17,12 +17,22 @@ import type { SiteDetails } from "@/cms/content/settings";
  * statement. Setting it flat threw all nine words at the reader at once; this
  * way the three ideas land first and the sentence reads underneath them.
  *
- * The three values arrive from the brief as three words and nothing else. They
- * are set as three words. Writing a supporting sentence under each would mean
- * inventing organisational values on FXB Rwanda's behalf, which is not ours to
- * do — the numerals carry the rhythm instead.
+ * The values arrive from the brief as bare words and nothing else. They are set
+ * as bare words. Writing a supporting sentence under each would mean inventing
+ * organisational values on FXB Rwanda's behalf, which is not ours to do — the
+ * numerals carry the rhythm instead.
+ *
+ * They read from the same global as the vision and mission. They were a literal
+ * here until the 6 August 2026 revision of the brief added Accountability and
+ * Creativity and Innovation, which settled the question of whether a board
+ * revises them.
+ *
+ * That revision also cost the row its arithmetic: three values sat in three
+ * columns, five sit in nothing. The grid is two up from `sm` and three from
+ * `lg`, so the last row runs short rather than stretching — and because the
+ * count is now editable, it has to hold for four or six as well. Wrapping is
+ * the only rule that does.
  */
-const values = ["Integrity", "Teamwork", "Honesty"];
 
 /**
  * Splits the vision around its emphasised phrases.
@@ -95,8 +105,8 @@ export function VisionMission({ details }: { details: SiteDetails }) {
           <h2 className="mt-12 text-xs font-semibold tracking-[0.14em] text-white-94">
             OUR GUIDING VALUES
           </h2>
-          <ul className="mt-8 grid gap-8 sm:grid-cols-3 sm:gap-6">
-            {values.map((value, index) => (
+          <ul className="mt-8 grid gap-8 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3">
+            {details.values.map((value, index) => (
               <li key={value} className="flex items-baseline gap-5">
                 <span
                   className="text-sm font-semibold text-white-94"

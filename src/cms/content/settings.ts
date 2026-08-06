@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { db, globals } from "@/staff/db";
-import type { SiteSettingsData } from "@/staff/db/schema";
+import { DEFAULT_VALUES, type SiteSettingsData } from "@/staff/db/schema";
 import { brand } from "@/lib/site";
 import { cached } from "./cache";
 
@@ -27,6 +27,8 @@ export type SiteDetails = typeof brand & {
   /** The phrases to stress in the vision, exactly as they appear in it. */
   visionEmphasis: string[];
   mission: string;
+  /** The guiding values, in the order they are shown. */
+  values: string[];
   socials: { label: string; href: string; icon: string }[];
   externalSystems: { label: string; href: string }[];
 };
@@ -67,6 +69,10 @@ export const getSiteDetails = cached(
       vision: data.vision,
       visionEmphasis: data.visionEmphasis ?? [],
       mission: data.mission,
+      // `?? `, not `||` on a length check: an editor who saves an empty box has
+      // not asked for the defaults back, but a row that predates the field has
+      // no opinion either way.
+      values: data.values ?? DEFAULT_VALUES,
       socials: (data.socials ?? []).map((social) => ({
         label: socialLabels[social.platform] ?? social.platform,
         href: social.url,

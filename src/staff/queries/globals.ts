@@ -75,6 +75,7 @@ export async function saveSiteSettings(form: FormData) {
     vision: str(form, "vision"),
     visionEmphasis: lines(form, "visionEmphasis"),
     mission: str(form, "mission"),
+    values: lines(form, "values"),
     // A platform with no address is simply not a social link, so it drops out
     // rather than rendering an icon that goes nowhere.
     socials: PLATFORMS.map((platform) => ({

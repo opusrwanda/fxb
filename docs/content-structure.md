@@ -50,7 +50,7 @@ Today
 
 FXB Rwanda operates across all four provinces of Rwanda and the City of Kigali, implementing integrated programs in Health, Education, Child Protection, Livelihoods & Economic Empowerment, Nutrition, Water, Sanitation and Hygiene (WASH), and Climate Resilience, reaching thousands of vulnerable children, families, and communities. Today, FXB Rwanda is proudly part of the FXB Global network, maintaining its strong local identity while contributing to a shared global vision, common values, and the internationally recognized VillageFXB model. 
 
-Our Guiding Values: Integrity, Teamwork, Honesty
+Our Guiding Values: Integrity | Teamwork | Honesty | Accountability | Creativity and Innovation
 
 Vision: To Create a World Fit for Children.
    >> COMMENT[2]: New Vision: EMPOWERED and RESILIENT COMMUNITIES shaping their OWN FUTURE

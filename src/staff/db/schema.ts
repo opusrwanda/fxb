@@ -284,9 +284,32 @@ export type SiteSettingsData = {
   vision: string;
   visionEmphasis: string[];
   mission: string;
+  /**
+   * Optional because rows written before the values moved in here do not carry
+   * it. `getSiteDetails()` falls back to the list in the content brief rather
+   * than rendering the section empty.
+   */
+  values?: string[];
   socials: { platform: string; url: string }[];
   externalSystems: { label: string; url: string }[];
 };
+
+/**
+ * The guiding values as the content brief lists them, in its order.
+ *
+ * A fallback and a form default, not the source — the values are edited in Site
+ * details. It exists because the field arrived after the global did, so a row
+ * saved before then carries no `values` key, and five words is a better answer
+ * to that than an empty band on Who We Are. The 6 August 2026 revision of the
+ * brief added Accountability and Creativity and Innovation to the first three.
+ */
+export const DEFAULT_VALUES = [
+  "Integrity",
+  "Teamwork",
+  "Honesty",
+  "Accountability",
+  "Creativity and Innovation",
+];
 
 export type ImpactData = {
   figures: {

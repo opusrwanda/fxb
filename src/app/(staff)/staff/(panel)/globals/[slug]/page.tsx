@@ -2,7 +2,11 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
-import type { ImpactData, SiteSettingsData } from "@/staff/db/schema";
+import {
+  DEFAULT_VALUES,
+  type ImpactData,
+  type SiteSettingsData,
+} from "@/staff/db/schema";
 import { getMediaOptions } from "@/staff/queries/document";
 import {
   getGlobal,
@@ -262,7 +266,7 @@ export default async function GlobalPage({
 
             <div className="flex flex-col gap-6">
               <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                VISION &amp; MISSION
+                VISION, MISSION &amp; VALUES
               </h2>
               <Field label="Vision" name="vision" rows={3} value={site?.vision} />
               <Field
@@ -273,6 +277,13 @@ export default async function GlobalPage({
                 help="One per line, exactly as they appear in the vision above. Each is shown at full strength against the words around it."
               />
               <Field label="Mission" name="mission" rows={3} value={site?.mission} />
+              <Field
+                label="Guiding values"
+                name="values"
+                rows={5}
+                value={(site?.values ?? DEFAULT_VALUES).join("\n")}
+                help="One per line, in the order they should be shown. They are numbered on Who We Are, so the order is the one people read."
+              />
             </div>
 
             <div className="flex flex-col gap-6">
