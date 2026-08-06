@@ -1,83 +1,105 @@
 # The CMS
 
-Payload, mounted at `/staff`. Everything the team should be able to change
+The staff panel at `/staff`. Everything the team should be able to change
 without a developer lives there: news, stories, programmes, publications, the
-board, partners, vacancies, the reach figures, and the contact details.
+board, partners, vacancies, the reach figures, the contact details, and the
+mailing list.
 
 **The site reads from it.** Every page is rendered from the database — see
 "How the site reads it" below.
 
-`/staff` rather than Payload's default `/admin` — it is the team's own word for
-the people who use it, and it keeps the door off the address every scanner
-tries first. The API moves with it, to `/staff/api`, so it does not land on top
-of the site's own `/api` contact and newsletter handlers.
+It is ours: Drizzle over Postgres, a hand-built panel under `src/staff`, and no
+CMS framework underneath it. It replaced Payload, which this document used to
+describe. If you find a `payload_*` table, a `PAYLOAD_SECRET`, or a reference to
+`payload.config.ts`, it is a leftover and not a dependency — see "What is left
+of Payload" at the end.
+
+`/staff` rather than `/admin` — it is the team's own word for the people who use
+it, and it keeps the door off the address every scanner tries first. It does not
+collide with the site's own `/api` contact and newsletter handlers.
 
 ## Running it locally
 
-Two variables in `.env.local`:
+One variable in `.env.local`:
 
 ```
-DATABASE_URL=postgres://<you>@localhost:5432/fxb_cms
-PAYLOAD_SECRET=<openssl rand -hex 32>
+STAFF_DATABASE_URL=postgres://<you>@localhost:5432/fxb
 ```
 
-Create the database (`createdb fxb_cms`), start the dev server, and open
-`/staff`. The tables are pushed from the collection definitions on first run;
-the first visit asks you to create the first user.
-
-## Seeding it from the site's own content
-
-The site's content began life as TypeScript modules under `src/lib` — fine for
-a build and useless for FXB, because publishing a news item meant editing a
-file. `scripts/seed-cms.ts` moves it across:
+Create the database (`createdb fxb`), apply the migrations, and open `/staff`:
 
 ```bash
-npm run seed
+npm run db:migrate
+npm run dev
 ```
 
-It brings over 4 news items, 3 stories, 6 programmes, 8 board members, 34
-partners, 18 publications, the four reach figures and the site details, and
-uploads the 63 photographs and logos they reference — pulling the programme
-photography from the Bunny pull zone and the board portraits from `public/`.
+Sessions are rows in the `sessions` table and the cookie carries nothing but 32
+random bytes, so there is no signing secret to set. There is no first-run setup
+screen either: the users came across with the content, by the migration
+described below.
 
-**It is safe to run again.** Every document is matched on its slug (or its
-name, for board and partners) and updated rather than duplicated; media is
-matched on filename, so a second run does not upload sixty-three images twice.
-That matters because it will be run once against the local database and again
-against production, with the source files having moved on in between.
+## Schema changes
 
-Two things it deliberately does not publish:
+The migrations in `src/staff/db/migrations` are generated files, checked in, and
+applied on deploy. Edit `src/staff/db/schema.ts`, then:
 
-- **The eighteen publications arrive as drafts.** They are placeholders for
-  documents FXB has not supplied — the `file` field is required for good
-  reason, and an annual report the site claims to have and cannot produce is
-  worse than a page saying it is coming. The team attaches the PDF and presses
-  Publish.
-- **The six programmes are published but ticked "Description not yet
-  confirmed".** The programmes are real; the descriptions were written to show
-  what the template looks like carrying copy, because an empty state tells you
-  nothing about a layout. Each page says so until the flag is cleared.
+```bash
+npm run db:generate   # writes the SQL, for you to read
+npm run db:migrate    # applies it
+```
 
-Ten photographs come in with `alt` reading "description to be written". Those
-are the frames nothing in the codebase has ever described — they render
-decoratively behind type, so the site asks nothing of the string, but the
-library does. They are the ten alt texts worth writing.
+Never `push`. A generated migration is a diff somebody can read before it runs
+against production.
+
+Both commands resolve the database the same way the panel does —
+`STAFF_DATABASE_URL`, falling back to `DATABASE_URL`. Note that drizzle-kit does
+not read `.env.local`, so the variable has to be in the environment:
+
+```bash
+STAFF_DATABASE_URL=postgres://... npm run db:migrate
+```
+
+The globals are the exception: `site_settings` and `impact` are a slug and a
+`jsonb` payload, so a new field on either is a TypeScript change and no
+migration at all.
+
+## How the content got here
+
+`scripts/migrate-from-payload.ts` lifts the content out of Payload's database
+and into ours:
+
+```bash
+DATABASE_URL=<payload's> STAFF_DATABASE_URL=<ours> npx tsx scripts/migrate-from-payload.ts
+```
+
+It has been run against the local databases. **It has not been run against
+production**, which is the only reason Payload's database still exists.
+
+It deliberately does not carry across Payload's `_v` version tables — the
+draft/published history, which nobody has asked to keep — or the user
+passwords, which are hashes under a scheme we cannot verify against. Every
+migrated user is given the same temporary password, which the script prints
+when it finishes, and re-running it never overwrites a password somebody has
+since set.
+
+Before Payload there was a seed script that moved the content out of the
+TypeScript modules under `src/lib`. That script is gone, and with it the only
+reader of most of those modules.
 
 ## How the site reads it
 
 `src/cms/content/` is the whole of it: one module per collection, each exporting
 functions that return the shapes the pages already used. Nothing else in the
-site talks to Payload.
+site talks to the database.
 
 Two things about it are worth knowing before changing anything.
 
 **The reads are cached until somebody edits.** Every query is wrapped in
-`cached()` (`src/cms/content/payload.ts`), which tags it with its collection and
-holds the result indefinitely. Each collection carries `revalidates()` hooks
-(`src/cms/revalidate.ts`), so pressing Publish drops that tag and the next
-request rebuilds the page. The alternative — a fixed revalidation window — would
-have the team press Publish and then wait, with no way to tell whether it had
-worked.
+`cached()` (`src/cms/content/cache.ts`), which tags it with its collection and
+holds the result indefinitely. Saving from `/staff` calls `bust()`
+(`src/cms/revalidate.ts`), which drops that tag so the next request rebuilds the
+page. The alternative — a fixed revalidation window — would have the team press
+Save and then wait, with no way to tell whether it had worked.
 
 The tag is expired outright rather than marked stale, because the next visitor
 after a publish is nearly always the person who just published, checking their
@@ -87,11 +109,10 @@ Media is the exception: it busts everything. A photograph is embedded in news
 cards, programme pages, the board and the reach figures, so replacing one image
 reaches pages no single collection tag would.
 
-**The content layer is server-only.** It imports the Payload config, which
-imports `node:fs`. A client component may import a *type* from it — types are
-erased — but importing a value breaks the build. `WhereWeWork` is the worked
-example: it takes its programmes as a prop and keeps its own copy of the
-district index.
+**The content layer is server-only.** It opens a connection pool. A client
+component may import a *type* from it — types are erased — but importing a value
+breaks the build. `WhereWeWork` is the worked example: it takes its programmes
+as a prop and keeps its own copy of the district index.
 
 ## What the team's own edits do not reach
 
@@ -109,10 +130,9 @@ Two things on the site are still written in code, on purpose:
   rebrand needing new logo files and metadata, so a text field would offer a
   change nobody could actually make from there.
 
-`src/lib` still holds the content modules the site used to render from. They are
-marked SEED INPUT ONLY and are read by `scripts/seed-cms.ts` and nothing else,
-because the migration has to be run once more against production. They can be
-deleted along with the seed once it has been.
+The guiding values used to be on this list and are not any more: they are in
+Site details, alongside the vision and mission, since the content brief revised
+them from three to five.
 
 ## Where uploaded files go, and what is still needed for production
 
@@ -122,22 +142,33 @@ committing one without the other only creates two things to keep in step.
 
 **This does not survive a deploy.** Vercel's filesystem is read-only at
 runtime and rebuilt on every deploy, so with the current configuration an
-upload made through `/staff` in production would fail, and the seeded files
-would not be there to serve. Before the CMS is handed over, uploads need a
-storage adapter. Two options, in order of preference:
+upload made through `/staff` in production would fail, and the migrated files
+would not be there to serve. Before the CMS is handed over, uploads need to go
+to Bunny storage, which the site already uses for its photography and already
+has a zone for — the pull zone in `NEXT_PUBLIC_CDN_URL` would then serve CMS
+uploads too, from the same hostname as everything else. This needs
+`BUNNY_STORAGE_PASSWORD` in Vercel, which has so far been kept local on purpose
+(only the build-time upload script needed it).
 
-1. **Bunny storage**, which the site already uses for its photography and
-   already has a zone for — the pull zone in `NEXT_PUBLIC_CDN_URL` would then
-   serve CMS uploads too, from the same hostname as everything else. This needs
-   `BUNNY_STORAGE_PASSWORD` in Vercel, which has so far been kept local on
-   purpose (only the build-time upload script needed it).
-2. **`@payloadcms/storage-vercel-blob`**, which needs no new credentials but
-   adds a second asset host and a second bill.
+**This is a launch blocker, not a nice-to-have.** Every photograph on the site
+is a `media` row: on the first deploy after migrating, `./media` is not in the
+image and every one of them 404s.
 
-Until one is in place, `/staff` is usable locally and read-only in effect on
-production.
+## What is left of Payload
 
-**This is now a launch blocker, not a nice-to-have.** It was survivable while
-the site rendered from `src/lib` and the CMS was a box nothing read. Now every
-photograph on the site is a `media` row: on the first deploy after seeding,
-`./media` is not in the image and every one of them 404s.
+Nothing executes. There is no dependency in `package.json`, no
+`payload.config.ts`, and no import anywhere in `src`. What remains is:
+
+- **The `fxb_cms` database**, locally and in production. It is the source for
+  `scripts/migrate-from-payload.ts` and cannot be dropped until that script has
+  been run against production.
+- **`scripts/migrate-from-payload.ts`** itself, which is worth keeping until the
+  same is true.
+- **Six modules under `src/lib`** — `news`, `impact`, `stories`, `partners`,
+  `projects`, `leadership` — marked SEED INPUT ONLY. The script that read them
+  is gone, so nothing reads them now.
+- **`PAYLOAD_SECRET` in `.env.local`**, which nothing has read since sessions
+  became rows.
+- **Historical mentions in comments**, where the reason a thing is shaped the
+  way it is happens to be the thing it replaced. Those are load-bearing prose
+  and should stay.

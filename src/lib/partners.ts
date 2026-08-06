@@ -5,9 +5,11 @@
  *
  * The partners are the Partners collection now.
  *
- * `scripts/seed-cms.ts` still reads it, because the migration has to be run
- * once more against the production database. Editing it changes nothing that
- * anybody can see — edit `/staff` instead.
+ * Nothing reads it. The seed script that did was retired when the content moved
+ * to Payload, and production is now reached by `scripts/migrate-from-payload.ts`,
+ * which reads Payload's database and not this file. Editing it changes nothing
+ * that anybody can see — edit `/staff` instead. It is kept only as the record
+ * of what the site shipped with, and can go once production has been migrated.
  */
 import manifest from "./partners.json";
 import { cdn } from "./media";

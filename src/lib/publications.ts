@@ -98,8 +98,9 @@ export const categories: {
  * ───────────────────────────────────────────────────────────────────────────
  *
  * The shelves are filled from the Publications collection now. This array is
- * what `scripts/seed-cms.ts` carries across, as Payload drafts, so the team
- * finds the titles waiting for them with a file to attach. Editing it changes
+ * what the retired seed script carried across, as drafts, so the team found the
+ * titles waiting for them with a file to attach. Nothing reads it any more —
+ * `categories` above is the one live export in this file. Editing it changes
  * nothing anybody can see.
  *
  * The brief names the categories and what each entry should carry — cover,

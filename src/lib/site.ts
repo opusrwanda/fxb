@@ -30,9 +30,12 @@ export const brand = {
  * ───────────────────────────────────────────────────────────────────────────
  *
  * These were the site's contact details until they moved into the Site details
- * global. `scripts/seed-cms.ts` still reads them, because it has to be run once
- * more against the production database — editing them here changes nothing that
- * anybody can see. Edit `/staff` instead.
+ * global. Nothing reads them now — the seed script that did was retired, and
+ * production is reached by `scripts/migrate-from-payload.ts`, which reads
+ * Payload's database rather than this file. Editing them here changes nothing
+ * that anybody can see. Edit `/staff` instead.
+ *
+ * `brand` above is the live export in this file, not this.
  */
 export const org = {
   name: "FXB Rwanda",
