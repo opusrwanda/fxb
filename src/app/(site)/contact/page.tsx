@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { SocialIcon } from "@/components/brand/social-icon";
@@ -27,10 +28,11 @@ export const metadata: Metadata = {
  * somebody away from a general enquiry and towards the page that actually
  * answers them.
  *
- * NOTE: the brief also asks for a QR code beside the social links, pointing at
- * linktr.ee/fxbrwanda. Generating one needs either an encoder dependency or the
- * artwork from FXB, so the link itself is here in the meantime and the QR is
- * flagged.
+ * The QR code beside the social links is FXB's own artwork, not one generated
+ * here. It was decoded before it went in and points at linktr.ee/fxbrwanda,
+ * the same place `brand.linktree` does — worth checking rather than assuming,
+ * because a QR code is the one image on a site whose destination nobody can
+ * read by looking at it.
  */
 function buildFaqs(details: SiteDetails) {
   return [
@@ -231,14 +233,35 @@ export default async function ContactPage() {
                     </li>
                   ))}
                 </ul>
-                <a
-                  href={details.linktree}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="mt-5 inline-block text-[15px] font-medium text-blue underline underline-offset-4 transition-colors duration-300 hover:text-green"
-                >
-                  All our links in one place
-                </a>
+                {/* The code and the link are the same destination for two
+                    different readers: somebody on a laptop taps the words,
+                    somebody holding a phone up to a printed page or a screen
+                    points the camera. Both go to linktr.ee/fxbrwanda, which is
+                    `brand.linktree` — the artwork is not the source of truth
+                    for where it goes, it is a second rendering of it. */}
+                <div className="mt-6 flex items-center gap-5">
+                  <Image
+                    src="/img/qr-linktree.png"
+                    alt=""
+                    width={768}
+                    height={768}
+                    sizes="112px"
+                    className="size-28 shrink-0 rounded-card border border-gray-15 p-1.5"
+                  />
+                  <div>
+                    <p className="text-[15px] leading-snug font-medium text-blue">
+                      Scan for all our links
+                    </p>
+                    <a
+                      href={details.linktree}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="mt-1 inline-block text-[15px] text-gray underline underline-offset-4 transition-colors duration-300 hover:text-green"
+                    >
+                      linktr.ee/fxbrwanda
+                    </a>
+                  </div>
+                </div>
               </div>
             </Reveal>
 
