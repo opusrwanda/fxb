@@ -103,8 +103,21 @@ export default async function CurrentProjectsPage() {
             ))}
           </ul>
 
+          {/* The model comes first of the three.
+              Every project on this page is delivered through the FXBVillage
+              model, and the section explaining it is the one thing a reader is
+              most likely to want back — the breadcrumb only reaches the top of
+              What We Do, which leaves them to find the section themselves on a
+              page with seven of them. */}
           <Reveal delay={220} className="mt-14 flex flex-wrap gap-4">
-            <Pill href="/who-we-are#where-we-work" variant="primary" size="lg">
+            <Pill
+              href="/what-we-do#fxbvillage-model"
+              variant="primary"
+              size="lg"
+            >
+              The FXBVillage Model
+            </Pill>
+            <Pill href="/who-we-are#where-we-work" size="lg">
               See these on the map
             </Pill>
             <Pill href="/what-we-do/phased-out-projects" size="lg">
