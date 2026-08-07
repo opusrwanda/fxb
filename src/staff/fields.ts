@@ -242,6 +242,10 @@ export const fields: Record<string, Field[]> = {
       // which is the worst kind of broken to debug from the outside.
       options: [
         { label: "Default — every page without its own", value: "*" },
+        { label: "Who We Are", value: "/who-we-are" },
+        { label: "What We Do", value: "/what-we-do" },
+        { label: "Our Impact", value: "/our-impact" },
+        { label: "Get Involved", value: "/get-involved" },
         { label: "Contact", value: "/contact" },
         { label: "Partner With Us", value: "/get-involved/partners" },
         { label: "Careers", value: "/get-involved/careers" },

@@ -3,6 +3,7 @@ import { Container } from "@/components/layout/container";
 import { HeroSentinels } from "@/components/layout/hero-sentinels";
 import { BackgroundVideo } from "@/components/ui/background-video";
 import { Pill } from "@/components/ui/pill";
+import type { Img } from "@/cms/content/image";
 import { heroVideo } from "@/lib/media";
 
 type Cta = { label: string; href: string; primary?: boolean };
@@ -37,6 +38,7 @@ export function Hero({
   stats = [],
   scrollTo,
   withVideo = false,
+  image,
 }: {
   eyebrow?: string;
   headline: string;
@@ -47,7 +49,19 @@ export function Hero({
   /** Anchor for the scroll cue. Omitted, the cue does not render. */
   scrollTo?: string;
   withVideo?: boolean;
+  /**
+   * A photograph to stand behind the room, for the section landings that have
+   * no footage. Home is the only page with video; Who We Are, What We Do, Our
+   * Impact and Get Involved were plain blue rectangles until this.
+   *
+   * Set in /staff → Page banners, the same place the page headers get theirs.
+   * Null and the room stays blue, exactly as it was.
+   */
+  image?: Img | null;
 }) {
+  // Footage wins where there is any: the poster is a frame of it, so a still
+  // behind the video would never be seen.
+  const backdrop = !withVideo && image ? image : null;
   return (
     // Exactly one viewport tall. Top padding clears the full rest-state header
     // — banner + utility strip + the 128px bar — and the content is sized to
@@ -66,11 +80,37 @@ export function Hero({
         // A full viewport is worth it for footage; it is not worth it for a
         // plain blue rectangle. On the hero-only pages the full height left
         // 200px of empty blue under the buttons and pushed the actual content
-        // below the fold to buy nothing.
-        withVideo ? "min-h-svh" : "min-h-[68svh]"
+        // below the fold to buy nothing. A photograph earns some of it back,
+        // but not all — these pages still open onto their content.
+        withVideo ? "min-h-svh" : backdrop ? "min-h-[76svh]" : "min-h-[68svh]"
       }`}
     >
       <HeroSentinels />
+
+      {backdrop && (
+        <>
+          {/* The same still treatment the footage gets, drift included, so a
+              section landing and the home page read as the same room. */}
+          <div className="hero-drift absolute inset-0 -z-20">
+            <Image
+              src={backdrop.url}
+              // Decorative: the h1 sitting over it says what the page is, and
+              // a description of the photograph read first would only delay it.
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="hero-scrim absolute inset-0 -z-10" aria-hidden="true" />
+          <div
+            className="hero-scrim-edges absolute inset-0 -z-10"
+            aria-hidden="true"
+          />
+          <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
+        </>
+      )}
 
       {withVideo && (
         <>

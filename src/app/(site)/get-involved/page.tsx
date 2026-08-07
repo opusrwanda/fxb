@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Hero } from "@/components/sections/hero";
+import { getPageHeaderImage } from "@/cms/content/page-headers";
 import { Partners } from "@/components/sections/partners";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
@@ -36,10 +37,12 @@ const routes = [
   },
 ];
 
-export default function GetInvolvedPage() {
+export default async function GetInvolvedPage() {
+  const banner = await getPageHeaderImage("/get-involved");
   return (
     <>
       <Hero
+        image={banner}
         headline="Together, we can create lasting change."
         body="Sustainable development requires collaboration. Meaningful and lasting impact is achieved when communities, governments, donors, institutions, businesses and development organisations work together toward a shared vision."
         ctas={[

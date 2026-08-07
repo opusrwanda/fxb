@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { getStories } from "@/cms/content/stories";
 import { Hero } from "@/components/sections/hero";
+import { getPageHeaderImage } from "@/cms/content/page-headers";
 import { ImpactStories } from "@/components/sections/impact-stories";
 import { Reach } from "@/components/sections/our-impact/reach";
 import { Pill } from "@/components/ui/pill";
@@ -26,11 +27,13 @@ export const metadata: Metadata = {
  * carousel to live.
  */
 export default async function OurImpactPage() {
+  const banner = await getPageHeaderImage("/our-impact");
   const stories = await getStories();
 
   return (
     <>
       <Hero
+        image={banner}
         headline="Creating lasting change through resilient communities."
         body="For more than three decades, FXB Rwanda has worked alongside vulnerable children, families and communities to address the root causes of poverty and vulnerability."
         ctas={[

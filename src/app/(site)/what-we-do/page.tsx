@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
+import { getPageHeaderImage } from "@/cms/content/page-headers";
 import { Approach } from "@/components/sections/what-we-do/approach";
 import { AreasOfIntervention } from "@/components/sections/what-we-do/areas-of-intervention";
 import { ModelIntro } from "@/components/sections/what-we-do/model-intro";
@@ -34,6 +35,7 @@ export const metadata: Metadata = {
  * see the note in `site.ts`.
  */
 export default async function WhatWeDoPage() {
+  const banner = await getPageHeaderImage("/what-we-do");
   const programmes = await getCurrentProgrammes();
   // Derived, not written down. The hero makes a claim about how much of this
   // organisation's work the page covers, and a hand-typed "6 programmes across
@@ -47,6 +49,7 @@ export default async function WhatWeDoPage() {
   return (
     <>
       <Hero
+        image={banner}
         headline="Families never face one problem at a time."
         // The old body read "The FXBVillage model works on income, health,
         // education…", which handed the whole page to one project. FXBVillage
