@@ -1,5 +1,6 @@
 import { Container } from "@/components/layout/container";
 import { Counter } from "@/components/ui/counter";
+import { getReach } from "@/cms/content/impact";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 
@@ -16,39 +17,40 @@ import { Reveal } from "@/components/ui/reveal";
  * 2012)" in the content brief, which itself marks them "(Insert updated
  * statistics from MEL/database)", so they want confirming before launch.
  */
-const stats = [
-  {
-    value: 2.9,
-    decimals: 1,
-    suffix: "M+",
-    caption: "children and vulnerable individuals reached since 2012",
-    exact: "2,984,961+",
-  },
-  {
-    value: 1.4,
-    decimals: 1,
-    suffix: "M+",
-    caption: "reached through HIV prevention, health, nutrition and WASH",
-    exact: "1,389,426+",
-  },
-  {
-    value: 1.1,
-    decimals: 1,
-    suffix: "M+",
-    caption:
-      "reached through economic empowerment, child protection and climate resilience",
-    exact: "1,090,288+",
-  },
-  {
-    value: 505,
-    decimals: 0,
-    suffix: "K+",
-    caption: "children supported through early childhood development and education",
-    exact: "505,247+",
-  },
-];
+/**
+ * A figure, as the counters want it.
+ *
+ * The CMS holds exact integers — 2,984,961 — because that is what MEL reports
+ * and what Our Impact prints. A counter at 124px cannot animate to seven
+ * digits, so the display value is derived rather than stored: nobody has to
+ * remember to update "2.9M+" when they update 2,984,961, because there is only
+ * one number to update.
+ */
+function display(value: number) {
+  if (value >= 1_000_000) {
+    return { value: Math.floor((value / 1_000_000) * 10) / 10, decimals: 1, suffix: "M+" };
+  }
+  if (value >= 1_000) {
+    return { value: Math.floor(value / 1_000), decimals: 0, suffix: "K+" };
+  }
+  return { value, decimals: 0, suffix: "+" };
+}
 
-export function ImpactCounters() {
+const exact = (value: number) => `${value.toLocaleString("en-GB")}+`;
+
+export async function ImpactCounters() {
+  const reach = await getReach();
+  const stats = reach.figures
+    .filter((figure) => figure.value !== null)
+    .map((figure) => ({
+      ...display(figure.value as number),
+      caption: figure.caption || figure.label,
+      exact: exact(figure.value as number),
+    }));
+
+  // No figures set is a real state — the band goes rather than showing zeros.
+  if (stats.length === 0) return null;
+
   return (
     <section id="our-impact" className="bg-green-10 py-32 lg:py-48">
       <Container>

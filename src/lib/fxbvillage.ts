@@ -183,5 +183,11 @@ export const pillars: Pillar[] = [
   },
 ];
 
-/** FXBVillage projects delivered to date, per the brief. */
-export const projectsDelivered = 54;
+/*
+ * `projectsDelivered` used to live here as 54, taken from the brief.
+ *
+ * It is a figure that changes, and it was in two places: this constant, which
+ * What We Do read, and the Impact figures global, which Our Impact and the
+ * phased-out projects page read. Updating it in /staff moved two of the three.
+ * It now lives only in the CMS — see `getReach()`.
+ */

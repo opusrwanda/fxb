@@ -3,7 +3,7 @@ import { Container } from "@/components/layout/container";
 import { Counter } from "@/components/ui/counter";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { projectsDelivered } from "@/lib/fxbvillage";
+import { getReach } from "@/cms/content/impact";
 import { photo } from "@/lib/photos";
 
 /**
@@ -29,7 +29,8 @@ import { photo } from "@/lib/photos";
  * The numeral counts up on arrival like the figures on the home page — the same
  * `Counter`, so the behaviour under reduced motion is the same too.
  */
-export function ProjectsDelivered() {
+export async function ProjectsDelivered() {
+  const { projectsDelivered } = await getReach();
   const image = photo("itap-closing-rwamagana-01");
 
   return (

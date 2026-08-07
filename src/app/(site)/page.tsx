@@ -1,3 +1,4 @@
+import { getReach } from "@/cms/content/impact";
 import { getStories } from "@/cms/content/stories";
 import { Hero } from "@/components/sections/hero";
 import { ImpactStories } from "@/components/sections/impact-stories";
@@ -20,14 +21,40 @@ import { WhoWeAre } from "@/components/sections/who-we-are";
  * brief marks the reach figure "(Insert updated statistics from MEL/database)"
  * — see `lib/impact.ts`. Both want confirming before launch.
  */
-const heroStats = [
-  { figure: "2.9M+", label: "children and families reached since 2012" },
-  { figure: "54", label: "FXBVillage projects delivered across Rwanda" },
-  { figure: "36", label: "months from crisis to self-reliance" },
-];
-
 export default async function Home() {
-  const stories = await getStories();
+  const [stories, reach] = await Promise.all([getStories(), getReach()]);
+
+  /**
+   * The rail at the fold.
+   *
+   * Two of these three were typed out here — "2.9M+" and "54" — while the same
+   * numbers sat in the Impact figures global that Our Impact reads. Updating
+   * one moved one page. They are derived now, so the home page cannot disagree
+   * with Our Impact about how many people FXB Rwanda has reached.
+   *
+   * The 36 months is not a statistic and stays written down: it is the length
+   * of the FXBVillage model, a fact about how the model is designed rather than
+   * a measurement of what it has done.
+   */
+  const largest = reach.figures
+    .filter((figure) => figure.value !== null)
+    .sort((a, b) => (b.value as number) - (a.value as number))[0];
+
+  const heroStats = [
+    ...(largest
+      ? [{
+          // Floored, not rounded: 2,984,961 is 2.9M and not 3M, and rounding a
+          // reach figure up is over-claiming.
+          figure: `${Math.floor(((largest.value as number) / 1_000_000) * 10) / 10}M+`,
+          label: "children and families reached since 2012",
+        }]
+      : []),
+    {
+      figure: String(reach.projectsDelivered),
+      label: "FXBVillage projects delivered across Rwanda",
+    },
+    { figure: "36", label: "months from crisis to self-reliance" },
+  ];
 
   return (
     <>
