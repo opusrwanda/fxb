@@ -154,7 +154,7 @@ export function Approach({ image }: { image?: Img | null }) {
         </Container>
       </section>
 
-      <section id="challenge" className="scroll-mt-36 bg-blue py-24 lg:py-32">
+      <section id="challenge" className="scroll-mt-36 bg-gray py-24 lg:py-32">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
             <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">

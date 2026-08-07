@@ -91,7 +91,7 @@ export default async function OurImpactPage() {
           footer below is blue, so a third blue band in between made an
           unbroken ~900px slab in which this call to action read as part of
           the footer rather than as the end of the page. */}
-      <section id="explore" className="scroll-mt-36 bg-blue-08 py-16 lg:py-20">
+      <section id="explore" className="scroll-mt-36 bg-green-10 py-16 lg:py-20">
         <Container>
           <Reveal className="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
             <h2 className="max-w-[24ch] text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[32px] lg:leading-[1.2]">
