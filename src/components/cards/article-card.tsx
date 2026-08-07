@@ -58,7 +58,7 @@ export function ArticleCard({
         <p className="mt-6 text-sm text-gray-80">{date}</p>
 
         <h3
-          className="mt-2 text-xl leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-[22px]"
+          className="mt-2 text-2xl leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-[26px]"
           lang={language}
         >
           {/* The whole card is one link target: the anchor stretches over the

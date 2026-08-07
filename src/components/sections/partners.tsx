@@ -69,7 +69,7 @@ export async function Partners() {
               None of this was done alone
             </h2>
           </div>
-          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-lg">
+          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-lg lg:font-light">
             Government institutions, donors and fellow organisations who fund
             the work, shape it, and deliver it alongside us.
           </p>

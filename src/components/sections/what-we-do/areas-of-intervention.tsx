@@ -71,7 +71,7 @@ export function AreasOfIntervention() {
                   <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-blue-08">
                     <BrandIcon id={area.id as IconId} className="size-8" />
                   </span>
-                  <h3 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
+                  <h3 className="text-[28px] font-bold tracking-[-0.02em] text-blue lg:text-[32px]">
                     {area.label}
                   </h3>
                 </div>

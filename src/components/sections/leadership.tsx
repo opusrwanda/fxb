@@ -91,7 +91,7 @@ export async function Leadership() {
                     reserved the second line on every card in the section, so the
                     four advisors — all one-line names — each paid for a blank
                     line the row never needed. */}
-                <h3 className="self-end text-center text-base leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-lg">
+                <h3 className="self-end text-center text-lg leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-xl">
                   {member.name}
                 </h3>
                 <p className="mt-1 text-center text-sm text-gray">
@@ -102,7 +102,7 @@ export async function Leadership() {
           </ul>
         ) : (
           <Reveal delay={140} className="mt-10 flex flex-col items-start gap-7">
-            <p className="max-w-[58ch] text-lg leading-relaxed text-gray">
+            <p className="max-w-[58ch] text-lg leading-relaxed text-gray font-light">
               FXB Rwanda is governed by a Board of Directors. Full profiles are
               being prepared for publication here.
             </p>

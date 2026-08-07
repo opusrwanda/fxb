@@ -99,7 +99,7 @@ export function Accordion({
                 className={`group -mx-4 flex w-[calc(100%+2rem)] items-center justify-between gap-6 rounded-card px-4 py-6 text-left transition-colors duration-300 ${palette.row}`}
               >
                 <span
-                  className={`text-xl leading-snug font-semibold tracking-[-0.02em] lg:text-[28px] ${palette.title}`}
+                  className={`text-2xl leading-snug font-semibold tracking-[-0.02em] lg:text-[32px] ${palette.title}`}
                 >
                   {item.title}
                 </span>

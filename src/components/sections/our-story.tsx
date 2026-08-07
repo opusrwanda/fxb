@@ -89,7 +89,7 @@ export function OurStory() {
             </h2>
           </div>
 
-          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-lg">
+          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-lg lg:font-light">
             From a life lost on a rescue mission in Mali to a Rwandan NGO working
             in every province — the through line has never changed.
           </p>

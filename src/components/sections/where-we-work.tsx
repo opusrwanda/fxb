@@ -371,7 +371,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
             >
               {previewProject ? (
                 <>
-                  <h3 className="text-xl font-bold tracking-[-0.02em] text-blue lg:text-2xl">
+                  <h3 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                     {previewProject.name}
                   </h3>
                   <p className="mt-1 text-sm text-gray-80">
@@ -386,7 +386,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                 </>
               ) : activeDistrict ? (
                 <>
-                  <h3 className="text-xl font-bold tracking-[-0.02em] text-blue lg:text-2xl">
+                  <h3 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                     {activeDistrict.name}
                   </h3>
                   <p className="mt-1 text-sm text-gray-80">
@@ -410,7 +410,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                 // Not an instruction. The section is asked "where do you work",
                 // and this is the shortest true answer to it.
                 <>
-                  <h3 className="text-xl font-bold tracking-[-0.02em] text-blue lg:text-2xl">
+                  <h3 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                     Every province, and Kigali
                   </h3>
                   <p className="mt-3 text-base leading-relaxed text-gray">

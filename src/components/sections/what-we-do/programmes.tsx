@@ -87,7 +87,7 @@ export async function Programmes() {
 
                 <div className="flex flex-1 flex-col gap-4 p-6 lg:p-7">
                   <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-xl leading-snug font-semibold tracking-[-0.02em] text-blue">
+                    <h3 className="text-2xl leading-snug font-semibold tracking-[-0.02em] text-blue">
                       {project.name}
                     </h3>
 

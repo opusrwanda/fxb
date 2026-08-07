@@ -83,7 +83,7 @@ export async function Reach() {
                       <Counter value={figure.value} />+
                     </p>
                   )}
-                  <h3 className="mt-3 text-xl font-semibold tracking-[-0.02em] text-white lg:text-2xl">
+                  <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-white lg:text-[28px]">
                     {figure.label}
                   </h3>
                   <p className="mt-2 max-w-[46ch] text-[15px] leading-relaxed text-white-94">

@@ -87,7 +87,7 @@ export async function LatestNews() {
 
                 <h3
                   lang={lead.language}
-                  className="text-2xl leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-[28px] lg:leading-[1.2]"
+                  className="text-[28px] leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-[32px] lg:leading-[1.2]"
                 >
                   <Link
                     href={`/news-insights/news/${lead.slug}`}
@@ -150,7 +150,7 @@ export async function LatestNews() {
                     </time>
                     <h3
                       lang={item.language}
-                      className="line-clamp-3 text-lg leading-snug font-semibold tracking-[-0.01em] text-blue"
+                      className="line-clamp-3 text-xl leading-snug font-semibold tracking-[-0.01em] text-blue"
                     >
                       <Link
                         href={`/news-insights/news/${item.slug}`}

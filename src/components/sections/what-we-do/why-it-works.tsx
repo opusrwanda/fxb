@@ -64,7 +64,7 @@ export function WhyItWorks() {
         <Reveal delay={290} className="mt-20">
           <div className="h-px w-full bg-gray-15" aria-hidden="true" />
 
-          <h3 className="mt-12 max-w-[30ch] text-2xl font-bold tracking-[-0.02em] text-blue lg:text-3xl">
+          <h3 className="mt-12 max-w-[30ch] text-[28px] font-bold tracking-[-0.02em] text-blue lg:text-[34px]">
             Contributing to national and global development
           </h3>
           <p className="mt-5 max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">

@@ -148,7 +148,11 @@ export function TransformationJourney() {
                   {/* The period is the phase's name, and at 18px in the same
                       weight as the copy under it, it was reading as the first
                       line of the paragraph rather than as a heading. */}
-                  <h3 className="text-[22px] leading-none font-bold tracking-[-0.02em] text-white lg:text-[26px]">
+                  {/* 1.12, not `leading-none`. Poppins collides with itself
+                      under 1.059 — the `g` tail against the next line's
+                      ascenders — and at 30px a two-line title is likelier than
+                      it was at 22. Same floor the hero headline is held to. */}
+                  <h3 className="text-[26px] leading-[1.12] font-bold tracking-[-0.02em] text-white lg:text-[30px]">
                     {phase.period}
                   </h3>
                   <p className="mt-4 max-w-[46ch] text-[15px] leading-relaxed text-white-94">

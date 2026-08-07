@@ -479,7 +479,7 @@ export default async function PartnersPage() {
             delay={360}
             className="wedge mt-14 flex flex-col items-start gap-6 bg-blue p-9 lg:p-14"
           >
-            <h3 className="max-w-[24ch] text-2xl font-bold tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[1.2]">
+            <h3 className="max-w-[24ch] text-[28px] font-bold tracking-[-0.02em] text-white lg:text-[36px] lg:leading-[1.2]">
               Start a conversation
             </h3>
             <p className="max-w-[56ch] text-base leading-relaxed text-white-94 lg:text-[17px]">

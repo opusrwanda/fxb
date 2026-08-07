@@ -272,7 +272,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
 
                     {/* Clamped so one long headline cannot drag the row of
                       buttons out of line with the others. */}
-                    <h3 className="line-clamp-3 text-2xl leading-[1.15] font-bold tracking-[-0.02em] text-white lg:text-[32px]">
+                    <h3 className="line-clamp-3 text-[28px] leading-[1.15] font-bold tracking-[-0.02em] text-white lg:text-[36px]">
                       <Link href={`/news-insights/stories/${story.slug}`}>
                         {story.title}
                       </Link>

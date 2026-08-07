@@ -67,7 +67,7 @@ export function PageHeader({
         </h1>
 
         {intro && (
-          <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-lg">
+          <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-lg lg:font-light">
             {intro}
           </p>
         )}

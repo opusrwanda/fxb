@@ -6,10 +6,23 @@ import { getSiteDetails } from "@/cms/content/settings";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 
+/**
+ * Poppins, in the five weights the brand sheet names.
+ *
+ * ExtraLight and Light are here for display sizes only. A geometric sans at
+ * 200 is elegant at 32px and unreadable at 15px, and this audience reads on
+ * mid-range Android screens in daylight — so the rule that goes with loading
+ * them is that they are never used below about 24px, and never on a colour
+ * ground where the contrast is already working hard. Body copy stays at 400.
+ *
+ * Each weight is a separate file, so this is two more requests than before.
+ * They are subset to latin and swapped in, and only the display sizes wait on
+ * them.
+ */
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["200", "300", "400", "500", "600", "700"],
   display: "swap",
 });
 

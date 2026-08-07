@@ -120,7 +120,7 @@ export default async function DonatePage() {
               </div>
 
               <div className="mt-8">
-                <h3 className="text-lg font-bold tracking-[-0.02em] text-blue">
+                <h3 className="text-xl font-bold tracking-[-0.02em] text-blue">
                   Need assistance?
                 </h3>
                 <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-gray">

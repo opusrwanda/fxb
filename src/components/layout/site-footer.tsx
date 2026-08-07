@@ -51,7 +51,7 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
 
           {columns.map((column) => (
             <div key={column.href} className="flex flex-col gap-5 xl:col-span-2">
-              <h3 className="text-base font-semibold">
+              <h3 className="text-lg font-semibold">
                 <Link
                   href={column.href}
                   className="transition-opacity duration-300 hover:opacity-70"
@@ -75,7 +75,7 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
           ))}
 
           <div className="flex flex-col gap-5 xl:col-span-2">
-            <h3 className="text-base font-semibold">
+            <h3 className="text-lg font-semibold">
               <Link
                 href="/contact"
                 className="transition-opacity duration-300 hover:opacity-70"
