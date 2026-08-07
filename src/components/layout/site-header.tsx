@@ -127,8 +127,17 @@ export function SiteHeader({
   const isActive = (href: string) =>
     pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
 
-  // "Solid" treatment: the pinned bar, or the bar sitting above an open drawer.
-  const solid = pinned || drawerOpen;
+  // "Solid" treatment: the pinned bar, the bar above an open drawer — or the
+  // bar with a hover panel under it.
+  //
+  // That last one is what stops the panel opening halfway down the screen. At
+  // rest the header is 227px tall: announcement, utility strip and a 128px bar.
+  // A panel hanging off the bottom of all that starts a third of the way down
+  // the hero, nowhere near the link that opened it. Collapsing first puts the
+  // bar at 73px and the panel directly beneath the words the pointer is on —
+  // the same place it appears once the page has actually been scrolled, so the
+  // menu behaves identically at the top of a page and in the middle of one.
+  const solid = pinned || drawerOpen || panel !== null;
 
   return (
     <header
@@ -142,9 +151,13 @@ export function SiteHeader({
       }}
       className={[
         "fixed inset-x-0 top-0 z-50 motion-size transition-[background-color,box-shadow,border-color] duration-500 ease-(--ease-standard)",
+        // `solid`, not `pinned`. The logo and the nav links already switched on
+        // `solid`, so keying the fill off `pinned` meant a hover at the top of
+        // a page collapsed the bar and darkened its type while leaving the
+        // ground transparent — grey links on the hero footage.
         drawerOpen
           ? "bg-blue"
-          : pinned
+          : solid
             ? "border-b border-gray-15 bg-white shadow-[0_2px_24px_rgba(83,83,83,0.10)]"
             : "border-b border-transparent bg-transparent",
       ].join(" ")}
@@ -349,6 +362,11 @@ export function SiteHeader({
           openPanel && !drawerOpen
             ? "translate-y-0 opacity-100"
             : "invisible -translate-y-2 opacity-0",
+          // Wait for the bar to finish collapsing before fading in, but only
+          // when there is a collapse to wait for. Opening a panel on a page
+          // that is already scrolled has nothing to wait on, and a delay there
+          // is just a menu that feels slow to answer.
+          openPanel && !pinned ? "delay-300" : "delay-0",
         ].join(" ")}
         onMouseEnter={() => openPanel && setPanel(openPanel.href)}
         aria-hidden={!openPanel}
