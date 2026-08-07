@@ -53,6 +53,23 @@ import type { Programme } from "@/cms/content/programmes";
  * a name like "Rwamagana" that runs wide. It only has to be good enough to
  * decide whether two labels would touch.
  */
+/**
+ * Rwanda's outline, as one path.
+ *
+ * Every district `d` concatenated into a single multi-subpath path. Filled, the
+ * subpaths union into the country silhouette; the internal boundaries only
+ * exist as edges between them, and an edge two shapes share is not an outline.
+ *
+ * Getting a stroke onto only the outside of that union is the trick. Stroking
+ * this path plainly would draw every district boundary too, because each
+ * subpath is stroked in turn. `paint-order: stroke` paints the stroke first and
+ * the fill over it, so the opaque silhouette covers every internal segment and
+ * the inner half of the outer one — what is left is the outer half, all the way
+ * round the country and nowhere else. The stroke is doubled to account for
+ * losing that half.
+ */
+const countryOutline = districts.map((district) => district.d).join(" ");
+
 const LABEL_SIZE = 20;
 const LABEL_ADVANCE = 0.58 * LABEL_SIZE;
 /** Breathing room between two labels before they count as colliding. */
@@ -310,6 +327,33 @@ export function WhereWeWork({
               role="group"
               aria-label="Map of Rwanda's districts, showing where FXB Rwanda works"
             >
+              {/* The country first, so everything else sits inside it. */}
+              <path
+                d={countryOutline}
+                className="fill-white stroke-gray"
+                strokeWidth={9}
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+                style={{ paintOrder: "stroke" }}
+                aria-hidden="true"
+              />
+              {/* And again in white, to plug the seams.
+                  The boundaries are simplified geometry, so a few neighbours
+                  fail to meet by a fraction of a unit. Those slivers are holes
+                  in the union, and the edge of a hole gets stroked like any
+                  other edge — which drew a dark seam down the middle of the
+                  country. A 2px white stroke on the same path closes them, and
+                  costs the outer border a pixel of its inner half, which was
+                  going to be covered by the districts anyway. */}
+              <path
+                d={countryOutline}
+                className="fill-white stroke-white"
+                strokeWidth={5}
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+                aria-hidden="true"
+              />
+
               {districts.map((district) => {
                 const here = byDistrict.get(district.name);
                 const finished = finishedByDistrict.get(district.name);
@@ -319,8 +363,8 @@ export function WhereWeWork({
                     <path
                       key={district.name}
                       d={district.d}
-                      className="fill-white stroke-gray-40"
-                      strokeWidth={1.5}
+                      className="fill-white stroke-gray-15"
+                      strokeWidth={1}
                       // The stroke is a screen width, not a map width. The
                       // viewBox is 1000 units wide inside roughly 700px, so
                       // every border was being scaled to about two thirds of
@@ -378,7 +422,7 @@ export function WhereWeWork({
                           ? "fill-gray-15 stroke-gray-40"
                           : "fill-green-16 stroke-green"
                     }`}
-                    strokeWidth={2.5}
+                    strokeWidth={1.5}
                     vectorEffect="non-scaling-stroke"
                   />
                 );
