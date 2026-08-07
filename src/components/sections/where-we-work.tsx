@@ -319,8 +319,14 @@ export function WhereWeWork({
                     <path
                       key={district.name}
                       d={district.d}
-                      className="fill-white stroke-gray-15"
+                      className="fill-white stroke-gray-40"
                       strokeWidth={1.5}
+                      // The stroke is a screen width, not a map width. The
+                      // viewBox is 1000 units wide inside roughly 700px, so
+                      // every border was being scaled to about two thirds of
+                      // what it asked for — 1.5 came out under a pixel and the
+                      // country read as one pale shape.
+                      vectorEffect="non-scaling-stroke"
                       // Not a target: nothing has ever run here, so there is
                       // nothing to announce and nothing to select.
                       aria-hidden="true"
@@ -372,7 +378,8 @@ export function WhereWeWork({
                           ? "fill-gray-15 stroke-gray-40"
                           : "fill-green-16 stroke-green"
                     }`}
-                    strokeWidth={1.5}
+                    strokeWidth={2.5}
+                    vectorEffect="non-scaling-stroke"
                   />
                 );
               })}
