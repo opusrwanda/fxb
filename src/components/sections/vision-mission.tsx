@@ -46,6 +46,14 @@ import type { SiteDetails } from "@/cms/content/settings";
  * the stylesheet fail, not just being looked at.
  */
 function emphasise(text: string, phrases: readonly string[]) {
+  // No phrases, no split. Joining an empty list gives `()`, which matches the
+  // empty string between every character and shatters the sentence into single
+  // letters. A vision with nothing stressed in it is a normal thing for the
+  // team to set, so it cannot be allowed to render as debris.
+  if (phrases.length === 0) {
+    return <span className="font-normal text-white-94">{text}</span>;
+  }
+
   const escaped = phrases.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
   const lowered = phrases.map((p) => p.toLowerCase());
 
