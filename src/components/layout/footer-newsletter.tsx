@@ -1,42 +1,30 @@
-"use client";
-
-import { usePathname } from "next/navigation";
 import { NewsletterForm } from "@/components/layout/newsletter-form";
-import { Pill } from "@/components/ui/pill";
 
 /**
- * The footer's signup block, and the pages where it stands down.
+ * The footer's signup block.
  *
- * The footer form is the site-wide catch: on Contact, Careers, Our Impact and
- * everywhere else it is the only place a visitor can subscribe, so it stays.
+ * The form renders on every page, the home page included. It used to stand
+ * down on the two routes that already carry the full `<NewsletterSignup />`
+ * section — home and the newsletters page — and show a link up to that section
+ * instead, on the grounds that two forms and two consent ticks a few hundred
+ * pixels apart read as nobody having looked at the page.
  *
- * The exceptions are the pages that already carry the full signup section. On
- * those, rendering the form again puts two newsletter forms, two consent ticks
- * and two near-identical consent sentences on the same screen, a couple of
- * hundred pixels apart. That does not read as thorough, it reads as nobody
- * having looked at the page.
+ * That reasoning was sound and the decision still went the other way: a footer
+ * signup is where people go looking for a signup, and sending them back up the
+ * page to a section they have already scrolled past is a worse trade than the
+ * repetition. The footer is also the one part of the site a visitor meets on
+ * every route, so it is the only place the form is guaranteed to be.
  *
- * On those routes the block keeps its heading, its copy and its place in the
- * grid — pulling it out entirely would leave four blocks in a twelve-column row
- * and throw the whole footer off balance — and swaps the form for a link to the
- * real one further up the page.
+ * The two forms do not collide. This one uses `newsletter-name` and
+ * `newsletter-email`; the section uses `newsletter-first-name`,
+ * `newsletter-last-name` and `newsletter-signup-email`, so no id is duplicated
+ * and every label still points at its own field. Both post to the same route,
+ * which records `source` either way.
  *
- * `usePathname` rather than a prop: the footer is server-rendered from the root
- * layout, which has no route to pass down. The header resolves its own
- * transparent state the same way.
+ * No longer a client component: the route was the only thing it needed, and it
+ * does not need the route any more.
  */
-
-/**
- * Routes whose page already renders `<NewsletterSignup />`.
- *
- * This list has to stay in step with the pages that render it — the same
- * contract, and the same hazard, as `TRANSPARENT_HEADER_ROUTES` in `site.ts`.
- */
-const ROUTES_WITH_SIGNUP = ["/", "/news-insights/newsletters"];
-
 export function FooterNewsletter() {
-  const hasSignup = ROUTES_WITH_SIGNUP.includes(usePathname());
-
   return (
     // Six of the twelve columns, up from four. The row is signup 6 + two nav
     // columns at 2 + contact 2, so dropping Get Involved hands its width
@@ -51,18 +39,7 @@ export function FooterNewsletter() {
         a year, no more.
       </p>
 
-      {hasSignup ? (
-        <Pill
-          href="#newsletter"
-          variant="outlineLight"
-          size="sm"
-          className="mt-6"
-        >
-          Sign up
-        </Pill>
-      ) : (
-        <NewsletterForm />
-      )}
+      <NewsletterForm />
     </div>
   );
 }
