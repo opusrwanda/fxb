@@ -3,7 +3,6 @@ import { Hero } from "@/components/sections/hero";
 import { ImpactStories } from "@/components/sections/impact-stories";
 import { ImpactCounters } from "@/components/sections/impact-counters";
 import { LatestNews } from "@/components/sections/latest-news";
-import { NewsletterSignup } from "@/components/sections/newsletter-signup";
 import { Partners } from "@/components/sections/partners";
 import { WhatWeDo } from "@/components/sections/what-we-do";
 import { WhoWeAre } from "@/components/sections/who-we-are";
@@ -56,7 +55,10 @@ export default async function Home() {
       <ImpactStories stories={stories} />
       <Partners />
       <LatestNews />
-      <NewsletterSignup />
+      {/* No signup section here. The footer below carries the real form on
+          every page now, so a full band above it was asking the same question
+          twice within one screen of itself. The section still stands on the
+          newsletters page, where signing up is what the page is for. */}
     </>
   );
 }
