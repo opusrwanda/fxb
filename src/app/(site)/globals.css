@@ -387,6 +387,32 @@
   .marquee:focus-within .marquee-track {
     animation-play-state: paused;
   }
+
+  /*
+    Manual mode: set once, by the first press of a prev/next button.
+
+    The line stops animating and becomes an ordinary scroll strip that the
+    buttons drive. `content-visibility` has to go with it — skipping the render
+    of off-screen content is exactly right for a decorative line that scrolls
+    itself, and exactly wrong for one the reader is scrolling through looking
+    for a particular logo.
+
+    The scrollbar is hidden rather than styled: it would draw a rule straight
+    across the bottom row of logos, and the buttons already say the strip moves.
+  */
+  .marquee[data-manual="true"] {
+    overflow-x: auto;
+    content-visibility: visible;
+    scrollbar-width: none;
+  }
+
+  .marquee[data-manual="true"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  .marquee[data-manual="true"] .marquee-track {
+    animation: none;
+  }
 }
 
 @keyframes marquee {

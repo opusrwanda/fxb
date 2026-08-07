@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
+import { PartnerCarousel } from "@/components/sections/partner-carousel";
 import { Reveal } from "@/components/ui/reveal";
 import { type Partner, getOrderedPartners } from "@/cms/content/people";
 
@@ -75,9 +76,14 @@ export async function Partners() {
         </Reveal>
       </Container>
 
-      {/* Full-bleed: the line runs past the measure and off both edges. */}
+      {/* Full-bleed: the line runs past the measure and off both edges.
+
+          The list stays server-rendered; PartnerCarousel wraps it to add the
+          prev/next buttons and to take the line over from the animation on the
+          first press. With JavaScript off nothing here changes — no buttons
+          appear, and the CSS marquee carries on as before. */}
       <Reveal className="mt-14 lg:mt-16">
-        <div className="marquee">
+        <PartnerCarousel>
           <ul
             className="marquee-track gap-4 md:gap-6"
             style={
@@ -97,7 +103,7 @@ export async function Partners() {
               />
             ))}
           </ul>
-        </div>
+        </PartnerCarousel>
       </Reveal>
     </section>
   );
