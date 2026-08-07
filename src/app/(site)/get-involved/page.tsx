@@ -62,7 +62,7 @@ export default function GetInvolvedPage() {
                   GET INVOLVED
                 </span>
               </div>
-              <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
+              <h2 className="mt-6 text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-blue lg:text-[84px]">
                 Four ways in
               </h2>
             </Reveal>

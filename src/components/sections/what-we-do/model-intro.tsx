@@ -42,7 +42,7 @@ export function ModelIntro() {
               THE FXBVILLAGE MODEL
             </span>
           </div>
-          <h2 className="max-w-[20ch] text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
+          <h2 className="max-w-[20ch] text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-blue lg:text-[84px]">
             A holistic route out of poverty
           </h2>
         </Reveal>
