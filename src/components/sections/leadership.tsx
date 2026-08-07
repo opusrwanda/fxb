@@ -42,61 +42,50 @@ export async function Leadership() {
           </h2>
         </Reveal>
 
-        {/* Two up even on the narrowest phone. Eight full-bleed squares
-            stacked one per row turns a board of directors into a scroll. */}
+        {/* Two across, and the name beside the portrait rather than under it.
+            Four up with centred captions is what every board page does, this
+            one included until now. */}
         {board.length > 0 ? (
-          <ul className="mt-14 grid grid-cols-2 gap-x-5 gap-y-12 sm:gap-x-6 lg:grid-cols-4">
+          <ul className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:gap-x-16 lg:gap-y-12">
             {board.map((member, index) => (
               <Reveal
                 as="li"
                 key={member.name}
                 delay={60 + Math.min(index, 3) * 60}
-                // Portrait, name and role are three tracks of the list's own
-                // grid rather than three blocks stacked inside a card, so the
-                // roles line up across a row because the rows themselves line
-                // up. `gap-y-0` because a subgrid inherits its parent's gutters
-                // — without it the 48px between rows would also open up between
-                // each portrait and its name.
-                className="row-span-3 grid grid-rows-subgrid gap-y-0"
+                className="flex items-center gap-5 lg:gap-7"
               >
-                <div className="relative mb-5 aspect-square overflow-hidden rounded-full bg-blue-16">
+                {/* No disc behind the portrait.
+
+                    These are cut-outs — half of every file is transparent — and
+                    they were being dropped onto a blue circle, which put each
+                    person in a coloured bubble and made the section read as
+                    eight badges. With the fill gone the circular clip is still
+                    doing the work, but the only part of it anyone sees is where
+                    it crosses the shoulders: the figure stands on the white and
+                    the crop curves away under it.
+
+                    Which is also why `object-top`. The clip takes the bottom of
+                    the frame, and on a cut-out that is the torso — the thing you
+                    can afford to lose. Centred, it took a slice of chin. */}
+                <div className="relative size-28 shrink-0 overflow-hidden rounded-full lg:size-36">
                   {member.portrait && (
                     <Image
                       src={member.portrait.url}
                       alt=""
                       width={member.portrait.width}
                       height={member.portrait.height}
-                      sizes="(min-width: 1024px) 23vw, 45vw"
-                      className="size-full object-cover"
+                      sizes="(min-width: 1024px) 144px, 112px"
+                      className="size-full object-cover object-top"
                     />
                   )}
                 </div>
-                {/* Ranged to the bottom of its track, which is what keeps a name
-                    and its role together.
 
-                    Exactly one name on this board runs to two lines — "Fr.
-                    Pierre Celestin NGOBOKA (PhD)" — and it sets the height of
-                    the name track for its whole row. Left ranged to the top, the
-                    other three names sat against the portrait and left a blank
-                    line between themselves and their role, so one long name put
-                    a hole under three short ones.
-
-                    Ranged to the bottom, the slack moves above the name instead,
-                    where it reads as breathing room under a portrait rather than
-                    as a gap in the middle of a caption. The three short names
-                    land on the same baseline as NGOBOKA's second line, and every
-                    role sits 4px under its own name.
-
-                    This is also why the earlier `min-h-[2lh]` had to go: it
-                    reserved the second line on every card in the section, so the
-                    four advisors — all one-line names — each paid for a blank
-                    line the row never needed. */}
-                <h3 className="self-end text-center text-lg leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-xl">
-                  {member.name}
-                </h3>
-                <p className="mt-1 text-center text-sm text-gray">
-                  {member.role}
-                </p>
+                <div className="min-w-0">
+                  <h3 className="text-lg leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-xl">
+                    {member.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray">{member.role}</p>
+                </div>
               </Reveal>
             ))}
           </ul>
