@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { getCurrentProgrammes } from "@/cms/content/programmes";
+import {
+  getCurrentProgrammes,
+  getPhasedOutProgrammes,
+} from "@/cms/content/programmes";
 import { getSiteDetails } from "@/cms/content/settings";
 import { Hero } from "@/components/sections/hero";
 import { getMilestones } from "@/cms/content/milestones";
@@ -28,9 +31,10 @@ export const metadata: Metadata = {
  * `<Hero>` — see the note in `site.ts`.
  */
 export default async function WhoWeArePage() {
-  const [banner, milestones] = await Promise.all([
+  const [banner, milestones, completed] = await Promise.all([
     getPageHeaderImage("/who-we-are"),
     getMilestones(),
+    getPhasedOutProgrammes(),
   ]);
   // Fetched together rather than inside each section: the vision and the map
   // are two bands of one page, and awaiting them one after the other would make
@@ -54,7 +58,7 @@ export default async function WhoWeArePage() {
 
       <OurStory milestones={milestones} />
       <VisionMission details={details} />
-      <WhereWeWork programmes={programmes} />
+      <WhereWeWork programmes={programmes} completed={completed} />
       <Leadership />
     </>
   );

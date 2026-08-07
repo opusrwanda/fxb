@@ -37,6 +37,9 @@
   --color-blue-16: #0472c229;
   --color-blue-90: #0472c2e6;
   --color-green-10: #008d001a;
+  /* The same alpha as `blue-16`, so the map's resting districts sit at exactly
+     the weight its highlighted ones used to. */
+  --color-green-16: #008d0029;
   --color-gray-15: #53535326;
   --color-gray-40: #53535366;
   --color-white-12: #ffffff1f;

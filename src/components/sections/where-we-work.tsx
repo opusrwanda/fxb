@@ -158,7 +158,14 @@ function ProjectLink({
   );
 }
 
-export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
+export function WhereWeWork({
+  programmes,
+  completed = [],
+}: {
+  programmes: Programme[];
+  /** Phased-out projects. They colour their districts and nothing else. */
+  completed?: Programme[];
+}) {
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [active, setActive] = useState<string | null>(null);
   /** The project row under the pointer, which previews its districts. */
@@ -170,6 +177,19 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
   );
 
   const byDistrict = useMemo(() => programmesByDistrict(visible), [visible]);
+
+  /**
+   * Where work has finished.
+   *
+   * Kept apart from `byDistrict` rather than merged into it, because a district
+   * with a running project and a district with a closed one are not the same
+   * answer to "where do you work" — and merging them would let a finished
+   * project turn a district green.
+   */
+  const finishedByDistrict = useMemo(
+    () => programmesByDistrict(completed),
+    [completed]
+  );
 
   function toggle(id: string) {
     setHidden((current) => {
@@ -191,6 +211,11 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
     ? districts.find((district) => district.name === active)
     : undefined;
   const activeProjectsHere = active ? (byDistrict.get(active) ?? []) : [];
+  /** Finished work in the district being pointed at, if that is all there is. */
+  const activeFinishedHere =
+    active && activeProjectsHere.length === 0
+      ? (finishedByDistrict.get(active) ?? [])
+      : [];
   const previewProject = preview
     ? visible.find((project) => project.slug === preview)
     : undefined;
@@ -271,20 +296,28 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
             >
               {districts.map((district) => {
                 const here = byDistrict.get(district.name);
+                const finished = finishedByDistrict.get(district.name);
 
-                if (!here) {
+                if (!here && !finished) {
                   return (
                     <path
                       key={district.name}
                       d={district.d}
                       className="fill-white stroke-gray-15"
                       strokeWidth={1.5}
-                      // Not a target: no project runs here, so there is nothing
-                      // to announce and nothing to select.
+                      // Not a target: nothing has ever run here, so there is
+                      // nothing to announce and nothing to select.
                       aria-hidden="true"
                     />
                   );
                 }
+
+                // Grey is for a district we have left: work happened, and it
+                // has finished. It is deliberately quiet — the section answers
+                // "where do you work", present tense, and a closed project
+                // should not read as loudly as a running one.
+                const closed = !here;
+                const projectsHere = here ?? finished ?? [];
 
                 return (
                   <path
@@ -292,9 +325,9 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                     d={district.d}
                     tabIndex={0}
                     role="button"
-                    aria-label={`${district.name}, ${district.province} — ${here
+                    aria-label={`${district.name}, ${district.province} — ${projectsHere
                       .map((project) => project.name)
-                      .join(", ")}`}
+                      .join(", ")}${closed ? " (completed)" : ""}`}
                     onMouseEnter={() => setActive(district.name)}
                     onMouseLeave={() => setActive(clearIf(district.name))}
                     onFocus={() => setActive(district.name)}
@@ -311,10 +344,17 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                       event.preventDefault();
                       setActive(district.name);
                     }}
+                    // Green where we are working, grey where we have finished,
+                    // blue only under the pointer. Blue was the resting colour
+                    // and the highlight both, a tint apart, which asked the
+                    // reader to tell two shades of one hue apart to know which
+                    // district they were on.
                     className={`cursor-pointer outline-offset-2 transition-colors duration-300 ${
                       highlighted.has(district.name)
                         ? "fill-blue stroke-blue"
-                        : "fill-blue-16 stroke-blue"
+                        : closed
+                          ? "fill-gray-15 stroke-gray-40"
+                          : "fill-green-16 stroke-green"
                     }`}
                     strokeWidth={1.5}
                   />
@@ -354,6 +394,32 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                 );
               })}
             </svg>
+
+            {/* Three colours are three statements, and a map that does not say
+                which is which is a map the reader has to guess at. */}
+            <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-80">
+              <li className="flex items-center gap-2">
+                <span
+                  className="size-3 rounded-full border border-green bg-green-16"
+                  aria-hidden="true"
+                />
+                Working here now
+              </li>
+              <li className="flex items-center gap-2">
+                <span
+                  className="size-3 rounded-full border border-gray-40 bg-gray-15"
+                  aria-hidden="true"
+                />
+                Project completed
+              </li>
+              <li className="flex items-center gap-2">
+                <span
+                  className="size-3 rounded-full border border-blue bg-blue"
+                  aria-hidden="true"
+                />
+                Selected
+              </li>
+            </ul>
 
             <p className="text-xs leading-relaxed text-gray-80">
               {districtsAttribution}
@@ -402,6 +468,17 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                         className="text-base font-medium text-blue"
                       >
                         {project.name}
+                      </li>
+                    ))}
+                    {/* Named, and named as finished. A district we have left
+                        with the project unnamed would read as a district we
+                        have nothing to say about. */}
+                    {activeFinishedHere.map((project) => (
+                      <li key={project.slug} className="text-base text-gray">
+                        {project.name}
+                        <span className="ml-2 text-sm text-gray-80">
+                          Completed
+                        </span>
                       </li>
                     ))}
                   </ul>
