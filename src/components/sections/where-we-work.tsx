@@ -286,8 +286,24 @@ export function WhereWeWork({
           </p>
         </Reveal>
 
-        <div className="mt-14 grid gap-10 lg:grid-cols-[1.35fr_1fr] lg:gap-14">
-          <Reveal delay={140} className="flex flex-col gap-4">
+        {/* `items-start`, so the map column is only as tall as the map. A grid
+            item stretches to the row by default, and a sticky element the full
+            height of its own track has nowhere to travel — it would sit there
+            looking static while the list moved beside it. */}
+        <div className="mt-14 grid items-start gap-10 lg:grid-cols-[1.35fr_1fr] lg:gap-14">
+          {/* The map holds its place while the projects scroll past it.
+              A district turns green on the left as its project is pointed at on
+              the right, and the two are useless to each other if the map has
+              already left the screen — which it does as soon as the list grows
+              past a handful of projects.
+
+              88px clears the pinned header with room to breathe. Desktop only:
+              on a phone the two are stacked, so there is no beside for it to
+              stay beside. */}
+          <Reveal
+            delay={140}
+            className="flex flex-col gap-4 lg:sticky lg:top-[88px]"
+          >
             <svg
               viewBox={districtsViewBox}
               className="w-full"
