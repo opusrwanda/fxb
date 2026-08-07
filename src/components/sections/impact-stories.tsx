@@ -220,7 +220,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
       >
         <Container>
           <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-            <h2 className="max-w-[16ch] text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-white lg:text-[84px]">
+            <h2 className="max-w-[16ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
               Behind every programme, a person
             </h2>
             <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:pt-2 lg:text-lg">

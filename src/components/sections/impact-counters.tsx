@@ -59,7 +59,7 @@ export function ImpactCounters() {
               OUR IMPACT
             </span>
           </div>
-          <h2 className="text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-blue lg:text-[84px]">
+          <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
             Measured in lives, not activities
           </h2>
         </Reveal>

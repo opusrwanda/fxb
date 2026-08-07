@@ -76,7 +76,7 @@ export function TransformationJourney() {
                 TRANSFORMATION JOURNEY
               </span>
             </div>
-            <h2 className="max-w-[22ch] text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-white lg:text-[84px]">
+            <h2 className="max-w-[22ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
               36 months to change a life, sustainably
             </h2>
           </div>

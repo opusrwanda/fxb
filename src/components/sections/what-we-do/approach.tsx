@@ -65,7 +65,7 @@ export function Approach() {
                   OUR APPROACH
                 </span>
               </div>
-              <h2 className="mt-6 text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-balance text-blue lg:text-[84px]">
+              <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-balance text-blue lg:text-[42px] lg:leading-[1.08]">
                 Empowering communities through integrated development
               </h2>
             </Reveal>
@@ -143,7 +143,7 @@ export function Approach() {
                   THE CHALLENGE
                 </span>
               </div>
-              <h2 className="mt-6 text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-white lg:text-[84px]">
+              <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
                 The challenge of child poverty
               </h2>
             </Reveal>

@@ -40,7 +40,7 @@ export function WhatWeDo() {
                 WHAT WE DO
               </span>
             </div>
-            <h2 className="text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-white lg:text-[84px]">
+            <h2 className="text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
               Four areas of intervention
             </h2>
           </div>

@@ -269,7 +269,7 @@ export default async function ContactPage() {
                   FIND US
                 </span>
               </div>
-              <h2 className="text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-blue lg:text-[80px]">
+              <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[40px]">
                 Ruyenzi, Kamonyi District
               </h2>
             </div>
@@ -295,7 +295,7 @@ export default async function ContactPage() {
                   FAQ
                 </span>
               </div>
-              <h2 className="mt-6 text-[60px] leading-[1.08] font-bold tracking-[-0.03em] text-blue lg:text-[84px]">
+              <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
                 Frequently asked questions
               </h2>
             </Reveal>
