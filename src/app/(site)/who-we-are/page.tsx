@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getCurrentProgrammes } from "@/cms/content/programmes";
 import { getSiteDetails } from "@/cms/content/settings";
 import { Hero } from "@/components/sections/hero";
+import { getMilestones } from "@/cms/content/milestones";
 import { getPageHeaderImage } from "@/cms/content/page-headers";
 import { Leadership } from "@/components/sections/leadership";
 import { OurStory } from "@/components/sections/our-story";
@@ -27,7 +28,10 @@ export const metadata: Metadata = {
  * `<Hero>` — see the note in `site.ts`.
  */
 export default async function WhoWeArePage() {
-  const banner = await getPageHeaderImage("/who-we-are");
+  const [banner, milestones] = await Promise.all([
+    getPageHeaderImage("/who-we-are"),
+    getMilestones(),
+  ]);
   // Fetched together rather than inside each section: the vision and the map
   // are two bands of one page, and awaiting them one after the other would make
   // the second query wait on the first for no reason.
@@ -48,7 +52,7 @@ export default async function WhoWeArePage() {
         ]}
       />
 
-      <OurStory />
+      <OurStory milestones={milestones} />
       <VisionMission details={details} />
       <WhereWeWork programmes={programmes} />
       <Leadership />

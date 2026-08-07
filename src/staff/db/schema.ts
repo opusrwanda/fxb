@@ -255,6 +255,28 @@ export const partners = pgTable("partners", {
 });
 
 /**
+ * A milestone on the Our Story timeline.
+ *
+ * `year` is text, not a number: the last one reads "Today", and a timeline that
+ * ends on a date rather than on the present tense is a timeline that needs
+ * editing every January.
+ *
+ * `current` marks that final entry so it can be set apart. A flag rather than
+ * "whichever sorts last", because the two are not the same thing — an entry
+ * added out of order should not silently become the present.
+ */
+export const milestones = pgTable("milestones", {
+  id: serial("id").primaryKey(),
+  year: varchar("year", { length: 40 }).notNull(),
+  body: text("body").notNull(),
+  imageId: integer("image_id").references(() => media.id, { onDelete: "set null" }),
+  order: integer("order").notNull().default(0),
+  current: boolean("current").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
  * The photograph behind a page's opening block.
  *
  * Keyed by route rather than by a foreign key to a page, because the pages this

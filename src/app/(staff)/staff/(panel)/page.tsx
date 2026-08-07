@@ -7,6 +7,7 @@ import {
   db,
   media,
   news,
+  milestones,
   opportunities,
   pageHeaders,
   partners,
@@ -37,6 +38,7 @@ const TABLES = {
   partners,
   opportunities,
   pageHeaders,
+  milestones,
   media,
 } as const;
 

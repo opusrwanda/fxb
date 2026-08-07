@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Container } from "@/components/layout/container";
+import type { Milestone } from "@/cms/content/milestones";
 
 /**
  * Our Story — the timeline, running across rather than down.
@@ -37,45 +38,8 @@ import { Container } from "@/components/layout/container";
  * numerals, and a date is a heading, not a statistic.
  */
 
-const milestones: {
-  year: string;
-  body: string;
-  /** A photograph of the milestone. Null renders the year panel — see above. */
-  image?: string;
-  current?: boolean;
-}[] = [
-  {
-    year: "1986",
-    body: "François-Xavier Bagnoud tragically lost his life during a humanitarian helicopter rescue mission in Mali. His legacy of courage and compassion would inspire the creation of FXB.",
-  },
-  {
-    year: "1989",
-    body: "Albina du Boisrouvray founded FXB International in memory of her son, François-Xavier Bagnoud, with the mission of fighting extreme poverty and improving the lives of vulnerable children and families worldwide.",
-  },
-  {
-    year: "1995",
-    body: "FXB International began its mission in Rwanda, responding to the aftermath of the 1994 Genocide against the Tutsi by supporting vulnerable children, widows, and families on their path to recovery and self-reliance.",
-  },
-  {
-    year: "2000",
-    body: "The FXBVillage model was introduced in Rwanda, providing a holistic approach to breaking the cycle of extreme poverty through interventions in health, education, nutrition, livelihoods, child protection, and WASH.",
-    // Illustrates the model rather than claiming to be a photograph of 2000.
-    image: "/media/fxbvillage-musambira-01.jpg",
-  },
-  {
-    year: "2012",
-    body: "FXB Rwanda became a registered Rwandan Non-Governmental Organization (NGO), reinforcing its long-term commitment to sustainable community development and child well-being across the country.",
-    image: "/media/fxbvillage-mageragere-02.jpg",
-  },
-  {
-    year: "Today",
-    body: "FXB Rwanda operates across all four provinces of Rwanda and the City of Kigali, implementing integrated programmes in health, education, child protection, livelihoods and economic empowerment, nutrition, WASH, and climate resilience — reaching thousands of vulnerable children, families, and communities.",
-    image: "/media/fxbvillage-tlf-09.jpg",
-    current: true,
-  },
-];
 
-export function OurStory() {
+export function OurStory({ milestones }: { milestones: Milestone[] }) {
   const track = useRef<HTMLOListElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -122,6 +86,11 @@ export function OurStory() {
         : "smooth",
     });
   }, []);
+
+  // Nothing to show is a real state — an empty timeline is a section that
+  // should not be on the page at all. Placed below the hooks, not above them:
+  // an early return before a hook changes the call order between renders.
+  if (milestones.length === 0) return null;
 
   return (
     <section id="story" className="scroll-mt-32 bg-white py-24 lg:py-32">
@@ -190,10 +159,10 @@ export function OurStory() {
             <div className="mt-4 aspect-4/3 overflow-hidden rounded-card">
               {milestone.image ? (
                 <Image
-                  src={milestone.image}
+                  src={milestone.image.url}
                   alt=""
-                  width={800}
-                  height={600}
+                  width={milestone.image.width}
+                  height={milestone.image.height}
                   sizes="(min-width: 1280px) 300px, (min-width: 1024px) 400px, (min-width: 640px) 46vw, 78vw"
                   className="size-full object-cover"
                 />

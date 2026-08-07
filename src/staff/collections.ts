@@ -6,6 +6,7 @@ import {
   FileText,
   Image as ImageIcon,
   Map,
+  Milestone,
   Newspaper,
   Send,
   Settings,
@@ -32,6 +33,7 @@ export type CollectionKey =
   | "programmes"
   | "publications"
   | "pageHeaders"
+  | "milestones"
   | "board"
   | "partners"
   | "opportunities"
@@ -77,6 +79,15 @@ export const collections: Entry[] = [
     singular: "publication",
     description: "Anything with a file to download.",
     icon: FileText,
+    group: "Publishing",
+  },
+  {
+    key: "milestones",
+    slug: "milestones",
+    label: "Our Story timeline",
+    singular: "milestone",
+    description: "The dated moments on the Who We Are timeline, in order.",
+    icon: Milestone,
     group: "Publishing",
   },
   {

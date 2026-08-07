@@ -230,6 +230,46 @@ export const fields: Record<string, Field[]> = {
     STATUS,
   ],
 
+  milestones: [
+    {
+      name: "year",
+      label: "Year",
+      type: "text",
+      required: true,
+      help: 'Shown above the picture. Text rather than a number, so the last one can read "Today".',
+    },
+    {
+      name: "body",
+      label: "What happened",
+      type: "textarea",
+      required: true,
+      rows: 4,
+      help: "Two or three sentences. Longer than about sixty words and the cards stop lining up.",
+    },
+    {
+      name: "imageId",
+      label: "Photograph",
+      type: "upload",
+      accept: "image",
+      help: "Optional. Without one the card shows its year on a tinted panel instead — which is the honest answer for a milestone nobody has an archive photograph of.",
+    },
+    {
+      name: "order",
+      label: "Order",
+      type: "number",
+      sidebar: true,
+      required: true,
+      help: "Lowest first. The timeline reads left to right in this order.",
+    },
+    {
+      name: "current",
+      label: "This is the present day",
+      type: "checkbox",
+      sidebar: true,
+      help: 'Sets the year in green. For the "Today" entry — only one should have it.',
+    },
+  ],
+
   pageHeaders: [
     {
       name: "path",

@@ -4,6 +4,7 @@ import {
   board,
   db,
   media,
+  milestones,
   pageHeaders,
   news,
   opportunities,
@@ -63,6 +64,26 @@ const listings: Record<string, () => Promise<Listing>> = {
           { kind: "date", value: row.date },
           { kind: "muted", value: row.language === "fr" ? "French" : "English" },
           { kind: "status", value: row.status },
+        ],
+      })),
+    };
+  },
+
+  async milestones() {
+    const rows = await db
+      .select({ id: milestones.id, year: milestones.year, body: milestones.body,
+                order: milestones.order, filename: media.filename })
+      .from(milestones)
+      .leftJoin(media, eq(milestones.imageId, media.id))
+      .orderBy(asc(milestones.order));
+    return {
+      columns: ["Year", "What happened", "Photograph"],
+      rows: rows.map((row) => ({
+        id: row.id,
+        cells: [
+          { kind: "title" as const, value: row.year },
+          { kind: "muted" as const, value: row.body.slice(0, 70) + (row.body.length > 70 ? "…" : "") },
+          { kind: "muted" as const, value: row.filename ?? "Year panel" },
         ],
       })),
     };
