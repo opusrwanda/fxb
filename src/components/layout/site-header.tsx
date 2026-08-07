@@ -17,8 +17,9 @@ import { hasTransparentHeader, primaryNav } from "@/lib/site";
  * footage in the white monochrome lockup.
  *
  * Pinned (past 64px): white fill, gray hairline, soft shadow. The bar collapses
- * from 128px to 72px on desktop (96px to 64px on mobile) and the logo scales to
- * 0.68 while cross-fading to the colour lockup.
+ * from 128px to 72px on desktop (96px to 64px on mobile) and the lockup
+ * cross-fades from the white monochrome mark to the colour one. The lockup does
+ * not change size with the bar — see the note on it below.
  *
  * The bar never auto-hides on scroll down: the brief requires Donate reachable
  * at any point in the visit, so reclaiming vertical space is not available to
@@ -194,11 +195,22 @@ export function SiteHeader({
           solid ? "h-16 lg:h-18" : "h-24 lg:h-32",
         ].join(" ")}
       >
+        {/* The lockup is the same size in both states.
+
+            It used to be scaled to 0.68 once the bar pinned, which left the
+            colour mark 38px tall on desktop and 27px on a phone — the version
+            of the logo a visitor spends almost the whole visit looking at, and
+            the smallest it ever got. At full size it is 56px and 40px inside a
+            72px and 64px bar, so it still clears the edges by 8px and 12px.
+
+            Nothing here changes the height of the header. The shrink was a
+            `transform`, and a transform does not take part in layout: the bar
+            is sized by `h-16 lg:h-18` above and measures 64px and 72px either
+            way. */}
         <Link
           href="/"
           aria-label={`${details.name} — home`}
-          className="motion-transform relative shrink-0 origin-left transition-transform duration-500 ease-(--ease-header)"
-          style={{ transform: solid ? "scale(0.68)" : "scale(1)" }}
+          className="relative shrink-0"
         >
           {/* Both lockups are rendered and cross-faded, so the swap never reads
               as two solid marks at once. */}
