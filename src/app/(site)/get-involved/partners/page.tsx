@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { PhotoBand } from "@/components/sections/photo-band";
+import { getPhotos } from "@/cms/content/photos";
 import { PartnerLogos } from "@/components/sections/get-involved/partner-logos";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
@@ -200,6 +202,7 @@ function SectionHeading({
 }
 
 export default async function PartnersPage() {
+  const photos = await getPhotos(["sugira-muryango-04.jpg", "fostering-03.jpg"]);
   const details = await getSiteDetails();
 
   return (
@@ -396,6 +399,12 @@ export default async function PartnersPage() {
       </section>
 
       {/* Corporate */}
+      {photos["sugira-muryango-04.jpg"] && (
+        <PhotoBand image={photos["sugira-muryango-04.jpg"]}>
+          Every project on this page is delivered with somebody.
+        </PhotoBand>
+      )}
+
       <section id="corporate" className="scroll-mt-36 bg-blue py-24 lg:py-32">
         <Container>
           <SectionHeading

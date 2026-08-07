@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, MapPin } from "lucide-react";
 import { Container } from "@/components/layout/container";
@@ -53,8 +54,25 @@ export default async function CurrentProjectsPage() {
                 delay={Math.min(index, 3) * 60}
                 className="border-t border-gray-15 last:border-b"
               >
-                <div className="flex flex-col gap-5 py-9 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-                  <div className="flex flex-col gap-4 lg:max-w-[42ch]">
+                <div className="flex flex-col gap-5 py-9 lg:flex-row lg:items-start lg:gap-10">
+                  {/* The programme's own photograph, which the CMS has held all
+                      along and this page never asked for. A listing of names
+                      and district chips is a table; the same rows with the work
+                      in them are a page about projects. */}
+                  {project.image && (
+                    <div className="aspect-4/3 w-full shrink-0 overflow-hidden rounded-card lg:aspect-square lg:w-44">
+                      <Image
+                        src={project.image.url}
+                        alt={project.image.alt}
+                        width={project.image.width}
+                        height={project.image.height}
+                        sizes="(min-width: 1024px) 176px, 100vw"
+                        className="size-full object-cover"
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex flex-col gap-4 lg:max-w-[38ch] lg:flex-1">
                     <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                       {project.href ? (
                         <Link

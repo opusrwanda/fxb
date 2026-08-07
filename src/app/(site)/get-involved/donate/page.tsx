@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { PhotoBand } from "@/components/sections/photo-band";
+import { getPhotos } from "@/cms/content/photos";
 import { Reveal } from "@/components/ui/reveal";
 import { getSiteDetails } from "@/cms/content/settings";
 
@@ -39,6 +41,7 @@ const bankDetails = [
 ];
 
 export default async function DonatePage() {
+  const photos = await getPhotos(["fxbvillage-mageragere-02.jpg"]);
   const details = await getSiteDetails();
 
   return (
@@ -164,6 +167,12 @@ export default async function DonatePage() {
           </Reveal>
         </Container>
       </section>
+      {photos["fxbvillage-mageragere-02.jpg"] && (
+        <PhotoBand image={photos["fxbvillage-mageragere-02.jpg"]}>
+          Three years of support, and a household that no longer needs it.
+        </PhotoBand>
+      )}
+
     </>
   );
 }

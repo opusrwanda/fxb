@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Download } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { PhotoBand } from "@/components/sections/photo-band";
+import { getPhotos } from "@/cms/content/photos";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Reveal } from "@/components/ui/reveal";
 import { formatDate } from "@/cms/content/date";
@@ -23,6 +25,7 @@ export const metadata: Metadata = {
  * FXB procures, rather than showing a bare heading.
  */
 export default async function ProcurementPage() {
+  const photos = await getPhotos(["fxbvillage-tlf-07.jpg"]);
   const tenders = await getOpenings("procurement");
   const open = tenders.length > 0;
 
@@ -99,6 +102,12 @@ export default async function ProcurementPage() {
           />
         )}
       </section>
+      {photos["fxbvillage-tlf-07.jpg"] && (
+        <PhotoBand image={photos["fxbvillage-tlf-07.jpg"]}>
+          What we buy is bought to be used in a district.
+        </PhotoBand>
+      )}
+
     </>
   );
 }

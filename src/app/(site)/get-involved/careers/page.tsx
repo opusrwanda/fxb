@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { PhotoBand } from "@/components/sections/photo-band";
+import { getPhotos } from "@/cms/content/photos";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
@@ -27,6 +29,7 @@ export const metadata: Metadata = {
  * "there are no open positions" reads as a broken page.
  */
 export default async function CareersPage() {
+  const photos = await getPhotos(["fostering-02.jpg"]);
   const vacancies = await getOpenings("career");
   const open = vacancies.length > 0;
 
@@ -98,6 +101,12 @@ export default async function CareersPage() {
           />
         )}
       </section>
+      {photos["fostering-02.jpg"] && (
+        <PhotoBand image={photos["fostering-02.jpg"]}>
+          The work is done by people who live where it happens.
+        </PhotoBand>
+      )}
+
     </>
   );
 }

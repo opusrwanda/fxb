@@ -5,6 +5,8 @@ import { Container } from "@/components/layout/container";
 import { Hero } from "@/components/sections/hero";
 import { getPageHeaderImage } from "@/cms/content/page-headers";
 import { Partners } from "@/components/sections/partners";
+import { PhotoBand } from "@/components/sections/photo-band";
+import { getPhotos } from "@/cms/content/photos";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 
@@ -38,6 +40,7 @@ const routes = [
 ];
 
 export default async function GetInvolvedPage() {
+  const photos = await getPhotos(["fostering-03.jpg"]);
   const banner = await getPageHeaderImage("/get-involved");
   return (
     <>
@@ -124,6 +127,12 @@ export default async function GetInvolvedPage() {
       </section>
 
       <Partners />
+      {photos["fostering-03.jpg"] && (
+        <PhotoBand image={photos["fostering-03.jpg"]}>
+          There is more than one way to be part of this.
+        </PhotoBand>
+      )}
+
     </>
   );
 }
