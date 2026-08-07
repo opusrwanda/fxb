@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
-import { SectionNav } from "@/components/layout/section-nav";
 import { PartnerLogos } from "@/components/sections/get-involved/partner-logos";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
@@ -210,21 +209,6 @@ export default async function PartnersPage() {
         eyebrow="PARTNER WITH US"
         title="Together, we can create lasting change"
         intro="At FXB Rwanda, we believe that meaningful and lasting impact is achieved when communities, governments, donors, institutions, businesses and development organisations work together toward a shared vision."
-      />
-
-      {/* Five kinds of partner, five sections, and the page runs long enough
-          that reaching the last of them meant scrolling past the other four.
-          Every section already carried an anchor — `#become-a-partner` is
-          linked from Get Involved and from the programme pages — so this is
-          navigation over ids that already existed rather than new structure. */}
-      <SectionNav
-        sections={[
-          { id: "development-partners", label: "Development Partners" },
-          { id: "government", label: "Government" },
-          { id: "donors", label: "Institutional Donors" },
-          { id: "corporate", label: "Corporate" },
-          { id: "become-a-partner", label: "Become a Partner" },
-        ]}
       />
 
       {/* Development partners.

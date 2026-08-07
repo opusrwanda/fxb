@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
-import { SectionNav } from "@/components/layout/section-nav";
 import { getStories } from "@/cms/content/stories";
 import { Hero } from "@/components/sections/hero";
 import { ImpactStories } from "@/components/sections/impact-stories";
@@ -37,19 +36,6 @@ export default async function OurImpactPage() {
         ctas={[
           { label: "Results at a Glance", href: "#results", primary: true },
           { label: "Success Stories", href: "/news-insights/stories" },
-        ]}
-      />
-
-      {/* Four entries for a five-thousand-pixel page. "Explore" is the last
-          band rather than a section of argument, but it is where the reports,
-          the annual reports and the gallery are reached from, so it earns a
-          line — that band is the answer to "where is the actual evidence". */}
-      <SectionNav
-        sections={[
-          { id: "measuring", label: "How We Measure" },
-          { id: "results", label: "Results at a Glance" },
-          { id: "impact-stories", label: "Success Stories" },
-          { id: "explore", label: "Reports & Gallery" },
         ]}
       />
 

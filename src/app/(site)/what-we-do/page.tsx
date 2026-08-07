@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { SectionNav } from "@/components/layout/section-nav";
 import { Hero } from "@/components/sections/hero";
 import { Approach } from "@/components/sections/what-we-do/approach";
 import { AreasOfIntervention } from "@/components/sections/what-we-do/areas-of-intervention";
@@ -64,23 +63,6 @@ export default async function WhatWeDoPage() {
           // should offer the list of them, and Our Impact is already reachable
           // from the nav and from the buttons further down this page.
           { label: "Current Projects", href: "/what-we-do/current-projects" },
-        ]}
-      />
-
-      {/* Six entries, not ten. The challenge, the principles and the count are
-          beats inside the argument rather than destinations, and a bar with a
-          line for every section is a table of contents — it stops being
-          navigation the moment it stops fitting on one row. Sections without an
-          entry leave the previous one lit, which is the honest answer. */}
-      <SectionNav
-        sections={[
-          { id: "approach", label: "Our Approach" },
-          { id: "fxbvillage-model", label: "The Model" },
-          { id: "journey", label: "36-Month Journey" },
-          { id: "pillars", label: "The Pillars" },
-          { id: "why-it-works", label: "Why It Works" },
-          { id: "programmes", label: "Our Programmes" },
-          { id: "areas", label: "Areas of Intervention" },
         ]}
       />
 
