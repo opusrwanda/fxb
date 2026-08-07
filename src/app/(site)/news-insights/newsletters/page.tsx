@@ -42,6 +42,7 @@ export default async function NewslettersPage() {
   return (
     <>
       <PageHeader
+        path="/news-insights/newsletters"
         breadcrumbs={[{ label: "News & Insights", href: "/news-insights" }]}
         eyebrow="NEWSLETTERS"
         title="Four times a year"

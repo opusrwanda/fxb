@@ -46,6 +46,7 @@ export default async function PublicationsPage() {
   return (
     <>
       <PageHeader
+        path="/news-insights/publications"
         breadcrumbs={[{ label: "News & Insights", href: "/news-insights" }]}
         eyebrow="PUBLICATIONS"
         title="Reports, research and policy"

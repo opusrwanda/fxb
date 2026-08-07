@@ -29,6 +29,7 @@ export default async function ProcurementPage() {
   return (
     <>
       <PageHeader
+        path="/get-involved/procurement"
         breadcrumbs={[{ label: "Get Involved", href: "/get-involved" }]}
         eyebrow="PROCUREMENT"
         title="Procurement opportunities"

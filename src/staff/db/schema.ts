@@ -254,6 +254,29 @@ export const partners = pgTable("partners", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * The photograph behind a page's opening block.
+ *
+ * Keyed by route rather than by a foreign key to a page, because the pages this
+ * covers are files rather than documents — Contact, Careers, Procurement and
+ * the listings are all hand-built routes with no row of their own anywhere.
+ * `path` is what joins the two.
+ *
+ * The row with path `*` is the fallback, used by any page that has not been
+ * given one of its own. That is what keeps this from being sixteen rows the
+ * team has to fill in before the feature does anything: set the default once
+ * and every page header has a photograph, then override the handful that
+ * deserve their own.
+ */
+export const pageHeaders = pgTable("page_headers", {
+  id: serial("id").primaryKey(),
+  /** A route such as `/contact`, or `*` for the site-wide default. */
+  path: varchar("path", { length: 120 }).notNull().unique(),
+  imageId: integer("image_id").references(() => media.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const opportunities = pgTable("opportunities", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),

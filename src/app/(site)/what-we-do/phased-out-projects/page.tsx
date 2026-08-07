@@ -36,6 +36,7 @@ export default async function PhasedOutProjectsPage() {
   return (
     <>
       <PageHeader
+        path="/what-we-do/phased-out-projects"
         breadcrumbs={[{ label: "What We Do", href: "/what-we-do" }]}
         eyebrow="PHASED-OUT PROJECTS"
         title="Work that has run its course"

@@ -205,6 +205,7 @@ export default async function PartnersPage() {
   return (
     <>
       <PageHeader
+        path="/get-involved/partners"
         breadcrumbs={[{ label: "Get Involved", href: "/get-involved" }]}
         eyebrow="PARTNER WITH US"
         title="Together, we can create lasting change"

@@ -31,6 +31,7 @@ export type CollectionKey =
   | "stories"
   | "programmes"
   | "publications"
+  | "pageHeaders"
   | "board"
   | "partners"
   | "opportunities"
@@ -113,6 +114,16 @@ export const collections: Entry[] = [
     description: "Organisations shown on the partner walls.",
     icon: Building2,
     group: "People",
+  },
+  {
+    key: "pageHeaders",
+    slug: "page-banners",
+    label: "Page banners",
+    singular: "page banner",
+    description:
+      "The photograph behind a page's title. Set the default once; override a page only if it deserves its own.",
+    icon: ImageIcon,
+    group: "Settings",
   },
   {
     key: "media",

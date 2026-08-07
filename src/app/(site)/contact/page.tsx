@@ -118,6 +118,7 @@ export default async function ContactPage() {
   return (
     <>
       <PageHeader
+        path="/contact"
         eyebrow="CONTACT"
         title="Let's connect"
         intro="Whether you have a question, would like to partner with us, make a donation, explore career opportunities, or simply learn more about our work, we would be delighted to hear from you."

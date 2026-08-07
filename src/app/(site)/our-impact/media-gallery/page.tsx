@@ -49,6 +49,7 @@ export default function MediaGalleryPage() {
   return (
     <>
       <PageHeader
+        path="/our-impact/media-gallery"
         breadcrumbs={[{ label: "Our Impact", href: "/our-impact" }]}
         eyebrow="MEDIA GALLERY"
         title="The work, as photographed"

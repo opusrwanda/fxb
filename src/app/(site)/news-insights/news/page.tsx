@@ -26,6 +26,7 @@ export default async function NewsPage() {
   return (
     <>
       <PageHeader
+        path="/news-insights/news"
         breadcrumbs={[{ label: "News & Insights", href: "/news-insights" }]}
         eyebrow="LATEST NEWS"
         title="News from FXB Rwanda"

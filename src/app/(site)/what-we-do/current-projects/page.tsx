@@ -36,6 +36,7 @@ export default async function CurrentProjectsPage() {
   return (
     <>
       <PageHeader
+        path="/what-we-do/current-projects"
         breadcrumbs={[{ label: "What We Do", href: "/what-we-do" }]}
         eyebrow="CURRENT PROJECTS"
         title="What we are running today"

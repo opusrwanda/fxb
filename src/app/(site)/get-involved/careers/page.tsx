@@ -33,6 +33,7 @@ export default async function CareersPage() {
   return (
     <>
       <PageHeader
+        path="/get-involved/careers"
         breadcrumbs={[{ label: "Get Involved", href: "/get-involved" }]}
         eyebrow="CAREERS"
         title={open ? "Join our team" : "Build a career with purpose"}

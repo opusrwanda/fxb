@@ -29,6 +29,7 @@ export default async function StoriesPage() {
   return (
     <>
       <PageHeader
+        path="/news-insights/stories"
         breadcrumbs={[{ label: "News & Insights", href: "/news-insights" }]}
         eyebrow="STORIES"
         title="People, not projects"

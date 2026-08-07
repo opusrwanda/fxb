@@ -230,6 +230,41 @@ export const fields: Record<string, Field[]> = {
     STATUS,
   ],
 
+  pageHeaders: [
+    {
+      name: "path",
+      label: "Page",
+      type: "select",
+      required: true,
+      help: "Every page uses the default unless it has its own banner here.",
+      // A list rather than a text box. The value is matched against the URL at
+      // render time, so a typo would not error — it would simply never appear,
+      // which is the worst kind of broken to debug from the outside.
+      options: [
+        { label: "Default — every page without its own", value: "*" },
+        { label: "Contact", value: "/contact" },
+        { label: "Partner With Us", value: "/get-involved/partners" },
+        { label: "Careers", value: "/get-involved/careers" },
+        { label: "Procurement", value: "/get-involved/procurement" },
+        { label: "Donate", value: "/get-involved/donate" },
+        { label: "Latest News", value: "/news-insights/news" },
+        { label: "Stories", value: "/news-insights/stories" },
+        { label: "Publications", value: "/news-insights/publications" },
+        { label: "Newsletters", value: "/news-insights/newsletters" },
+        { label: "Current Projects", value: "/what-we-do/current-projects" },
+        { label: "Phased-out Projects", value: "/what-we-do/phased-out-projects" },
+        { label: "Media Gallery", value: "/our-impact/media-gallery" },
+      ],
+    },
+    {
+      name: "imageId",
+      label: "Background photograph",
+      type: "upload",
+      accept: "image",
+      help: "Landscape, and busy at the edges rather than the middle — the title sits over the left of it. A dark scrim is laid over the whole picture so white type stays legible, so a bright photograph is fine.",
+    },
+  ],
+
   board: [
     { name: "name", label: "Name", type: "text", required: true, help: 'As it should appear, including any honorific — e.g. "Fr. Pierre Celestin NGOBOKA (PhD)".' },
     { name: "role", label: "Role", type: "text", required: true, help: "e.g. Chairperson." },

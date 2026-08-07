@@ -1,9 +1,10 @@
-import { asc, desc, sql } from "drizzle-orm";
+import { asc, desc, eq, sql } from "drizzle-orm";
 
 import {
   board,
   db,
   media,
+  pageHeaders,
   news,
   opportunities,
   partners,
@@ -62,6 +63,30 @@ const listings: Record<string, () => Promise<Listing>> = {
           { kind: "date", value: row.date },
           { kind: "muted", value: row.language === "fr" ? "French" : "English" },
           { kind: "status", value: row.status },
+        ],
+      })),
+    };
+  },
+
+  async pageHeaders() {
+    const rows = await db
+      .select({ id: pageHeaders.id, path: pageHeaders.path, filename: media.filename })
+      .from(pageHeaders)
+      .leftJoin(media, eq(pageHeaders.imageId, media.id))
+      .orderBy(pageHeaders.path);
+    return {
+      columns: ["Page", "Photograph"],
+      rows: rows.map((row) => ({
+        id: row.id,
+        cells: [
+          {
+            kind: "title" as const,
+            value: row.path === "*" ? "Default — every other page" : row.path,
+          },
+          {
+            kind: "muted" as const,
+            value: row.filename ?? "No image set",
+          },
         ],
       })),
     };
