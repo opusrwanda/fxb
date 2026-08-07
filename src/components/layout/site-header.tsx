@@ -35,7 +35,7 @@ export function SiteHeader({
   report: { title: string; slug: string } | null;
 }) {
   const pathname = usePathname();
-  const [pinned, setPinned] = useState(() => !hasTransparentHeader(pathname));
+  const [pinned, setPinned] = useState(() => !hasTransparentHeader());
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   /** href of the section whose hover panel is open, or null. Desktop only. */
@@ -50,7 +50,7 @@ export function SiteHeader({
   const [renderedPath, setRenderedPath] = useState(pathname);
   if (renderedPath !== pathname) {
     setRenderedPath(pathname);
-    setPinned(!hasTransparentHeader(pathname));
+    setPinned(!hasTransparentHeader());
     setDrawerOpen(false);
     setExpanded(null);
     setPanel(null);

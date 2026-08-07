@@ -190,15 +190,18 @@ export const socials = [
  * not listed here — Contact, Careers, Procurement, the publication listings —
  * opens onto white and keeps the header solid from scroll 0.
  */
-const TRANSPARENT_HEADER_ROUTES = [
-  "/",
-  "/who-we-are",
-  "/what-we-do",
-  "/our-impact",
-  "/news-insights",
-  "/get-involved",
-];
-
-export function hasTransparentHeader(pathname: string): boolean {
-  return TRANSPARENT_HEADER_ROUTES.includes(pathname);
+/**
+ * Every page, now that every page opens with the hero room.
+ *
+ * This was a list of six, and it had to be kept in step by hand with the pages
+ * that rendered `<Hero>` — the hazard its own comment above describes. That
+ * hazard is gone: `PageHeader` delegates to `Hero`, so there is no page left
+ * that opens on anything else, and no list to fall out of step.
+ *
+ * Safe against a page with no photograph, too. The room is `bg-blue` whether or
+ * not a picture is set, so the white lockup always has a dark ground under it —
+ * a transparent header can never end up white on white.
+ */
+export function hasTransparentHeader(): boolean {
+  return true;
 }

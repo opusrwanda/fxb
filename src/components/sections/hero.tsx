@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { HeroSentinels } from "@/components/layout/hero-sentinels";
 import { BackgroundVideo } from "@/components/ui/background-video";
@@ -7,6 +9,9 @@ import type { Img } from "@/cms/content/image";
 import { heroVideo } from "@/lib/media";
 
 type Cta = { label: string; href: string; primary?: boolean };
+
+/** A step in the trail above the eyebrow. */
+export type Crumb = { label: string; href: string };
 
 /** A figure carried at the fold. Kept to three — see the rail below. */
 export type HeroStat = { figure: string; label: string };
@@ -39,6 +44,7 @@ export function Hero({
   scrollTo,
   withVideo = false,
   image,
+  breadcrumbs = [],
 }: {
   eyebrow?: string;
   headline: string;
@@ -58,6 +64,14 @@ export function Hero({
    * Null and the room stays blue, exactly as it was.
    */
   image?: Img | null;
+  /**
+   * The trail above the eyebrow, for the pages that sit inside a section.
+   *
+   * Lives here rather than in a second component because every page on the
+   * site now opens with this room, and the ones that need a trail were the
+   * only reason a second opening block existed at all.
+   */
+  breadcrumbs?: Crumb[];
 }) {
   // Footage wins where there is any: the poster is a frame of it, so a still
   // behind the video would never be seen.
@@ -153,6 +167,28 @@ export function Hero({
           band in whatever height the rail leaves, instead of centring the two
           of them together and floating the rail off the bottom edge. */}
       <Container className="my-auto flex flex-col items-start gap-5 lg:gap-7">
+        {breadcrumbs.length > 0 && (
+          <nav aria-label="Breadcrumb" className="hero-rise">
+            <ol className="flex flex-wrap items-center gap-1.5 text-sm text-white-94">
+              {breadcrumbs.map((crumb, index) => (
+                <li key={crumb.href} className="flex items-center gap-1.5">
+                  <Link
+                    href={crumb.href}
+                    className="transition-colors duration-300 hover:text-white"
+                  >
+                    {crumb.label}
+                  </Link>
+                  {/* Between crumbs only. The current page is the `h1` just
+                      below, so a trailing chevron would point at nothing. */}
+                  {index < breadcrumbs.length - 1 && (
+                    <ChevronRight className="size-3.5" aria-hidden="true" />
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
+
         {eyebrow && (
           // The same eyebrow every other section on the site opens with — green
           // rule, tracked caps — rather than the pill this used to carry. A
