@@ -53,9 +53,20 @@ export function StaffNav({ user }: { user: StaffUser }) {
         />
 
         {GROUPS.map((group) => {
-          const entries = [...collections, ...mailing, ...globals].filter(
-            (entry) => entry.group === group,
-          );
+          // The href comes from what the entry *is*, not from the heading it
+          // happens to sit under. This used to read `group === "Settings"` and
+          // send anything in that group to /staff/globals/…, which was true
+          // only for as long as Settings held nothing but globals — the first
+          // collection filed there linked straight to a 404. A group is a
+          // heading in this sidebar; it was never meant to decide a route.
+          const entries = [
+            ...collections.map((entry) => ({ ...entry, href: `/staff/${entry.slug}` })),
+            ...mailing.map((entry) => ({ ...entry, href: `/staff/${entry.slug}` })),
+            ...globals.map((entry) => ({
+              ...entry,
+              href: `/staff/globals/${entry.slug}`,
+            })),
+          ].filter((entry) => entry.group === group);
           if (entries.length === 0) return null;
 
           return (
@@ -63,21 +74,15 @@ export function StaffNav({ user }: { user: StaffUser }) {
               <h2 className="px-3 pb-1 text-[11px] font-semibold tracking-[0.14em] text-white-70 uppercase">
                 {group}
               </h2>
-              {entries.map((entry) => {
-                const href =
-                  entry.group === "Settings"
-                    ? `/staff/globals/${entry.slug}`
-                    : `/staff/${entry.slug}`;
-                return (
-                  <NavLink
-                    key={entry.key}
-                    href={href}
-                    label={entry.label}
-                    icon={entry.icon}
-                    active={isActive(href)}
-                  />
-                );
-              })}
+              {entries.map((entry) => (
+                <NavLink
+                  key={entry.key}
+                  href={entry.href}
+                  label={entry.label}
+                  icon={entry.icon}
+                  active={isActive(entry.href)}
+                />
+              ))}
             </div>
           );
         })}
