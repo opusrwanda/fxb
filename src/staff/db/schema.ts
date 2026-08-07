@@ -1,3 +1,4 @@
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import {
   boolean,
   date,
@@ -197,6 +198,24 @@ export const programmes = pgTable("programmes", {
    * both being called "status" is how an editor picks the wrong one.
    */
   stage: varchar("stage", { length: 20 }).notNull().default("current"),
+  /**
+   * The programme this one sits under, or null for a top-level programme.
+   *
+   * FXBVillage is not one project — it is the model, delivered as a series of
+   * them, each in its own place and with its own partner: Mageragere in
+   * Nyarugenge, the one run with The Light Foundation, and whichever starts
+   * next. They were a single row, so the site could name the model but never
+   * the projects inside it, and adding October's would have meant either
+   * editing the name of an existing row or losing the grouping.
+   *
+   * A self-reference rather than a separate table: a sub-programme is a
+   * programme. It has districts, a funder, a period and a photograph like any
+   * other, and everything that already reads this table — the map, the
+   * listings, the counts — keeps working without knowing about the hierarchy.
+   */
+  parentId: integer("parent_id").references((): AnyPgColumn => programmes.id, {
+    onDelete: "set null",
+  }),
   /** Lower numbers first. Null sorts to the end, then by name. */
   order: integer("order"),
   /** District names, matching `src/lib/districts.ts` — the map matches on them. */

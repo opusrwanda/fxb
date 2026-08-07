@@ -7,6 +7,7 @@ import { mainFields, sidebarFields } from "@/staff/fields";
 import {
   getDocument,
   getMediaOptions,
+  getParentOptions,
   isCollection,
   richTextToEditorJson,
   saveDocument,
@@ -54,9 +55,12 @@ export default async function EditPage({
   const numericId = creating ? null : Number(id);
   if (!creating && !Number.isInteger(numericId)) notFound();
 
-  const [document, mediaOptions] = await Promise.all([
+  const [document, mediaOptions, parentOptions] = await Promise.all([
     creating ? null : getDocument(entry.key, numericId as number),
     getMediaOptions(),
+    // A programme cannot be its own parent, so the row being edited is not on
+    // the list it is choosing from.
+    getParentOptions(creating ? null : (numericId as number)),
   ]);
 
   if (!creating && !document) notFound();
@@ -151,6 +155,7 @@ export default async function EditPage({
               field={field}
               value={valueOf(field.name, field.type)}
               mediaOptions={mediaOptions}
+                  parentOptions={parentOptions}
             />
           ))}
         </div>
@@ -163,6 +168,7 @@ export default async function EditPage({
                 field={field}
                 value={valueOf(field.name, field.type)}
                 mediaOptions={mediaOptions}
+                  parentOptions={parentOptions}
               />
             ))}
           </div>

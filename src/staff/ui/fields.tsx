@@ -13,6 +13,8 @@ import { RichTextEditor } from "./editor";
  * guidance lives in a wiki is an admin where the guidance is not read.
  */
 
+type ParentOption = { id: number; name: string };
+
 type MediaOption = {
   id: number;
   filename: string;
@@ -27,10 +29,12 @@ export function FormField({
   field,
   value,
   mediaOptions,
+  parentOptions,
 }: {
   field: Field;
   value: unknown;
   mediaOptions: MediaOption[];
+  parentOptions: ParentOption[];
 }) {
   const id = `field-${field.name}`;
   const help = field.help ? `${id}-help` : undefined;
@@ -53,7 +57,7 @@ export function FormField({
         </p>
       )}
 
-      <Control field={field} id={id} help={help} value={value} mediaOptions={mediaOptions} />
+      <Control field={field} id={id} help={help} value={value} mediaOptions={mediaOptions} parentOptions={parentOptions} />
     </div>
   );
 }
@@ -64,12 +68,14 @@ function Control({
   help,
   value,
   mediaOptions,
+  parentOptions,
 }: {
   field: Field;
   id: string;
   help?: string;
   value: unknown;
   mediaOptions: MediaOption[];
+  parentOptions: ParentOption[];
 }) {
   const shared = {
     id,
@@ -162,6 +168,19 @@ function Control({
             </label>
           ))}
         </fieldset>
+      );
+    }
+
+    case "parent": {
+      return (
+        <select {...shared} defaultValue={value ? String(value) : ""} className={inputClass}>
+          <option value="">— a programme in its own right —</option>
+          {parentOptions.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.name}
+            </option>
+          ))}
+        </select>
       );
     }
 

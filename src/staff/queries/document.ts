@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, isNull } from "drizzle-orm";
 
 import {
   board,
@@ -70,6 +70,23 @@ export async function getDocument(
     .limit(1);
 
   return (rows[0] as Record<string, unknown> | undefined) ?? null;
+}
+
+/**
+ * Everything that can be picked as a parent programme.
+ *
+ * Top-level programmes only: a sub-programme cannot itself have children, which
+ * keeps the hierarchy one level deep. Two levels would be a tree, and a tree
+ * needs a navigation to match — this is a model with projects under it.
+ */
+export async function getParentOptions(excludeId: number | null) {
+  const rows = await db
+    .select({ id: programmes.id, name: programmes.name })
+    .from(programmes)
+    .where(isNull(programmes.parentId))
+    .orderBy(asc(programmes.name));
+
+  return rows.filter((row) => row.id !== excludeId);
 }
 
 /** Everything that can be picked in an upload field. */
@@ -186,7 +203,9 @@ function coerce(
       return value === "" ? null : Number(value);
     }
 
-    case "upload": {
+    case "upload":
+    // A parent is an id chosen from a list, exactly like an upload.
+    case "parent": {
       const value = String(raw ?? "").trim();
       return value === "" ? null : Number(value);
     }

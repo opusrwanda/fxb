@@ -14,6 +14,10 @@ import { image, type Img } from "./image";
  * a single field in the panel and every one of those follows.
  */
 export type Programme = {
+  /** Row id, so a parent can be matched to its children. */
+  id: number;
+  /** The programme this one sits under, or null. */
+  parentId: number | null;
   slug: string;
   name: string;
   /** District names, matching `src/lib/districts.ts` — the map matches on them. */
@@ -44,6 +48,8 @@ const toProgramme = ({ programme: p, photo }: Row): Programme => ({
   name: p.name,
   districts: p.districts ?? [],
   current: p.stage !== "phased-out",
+  parentId: p.parentId,
+  id: p.id,
   summary: p.summary ?? undefined,
   body: p.body,
   runs: p.runs ?? undefined,
@@ -94,4 +100,37 @@ export async function getCurrentProgrammes(): Promise<Programme[]> {
 
 export async function getPhasedOutProgrammes(): Promise<Programme[]> {
   return (await getProgrammes()).filter((programme) => !programme.current);
+}
+
+/** A top-level programme with whatever sits under it. */
+export type ProgrammeGroup = Programme & { children: Programme[] };
+
+/**
+ * The running programmes, with sub-programmes nested under their parent.
+ *
+ * FXBVillage is the case this exists for: the model is delivered as a series of
+ * projects — Mageragere in Nyarugenge, the one run with The Light Foundation,
+ * and whichever starts next — and they are programmes in their own right with
+ * their own districts, funders and periods. Flat, the section could name the
+ * model or the projects but not both.
+ *
+ * A child whose parent is not itself running is promoted to the top level
+ * rather than disappearing. Phasing out a parent should not silently take four
+ * live projects off the site with it.
+ */
+export async function getProgrammeGroups(): Promise<ProgrammeGroup[]> {
+  const running = await getCurrentProgrammes();
+  const byId = new Map(running.map((p) => [p.id, p]));
+
+  const groups = running
+    .filter((p) => p.parentId === null || !byId.has(p.parentId))
+    .map((p) => ({ ...p, children: [] as Programme[] }));
+
+  const groupById = new Map(groups.map((g) => [g.id, g]));
+  for (const p of running) {
+    if (p.parentId === null) continue;
+    groupById.get(p.parentId)?.children.push(p);
+  }
+
+  return groups;
 }

@@ -1,0 +1,2 @@
+ALTER TABLE "programmes" ADD COLUMN "parent_id" integer;--> statement-breakpoint
+ALTER TABLE "programmes" ADD CONSTRAINT "programmes_parent_id_programmes_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."programmes"("id") ON DELETE set null ON UPDATE no action;

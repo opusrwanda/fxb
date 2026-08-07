@@ -4,7 +4,8 @@ import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
-import { getCurrentProgrammes } from "@/cms/content/programmes";
+import { getProgrammeGroups } from "@/cms/content/programmes";
+import type { Programme } from "@/cms/content/programmes";
 
 /**
  * The programmes running today.
@@ -30,10 +31,9 @@ import { getCurrentProgrammes } from "@/cms/content/programmes";
  * gives: a hand-typed "six programmes" is wrong the first time one ends.
  */
 export async function Programmes() {
-  const programmes = await getCurrentProgrammes();
-  const districtCount = new Set(
-    programmes.flatMap((programme) => programme.districts),
-  ).size;
+  const groups = await getProgrammeGroups();
+  const all = groups.flatMap((group) => [group, ...group.children]);
+  const districtCount = new Set(all.flatMap((p) => p.districts)).size;
 
   return (
     <section id="programmes" className="scroll-mt-36 bg-white py-24 lg:py-32">
@@ -51,19 +51,111 @@ export async function Programmes() {
             </h2>
           </div>
           <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
-            {programmes.length} programmes across {districtCount} districts,
+            {all.length} programmes across {districtCount} districts,
             delivered with government, donors and community partners. The
             FXBVillage model runs alongside all of them.
           </p>
         </Reveal>
 
         <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-          {programmes.map((project, index) => (
+          {groups.map((group, index) => (
             <Reveal
               as="li"
-              key={project.slug}
+              key={group.slug}
               delay={60 + Math.min(index, 3) * 60}
+              // A programme with projects under it takes the full row, because
+              // the blocks have to sit beside it rather than under the grid.
+              className={group.children.length > 0 ? "sm:col-span-2 lg:col-span-3" : ""}
             >
+              {group.children.length > 0 ? (
+                <Group group={group} />
+              ) : (
+                <Card project={group} />
+              )}
+            </Reveal>
+          ))}
+        </ul>
+
+        <Reveal delay={540} className="mt-12 flex flex-wrap gap-4">
+          <Pill href="/what-we-do/current-projects" variant="outline" size="lg">
+            Programme details
+          </Pill>
+          <Pill href="/who-we-are#where-we-work" size="lg">
+            See where we work
+          </Pill>
+        </Reveal>
+      </Container>
+    </section>
+  );
+}
+
+/**
+ * A programme that is delivered as several projects.
+ *
+ * FXBVillage is the one this exists for. It is a model rather than a project,
+ * and the projects under it — Mageragere in Nyarugenge, the one with The Light
+ * Foundation, whichever starts next — each have their own districts, funder and
+ * period. A flat grid could name the model or the projects; it could not say
+ * that these belong to that.
+ *
+ * The parent keeps its own card and the children sit beside it under a rule, so
+ * adding October's project is a row in `/staff` with "Part of: FXBVillage" set
+ * and nothing here to change.
+ */
+function Group({
+  group,
+}: {
+  group: Programme & { children: Programme[] };
+}) {
+  return (
+    <div className="wedge border border-gray-15 p-6 lg:p-8">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
+        <div className="lg:w-72 lg:shrink-0">
+          <Card project={group} />
+        </div>
+
+        <div className="flex-1 lg:border-l lg:border-gray-15 lg:pl-10">
+          <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+            {group.children.length} PROJECT
+            {group.children.length === 1 ? "" : "S"} UNDER THIS MODEL
+          </p>
+          <ul className="mt-5 grid gap-4 sm:grid-cols-2">
+            {group.children.map((child) => (
+              <li key={child.slug}>
+                <Link
+                  href={`/what-we-do/programmes/${child.slug}`}
+                  className="group flex h-full flex-col gap-2 border-t border-gray-15 pt-4 transition-colors duration-500 hover:border-blue"
+                >
+                  <span className="flex items-start justify-between gap-3">
+                    <span className="text-lg leading-snug font-semibold tracking-[-0.02em] text-blue">
+                      {child.name}
+                    </span>
+                    <ArrowUpRight
+                      className="mt-1 size-4 shrink-0 text-gray-80 transition-colors duration-500 group-hover:text-blue"
+                      aria-hidden="true"
+                    />
+                  </span>
+                  {child.districts.length > 0 && (
+                    <span className="text-[15px] leading-snug text-gray">
+                      {child.districts.join(" · ")}
+                    </span>
+                  )}
+                  {child.runs && (
+                    <span className="text-sm text-gray-80">{child.runs}</span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Card({ project }: { project: Programme }) {
+  return (
+    <>
               {/* The whole card is the link now. It used to be the name only,
                     and only on the two programmes that happened to have an
                     `href` — so four of the six cards were not clickable at all
@@ -114,19 +206,6 @@ export async function Programmes() {
                   </p>
                 </div>
               </Link>
-            </Reveal>
-          ))}
-        </ul>
-
-        <Reveal delay={540} className="mt-12 flex flex-wrap gap-4">
-          <Pill href="/what-we-do/current-projects" variant="outline" size="lg">
-            Programme details
-          </Pill>
-          <Pill href="/who-we-are#where-we-work" size="lg">
-            See where we work
-          </Pill>
-        </Reveal>
-      </Container>
-    </section>
+    </>
   );
 }

@@ -28,6 +28,7 @@ export type Field = {
     | "select"
     | "multiselect"
     | "upload"
+    | "parent"
     | "list"
     | "richtext";
   help?: string;
@@ -147,6 +148,13 @@ export const fields: Record<string, Field[]> = {
       label: "What it delivers",
       type: "list",
       help: "One per line.",
+    },
+    {
+      name: "parentId",
+      label: "Part of",
+      type: "parent",
+      sidebar: true,
+      help: "Leave blank for a programme in its own right. Set it to FXBVillage for one of the FXBVillage projects — Mageragere, The Light Foundation, and whichever starts next — and it appears as a block under FXBVillage rather than beside it.",
     },
     SLUG("sugira-muryango"),
     {
