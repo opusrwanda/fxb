@@ -48,7 +48,7 @@ export function OfficeMap({ details }: { details: SiteDetails }) {
         <MapPin className="size-4 shrink-0" aria-hidden="true" />
         Get directions
         <ArrowUpRight
-          className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
           aria-hidden="true"
         />
         <span className="sr-only">(opens in a new tab)</span>

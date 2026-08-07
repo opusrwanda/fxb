@@ -114,7 +114,7 @@ export default async function EditPage({
     <div className="mx-auto max-w-5xl">
       <Link
         href={`/staff/${entry.slug}`}
-        className="inline-flex items-center gap-2 text-sm font-medium text-gray-80 transition-colors duration-200 hover:text-blue"
+        className="inline-flex items-center gap-2 text-sm font-medium text-gray-80 transition-colors duration-300 hover:text-blue"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         {entry.label}
@@ -169,7 +169,7 @@ export default async function EditPage({
 
           <button
             type="submit"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-200 hover:bg-blue-90"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
           >
             {creating ? `Create ${entry.singular}` : "Save changes"}
           </button>

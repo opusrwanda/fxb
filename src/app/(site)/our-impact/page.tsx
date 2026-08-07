@@ -68,7 +68,7 @@ export default async function OurImpactPage() {
               </h2>
             </Reveal>
 
-            <Reveal delay={80} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
+            <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
               <p className="max-w-[38ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
                 Our impact is measured not only by the number of people reached,
                 but by the lives transformed, families strengthened, and

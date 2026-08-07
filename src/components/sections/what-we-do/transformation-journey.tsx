@@ -117,7 +117,7 @@ export function TransformationJourney() {
                       aria-hidden="true"
                     >
                       <span
-                        className={`motion-transform block size-full origin-top bg-white transition-transform duration-[420ms] ease-out lg:origin-left ${
+                        className={`motion-transform block size-full origin-top bg-white transition-transform duration-700 ease-(--ease-standard) lg:origin-left ${
                           shown
                             ? "scale-100"
                             : "scale-y-0 lg:scale-x-0 lg:scale-y-100"
@@ -129,7 +129,7 @@ export function TransformationJourney() {
                 )}
 
                 <span
-                  className={`motion-transform relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full bg-white transition-transform duration-[420ms] ease-out ${
+                  className={`motion-transform relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full bg-white transition-transform duration-700 ease-(--ease-standard) ${
                     shown ? "scale-100" : "scale-0"
                   }`}
                   style={{ transitionDelay: delay(index, 140) }}
@@ -140,7 +140,7 @@ export function TransformationJourney() {
                 </span>
 
                 <div
-                  className={`motion-transform pb-2 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:mt-9 ${
+                  className={`motion-transform pb-2 transition-[opacity,transform,translate,scale,rotate] duration-700 ease-(--ease-standard) lg:mt-9 ${
                     shown ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
                   }`}
                   style={{ transitionDelay: delay(index, 220) }}

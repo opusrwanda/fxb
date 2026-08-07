@@ -61,7 +61,7 @@ export function ModelIntro() {
           ))}
         </div>
 
-        <Reveal delay={240} className="mt-20">
+        <Reveal delay={430} className="mt-20">
           <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
             MAIN CHALLENGES
           </p>

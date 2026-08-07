@@ -80,7 +80,7 @@ export function WhoWeAre() {
             </h2>
           </Reveal>
 
-          <Reveal delay={80} className="lg:col-span-7 lg:col-start-6 lg:row-start-1">
+          <Reveal delay={140} className="lg:col-span-7 lg:col-start-6 lg:row-start-1">
             <p className="max-w-[38ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[32px]">
               A Rwandan NGO that began in the aftermath of the 1994 Genocide
               against the Tutsi, and never left.
@@ -91,7 +91,7 @@ export function WhoWeAre() {
               mark. Capped in height on a phone, where a 4:5 crop at full width
               is 480px of an 844px screen for a single supporting image. */}
           <Reveal
-            delay={160}
+            delay={290}
             className="lg:col-span-4 lg:col-start-1 lg:row-start-2"
           >
             <div className="wedge relative aspect-4/5 max-h-[60svh] overflow-hidden lg:max-h-none">
@@ -112,7 +112,7 @@ export function WhoWeAre() {
           </Reveal>
 
           <Reveal
-            delay={240}
+            delay={430}
             className="flex flex-col items-start gap-9 lg:col-span-7 lg:col-start-6 lg:row-start-2"
           >
             <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
@@ -149,9 +149,9 @@ export function WhoWeAre() {
               className="group flex items-center gap-3 text-lg font-semibold text-blue"
             >
               Read our story
-              <span className="flex size-9 items-center justify-center rounded-full border border-gray-15 transition-colors duration-300 group-hover:border-blue group-hover:bg-blue">
+              <span className="flex size-9 items-center justify-center rounded-full border border-gray-15 transition-colors duration-500 group-hover:border-blue group-hover:bg-blue">
                 <ArrowRight
-                  className="size-4 transition-colors duration-300 group-hover:text-white"
+                  className="size-4 transition-colors duration-500 group-hover:text-white"
                   aria-hidden="true"
                 />
               </span>

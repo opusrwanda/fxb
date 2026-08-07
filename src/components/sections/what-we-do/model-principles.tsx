@@ -32,7 +32,7 @@ export function ModelPrinciples() {
             </p>
           </Reveal>
 
-          <Reveal delay={80} className="lg:col-span-7 lg:col-start-6">
+          <Reveal delay={140} className="lg:col-span-7 lg:col-start-6">
             <Accordion
               items={principles.map((principle) => ({
                 id: principle.id,

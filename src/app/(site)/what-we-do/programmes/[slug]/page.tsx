@@ -171,7 +171,7 @@ export default async function ProgrammePage({
               )}
             </Reveal>
 
-            <Reveal delay={80} className="lg:col-span-4 lg:col-start-9">
+            <Reveal delay={140} className="lg:col-span-4 lg:col-start-9">
               {/* The facts rail. Every row is optional and simply absent when
                   the data has nothing for it, so a programme with a funder but
                   no period does not render an empty label. */}
@@ -227,7 +227,7 @@ export default async function ProgrammePage({
                 >
                   Visit the programme system
                   <ArrowUpRight
-                    className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                     aria-hidden="true"
                   />
                   {external && (
@@ -239,7 +239,7 @@ export default async function ProgrammePage({
           </div>
 
           <Reveal
-            delay={160}
+            delay={290}
             className="flex flex-wrap gap-4 border-t border-gray-15 pt-12"
           >
             <Pill href="/what-we-do#programmes" variant="outline" size="lg">

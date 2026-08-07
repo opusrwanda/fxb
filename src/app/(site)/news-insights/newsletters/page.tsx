@@ -59,7 +59,7 @@ export default async function NewslettersPage() {
                   <a
                     href={issue.file?.url ?? "#"}
                     download
-                    className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-300 hover:border-blue"
+                    className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-500 hover:border-blue"
                   >
                     {issue.cover && (
                       <span className="relative block aspect-3/4 overflow-hidden bg-blue-08">
@@ -68,7 +68,7 @@ export default async function NewslettersPage() {
                           alt=""
                           fill
                           sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                          className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                          className="motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
                         />
                       </span>
                     )}

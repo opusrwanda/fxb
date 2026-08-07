@@ -151,7 +151,7 @@ export default async function ContactPage() {
                     <span className="block text-sm text-gray-80">
                       Office address
                     </span>
-                    <span className="block text-base leading-snug text-gray transition-colors duration-200 group-hover:text-blue">
+                    <span className="block text-base leading-snug text-gray transition-colors duration-300 group-hover:text-blue">
                       {details.address.line}, {details.address.district},{" "}
                       {details.address.country}
                     </span>
@@ -167,7 +167,7 @@ export default async function ContactPage() {
                   </span>
                   <span>
                     <span className="block text-sm text-gray-80">Phone</span>
-                    <span className="block text-base text-gray transition-colors duration-200 group-hover:text-blue">
+                    <span className="block text-base text-gray transition-colors duration-300 group-hover:text-blue">
                       {details.phone}
                     </span>
                   </span>
@@ -182,7 +182,7 @@ export default async function ContactPage() {
                   </span>
                   <span>
                     <span className="block text-sm text-gray-80">Email</span>
-                    <span className="block text-base text-gray transition-colors duration-200 group-hover:text-blue">
+                    <span className="block text-base text-gray transition-colors duration-300 group-hover:text-blue">
                       {details.email}
                     </span>
                   </span>
@@ -223,7 +223,7 @@ export default async function ContactPage() {
                         target="_blank"
                         rel="noreferrer noopener"
                         aria-label={`${details.name} on ${social.label}`}
-                        className="flex size-11 items-center justify-center rounded-full border border-gray-15 text-blue transition-colors duration-200 hover:border-blue hover:bg-blue hover:text-white"
+                        className="flex size-11 items-center justify-center rounded-full border border-gray-15 text-blue transition-colors duration-300 hover:border-blue hover:bg-blue hover:text-white"
                       >
                         <SocialIcon name={social.icon} />
                       </a>
@@ -234,7 +234,7 @@ export default async function ContactPage() {
                   href={details.linktree}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="mt-5 inline-block text-[15px] font-medium text-blue underline underline-offset-4 transition-colors duration-200 hover:text-green"
+                  className="mt-5 inline-block text-[15px] font-medium text-blue underline underline-offset-4 transition-colors duration-300 hover:text-green"
                 >
                   All our links in one place
                 </a>
@@ -242,7 +242,7 @@ export default async function ContactPage() {
             </Reveal>
 
             {/* Send us a message */}
-            <Reveal delay={100} className="flex flex-col gap-8">
+            <Reveal delay={180} className="flex flex-col gap-8">
               <div>
                 <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                   SEND US A MESSAGE
@@ -278,7 +278,7 @@ export default async function ContactPage() {
             </Pill>
           </Reveal>
 
-          <Reveal delay={80} className="mt-10">
+          <Reveal delay={140} className="mt-10">
             <OfficeMap details={details} />
           </Reveal>
         </Container>
@@ -300,7 +300,7 @@ export default async function ContactPage() {
               </h2>
             </Reveal>
 
-            <Reveal delay={80} className="lg:col-span-7 lg:col-start-6">
+            <Reveal delay={140} className="lg:col-span-7 lg:col-start-6">
               <Accordion
                 defaultOpen={null}
                 items={faqs.map((faq) => ({

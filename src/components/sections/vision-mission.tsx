@@ -77,7 +77,7 @@ export function VisionMission({ details }: { details: SiteDetails }) {
         </Reveal>
 
         <div className="mt-14 grid gap-12 lg:grid-cols-2 lg:gap-20">
-          <Reveal delay={80}>
+          <Reveal delay={140}>
             <h2 className="text-xs font-semibold tracking-[0.14em] text-white-94">
               OUR VISION
             </h2>
@@ -90,7 +90,7 @@ export function VisionMission({ details }: { details: SiteDetails }) {
             </p>
           </Reveal>
 
-          <Reveal delay={160}>
+          <Reveal delay={290}>
             <h2 className="text-xs font-semibold tracking-[0.14em] text-white-94">
               OUR MISSION
             </h2>
@@ -100,7 +100,7 @@ export function VisionMission({ details }: { details: SiteDetails }) {
           </Reveal>
         </div>
 
-        <Reveal delay={240} className="mt-16 lg:mt-24">
+        <Reveal delay={430} className="mt-16 lg:mt-24">
           <div className="h-px w-full bg-white-12" aria-hidden="true" />
           <h2 className="mt-12 text-xs font-semibold tracking-[0.14em] text-white-94">
             OUR GUIDING VALUES

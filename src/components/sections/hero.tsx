@@ -210,7 +210,7 @@ export function Hero({
               // spare there anyway.
               <a
                 href={scrollTo}
-                className="group hidden shrink-0 items-center gap-4 pb-1 text-[11px] font-semibold tracking-[0.18em] text-white-94 transition-colors duration-200 hover:text-white lg:flex"
+                className="group hidden shrink-0 items-center gap-4 pb-1 text-[11px] font-semibold tracking-[0.18em] text-white-94 transition-colors duration-300 hover:text-white lg:flex"
               >
                 SCROLL
                 {/* Unlit rule, lit segment falling down it. The overflow clip is

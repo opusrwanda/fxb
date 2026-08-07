@@ -44,7 +44,7 @@ export function AnnualReportBanner({
         >
           <span className="truncate">Read our {report.title}</span>
           <ArrowRight
-            className="size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
+            className="size-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5"
             aria-hidden="true"
           />
         </Link>

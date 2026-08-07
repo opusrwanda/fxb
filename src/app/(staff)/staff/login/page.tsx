@@ -104,7 +104,7 @@ export default async function LoginPage({
 
           <button
             type="submit"
-            className="mt-2 inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-200 hover:bg-blue-90"
+            className="mt-2 inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
           >
             Sign in
           </button>
@@ -138,7 +138,7 @@ function Field({
         defaultValue={defaultValue}
         autoComplete={autoComplete}
         required={required}
-        className="h-12 rounded-card border border-gray-15 bg-white px-4 text-base text-gray transition-colors duration-200 outline-none focus:border-blue"
+        className="h-12 rounded-card border border-gray-15 bg-white px-4 text-base text-gray transition-colors duration-300 outline-none focus:border-blue"
       />
     </label>
   );

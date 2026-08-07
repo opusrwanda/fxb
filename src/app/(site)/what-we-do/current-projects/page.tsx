@@ -61,11 +61,11 @@ export default async function CurrentProjectsPage() {
                           {...(project.href.startsWith("http")
                             ? { target: "_blank", rel: "noreferrer noopener" }
                             : {})}
-                          className="group inline-flex items-start gap-2 transition-colors duration-200 hover:text-green"
+                          className="group inline-flex items-start gap-2 transition-colors duration-300 hover:text-green"
                         >
                           {project.name}
                           <ArrowUpRight
-                            className="mt-1 size-5 shrink-0 text-gray-80 transition-colors duration-200 group-hover:text-green"
+                            className="mt-1 size-5 shrink-0 text-gray-80 transition-colors duration-300 group-hover:text-green"
                             aria-hidden="true"
                           />
                         </Link>
@@ -102,7 +102,7 @@ export default async function CurrentProjectsPage() {
             ))}
           </ul>
 
-          <Reveal delay={120} className="mt-14 flex flex-wrap gap-4">
+          <Reveal delay={220} className="mt-14 flex flex-wrap gap-4">
             <Pill href="/who-we-are#where-we-work" variant="primary" size="lg">
               See these on the map
             </Pill>

@@ -71,7 +71,7 @@ export async function Programmes() {
                     programme. */}
               <Link
                 href={`/what-we-do/programmes/${project.slug}`}
-                className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-300 hover:border-blue"
+                className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-500 hover:border-blue"
               >
                 {project.image && (
                   <div className="relative aspect-16/10 overflow-hidden bg-blue-08">
@@ -80,7 +80,7 @@ export async function Programmes() {
                       alt={project.image.alt}
                       fill
                       sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                      className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                      className="motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
                     />
                   </div>
                 )}
@@ -91,9 +91,9 @@ export async function Programmes() {
                       {project.name}
                     </h3>
 
-                    <span className="wedge-nudge motion-transform mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-08 transition-colors duration-300 group-hover:bg-blue">
+                    <span className="wedge-nudge motion-transform mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-08 transition-colors duration-500 group-hover:bg-blue">
                       <ArrowUpRight
-                        className="size-4 text-blue transition-colors duration-300 group-hover:text-white"
+                        className="size-4 text-blue transition-colors duration-500 group-hover:text-white"
                         aria-hidden="true"
                       />
                     </span>
@@ -118,7 +118,7 @@ export async function Programmes() {
           ))}
         </ul>
 
-        <Reveal delay={300} className="mt-12 flex flex-wrap gap-4">
+        <Reveal delay={540} className="mt-12 flex flex-wrap gap-4">
           <Pill href="/what-we-do/current-projects" variant="outline" size="lg">
             Programme details
           </Pill>

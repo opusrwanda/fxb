@@ -89,7 +89,7 @@ export default async function DonatePage() {
               </p>
             </Reveal>
 
-            <Reveal delay={100}>
+            <Reveal delay={180}>
               <div className="wedge bg-blue-08 p-8 lg:p-10">
                 <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                   Make a donation
@@ -131,13 +131,13 @@ export default async function DonatePage() {
                 <div className="mt-4 flex flex-col gap-1.5">
                   <a
                     href={`mailto:${details.email}`}
-                    className="text-base font-semibold text-blue underline underline-offset-4 transition-colors duration-200 hover:text-green"
+                    className="text-base font-semibold text-blue underline underline-offset-4 transition-colors duration-300 hover:text-green"
                   >
                     {details.email}
                   </a>
                   <a
                     href={`tel:${details.phoneHref}`}
-                    className="text-base font-semibold text-blue underline underline-offset-4 transition-colors duration-200 hover:text-green"
+                    className="text-base font-semibold text-blue underline underline-offset-4 transition-colors duration-300 hover:text-green"
                   >
                     {details.phone}
                   </a>

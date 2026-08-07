@@ -26,7 +26,7 @@ export async function generateMetadata({
 }
 
 const input =
-  "w-full rounded-card border border-gray-15 bg-white px-4 py-3 text-[15px] text-gray transition-colors duration-200 outline-none focus:border-blue";
+  "w-full rounded-card border border-gray-15 bg-white px-4 py-3 text-[15px] text-gray transition-colors duration-300 outline-none focus:border-blue";
 
 function Field({
   label,
@@ -122,7 +122,7 @@ export default async function GlobalPage({
     <div className="mx-auto max-w-3xl">
       <Link
         href="/staff"
-        className="inline-flex items-center gap-2 text-sm font-medium text-gray-80 transition-colors duration-200 hover:text-blue"
+        className="inline-flex items-center gap-2 text-sm font-medium text-gray-80 transition-colors duration-300 hover:text-blue"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         Dashboard
@@ -318,7 +318,7 @@ export default async function GlobalPage({
 
         <button
           type="submit"
-          className="inline-flex h-12 w-fit items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-200 hover:bg-blue-90"
+          className="inline-flex h-12 w-fit items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
         >
           Save changes
         </button>

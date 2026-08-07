@@ -99,7 +99,7 @@ export function SectionNav({ sections }: { sections: Section[] }) {
                   href={`#${section.id}`}
                   data-id={section.id}
                   aria-current={current ? "true" : undefined}
-                  className={`relative flex items-center py-4 text-[15px] font-medium whitespace-nowrap transition-colors duration-200 lg:py-5 ${
+                  className={`relative flex items-center py-4 text-[15px] font-medium whitespace-nowrap transition-colors duration-300 lg:py-5 ${
                     current ? "text-blue" : "text-gray-80 hover:text-blue"
                   }`}
                 >
@@ -107,7 +107,7 @@ export function SectionNav({ sections }: { sections: Section[] }) {
                   {/* The same green underline the header uses for the current
                       section, so "you are here" means one thing on this site. */}
                   <span
-                    className={`motion-size absolute inset-x-3 bottom-0 h-0.5 origin-left bg-green transition-transform duration-300 ease-out ${
+                    className={`motion-size absolute inset-x-3 bottom-0 h-0.5 origin-left bg-green transition-transform duration-500 ease-(--ease-standard) ${
                       current ? "scale-x-100" : "scale-x-0"
                     }`}
                     aria-hidden="true"

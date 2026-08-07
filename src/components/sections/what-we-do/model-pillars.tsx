@@ -85,7 +85,7 @@ export function ModelPillars() {
             />
           </Reveal>
 
-          <Reveal delay={120} className="order-first lg:order-none">
+          <Reveal delay={220} className="order-first lg:order-none">
             <div className="wedge relative aspect-4/5 overflow-hidden lg:sticky lg:top-28">
               <Image
                 src={image.url}

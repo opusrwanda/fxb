@@ -70,7 +70,7 @@ export function Approach() {
               </h2>
             </Reveal>
 
-            <Reveal delay={80} className="lg:col-span-5 lg:col-start-8">
+            <Reveal delay={140} className="lg:col-span-5 lg:col-start-8">
               <p className="text-xl leading-[1.45] font-medium text-blue lg:text-[23px]">
                 At FXB Rwanda, we believe that lasting change happens when
                 families and communities are equipped with the knowledge,
@@ -83,7 +83,7 @@ export function Approach() {
               400-pixel grey run in the middle of the page with nothing to
               break it; side by side each is four lines and reads at a glance. */}
           <div className="mt-14 grid gap-x-10 gap-y-6 lg:mt-16 lg:grid-cols-2 lg:gap-x-16">
-            <Reveal delay={160}>
+            <Reveal delay={290}>
               <p className="max-w-[54ch] text-base leading-relaxed text-gray lg:text-[17px]">
                 Our work goes beyond addressing immediate needs. We implement
                 integrated, community-centred programmes that strengthen
@@ -92,7 +92,7 @@ export function Approach() {
               </p>
             </Reveal>
 
-            <Reveal delay={240}>
+            <Reveal delay={430}>
               <p className="max-w-[54ch] text-base leading-relaxed text-gray lg:text-[17px]">
                 Whether responding to urgent challenges or investing in
                 long-term development, our goal remains the same: to create a
@@ -102,12 +102,12 @@ export function Approach() {
             </Reveal>
           </div>
 
-          <Reveal delay={320} className="mt-16 lg:mt-24">
+          <Reveal delay={580} className="mt-16 lg:mt-24">
             <p className="max-w-[54ch] text-base leading-relaxed text-gray lg:text-[17px]">
               Guided by the{" "}
               <Link
                 href="#fxbvillage-model"
-                className="font-medium text-blue underline underline-offset-4 transition-colors duration-200 hover:text-green"
+                className="font-medium text-blue underline underline-offset-4 transition-colors duration-300 hover:text-green"
               >
                 FXBVillage Model
               </Link>
@@ -148,7 +148,7 @@ export function Approach() {
               </h2>
             </Reveal>
 
-            <Reveal delay={80} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
+            <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
               <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
                 Among the most disadvantaged groups in society, children are
                 particularly vulnerable to the many consequences of poverty that

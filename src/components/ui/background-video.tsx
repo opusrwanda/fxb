@@ -74,7 +74,7 @@ export function BackgroundVideo({
   return (
     <video
       ref={videoRef}
-      className={`transition-opacity duration-700 ease-out ${
+      className={`transition-opacity duration-1000 ease-(--ease-standard) ${
         ready ? "opacity-100" : "opacity-0"
       } ${className}`}
       autoPlay

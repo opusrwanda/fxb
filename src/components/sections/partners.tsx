@@ -118,7 +118,7 @@ function PartnerTile({
 }) {
   return (
     <li className="shrink-0" {...(decorative ? { "aria-hidden": true } : {})}>
-      <div className="flex h-24 w-44 items-center justify-center rounded-card border border-gray-15 bg-white p-5 transition-colors duration-200 hover:border-blue-16 md:h-32 md:w-56 md:p-6">
+      <div className="flex h-24 w-44 items-center justify-center rounded-card border border-gray-15 bg-white p-5 transition-colors duration-300 hover:border-blue-16 md:h-32 md:w-56 md:p-6">
         {partner.logo && (
           <Image
             src={partner.logo.url}

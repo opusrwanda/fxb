@@ -5,18 +5,27 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Entry animation for a colour room's contents.
  *
- * As a band crosses the fold its contents rise 20px and fade in together over
- * 500ms, staggered 60ms apart. The band itself never moves. It fires once and
- * holds — nothing re-animates on scroll back.
+ * As a band crosses the fold its contents rise and fade in together, staggered
+ * so they arrive as a sequence rather than as a block. The band itself never
+ * moves. It fires once and holds — nothing re-animates on scroll back.
  *
- * The curve is expo-out, not `ease-out`. 24px over 600ms is 40px/second, which
- * is slow enough to read as sluggish rather than crisp; expo-out covers most of
- * the distance early and settles softly, so the same move arrives faster and
- * lands quieter. Editorial reveal wants short, fast and well damped.
+ * SLOW ON PURPOSE
  *
- * The stagger is capped at four steps by `delay`'s callers. Uncapped, the
- * fourth card in a row finished 920ms after the trigger, by which point the
- * reader has already looked at it and is waiting for the site to catch up.
+ * This was 20px over 500ms on an expo-out curve, which is a curve chosen to
+ * make a move land quickly and quietly: most of the distance is covered in the
+ * first third. The brief is now the opposite one — Acumen as the reference,
+ * and motion that is unhurried everywhere — so it is 36px over 900ms on the
+ * single curve the site now uses, which eases in as well as out. The content
+ * drifts up into place instead of darting into it.
+ *
+ * The travel grew with the duration rather than staying where it was. 20px
+ * over 900ms is 22px a second, slow enough that the eye stops reading it as
+ * movement at all and registers only the fade; 36px keeps the rise legible as
+ * a rise at the longer duration.
+ *
+ * The trigger moved out to -18% for the same reason. A 900ms entrance starting
+ * at -12% was still settling when the section was already well up the screen;
+ * firing earlier means it finishes about where the old one did.
  *
  * Under prefers-reduced-motion the content is simply present from the start:
  * no transform, no fade, no delay.
@@ -58,7 +67,7 @@ export function Reveal({
       // section needed 135px on screen, by which time it was halfway up the
       // viewport and the move read as pop-in. Firing on the first pixel past a
       // margin makes the trigger point identical regardless of section height.
-      { threshold: 0, rootMargin: "0px 0px -12% 0px" }
+      { threshold: 0, rootMargin: "0px 0px -18% 0px" }
     );
 
     observer.observe(node);
@@ -68,8 +77,8 @@ export function Reveal({
   return (
     <Tag
       ref={ref as React.Ref<HTMLDivElement & HTMLLIElement>}
-      className={`motion-transform transition-[opacity,transform] duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        shown ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
+      className={`motion-transform transition-[opacity,transform,translate,scale,rotate] duration-900 ease-(--ease-standard) ${
+        shown ? "translate-y-0 opacity-100" : "translate-y-9 opacity-0"
       } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >

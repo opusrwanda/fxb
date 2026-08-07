@@ -37,7 +37,7 @@ export function PageHeader({
                 <li key={crumb.href} className="flex items-center gap-1.5">
                   <Link
                     href={crumb.href}
-                    className="transition-colors duration-200 hover:text-blue"
+                    className="transition-colors duration-300 hover:text-blue"
                   >
                     {crumb.label}
                   </Link>

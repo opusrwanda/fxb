@@ -152,7 +152,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={state.status === "sending"}
-          className="inline-flex items-center justify-center rounded-full bg-blue px-7 py-3 text-base font-medium whitespace-nowrap text-white transition-colors duration-200 hover:bg-blue-90 disabled:opacity-60"
+          className="inline-flex items-center justify-center rounded-full bg-blue px-7 py-3 text-base font-medium whitespace-nowrap text-white transition-colors duration-300 hover:bg-blue-90 disabled:opacity-60"
         >
           {state.status === "sending" ? "Sending…" : "Send Message"}
         </button>

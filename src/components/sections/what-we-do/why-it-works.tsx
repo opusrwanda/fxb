@@ -39,7 +39,7 @@ export function WhyItWorks() {
             </h2>
           </Reveal>
 
-          <Reveal delay={80} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
+          <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
             <p className="max-w-[38ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
               The strength of the FXBVillage Model lies in its integrated and
               people-centred approach.
@@ -61,7 +61,7 @@ export function WhyItWorks() {
           </Reveal>
         </div>
 
-        <Reveal delay={160} className="mt-20">
+        <Reveal delay={290} className="mt-20">
           <div className="h-px w-full bg-gray-15" aria-hidden="true" />
 
           <h3 className="mt-12 max-w-[30ch] text-2xl font-bold tracking-[-0.02em] text-blue lg:text-3xl">

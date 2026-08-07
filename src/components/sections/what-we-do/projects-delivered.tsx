@@ -67,7 +67,7 @@ export function ProjectsDelivered() {
             </div>
           </Reveal>
 
-          <Reveal delay={100} className="flex flex-col items-start gap-7">
+          <Reveal delay={180} className="flex flex-col items-start gap-7">
             <p className="max-w-[42ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
               As of now, 54 FXBVillage projects have been implemented, leaving
               thousands of families resilient from poverty.

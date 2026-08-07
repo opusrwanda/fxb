@@ -265,7 +265,7 @@ function Button({
       aria-label={label}
       aria-pressed={active}
       title={label}
-      className={`flex size-8 items-center justify-center rounded-md transition-colors duration-150 disabled:pointer-events-none disabled:opacity-30 ${
+      className={`flex size-8 items-center justify-center rounded-md transition-colors duration-300 disabled:pointer-events-none disabled:opacity-30 ${
         active
           ? "bg-blue text-white"
           : "text-gray hover:bg-white hover:text-blue"

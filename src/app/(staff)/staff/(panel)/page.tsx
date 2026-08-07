@@ -114,13 +114,13 @@ export default async function DashboardPage() {
           <li key={entry.key}>
             <Link
               href={`/staff/${entry.slug}`}
-              className="group flex h-full flex-col gap-4 rounded-[20px_20px_0_20px] border border-gray-15 p-6 transition-colors duration-300 hover:border-blue"
+              className="group flex h-full flex-col gap-4 rounded-[20px_20px_0_20px] border border-gray-15 p-6 transition-colors duration-500 hover:border-blue"
             >
               <div className="flex items-start justify-between gap-4">
                 <entry.icon className="size-5 text-blue" aria-hidden="true" />
-                <span className="flex size-8 items-center justify-center rounded-full bg-blue-08 transition-colors duration-300 group-hover:bg-blue">
+                <span className="flex size-8 items-center justify-center rounded-full bg-blue-08 transition-colors duration-500 group-hover:bg-blue">
                   <ArrowUpRight
-                    className="size-4 text-blue transition-colors duration-300 group-hover:text-white"
+                    className="size-4 text-blue transition-colors duration-500 group-hover:text-white"
                     aria-hidden="true"
                   />
                 </span>
@@ -176,7 +176,7 @@ export default async function DashboardPage() {
                 </span>
               </span>
               <ArrowUpRight
-                className="size-4 shrink-0 text-gray-80 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue"
+                className="size-4 shrink-0 text-gray-80 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue"
                 aria-hidden="true"
               />
             </Link>

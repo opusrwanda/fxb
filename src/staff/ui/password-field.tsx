@@ -57,7 +57,7 @@ export function PasswordField({
           required={required}
           // Room on the right for the button, so a long password never runs
           // underneath it.
-          className="h-12 w-full rounded-card border border-gray-15 bg-white pr-12 pl-4 text-base text-gray transition-colors duration-200 outline-none focus:border-blue"
+          className="h-12 w-full rounded-card border border-gray-15 bg-white pr-12 pl-4 text-base text-gray transition-colors duration-300 outline-none focus:border-blue"
         />
 
         <button
@@ -65,7 +65,7 @@ export function PasswordField({
           onClick={() => setVisible((shown) => !shown)}
           aria-label={visible ? "Hide password" : "Show password"}
           aria-pressed={visible}
-          className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-card text-gray-80 transition-colors duration-200 hover:text-blue"
+          className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-card text-gray-80 transition-colors duration-300 hover:text-blue"
         >
           {visible ? (
             <EyeOff className="size-5" aria-hidden="true" />

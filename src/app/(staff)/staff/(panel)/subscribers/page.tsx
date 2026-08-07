@@ -95,7 +95,7 @@ export default async function SubscribersPage({
 
         <Link
           href="/staff/subscribers/export"
-          className="ml-auto inline-flex h-10 items-center gap-2 rounded-full border border-blue px-5 text-sm font-semibold text-blue transition-colors duration-200 hover:bg-blue-08"
+          className="ml-auto inline-flex h-10 items-center gap-2 rounded-full border border-blue px-5 text-sm font-semibold text-blue transition-colors duration-300 hover:bg-blue-08"
         >
           <Download className="size-4" aria-hidden="true" />
           Export CSV
@@ -134,7 +134,7 @@ export default async function SubscribersPage({
         </label>
         <button
           type="submit"
-          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-blue-90"
+          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
         >
           <Plus className="size-4" aria-hidden="true" />
           Add

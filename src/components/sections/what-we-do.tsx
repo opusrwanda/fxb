@@ -62,13 +62,13 @@ export function WhatWeDo() {
                   alt={area.alt}
                   fill
                   sizes="(min-width: 1280px) 22vw, (min-width: 640px) 45vw, 90vw"
-                  className="motion-transform object-cover object-[50%_38%] transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                  className="motion-transform object-cover object-[50%_38%] transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
                 />
 
                 {/* Deepens on hover so the label never loses contrast while the
                     photograph moves underneath it. */}
                 <span
-                  className="absolute inset-0 bg-linear-to-t from-black/85 via-black/30 to-black/5 transition-opacity duration-[400ms] ease-out group-hover:opacity-90"
+                  className="absolute inset-0 bg-linear-to-t from-black/85 via-black/30 to-black/5 transition-opacity duration-700 ease-(--ease-standard) group-hover:opacity-90"
                   aria-hidden="true"
                 />
 
@@ -77,7 +77,7 @@ export function WhatWeDo() {
                     four different heights across the row — the most visible
                     craft failure on the page. Anchored to the corner they line
                     up whatever the titles do. */}
-                <span className="motion-transform wedge-nudge absolute top-6 right-6 z-10 flex size-9 items-center justify-center rounded-full bg-white-12 transition-[transform,background-color] duration-300 ease-out group-hover:bg-green">
+                <span className="motion-transform wedge-nudge absolute top-6 right-6 z-10 flex size-9 items-center justify-center rounded-full bg-white-12 transition-[transform,translate,scale,rotate,background-color] duration-500 ease-(--ease-standard) group-hover:bg-green">
                   <ArrowUpRight className="size-4 text-white" aria-hidden="true" />
                 </span>
 
@@ -88,7 +88,7 @@ export function WhatWeDo() {
 
                   {/* Held at zero height until hover, so the resting card is
                       just photograph and title. */}
-                  <span className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-[400ms] ease-out group-hover:grid-rows-[1fr]">
+                  <span className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-700 ease-(--ease-standard) group-hover:grid-rows-[1fr]">
                     <span className="overflow-hidden">
                       <span className="block pt-1 text-sm leading-snug text-white-94">
                         {area.blurb}

@@ -44,7 +44,7 @@ export default async function CampaignsPage() {
 
         <Link
           href="/staff/campaigns/new"
-          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-blue-90"
+          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
         >
           <Plus className="size-4" aria-hidden="true" />
           New campaign
@@ -83,7 +83,7 @@ export default async function CampaignsPage() {
               {rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="group border-b border-gray-15 transition-colors duration-200 hover:bg-blue-08"
+                  className="group border-b border-gray-15 transition-colors duration-300 hover:bg-blue-08"
                 >
                   <td className="relative py-4 pr-6">
                     <Link
@@ -135,7 +135,7 @@ export default async function CampaignsPage() {
             </p>
             <Link
               href="/staff/campaigns/new"
-              className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-blue-90"
+              className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
             >
               <Plus className="size-4" aria-hidden="true" />
               New campaign

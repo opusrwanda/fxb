@@ -46,7 +46,7 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
               <h3 className="text-base font-semibold">
                 <Link
                   href={column.href}
-                  className="transition-opacity duration-200 hover:opacity-70"
+                  className="transition-opacity duration-300 hover:opacity-70"
                 >
                   {column.label}
                 </Link>
@@ -56,7 +56,7 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
                   <li key={child.href}>
                     <Link
                       href={child.href}
-                      className="text-[15px] leading-snug text-white-94 transition-colors duration-200 hover:text-white"
+                      className="text-[15px] leading-snug text-white-94 transition-colors duration-300 hover:text-white"
                     >
                       {child.label}
                     </Link>
@@ -70,7 +70,7 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
             <h3 className="text-base font-semibold">
               <Link
                 href="/contact"
-                className="transition-opacity duration-200 hover:opacity-70"
+                className="transition-opacity duration-300 hover:opacity-70"
               >
                 Contact
               </Link>
@@ -81,7 +81,7 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
                 href={details.mapUrl}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="flex items-start gap-2.5 text-white-94 transition-colors duration-200 hover:text-white"
+                className="flex items-start gap-2.5 text-white-94 transition-colors duration-300 hover:text-white"
               >
                 <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <span>
@@ -91,14 +91,14 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
               </a>
               <a
                 href={`tel:${details.phoneHref}`}
-                className="flex items-center gap-2.5 text-white-94 transition-colors duration-200 hover:text-white"
+                className="flex items-center gap-2.5 text-white-94 transition-colors duration-300 hover:text-white"
               >
                 <Phone className="size-4 shrink-0" aria-hidden="true" />
                 {details.phone}
               </a>
               <a
                 href={`mailto:${details.email}`}
-                className="flex items-center gap-2.5 text-white-94 transition-colors duration-200 hover:text-white"
+                className="flex items-center gap-2.5 text-white-94 transition-colors duration-300 hover:text-white"
               >
                 <Mail className="size-4 shrink-0" aria-hidden="true" />
                 {details.email}
@@ -123,7 +123,7 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
               <li>
                 <Link
                   href="/privacy-policy"
-                  className="transition-colors duration-200 hover:text-white"
+                  className="transition-colors duration-300 hover:text-white"
                 >
                   Privacy Policy
                 </Link>
@@ -131,7 +131,7 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
               <li>
                 <Link
                   href="/terms-of-use"
-                  className="transition-colors duration-200 hover:text-white"
+                  className="transition-colors duration-300 hover:text-white"
                 >
                   Terms of Use
                 </Link>
@@ -151,7 +151,7 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
                   target="_blank"
                   rel="noreferrer noopener"
                   aria-label={`${details.name} on ${social.label}`}
-                  className="flex size-9 items-center justify-center rounded-full border border-white-40 text-white transition-colors duration-200 hover:border-white hover:bg-white hover:text-blue"
+                  className="flex size-9 items-center justify-center rounded-full border border-white-40 text-white transition-colors duration-300 hover:border-white hover:bg-white hover:text-blue"
                 >
                   <SocialIcon name={social.icon} />
                 </a>

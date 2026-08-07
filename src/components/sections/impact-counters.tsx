@@ -110,7 +110,7 @@ export function ImpactCounters() {
           ))}
         </dl>
 
-        <Reveal delay={320}>
+        <Reveal delay={580}>
           <Pill href="/our-impact" size="lg" className="mt-16">
             See Full Impact Report
           </Pill>

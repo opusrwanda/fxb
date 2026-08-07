@@ -94,7 +94,7 @@ export function NewsletterSignup() {
           {/* White card carrying the wedge. The tint is pale enough that fields
               drawn straight onto it would have almost no edge; the card gives
               them a ground to sit on and gives the section its one shape. */}
-          <Reveal delay={80} className="lg:col-span-6 lg:col-start-7">
+          <Reveal delay={140} className="lg:col-span-6 lg:col-start-7">
             <div className="wedge bg-white p-7 sm:p-9 lg:p-10">
               {state.status === "ok" ? (
                 // The form is replaced rather than left standing under a
@@ -190,7 +190,7 @@ export function NewsletterSignup() {
                       the{" "}
                       <Link
                         href="/privacy-policy"
-                        className="text-blue underline underline-offset-2 transition-colors duration-200 hover:text-blue-90"
+                        className="text-blue underline underline-offset-2 transition-colors duration-300 hover:text-blue-90"
                       >
                         Privacy Policy
                       </Link>
@@ -202,7 +202,7 @@ export function NewsletterSignup() {
                     <button
                       type="submit"
                       disabled={state.status === "sending"}
-                      className="inline-flex items-center justify-center rounded-full bg-blue px-7 py-3 text-base font-medium whitespace-nowrap text-white transition-colors duration-200 hover:bg-blue-90 disabled:opacity-60"
+                      className="inline-flex items-center justify-center rounded-full bg-blue px-7 py-3 text-base font-medium whitespace-nowrap text-white transition-colors duration-300 hover:bg-blue-90 disabled:opacity-60"
                     >
                       {state.status === "sending"
                         ? "Signing you up…"

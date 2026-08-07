@@ -53,7 +53,7 @@ export async function LatestNews() {
           >
             All news
             <ArrowRight
-              className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+              className="size-4 transition-transform duration-300 group-hover:translate-x-1"
               aria-hidden="true"
             />
           </Link>
@@ -72,7 +72,7 @@ export async function LatestNews() {
                     alt={lead.image.alt}
                     fill
                     sizes="(min-width: 1024px) 58vw, 90vw"
-                    className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                    className="motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
                   />
                 </Link>
               )}
@@ -91,7 +91,7 @@ export async function LatestNews() {
                 >
                   <Link
                     href={`/news-insights/news/${lead.slug}`}
-                    className="transition-colors duration-200 hover:text-blue"
+                    className="transition-colors duration-300 hover:text-blue"
                   >
                     {lead.title}
                   </Link>
@@ -136,7 +136,7 @@ export async function LatestNews() {
                         alt={item.image.alt}
                         fill
                         sizes="128px"
-                        className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                        className="motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
                       />
                     </Link>
                   )}
@@ -154,7 +154,7 @@ export async function LatestNews() {
                     >
                       <Link
                         href={`/news-insights/news/${item.slug}`}
-                        className="transition-colors duration-200 hover:text-blue"
+                        className="transition-colors duration-300 hover:text-blue"
                       >
                         {item.title}
                       </Link>

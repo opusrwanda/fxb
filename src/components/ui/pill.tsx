@@ -64,7 +64,7 @@ export function Pill({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center justify-center rounded-full whitespace-nowrap transition-colors duration-200 ${variants[variant]} ${
+      className={`inline-flex items-center justify-center rounded-full whitespace-nowrap transition-colors duration-300 ${variants[variant]} ${
         variant === "donate" ? DONATE_SIZE : sizes[size]
       } ${className}`}
     >

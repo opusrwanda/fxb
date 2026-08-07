@@ -21,7 +21,7 @@ type MediaOption = {
 };
 
 const inputClass =
-  "w-full rounded-card border border-gray-15 bg-white px-4 py-3 text-[15px] text-gray transition-colors duration-200 outline-none focus:border-blue";
+  "w-full rounded-card border border-gray-15 bg-white px-4 py-3 text-[15px] text-gray transition-colors duration-300 outline-none focus:border-blue";
 
 export function FormField({
   field,

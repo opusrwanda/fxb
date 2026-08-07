@@ -114,7 +114,7 @@ export default async function CampaignPage({
     <div className="mx-auto max-w-5xl">
       <Link
         href="/staff/campaigns"
-        className="inline-flex items-center gap-2 text-sm font-medium text-gray-80 transition-colors duration-200 hover:text-blue"
+        className="inline-flex items-center gap-2 text-sm font-medium text-gray-80 transition-colors duration-300 hover:text-blue"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         Email campaigns
@@ -179,7 +179,7 @@ export default async function CampaignPage({
 
         <button
           type="submit"
-          className="inline-flex h-12 w-fit items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-200 hover:bg-blue-90"
+          className="inline-flex h-12 w-fit items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
         >
           {creating ? "Create campaign" : "Save changes"}
         </button>
@@ -233,7 +233,7 @@ export default async function CampaignPage({
                 </label>
                 <button
                   type="submit"
-                  className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-blue px-6 text-[15px] font-semibold text-blue transition-colors duration-200 hover:bg-blue-08"
+                  className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-blue px-6 text-[15px] font-semibold text-blue transition-colors duration-300 hover:bg-blue-08"
                 >
                   Send test
                 </button>
@@ -269,7 +269,7 @@ export default async function CampaignPage({
                 <button
                   type="submit"
                   disabled={progress!.remaining === 0}
-                  className="inline-flex h-12 w-fit items-center gap-2 rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-200 hover:bg-blue-90 disabled:pointer-events-none disabled:opacity-40"
+                  className="inline-flex h-12 w-fit items-center gap-2 rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90 disabled:pointer-events-none disabled:opacity-40"
                 >
                   <Send className="size-4" aria-hidden="true" />
                   {progress!.remaining === 0

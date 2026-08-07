@@ -124,7 +124,7 @@ function ProjectLink({
   onFocus: () => void;
   onBlur: () => void;
 }) {
-  const className = `group/link inline-flex items-center gap-1.5 text-base leading-snug font-semibold transition-colors duration-200 ${
+  const className = `group/link inline-flex items-center gap-1.5 text-base leading-snug font-semibold transition-colors duration-300 ${
     shown ? "text-blue" : "text-gray-80"
   }`;
 
@@ -132,7 +132,7 @@ function ProjectLink({
     <>
       {children}
       <ArrowUpRight
-        className="size-4 shrink-0 transition-transform duration-200 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
+        className="size-4 shrink-0 transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
         aria-hidden="true"
       />
     </>
@@ -262,7 +262,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
         </Reveal>
 
         <div className="mt-14 grid gap-10 lg:grid-cols-[1.35fr_1fr] lg:gap-14">
-          <Reveal delay={80} className="flex flex-col gap-4">
+          <Reveal delay={140} className="flex flex-col gap-4">
             <svg
               viewBox={districtsViewBox}
               className="w-full"
@@ -311,7 +311,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                       event.preventDefault();
                       setActive(district.name);
                     }}
-                    className={`cursor-pointer outline-offset-2 transition-colors duration-200 ${
+                    className={`cursor-pointer outline-offset-2 transition-colors duration-300 ${
                       highlighted.has(district.name)
                         ? "fill-blue stroke-blue"
                         : "fill-blue-16 stroke-blue"
@@ -360,7 +360,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
             </p>
           </Reveal>
 
-          <Reveal delay={160} className="flex flex-col gap-8">
+          <Reveal delay={290} className="flex flex-col gap-8">
             {/* The readout. Announced politely so tabbing is as informative as
                 pointing. It answers whichever question was asked last — what
                 runs in this district, or where does this project run. */}
@@ -447,7 +447,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                         // A tap fires an emulated mouseenter, so touch gets the
                         // preview from the same handler the pointer uses.
                         onMouseEnter={() => shown && setPreview(project.slug)}
-                        className={`flex items-start gap-3 border-l-2 py-4 pr-1 pl-4 transition-colors duration-200 ${
+                        className={`flex items-start gap-3 border-l-2 py-4 pr-1 pl-4 transition-colors duration-300 ${
                           // The accent is the row saying which districts on the
                           // map are currently its own — the same job the solid
                           // fill is doing up there, at the other end of the
@@ -471,7 +471,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                               </ProjectLink>
                             ) : (
                               <span
-                                className={`text-base leading-snug font-semibold transition-colors duration-200 ${
+                                className={`text-base leading-snug font-semibold transition-colors duration-300 ${
                                   shown ? "text-blue" : "text-gray-80"
                                 }`}
                               >
@@ -483,7 +483,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                                 at the end of a row could have been districts,
                                 years, beneficiaries or a rank. */}
                             <span
-                              className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold tabular-nums transition-colors duration-200 ${
+                              className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold tabular-nums transition-colors duration-300 ${
                                 shown
                                   ? "bg-blue-08 text-blue"
                                   : "bg-gray-15 text-gray-80"
@@ -499,7 +499,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                           {/* Middot rather than commas, so each district reads
                               as one of a set rather than as a sentence. */}
                           <p
-                            className={`text-sm leading-snug transition-colors duration-200 ${
+                            className={`text-sm leading-snug transition-colors duration-300 ${
                               shown ? "text-gray" : "text-gray-80"
                             }`}
                           >
@@ -524,7 +524,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
                           }}
                           onFocus={() => shown && setPreview(project.slug)}
                           onBlur={() => setPreview(clearIf(project.slug))}
-                          className={`mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors duration-200 hover:bg-blue-16 ${
+                          className={`mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors duration-300 hover:bg-blue-16 ${
                             shown ? "text-blue" : "text-gray-80"
                           }`}
                         >

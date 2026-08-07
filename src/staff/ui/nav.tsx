@@ -91,7 +91,7 @@ export function StaffNav({ user }: { user: StaffUser }) {
         <form action="/staff/logout" method="post">
           <button
             type="submit"
-            className="flex w-full items-center gap-3 rounded-full px-3 py-2 text-sm font-medium text-white-94 transition-colors duration-200 hover:bg-white-12 hover:text-white"
+            className="flex w-full items-center gap-3 rounded-full px-3 py-2 text-sm font-medium text-white-94 transition-colors duration-300 hover:bg-white-12 hover:text-white"
           >
             <LogOut className="size-4 shrink-0" aria-hidden="true" />
             Sign out
@@ -117,7 +117,7 @@ function NavLink({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`flex items-center gap-3 rounded-full px-3 py-2 text-[15px] transition-colors duration-200 ${
+      className={`flex items-center gap-3 rounded-full px-3 py-2 text-[15px] transition-colors duration-300 ${
         active
           ? "bg-white/16 font-semibold text-white shadow-[inset_3px_0_0_0_var(--color-green)]"
           : "font-medium text-white-94 hover:bg-white-12 hover:text-white"

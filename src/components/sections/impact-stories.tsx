@@ -257,7 +257,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
                         alt={story.image.alt}
                         fill
                         sizes="(min-width: 1024px) 560px, (min-width: 640px) 62vw, 85vw"
-                        className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                        className="motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
                       />
                     </Link>
                   )}
@@ -301,7 +301,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
           >
             View all stories
             <ArrowRight
-              className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+              className="size-4 transition-transform duration-300 group-hover:translate-x-1"
               aria-hidden="true"
             />
           </Link>
@@ -349,7 +349,7 @@ function Arrow({
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className="flex size-11 items-center justify-center rounded-full border border-white-40 text-white transition-colors duration-200 hover:border-white hover:bg-white hover:text-blue disabled:pointer-events-none disabled:opacity-30"
+      className="flex size-11 items-center justify-center rounded-full border border-white-40 text-white transition-colors duration-300 hover:border-white hover:bg-white hover:text-blue disabled:pointer-events-none disabled:opacity-30"
     >
       {children}
     </button>

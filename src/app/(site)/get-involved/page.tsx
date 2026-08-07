@@ -67,7 +67,7 @@ export default function GetInvolvedPage() {
               </h2>
             </Reveal>
 
-            <Reveal delay={80} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
+            <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
               <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
                 For more than three decades, FXB Rwanda has partnered with local
                 and international stakeholders to design and implement
@@ -97,15 +97,15 @@ export default function GetInvolvedPage() {
               <Reveal as="li" key={route.href} delay={Math.min(index, 3) * 60}>
                 <Link
                   href={route.href}
-                  className="wedge group flex h-full flex-col gap-4 bg-blue-08 p-8 transition-colors duration-300 hover:bg-blue-16 lg:p-10"
+                  className="wedge group flex h-full flex-col gap-4 bg-blue-08 p-8 transition-colors duration-500 hover:bg-blue-16 lg:p-10"
                 >
                   <span className="flex items-start justify-between gap-4">
                     <span className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
                       {route.label}
                     </span>
-                    <span className="motion-transform mt-1 flex size-9 shrink-0 items-center justify-center rounded-full border border-gray-15 transition-colors duration-300 group-hover:border-blue group-hover:bg-blue">
+                    <span className="motion-transform mt-1 flex size-9 shrink-0 items-center justify-center rounded-full border border-gray-15 transition-colors duration-500 group-hover:border-blue group-hover:bg-blue">
                       <ArrowUpRight
-                        className="size-4 text-blue transition-colors duration-300 group-hover:text-white"
+                        className="size-4 text-blue transition-colors duration-500 group-hover:text-white"
                         aria-hidden="true"
                       />
                     </span>

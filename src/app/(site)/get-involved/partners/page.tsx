@@ -245,7 +245,7 @@ export default async function PartnersPage() {
           />
 
           <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-16">
-            <Reveal delay={80} className="flex flex-col gap-6">
+            <Reveal delay={140} className="flex flex-col gap-6">
               <p className="text-base leading-relaxed text-gray lg:text-[17px]">
                 Development partnerships are at the heart of FXB Rwanda&rsquo;s
                 mission. We collaborate with international NGOs, UN agencies,
@@ -261,7 +261,7 @@ export default async function PartnersPage() {
               </p>
             </Reveal>
 
-            <Reveal delay={160}>
+            <Reveal delay={290}>
               <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 WHY PARTNER WITH FXB RWANDA?
               </p>
@@ -271,16 +271,16 @@ export default async function PartnersPage() {
             </Reveal>
           </div>
 
-          <Reveal delay={200} className="mt-14">
+          <Reveal delay={360} className="mt-14">
             <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               AREAS OF COLLABORATION
             </p>
           </Reveal>
-          <Reveal delay={240} className="mt-6">
+          <Reveal delay={430} className="mt-6">
             <Checklist items={collaborationAreas} />
           </Reveal>
 
-          <Reveal delay={280} className="mt-14">
+          <Reveal delay={500} className="mt-14">
             <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               OUR DEVELOPMENT PARTNERS
             </p>
@@ -303,7 +303,7 @@ export default async function PartnersPage() {
             dark
           />
 
-          <Reveal delay={80} className="mt-10 flex flex-col gap-6">
+          <Reveal delay={140} className="mt-10 flex flex-col gap-6">
             <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
               FXB Rwanda recognises government leadership as essential for
               sustainable development. With the Ministry of Gender and Family
@@ -323,7 +323,7 @@ export default async function PartnersPage() {
             <Cards items={governmentEngagement} dark />
           </div>
 
-          <Reveal delay={200} className="mt-14">
+          <Reveal delay={360} className="mt-14">
             <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
               WORKING TOGETHER FOR SUSTAINABLE SOLUTIONS
             </p>
@@ -345,7 +345,7 @@ export default async function PartnersPage() {
           />
 
           <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-16">
-            <Reveal delay={80} className="flex flex-col gap-6">
+            <Reveal delay={140} className="flex flex-col gap-6">
               <p className="text-base leading-relaxed text-gray lg:text-[17px]">
                 Institutional donors play a vital role in enabling FXB Rwanda to
                 deliver high-quality programmes that improve the lives of
@@ -379,7 +379,7 @@ export default async function PartnersPage() {
               </div>
             </Reveal>
 
-            <Reveal delay={160}>
+            <Reveal delay={290}>
               <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 OUR COMMITMENT TO DONORS
               </p>
@@ -399,7 +399,7 @@ export default async function PartnersPage() {
             </Reveal>
           </div>
 
-          <Reveal delay={200} className="mt-14">
+          <Reveal delay={360} className="mt-14">
             <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               OUR DONORS
             </p>
@@ -419,7 +419,7 @@ export default async function PartnersPage() {
             dark
           />
 
-          <Reveal delay={80} className="mt-10">
+          <Reveal delay={140} className="mt-10">
             <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
               Companies have an important role to play in creating a more
               inclusive and sustainable society. FXB Rwanda welcomes
@@ -428,7 +428,7 @@ export default async function PartnersPage() {
             </p>
           </Reveal>
 
-          <Reveal delay={120} className="mt-10">
+          <Reveal delay={220} className="mt-10">
             <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
               WAYS COMPANIES CAN PARTNER WITH US
             </p>
@@ -437,7 +437,7 @@ export default async function PartnersPage() {
             <Cards items={corporateRoutes} dark />
           </div>
 
-          <Reveal delay={200} className="mt-14">
+          <Reveal delay={360} className="mt-14">
             <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
               LET&rsquo;S CREATE IMPACT TOGETHER
             </p>
@@ -456,7 +456,7 @@ export default async function PartnersPage() {
         <Container>
           <SectionHeading eyebrow="BECOME A PARTNER" title="Let's work together" />
 
-          <Reveal delay={80} className="mt-10">
+          <Reveal delay={140} className="mt-10">
             <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
               Are you an organisation, institution, company or individual
               interested in supporting FXB Rwanda&rsquo;s mission? We welcome
@@ -466,7 +466,7 @@ export default async function PartnersPage() {
             </p>
           </Reveal>
 
-          <Reveal delay={120} className="mt-10">
+          <Reveal delay={220} className="mt-10">
             <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
               PARTNERSHIP OPPORTUNITIES
             </p>
@@ -476,7 +476,7 @@ export default async function PartnersPage() {
           </div>
 
           <Reveal
-            delay={200}
+            delay={360}
             className="wedge mt-14 flex flex-col items-start gap-6 bg-blue p-9 lg:p-14"
           >
             <h3 className="max-w-[24ch] text-2xl font-bold tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[1.2]">
@@ -489,13 +489,13 @@ export default async function PartnersPage() {
             <div className="flex flex-col gap-2 text-white">
               <a
                 href={`mailto:${details.email}`}
-                className="text-lg font-semibold underline underline-offset-4 transition-opacity duration-200 hover:opacity-80"
+                className="text-lg font-semibold underline underline-offset-4 transition-opacity duration-300 hover:opacity-80"
               >
                 {details.email}
               </a>
               <a
                 href={`tel:${details.phoneHref}`}
-                className="text-lg font-semibold underline underline-offset-4 transition-opacity duration-200 hover:opacity-80"
+                className="text-lg font-semibold underline underline-offset-4 transition-opacity duration-300 hover:opacity-80"
               >
                 {details.phone}
               </a>

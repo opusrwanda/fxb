@@ -50,7 +50,7 @@ export function ArticleCard({
               alt={image.alt}
               fill
               sizes="(min-width: 1024px) 31vw, (min-width: 640px) 45vw, 90vw"
-              className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+              className="motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
             />
           </div>
         )}
@@ -79,7 +79,7 @@ export function ArticleCard({
         <span className="mt-5 flex items-center gap-2 text-sm font-semibold text-blue">
           Read more
           <ArrowUpRight
-            className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             aria-hidden="true"
           />
         </span>

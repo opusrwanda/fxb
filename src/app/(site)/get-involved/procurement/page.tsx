@@ -65,7 +65,7 @@ export default async function ProcurementPage() {
                         <a
                           href={tender.document.url}
                           download
-                          className="flex items-center gap-2.5 text-[15px] font-medium text-blue underline underline-offset-4 transition-colors duration-200 hover:text-green"
+                          className="flex items-center gap-2.5 text-[15px] font-medium text-blue underline underline-offset-4 transition-colors duration-300 hover:text-green"
                         >
                           <Download className="size-4" aria-hidden="true" />
                           Terms of reference

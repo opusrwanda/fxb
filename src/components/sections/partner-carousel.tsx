@@ -175,7 +175,7 @@ function Arrow({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="flex size-11 items-center justify-center rounded-full border border-gray-15 bg-white text-blue transition-colors duration-200 hover:border-blue hover:bg-blue hover:text-white"
+      className="flex size-11 items-center justify-center rounded-full border border-gray-15 bg-white text-blue transition-colors duration-300 hover:border-blue hover:bg-blue hover:text-white"
     >
       {children}
     </button>

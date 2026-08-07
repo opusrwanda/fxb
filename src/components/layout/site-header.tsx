@@ -127,7 +127,7 @@ export function SiteHeader({
   return (
     <header
       className={[
-        "fixed inset-x-0 top-0 z-50 motion-size transition-[background-color,box-shadow,border-color] duration-[240ms] ease-out",
+        "fixed inset-x-0 top-0 z-50 motion-size transition-[background-color,box-shadow,border-color] duration-500 ease-(--ease-standard)",
         drawerOpen
           ? "bg-blue"
           : pinned
@@ -151,7 +151,7 @@ export function SiteHeader({
           SubNav — pin against by number. */}
       <div
         className={[
-          "overflow-hidden transition-[max-height,opacity] duration-[240ms] ease-out",
+          "overflow-hidden transition-[max-height,opacity] duration-500 ease-(--ease-standard)",
           solid ? "max-h-0 opacity-0" : "max-h-40 opacity-100",
         ].join(" ")}
         aria-hidden={solid}
@@ -163,21 +163,21 @@ export function SiteHeader({
         <Container className="hidden items-center justify-end gap-7 border-b border-white-12 pt-5 pb-4 text-sm font-medium text-white-94 lg:flex">
           <Link
             href="/get-involved/partners"
-            className="transition-colors duration-200 hover:text-white"
+            className="transition-colors duration-300 hover:text-white"
             tabIndex={solid ? -1 : 0}
           >
             Partner With Us
           </Link>
           <Link
             href="/contact"
-            className="transition-colors duration-200 hover:text-white"
+            className="transition-colors duration-300 hover:text-white"
             tabIndex={solid ? -1 : 0}
           >
             Contact Us
           </Link>
           <a
             href={`tel:${details.phoneHref}`}
-            className="flex items-center gap-2 transition-colors duration-200 hover:text-white"
+            className="flex items-center gap-2 transition-colors duration-300 hover:text-white"
             tabIndex={solid ? -1 : 0}
           >
             <Phone className="size-3.5" aria-hidden="true" />
@@ -189,7 +189,7 @@ export function SiteHeader({
       {/* The bar itself. */}
       <Container
         className={[
-          "motion-size flex items-center gap-3 transition-[height] duration-[280ms] sm:gap-6",
+          "motion-size flex items-center gap-3 transition-[height] duration-500 sm:gap-6",
           "ease-(--ease-header)",
           solid ? "h-16 lg:h-18" : "h-24 lg:h-32",
         ].join(" ")}
@@ -197,19 +197,19 @@ export function SiteHeader({
         <Link
           href="/"
           aria-label={`${details.name} — home`}
-          className="motion-transform relative shrink-0 origin-left transition-transform duration-[280ms] ease-(--ease-header)"
+          className="motion-transform relative shrink-0 origin-left transition-transform duration-500 ease-(--ease-header)"
           style={{ transform: solid ? "scale(0.68)" : "scale(1)" }}
         >
           {/* Both lockups are rendered and cross-faded, so the swap never reads
               as two solid marks at once. */}
           <span
-            className="block transition-opacity duration-[160ms] delay-[112ms] ease-out"
+            className="block transition-opacity duration-300 delay-[112ms] ease-(--ease-standard)"
             style={{ opacity: solid ? 0 : 1 }}
           >
             <Logo variant="white" alt="" priority className="h-10 lg:h-14" />
           </span>
           <span
-            className="absolute inset-0 flex items-center transition-opacity duration-[160ms] delay-[112ms] ease-out"
+            className="absolute inset-0 flex items-center transition-opacity duration-300 delay-[112ms] ease-(--ease-standard)"
             style={{ opacity: solid ? 1 : 0 }}
             aria-hidden="true"
           >
@@ -234,7 +234,7 @@ export function SiteHeader({
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={[
-                  "border-b-3 pt-2.5 pb-2.5 text-sm whitespace-nowrap transition-colors duration-[240ms] ease-out xl:text-base",
+                  "border-b-3 pt-2.5 pb-2.5 text-sm whitespace-nowrap transition-colors duration-500 ease-(--ease-standard) xl:text-base",
                   active ? "font-semibold" : "font-medium",
                   solid
                     ? active
@@ -266,7 +266,7 @@ export function SiteHeader({
           <Link
             href="/get-involved/donate"
             className={[
-              "rounded-full px-5 py-2.5 text-[19px] font-bold whitespace-nowrap transition-colors duration-200 sm:px-6 sm:py-3 lg:px-7 lg:py-3.5",
+              "rounded-full px-5 py-2.5 text-[19px] font-bold whitespace-nowrap transition-colors duration-300 sm:px-6 sm:py-3 lg:px-7 lg:py-3.5",
               drawerOpen
                 ? "bg-white text-blue hover:bg-white-70"
                 : "bg-green text-white hover:bg-green/90",
@@ -336,10 +336,10 @@ export function SiteHeader({
                       // put a 24px target next to an 82px one on the same row —
                       // and this is the control that reveals the section pages,
                       // so missing it looks like the menu simply has no depth.
-                      className="-mr-2.5 flex size-11 shrink-0 items-center justify-center text-white-94 transition-colors duration-200 hover:text-white"
+                      className="-mr-2.5 flex size-11 shrink-0 items-center justify-center text-white-94 transition-colors duration-300 hover:text-white"
                     >
                       <Plus
-                        className={`size-6 transition-transform duration-[240ms] ease-out ${
+                        className={`size-6 transition-transform duration-500 ease-(--ease-standard) ${
                           expanded === item.href ? "rotate-45" : ""
                         }`}
                         aria-hidden="true"

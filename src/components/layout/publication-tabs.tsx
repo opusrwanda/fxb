@@ -106,7 +106,7 @@ function FilterChip({
       type="button"
       aria-pressed={current}
       onClick={onClick}
-      className={`shrink-0 rounded-full px-5 py-2.5 text-[15px] font-medium whitespace-nowrap transition-colors duration-200 ${
+      className={`shrink-0 rounded-full px-5 py-2.5 text-[15px] font-medium whitespace-nowrap transition-colors duration-300 ${
         current
           ? "bg-blue text-white"
           : "bg-blue-08 text-gray hover:bg-blue-16 hover:text-blue"

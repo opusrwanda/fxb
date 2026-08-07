@@ -59,7 +59,7 @@ export async function Reach() {
                     alt=""
                     fill
                     sizes="(min-width: 640px) 46vw, 90vw"
-                    className="motion-transform object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+                    className="motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
                   />
                 )}
                 {/* Load-bearing where the type is, and nowhere else. The scrim
@@ -93,7 +93,7 @@ export async function Reach() {
                   {/* Held at zero height until the block is hovered or focused.
                       `@media (hover: none)` opens it permanently, because on a
                       touch screen nothing would ever open it. */}
-                  <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-[400ms] ease-out group-hover:grid-rows-[1fr] group-focus-within:grid-rows-[1fr] [@media(hover:none)]:grid-rows-[1fr]">
+                  <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-700 ease-(--ease-standard) group-hover:grid-rows-[1fr] group-focus-within:grid-rows-[1fr] [@media(hover:none)]:grid-rows-[1fr]">
                     <div className="overflow-hidden">
                       <ul className="flex flex-col gap-2 pt-5">
                         {figure.areas.map((area) => (
@@ -117,7 +117,7 @@ export async function Reach() {
         </ul>
 
         {reach.note && (
-          <Reveal delay={240}>
+          <Reveal delay={430}>
             <p className="mt-8 max-w-[70ch] text-sm text-gray-80">
               {reach.note}
             </p>

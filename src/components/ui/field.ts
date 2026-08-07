@@ -11,4 +11,4 @@
  * not read as a field at all.
  */
 export const field =
-  "w-full rounded-card border border-gray-15 bg-white px-5 py-3.5 text-base text-gray transition-colors duration-200 outline-none placeholder:text-gray-80 focus:border-blue";
+  "w-full rounded-card border border-gray-15 bg-white px-5 py-3.5 text-base text-gray transition-colors duration-300 outline-none placeholder:text-gray-80 focus:border-blue";

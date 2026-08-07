@@ -56,7 +56,7 @@ export default async function CollectionPage({
 
         <Link
           href={`/staff/${entry.slug}/new`}
-          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-blue-90"
+          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
         >
           <Plus className="size-4" aria-hidden="true" />
           New {entry.singular}
@@ -89,7 +89,7 @@ export default async function CollectionPage({
             </p>
             <Link
               href={`/staff/${entry.slug}/new`}
-              className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-blue-90"
+              className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
             >
               <Plus className="size-4" aria-hidden="true" />
               New {entry.singular}

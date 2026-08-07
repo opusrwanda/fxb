@@ -70,7 +70,7 @@ const milestones = [
 ];
 
 /** The site's reveal curve — expo-out, fast away and softly damped. */
-const EASE = "ease-[cubic-bezier(0.16,1,0.3,1)]";
+const EASE = "ease-(--ease-standard)";
 
 export function OurStory() {
   return (
@@ -206,7 +206,7 @@ function Milestone({
               aria-hidden="true"
             >
               <span
-                className={`motion-transform block size-full origin-top bg-blue transition-transform duration-[800ms] ${EASE} ${
+                className={`motion-transform block size-full origin-top bg-blue transition-transform duration-1000 ${EASE} ${
                   shown ? "scale-y-100" : "scale-y-0"
                 }`}
               />
@@ -229,7 +229,7 @@ function Milestone({
               where the node sits, which is the difference between a marker on
               a line and a bead threaded onto one. */}
           <span
-            className={`motion-transform relative block size-3.5 rounded-full border-2 bg-white transition-transform duration-[500ms] ${EASE} ${
+            className={`motion-transform relative block size-3.5 rounded-full border-2 bg-white transition-transform duration-700 ${EASE} ${
               shown ? "scale-100" : "scale-0"
             } ${current ? "border-green" : "border-blue"}`}
             style={{ transitionDelay: shown ? "140ms" : "0ms" }}
@@ -240,7 +240,7 @@ function Milestone({
       {/* The year does the work the cards used to. At display scale, ranged
           right against the axis, the six of them read as a rail. */}
       <h3
-        className={`motion-transform col-start-2 row-start-1 text-[34px] leading-none font-bold tracking-[-0.03em] tabular-nums whitespace-nowrap transition-[opacity,transform,filter] duration-[600ms] lg:col-start-1 lg:row-start-1 lg:text-right lg:text-[56px] ${EASE} ${arrive(
+        className={`motion-transform col-start-2 row-start-1 text-[34px] leading-none font-bold tracking-[-0.03em] tabular-nums whitespace-nowrap transition-[opacity,transform,translate,scale,rotate,filter] duration-1000 lg:col-start-1 lg:row-start-1 lg:text-right lg:text-[56px] ${EASE} ${arrive(
           "lg:-translate-x-3"
         )} ${current ? "text-green" : "text-blue"}`}
         style={{ transitionDelay: shown ? "180ms" : "0ms" }}
@@ -249,7 +249,7 @@ function Milestone({
       </h3>
 
       <p
-        className={`motion-transform col-start-2 row-start-2 mt-4 max-w-[62ch] text-base leading-relaxed text-gray transition-[opacity,transform,filter] duration-[600ms] lg:col-start-3 lg:row-start-1 lg:mt-0 lg:pt-2.5 lg:text-[17px] ${
+        className={`motion-transform col-start-2 row-start-2 mt-4 max-w-[62ch] text-base leading-relaxed text-gray transition-[opacity,transform,translate,scale,rotate,filter] duration-1000 lg:col-start-3 lg:row-start-1 lg:mt-0 lg:pt-2.5 lg:text-[17px] ${
           last ? "" : "pb-12 lg:pb-16"
         } ${EASE} ${arrive(
           "lg:translate-x-3"

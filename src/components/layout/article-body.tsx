@@ -62,7 +62,7 @@ export function ArticleBody({
           </Reveal>
 
           {image && (
-            <Reveal delay={60} className="mt-8">
+            <Reveal delay={110} className="mt-8">
               <div className="relative aspect-16/9 overflow-hidden rounded-card">
                 <Image
                   src={image.url}
@@ -77,7 +77,7 @@ export function ArticleBody({
           )}
 
           <div className="mt-14 lg:mt-20">
-            <Reveal delay={80}>
+            <Reveal delay={140}>
               <p
                 className="max-w-[46ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]"
                 lang={language}
@@ -87,12 +87,12 @@ export function ArticleBody({
             </Reveal>
 
             {written ? (
-              <Reveal delay={140} className="mt-10">
+              <Reveal delay={250} className="mt-10">
                 <Prose data={body} lang={language} />
               </Reveal>
             ) : (
               <Reveal
-                delay={140}
+                delay={250}
                 className="wedge mt-12 flex flex-col items-start gap-5 bg-blue-08 p-8 lg:p-10"
               >
                 <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
@@ -116,7 +116,7 @@ export function ArticleBody({
           </div>
 
           {written && (
-            <Reveal delay={200} className="mt-14">
+            <Reveal delay={360} className="mt-14">
               <Pill href={backHref} variant="outline" size="lg">
                 {backLabel}
               </Pill>

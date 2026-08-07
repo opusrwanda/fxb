@@ -46,7 +46,7 @@ export function ListTable({
           {rows.map((row) => (
             <tr
               key={row.id}
-              className="group border-b border-gray-15 transition-colors duration-200 hover:bg-blue-08"
+              className="group border-b border-gray-15 transition-colors duration-300 hover:bg-blue-08"
             >
               {row.cells.map((cell, index) => (
                 <td

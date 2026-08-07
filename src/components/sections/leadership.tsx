@@ -101,7 +101,7 @@ export async function Leadership() {
             ))}
           </ul>
         ) : (
-          <Reveal delay={80} className="mt-10 flex flex-col items-start gap-7">
+          <Reveal delay={140} className="mt-10 flex flex-col items-start gap-7">
             <p className="max-w-[58ch] text-lg leading-relaxed text-gray">
               FXB Rwanda is governed by a Board of Directors. Full profiles are
               being prepared for publication here.

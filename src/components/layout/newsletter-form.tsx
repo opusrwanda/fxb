@@ -79,13 +79,13 @@ export function NewsletterForm() {
           autoComplete="email"
           placeholder="Your email address"
           // Right padding clears the button sitting on top of the field.
-          className="w-full border-b border-white-40 bg-transparent pb-3 pr-12 text-base text-white transition-colors duration-200 outline-none placeholder:text-white-70 focus:border-white"
+          className="w-full border-b border-white-40 bg-transparent pb-3 pr-12 text-base text-white transition-colors duration-300 outline-none placeholder:text-white-70 focus:border-white"
         />
         <button
           type="submit"
           disabled={state.status === "sending"}
           aria-label="Sign up for the newsletter"
-          className="absolute right-0 bottom-2 flex size-9 items-center justify-center rounded-full border border-white-40 text-white transition-colors duration-200 hover:border-white hover:bg-white hover:text-blue disabled:opacity-50"
+          className="absolute right-0 bottom-2 flex size-9 items-center justify-center rounded-full border border-white-40 text-white transition-colors duration-300 hover:border-white hover:bg-white hover:text-blue disabled:opacity-50"
         >
           <ArrowRight
             className={`size-4 ${state.status === "sending" ? "animate-pulse" : ""}`}
@@ -105,7 +105,7 @@ export function NewsletterForm() {
           I agree to receive emails from FXB Rwanda, in line with the{" "}
           <Link
             href="/privacy-policy"
-            className="underline underline-offset-2 transition-colors duration-200 hover:text-white"
+            className="underline underline-offset-2 transition-colors duration-300 hover:text-white"
           >
             Privacy Policy
           </Link>

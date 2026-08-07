@@ -96,7 +96,7 @@ export function Accordion({
                 // 20–26px in a 76px row, so aiming at the text alone wasted
                 // most of the hit area. The tint makes the row read as one
                 // control and extends past the measure so the edges are live.
-                className={`group -mx-4 flex w-[calc(100%+2rem)] items-center justify-between gap-6 rounded-card px-4 py-6 text-left transition-colors duration-200 ${palette.row}`}
+                className={`group -mx-4 flex w-[calc(100%+2rem)] items-center justify-between gap-6 rounded-card px-4 py-6 text-left transition-colors duration-300 ${palette.row}`}
               >
                 <span
                   className={`text-xl leading-snug font-semibold tracking-[-0.02em] lg:text-[28px] ${palette.title}`}
@@ -104,7 +104,7 @@ export function Accordion({
                   {item.title}
                 </span>
                 <span
-                  className={`motion-transform flex size-10 shrink-0 items-center justify-center rounded-full border transition-[transform,color,border-color] duration-[280ms] ease-out ${
+                  className={`motion-transform flex size-10 shrink-0 items-center justify-center rounded-full border transition-[transform,translate,scale,rotate,color,border-color] duration-500 ease-(--ease-standard) ${
                     palette.ring
                   } ${isOpen ? `rotate-45 ${palette.iconOpen}` : palette.icon}`}
                   aria-hidden="true"
@@ -117,7 +117,7 @@ export function Accordion({
             <div
               id={panelId}
               role="region"
-              className={`motion-size grid transition-[grid-template-rows] duration-[320ms] ease-out ${
+              className={`motion-size grid transition-[grid-template-rows] duration-500 ease-(--ease-standard) ${
                 isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
               }`}
             >
@@ -130,7 +130,7 @@ export function Accordion({
                     reads as the panel sliding down over the copy rather than
                     the copy arriving with the panel. */}
                 <div
-                  className={`pb-9 transition-opacity duration-[160ms] ${
+                  className={`pb-9 transition-opacity duration-300 ${
                     isOpen ? "opacity-100 delay-[80ms]" : "opacity-0"
                   }`}
                 >
