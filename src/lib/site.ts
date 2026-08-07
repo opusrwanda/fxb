@@ -86,12 +86,26 @@ export const org = {
 } as const;
 
 export type NavChild = { label: string; href: string };
-export type NavItem = { label: string; href: string; children?: NavChild[] };
+export type NavItem = {
+  label: string;
+  href: string;
+  children?: NavChild[];
+  /**
+   * One sentence, shown beside the children in the header's hover panel.
+   *
+   * It is what the section is, not a tagline — somebody reading it is deciding
+   * whether this is the branch they want, and "Our work, our way" does not help
+   * them decide. Only sections with children need one; Contact has no panel.
+   */
+  blurb?: string;
+};
 
 export const primaryNav: NavItem[] = [
   {
     label: "Who We Are",
     href: "/who-we-are",
+    blurb:
+      "A Rwandan NGO since 1995 — where we came from, what we stand for, and who leads the work.",
     children: [
       { label: "Our Story", href: "/who-we-are#story" },
       { label: "Vision, Mission & Values", href: "/who-we-are#vision" },
@@ -102,6 +116,8 @@ export const primaryNav: NavItem[] = [
   {
     label: "What We Do",
     href: "/what-we-do",
+    blurb:
+      "The FXBVillage model and the eight areas it works across, from the projects running now to the ones already handed over.",
     children: [
       { label: "The FXBVillage Model", href: "/what-we-do#fxbvillage-model" },
       { label: "Areas of Intervention", href: "/what-we-do#areas" },
@@ -112,6 +128,8 @@ export const primaryNav: NavItem[] = [
   {
     label: "Our Impact",
     href: "/our-impact",
+    blurb:
+      "What the work has changed, measured in lives rather than activities — with the reports and the evidence behind it.",
     children: [
       { label: "Results at a Glance", href: "/our-impact#results" },
       { label: "Success Stories", href: "/our-impact/success-stories" },
@@ -123,6 +141,8 @@ export const primaryNav: NavItem[] = [
   {
     label: "News & Insights",
     href: "/news-insights",
+    blurb:
+      "Programme news, accounts from the districts, and everything we publish — reports, policies and the quarterly newsletter.",
     children: [
       { label: "Latest News", href: "/news-insights/news" },
       { label: "Stories", href: "/news-insights/stories" },
@@ -133,6 +153,8 @@ export const primaryNav: NavItem[] = [
   {
     label: "Get Involved",
     href: "/get-involved",
+    blurb:
+      "Fund the work, deliver it alongside us, join the team, or bid for a contract.",
     children: [
       { label: "Partner With Us", href: "/get-involved/partners" },
       { label: "Careers", href: "/get-involved/careers" },

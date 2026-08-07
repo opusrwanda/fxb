@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mail, Menu, Phone, Plus, X } from "lucide-react";
+import { ArrowRight, Mail, Menu, Phone, Plus, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/brand/logo";
 import { AnnualReportBanner } from "@/components/layout/annual-report-banner";
@@ -38,8 +38,12 @@ export function SiteHeader({
   const [pinned, setPinned] = useState(() => !hasTransparentHeader(pathname));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  /** href of the section whose hover panel is open, or null. Desktop only. */
+  const [panel, setPanel] = useState<string | null>(null);
   const burgerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  const openPanel = primaryNav.find((item) => item.href === panel);
 
   // Reset on navigation, during render rather than in an effect, so the header
   // never paints the wrong state for a frame. The drawer closes with it.
@@ -49,6 +53,7 @@ export function SiteHeader({
     setPinned(!hasTransparentHeader(pathname));
     setDrawerOpen(false);
     setExpanded(null);
+    setPanel(null);
   }
 
   // Pin state, driven by the sentinels a hero section renders. Both observers
@@ -127,6 +132,14 @@ export function SiteHeader({
 
   return (
     <header
+      // One leave handler for the whole header rather than one per nav item.
+      // The pointer has to cross the gap between a link and the panel hanging
+      // below it, and closing on the link's own mouseleave would shut the panel
+      // in that gap every time. Escape closes it for the keyboard.
+      onMouseLeave={() => setPanel(null)}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") setPanel(null);
+      }}
       className={[
         "fixed inset-x-0 top-0 z-50 motion-size transition-[background-color,box-shadow,border-color] duration-500 ease-(--ease-standard)",
         drawerOpen
@@ -240,19 +253,26 @@ export function SiteHeader({
         >
           {primaryNav.map((item) => {
             const active = isActive(item.href);
+            const hasPanel = Boolean(item.children?.length);
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
+                // The panel opens on hover and on focus, and the whole bar
+                // shares one open item — so moving sideways along the nav
+                // swaps the panel rather than closing and reopening it.
+                onMouseEnter={() => setPanel(hasPanel ? item.href : null)}
+                onFocus={() => setPanel(hasPanel ? item.href : null)}
+                aria-expanded={hasPanel ? panel === item.href : undefined}
                 className={[
                   "border-b-3 pt-2.5 pb-2.5 text-sm whitespace-nowrap transition-colors duration-500 ease-(--ease-standard) xl:text-base",
-                  active ? "font-semibold" : "font-medium",
+                  active || panel === item.href ? "font-semibold" : "font-medium",
                   solid
-                    ? active
+                    ? active || panel === item.href
                       ? "border-green text-blue"
                       : "border-transparent text-gray hover:text-blue"
-                    : active
+                    : active || panel === item.href
                       ? "border-white text-white"
                       : "border-transparent text-white hover:border-white-40",
                 ].join(" ")}
@@ -311,6 +331,73 @@ export function SiteHeader({
           </button>
         </div>
       </Container>
+
+      {/* The hover panel: the section's children, one click from the bar.
+          Desktop only — the drawer below already gives a phone the same list,
+          and there is no hover on a touch screen to open this with.
+
+          Rendered whether or not it is open, and hidden with opacity and
+          `invisible` rather than by unmounting, so the fade has something to
+          fade. `invisible` is what keeps it out of the tab order and off the
+          pointer while it is closed; `hidden` would kill the transition and
+          `opacity-0` alone would leave an invisible sheet swallowing clicks
+          across the whole page. */}
+      <div
+        className={[
+          "absolute inset-x-0 top-full hidden border-b border-white-12 bg-blue lg:block",
+          "motion-transform transition-[opacity,translate] duration-500 ease-(--ease-standard)",
+          openPanel && !drawerOpen
+            ? "translate-y-0 opacity-100"
+            : "invisible -translate-y-2 opacity-0",
+        ].join(" ")}
+        onMouseEnter={() => openPanel && setPanel(openPanel.href)}
+        aria-hidden={!openPanel}
+      >
+        {openPanel && (
+          <Container className="grid gap-10 py-12 lg:grid-cols-12 lg:gap-16">
+            {/* Left: what the section is, and the way into it. */}
+            <div className="flex flex-col items-start gap-5 lg:col-span-4">
+              <p className="text-2xl font-bold tracking-[-0.02em] text-white">
+                {openPanel.label}
+              </p>
+              {openPanel.blurb && (
+                <p className="max-w-[34ch] text-[15px] leading-relaxed font-light text-white-94">
+                  {openPanel.blurb}
+                </p>
+              )}
+              <Link
+                href={openPanel.href}
+                aria-label={`${openPanel.label} — section overview`}
+                tabIndex={openPanel ? 0 : -1}
+                className="mt-1 flex size-11 items-center justify-center rounded-full border border-white-40 text-white transition-colors duration-300 hover:border-white hover:bg-white hover:text-blue"
+              >
+                <ArrowRight className="size-4.5" aria-hidden="true" />
+              </Link>
+            </div>
+
+            {/* Right: the children, which is the whole point of the panel —
+                a visitor who already knows they want Careers should not have
+                to land on Get Involved first and look for it. */}
+            <ul className="lg:col-span-5 lg:border-l lg:border-white-12 lg:pl-16">
+              {openPanel.children?.map((child) => (
+                <li key={child.href}>
+                  <Link
+                    href={child.href}
+                    tabIndex={openPanel ? 0 : -1}
+                    className="group flex items-center justify-between gap-8 border-b border-white-12 py-3.5 text-[15px] font-medium text-white transition-colors duration-300 last:border-b-0 hover:text-white-70"
+                  >
+                    {child.label}
+                    <ArrowRight
+                      className="size-4 shrink-0 transition-transform duration-300 ease-(--ease-standard) group-hover:translate-x-1"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        )}
+      </div>
 
       {/* Mobile drawer: full-screen blue panel. */}
       <Container
