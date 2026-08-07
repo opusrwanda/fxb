@@ -111,7 +111,7 @@ export async function ModelPillars() {
                   <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
                     <div className="flex flex-col gap-7">
                       <div className="flex flex-col gap-4">
-                        <p className="text-sm font-semibold tracking-[0.14em] text-white-70">
+                        <p className="text-sm font-semibold tracking-[0.14em] text-white-94">
                           {String(index + 1).padStart(2, "0")}
                         </p>
                         <h3 className="max-w-[20ch] text-2xl font-bold tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[1.12]">

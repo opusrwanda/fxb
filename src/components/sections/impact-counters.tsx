@@ -50,7 +50,7 @@ const stats = [
 
 export function ImpactCounters() {
   return (
-    <section id="our-impact" className="bg-white py-32 lg:py-48">
+    <section id="our-impact" className="bg-green-10 py-32 lg:py-48">
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">

@@ -28,7 +28,7 @@ export async function Leadership() {
   const [board, details] = await Promise.all([getBoard(), getSiteDetails()]);
 
   return (
-    <section id="leadership" className="scroll-mt-32 bg-blue-08 py-24 lg:py-32">
+    <section id="leadership" className="scroll-mt-32 bg-green-10 py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">

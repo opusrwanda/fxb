@@ -124,13 +124,13 @@ export default async function ContactPage() {
         intro="Whether you have a question, would like to partner with us, make a donation, explore career opportunities, or simply learn more about our work, we would be delighted to hear from you."
       />
 
-      <section className="bg-white pb-24 lg:pb-32">
+      <section className="bg-green-10 py-24 lg:py-32">
         <Container>
           <div className="grid gap-12 lg:grid-cols-[1fr_1.25fr] lg:gap-20">
             {/* Get in touch */}
             <Reveal className="flex flex-col gap-8">
               <div>
-                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray">
                   GET IN TOUCH
                 </h2>
                 <p className="mt-4 text-2xl font-bold tracking-[-0.02em] text-blue">
@@ -149,7 +149,7 @@ export default async function ContactPage() {
                     <MapPin className="size-5 text-blue" aria-hidden="true" />
                   </span>
                   <span>
-                    <span className="block text-sm text-gray-80">
+                    <span className="block text-sm text-gray">
                       Office address
                     </span>
                     <span className="block text-base leading-snug text-gray transition-colors duration-300 group-hover:text-blue">
@@ -167,7 +167,7 @@ export default async function ContactPage() {
                     <Phone className="size-5 text-blue" aria-hidden="true" />
                   </span>
                   <span>
-                    <span className="block text-sm text-gray-80">Phone</span>
+                    <span className="block text-sm text-gray">Phone</span>
                     <span className="block text-base text-gray transition-colors duration-300 group-hover:text-blue">
                       {details.phone}
                     </span>
@@ -182,7 +182,7 @@ export default async function ContactPage() {
                     <Mail className="size-5 text-blue" aria-hidden="true" />
                   </span>
                   <span>
-                    <span className="block text-sm text-gray-80">Email</span>
+                    <span className="block text-sm text-gray">Email</span>
                     <span className="block text-base text-gray transition-colors duration-300 group-hover:text-blue">
                       {details.email}
                     </span>
@@ -194,13 +194,13 @@ export default async function ContactPage() {
                     <Clock className="size-5 text-blue" aria-hidden="true" />
                   </span>
                   <span>
-                    <span className="block text-sm text-gray-80">
+                    <span className="block text-sm text-gray">
                       Office hours
                     </span>
                     <span className="block text-base text-gray">
                       {details.officeHours}
                     </span>
-                    <span className="block text-sm text-gray-80">
+                    <span className="block text-sm text-gray">
                       Closed on weekends and public holidays.
                     </span>
                   </span>
@@ -209,7 +209,7 @@ export default async function ContactPage() {
 
               {/* Connect with us */}
               <div className="border-t border-gray-15 pt-8">
-                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray">
                   CONNECT WITH US
                 </h2>
                 <p className="mt-4 max-w-[42ch] text-base leading-relaxed text-gray">
@@ -245,7 +245,7 @@ export default async function ContactPage() {
             {/* Send us a message */}
             <Reveal delay={180} className="flex flex-col gap-8">
               <div>
-                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                <h2 className="text-xs font-semibold tracking-[0.14em] text-gray">
                   SEND US A MESSAGE
                 </h2>
                 <p className="mt-4 max-w-[46ch] text-base leading-relaxed text-gray">
