@@ -70,6 +70,27 @@ import type { Programme } from "@/cms/content/programmes";
  */
 const countryOutline = districts.map((district) => district.d).join(" ");
 
+/**
+ * The viewBox, opened up by a few units on every side.
+ *
+ * Rwanda touches all four edges of its own bounding box, and an SVG clips to
+ * its viewBox — so the border drawn round the country was being sliced off flat
+ * at the top, the left and the right. The stroke is `non-scaling`, which makes
+ * it worse to reason about: it is 2px on screen whatever the map is scaled to,
+ * so the room it needs in user units changes with the size of the map. Eight
+ * units is comfortably more than it can ever want at the sizes this renders at.
+ */
+const PADDING = 8;
+const paddedViewBox = (() => {
+  const [x, y, width, height] = districtsViewBox.split(/\s+/).map(Number);
+  return [
+    x - PADDING,
+    y - PADDING,
+    width + PADDING * 2,
+    height + PADDING * 2,
+  ].join(" ");
+})();
+
 const LABEL_SIZE = 20;
 const LABEL_ADVANCE = 0.58 * LABEL_SIZE;
 /** Breathing room between two labels before they count as colliding. */
@@ -322,7 +343,7 @@ export function WhereWeWork({
             className="flex flex-col gap-4 lg:sticky lg:top-[88px]"
           >
             <svg
-              viewBox={districtsViewBox}
+              viewBox={paddedViewBox}
               className="w-full"
               role="group"
               aria-label="Map of Rwanda's districts, showing where FXB Rwanda works"
@@ -330,7 +351,7 @@ export function WhereWeWork({
               {/* The country first, so everything else sits inside it. */}
               <path
                 d={countryOutline}
-                className="fill-white stroke-gray"
+                className="fill-white stroke-blue"
                 strokeWidth={9}
                 strokeLinejoin="round"
                 vectorEffect="non-scaling-stroke"
