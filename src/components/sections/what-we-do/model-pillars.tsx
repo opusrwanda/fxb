@@ -3,6 +3,7 @@ import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
 import { pillars } from "@/lib/fxbvillage";
 import { getPhotos } from "@/cms/content/photos";
+import { BrandIcon, type IconId } from "@/components/brand/icon";
 
 /**
  * The pillars of the FXBVillage model, as a stack.
@@ -43,6 +44,23 @@ import { getPhotos } from "@/cms/content/photos";
  * brief's words and nothing else — no filenames, no layout. Falling off the end
  * of this list is survivable: the panel simply renders without a picture.
  */
+/**
+ * The brand icon for each pillar.
+ *
+ * The guide draws one per pillar and they were sitting in the set unused — the
+ * areas of intervention were the only section reading it. Four ids match the
+ * pillar's own; `health-and-wash` is drawn as `wash-and-health`, which is the
+ * one place the two vocabularies disagree and the reason this is a map rather
+ * than a cast.
+ */
+const PILLAR_ICONS: Record<string, IconId> = {
+  "home-visits-and-coaching": "home-visits-and-coaching",
+  "economic-empowerment": "economic-empowerment",
+  "nutrition-and-food-security": "nutrition-and-food-security",
+  "education-and-access-to-information": "education-and-access-to-information",
+  "health-and-wash": "wash-and-health",
+};
+
 const PILLAR_PHOTOS = [
   "sugira-muryango-02.jpg", // home visits and coaching
   "fxbvillage-tlf-11.jpg", // economic empowerment
@@ -111,9 +129,20 @@ export async function ModelPillars() {
                   <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
                     <div className="flex flex-col gap-7">
                       <div className="flex flex-col gap-4">
-                        <p className="text-sm font-semibold tracking-[0.14em] text-white-94">
-                          {String(index + 1).padStart(2, "0")}
-                        </p>
+                        {/* The icon and the number on one line: the drawing
+                            says what the pillar is about, the number says where
+                            it sits in the five. */}
+                        <div className="flex items-center gap-4">
+                          {PILLAR_ICONS[pillar.id] && (
+                            <BrandIcon
+                              id={PILLAR_ICONS[pillar.id]}
+                              className="size-11 text-white"
+                            />
+                          )}
+                          <p className="text-sm font-semibold tracking-[0.14em] text-white-94">
+                            {String(index + 1).padStart(2, "0")}
+                          </p>
+                        </div>
                         <h3 className="max-w-[20ch] text-2xl font-bold tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[1.12]">
                           {pillar.title}
                         </h3>
