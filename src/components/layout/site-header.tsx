@@ -135,18 +135,20 @@ export function SiteHeader({
             : "border-b border-transparent bg-transparent",
       ].join(" ")}
     >
-      {/* The announcement never leaves and never changes size — it is outside
-          the collapsing wrapper below, and it has no dismiss control.
+      {/* The announcement and the utility strip both belong to the rest state
+          only; once the page moves they collapse away, and they come back the
+          moment the visitor returns to the top.
 
-          That makes the pinned header permanently taller than the bar alone,
-          and the two sticky navigation bars — SectionNav and SubNav — pin
-          against that height by number. Rather than making them dynamic, the
-          number lives in one place: `--h-header` in globals.css, which is the
-          banner plus the pinned bar plus the hairline. */}
-      <AnnualReportBanner report={report} />
+          What the banner no longer has is a close button. Collapsing on scroll
+          and being dismissed are two different things: the first is the
+          announcement getting out of the way of the reading, the second was the
+          reader deleting it for the rest of the visit. It is at the top of
+          every page, which is what it was asked to be; it is not also in the
+          way of every scroll, and it is not something anybody can switch off.
 
-      {/* The utility strip does belong to the rest state only; once the page
-          moves it is gone until the visitor returns to the top. */}
+          The banner collapsing with the strip is also what keeps the pinned bar
+          a fixed height, which the two sticky navigation bars — SectionNav and
+          SubNav — pin against by number. */}
       <div
         className={[
           "overflow-hidden transition-[max-height,opacity] duration-[240ms] ease-out",
@@ -154,6 +156,8 @@ export function SiteHeader({
         ].join(" ")}
         aria-hidden={solid}
       >
+        <AnnualReportBanner report={report} />
+
         {/* Utility strip. Everything in it sits at the right-hand end, one step
             down in size from the primary nav so it reads as secondary to it. */}
         <Container className="hidden items-center justify-end gap-7 border-b border-white-12 pt-5 pb-4 text-sm font-medium text-white-94 lg:flex">
@@ -301,7 +305,7 @@ export function SiteHeader({
         id="mobile-nav"
         ref={drawerRef}
         hidden={!drawerOpen}
-        className="h-[calc(100dvh-var(--h-header))] overflow-y-auto bg-blue pt-7 pb-16 lg:hidden"
+        className="h-[calc(100dvh-4rem)] overflow-y-auto bg-blue pt-7 pb-16 lg:hidden"
       >
         <nav aria-label="Mobile">
           <ul>

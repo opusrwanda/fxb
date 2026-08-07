@@ -51,7 +51,7 @@ const SECTORS = [
 export function Approach() {
   return (
     <>
-      <section id="approach" className="scroll-mt-[var(--h-anchor)] bg-white py-24 lg:py-32">
+      <section id="approach" className="scroll-mt-36 bg-white py-24 lg:py-32">
         <Container>
           {/* Heading across half the measure, statement across the rest. The
               statement is the one sentence in the section worth reading if you
@@ -133,7 +133,7 @@ export function Approach() {
         </Container>
       </section>
 
-      <section id="challenge" className="scroll-mt-[var(--h-anchor)] bg-blue py-24 lg:py-32">
+      <section id="challenge" className="scroll-mt-36 bg-blue py-24 lg:py-32">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
             <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">

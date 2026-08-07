@@ -12,23 +12,18 @@ import { Container } from "@/components/layout/container";
  * The report is passed in rather than read here: the CMS is only reachable
  * from the server, so the layout does the asking.
  *
- * ALWAYS ON, ALWAYS THE SAME SIZE
+ * NO DISMISSAL
  *
- * The banner has no dismiss control and no dismissed state. It used to keep one
- * in `sessionStorage` against the report's slug; the announcement is now a
- * permanent fixture of the header instead, so all of that — the button, the
- * key, the effect that hid the banner a frame after a full page load, and the
- * flash that came with it — is gone.
+ * There is no close button and no dismissed state. It used to have both, kept
+ * in `sessionStorage` against the report's slug, and the two behaviours read as
+ * the same thing from the outside but are not: the header collapsing this away
+ * on scroll is the announcement getting out of the way, and it returns at the
+ * top of the page. Being dismissed removed it for the rest of the visit.
  *
- * It does not shrink on scroll either. A first cut collapsed it to a 28px strip
- * once the header pinned, which is the sort of thing that looks considerate in
- * a spec and reads as the banner having gone away on the actual page. A single
- * height means what the reader sees at the top of the page is what they see at
- * the bottom of it.
- *
- * The height is fixed rather than derived from padding, because the pinned
- * header's total height is a number two sticky navigation bars pin against.
- * See `--h-header` in globals.css — change the height here and change it there.
+ * Losing the button takes the storage key with it, and the effect that read it
+ * back — which also removes the one frame of banner that a full page load used
+ * to paint before that effect could hide it. The component is now plain enough
+ * to render on the server with no client state at all.
  */
 export function AnnualReportBanner({
   report,
@@ -40,9 +35,9 @@ export function AnnualReportBanner({
   return (
     <div
       id="annual-report-banner"
-      className="flex h-11 items-center overflow-hidden border-b border-white-12 bg-blue-90"
+      className="border-b border-white-12 bg-blue-90"
     >
-      <Container className="flex items-center">
+      <Container className="flex items-center py-2.5">
         <Link
           href="/news-insights/publications#annual-reports"
           className="group flex min-w-0 items-center gap-2.5 text-[13px] font-medium text-white sm:text-sm"

@@ -207,7 +207,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
     <section
       ref={sectionRef}
       id="impact-stories"
-      className="relative scroll-mt-[var(--h-anchor)] overflow-x-clip bg-blue"
+      className="relative scroll-mt-36 overflow-x-clip bg-blue"
       style={pin ? { height: `${pin.height}px` } : undefined}
     >
       <div

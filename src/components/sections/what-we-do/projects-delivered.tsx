@@ -33,7 +33,7 @@ export function ProjectsDelivered() {
   const image = photo("itap-closing-rwamagana-01");
 
   return (
-    <section id="projects" className="relative isolate scroll-mt-[var(--h-anchor)] overflow-hidden bg-blue">
+    <section id="projects" className="relative isolate scroll-mt-36 overflow-hidden bg-blue">
       <Image
         src={image.url}
         alt="Participants and staff standing together at the closing of an FXB Rwanda project in Rwamagana"

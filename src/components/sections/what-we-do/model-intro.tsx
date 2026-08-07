@@ -32,7 +32,7 @@ export function ModelIntro() {
   return (
     <section
       id="fxbvillage-model"
-      className="scroll-mt-[var(--h-anchor)] bg-white py-24 lg:py-32"
+      className="scroll-mt-36 bg-white py-24 lg:py-32"
     >
       <Container>
         <Reveal className="flex flex-col gap-5">

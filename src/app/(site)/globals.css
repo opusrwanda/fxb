@@ -63,33 +63,6 @@
 }
 
 @layer base {
-  /*
-    The two heights the sticky furniture is measured against.
-
-    `--h-header` is what the header occupies once it is pinned: the
-    annual-report strip (44px) plus its hairline, the pinned bar (64px, 72px
-    from lg), plus the header's own hairline. The announcement is permanent, has
-    no dismiss control and does not shrink, so this number is fixed rather than
-    a state the page can find itself on either side of — which is exactly why
-    SectionNav and SubNav can go on pinning against a number at all. Change the
-    banner height in annual-report-banner.tsx and change this with it.
-
-    `--h-anchor` is that plus a sticky section bar (53px, 61px from lg) and a
-    little air. It is the offset every `id` target scrolls to, so a heading
-    linked from one of those bars lands under it rather than behind it.
-  */
-  :root {
-    --h-header: 110px;
-    --h-anchor: 176px;
-  }
-
-  @media (width >= 64rem) {
-    :root {
-      --h-header: 118px;
-      --h-anchor: 192px;
-    }
-  }
-
   html {
     scroll-behavior: smooth;
   }

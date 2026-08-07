@@ -53,7 +53,7 @@ export default async function OurImpactPage() {
         ]}
       />
 
-      <section id="measuring" className="scroll-mt-[var(--h-anchor)] bg-white py-24 lg:py-32">
+      <section id="measuring" className="scroll-mt-36 bg-white py-24 lg:py-32">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
             <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
@@ -102,7 +102,7 @@ export default async function OurImpactPage() {
           footer below is blue, so a third blue band in between made an
           unbroken ~900px slab in which this call to action read as part of
           the footer rather than as the end of the page. */}
-      <section id="explore" className="scroll-mt-[var(--h-anchor)] bg-blue-08 py-16 lg:py-20">
+      <section id="explore" className="scroll-mt-36 bg-blue-08 py-16 lg:py-20">
         <Container>
           <Reveal className="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
             <h2 className="max-w-[24ch] text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[32px] lg:leading-[1.2]">

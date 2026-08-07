@@ -66,7 +66,7 @@ export function TransformationJourney() {
     shown ? `${index * STEP + offset}ms` : "0ms";
 
   return (
-    <section id="journey" className="scroll-mt-[var(--h-anchor)] bg-blue py-24 lg:py-32">
+    <section id="journey" className="scroll-mt-36 bg-blue py-24 lg:py-32">
       <Container>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">

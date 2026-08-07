@@ -24,7 +24,7 @@ import { sdgs } from "@/lib/sdg";
  */
 export function WhyItWorks() {
   return (
-    <section id="why-it-works" className="scroll-mt-[var(--h-anchor)] bg-white py-24 lg:py-32">
+    <section id="why-it-works" className="scroll-mt-36 bg-white py-24 lg:py-32">
       <Container>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
           <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">

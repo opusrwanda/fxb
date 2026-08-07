@@ -26,7 +26,7 @@ export function ModelPillars() {
   const image = photo("sugira-muryango-01");
 
   return (
-    <section id="pillars" className="scroll-mt-[var(--h-anchor)] bg-blue py-24 lg:py-32">
+    <section id="pillars" className="scroll-mt-36 bg-blue py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">
