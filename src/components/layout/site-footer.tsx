@@ -23,8 +23,16 @@ import { primaryNav } from "@/lib/site";
  * do I reach you" is the most common question a footer answers.
  */
 
-/** Which nav sections get a column. The rest are reachable from the header. */
-const COLUMNS = ["Who We Are", "What We Do", "Get Involved"];
+/**
+ * Which nav sections get a column. The rest are reachable from the header.
+ *
+ * Get Involved is not one of them. Its four children — Partner With Us,
+ * Careers, Procurement, Donate — are all reachable from the header, and three
+ * of the four have a home elsewhere in this footer or the bar above it. The
+ * space it was using goes to the signup, which is the only thing in this room
+ * that asks the reader for something.
+ */
+const COLUMNS = ["Who We Are", "What We Do"];
 
 export function SiteFooter({ details }: { details: SiteDetails }) {
   const columns = COLUMNS.map((label) => {

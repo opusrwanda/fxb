@@ -7,12 +7,17 @@ import { useState } from "react";
 /**
  * Footer newsletter signup.
  *
- * One field, with the action sitting inside it. The earlier version stacked a
- * name, an email, a two-line consent statement and a separate button, which
- * left this column running twice the depth of the nav columns beside it — a
- * signup form should not be the tallest thing in a footer. Name is dropped
- * (nothing is personalised with it yet), the button moved into the field, and
- * consent reduced to a single line.
+ * Name and email side by side, with the action sitting inside the email field.
+ *
+ * Name was dropped from here once, and for a good reason: stacked above the
+ * email with a separate button and a two-line consent statement, it left this
+ * column running twice the depth of the nav columns beside it, and a signup
+ * form should not be the tallest thing in a footer.
+ *
+ * It comes back because the constraint changed rather than because the reason
+ * stopped being true. The block is six columns wide now instead of four, so
+ * the two fields sit on one row and the form is exactly as tall with the name
+ * as it was without it. Stack them again and the old problem returns.
  *
  * Underlined rather than boxed: inside a solid colour room a bordered box reads
  * as a hole punched in the surface, while a single rule carries the affordance
@@ -45,7 +50,11 @@ export function NewsletterForm() {
         // Consent is sent, not assumed. The tick is `required` so the browser
         // will not submit without it, but the route checks rather than infers
         // it — it is the one value here with legal weight.
+        // `name`, not firstName/lastName: the route composes a display name
+        // from the parts when the signup section sends them and falls back to
+        // this single field, which is what keeps `source` reading "footer".
         body: JSON.stringify({
+          name: data.get("name"),
           email: data.get("email"),
           consent: data.get("consent") === "on",
         }),
@@ -67,7 +76,28 @@ export function NewsletterForm() {
 
   return (
     <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-4">
-      <div className="relative">
+      {/* One row from sm up, stacked below it. Two ruled fields at half width
+          each read as a pair; stacked, they read as a queue. */}
+      <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
+        <div>
+          <label htmlFor="newsletter-name" className="sr-only">
+            Your name
+          </label>
+          <input
+            id="newsletter-name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            maxLength={160}
+            placeholder="Your name"
+            // Not `required`. The address is what a mailing list needs; a name
+            // it can do without, and a field that blocks the submit is a field
+            // that costs subscribers. The route never required it either.
+            className="w-full border-b border-white-40 bg-transparent pb-3 text-base text-white transition-colors duration-300 outline-none placeholder:text-white-70 focus:border-white focus-visible:shadow-[0_2px_0_0_var(--color-white)]"
+          />
+        </div>
+
+        <div className="relative">
         <label htmlFor="newsletter-email" className="sr-only">
           Email address
         </label>
@@ -109,6 +139,7 @@ export function NewsletterForm() {
             aria-hidden="true"
           />
         </button>
+        </div>
       </div>
 
       <label className="flex items-start gap-2.5 text-xs leading-relaxed text-white-94">

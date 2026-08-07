@@ -38,7 +38,11 @@ export function FooterNewsletter() {
   const hasSignup = ROUTES_WITH_SIGNUP.includes(usePathname());
 
   return (
-    <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
+    // Six of the twelve columns, up from four. The row is signup 6 + two nav
+    // columns at 2 + contact 2, so dropping Get Involved hands its width
+    // straight to the form rather than leaving a gap — which is what lets the
+    // name and email fields sit side by side without the block growing taller.
+    <div className="sm:col-span-2 lg:col-span-3 xl:col-span-6">
       <h2 className="text-xl font-bold tracking-[-0.02em] lg:text-2xl">
         Sign up for our newsletter
       </h2>
