@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
+import { PhotoBand } from "@/components/sections/photo-band";
+import { getPhotos } from "@/cms/content/photos";
 import { getPageHeaderImage } from "@/cms/content/page-headers";
 import { Approach } from "@/components/sections/what-we-do/approach";
 import { AreasOfIntervention } from "@/components/sections/what-we-do/areas-of-intervention";
@@ -35,6 +37,14 @@ export const metadata: Metadata = {
  * see the note in `site.ts`.
  */
 export default async function WhatWeDoPage() {
+  // Three pictures for the top half of this page, which ran 4,260 pixels —
+  // Our Approach through to the principles — without one.
+  const photos = await getPhotos([
+    "fostering-03.jpg",
+    "fxbvillage-musambira-05.jpg",
+    "fxbvillage-tlf-11.jpg",
+    "fxbvillage-tlf-04.jpg",
+  ]);
   const banner = await getPageHeaderImage("/what-we-do");
   const programmes = await getCurrentProgrammes();
   // Derived, not written down. The hero makes a claim about how much of this
@@ -69,10 +79,35 @@ export default async function WhatWeDoPage() {
         ]}
       />
 
-      <Approach />
+      <Approach image={photos["fxbvillage-tlf-04.jpg"]} />
+
+      {/* The page opens with five sections of unbroken argument — the approach,
+          the challenge, the model, the 36 months, the principles — and every
+          photograph on it used to sit below them. These three are spaced
+          through that run rather than grouped, so no stretch of it goes more
+          than about a thousand pixels without the work appearing in it. */}
+      {photos["fostering-03.jpg"] && (
+        <PhotoBand image={photos["fostering-03.jpg"]}>
+          Poverty arrives in every part of a life at once.
+        </PhotoBand>
+      )}
+
       <ModelIntro />
+
+      {photos["fxbvillage-musambira-05.jpg"] && (
+        <PhotoBand image={photos["fxbvillage-musambira-05.jpg"]}>
+          Three years, and a household that no longer needs us.
+        </PhotoBand>
+      )}
+
       <TransformationJourney />
       <ModelPrinciples />
+
+      {photos["fxbvillage-tlf-11.jpg"] && (
+        <PhotoBand image={photos["fxbvillage-tlf-11.jpg"]}>
+          A business of one&apos;s own is what the last year is for.
+        </PhotoBand>
+      )}
       <ModelPillars />
       <WhyItWorks />
       <ProjectsDelivered />

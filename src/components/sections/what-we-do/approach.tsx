@@ -1,6 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
+import type { Img } from "@/cms/content/image";
 
 /**
  * The opening statement, and the case for it.
@@ -48,7 +50,7 @@ const SECTORS = [
   "Climate resilience",
   "Community health",
 ];
-export function Approach() {
+export function Approach({ image }: { image?: Img | null }) {
   return (
     <>
       <section id="approach" className="scroll-mt-36 bg-white py-24 lg:py-32">
@@ -101,6 +103,25 @@ export function Approach() {
               </p>
             </Reveal>
           </div>
+
+          {/* The work, before the nine words naming it.
+              This section and the one below it ran a thousand pixels each with
+              nothing in them but type, at the very top of the page — the first
+              photograph a reader met after the hero was four screens down. */}
+          {image && (
+            <Reveal delay={520} className="mt-16 lg:mt-24">
+              <div className="aspect-21/9 overflow-hidden rounded-card">
+                <Image
+                  src={image.url}
+                  alt={image.alt}
+                  width={image.width}
+                  height={image.height}
+                  sizes="(min-width: 1024px) 1200px, 100vw"
+                  className="size-full object-cover"
+                />
+              </div>
+            </Reveal>
+          )}
 
           <Reveal delay={580} className="mt-16 lg:mt-24">
             <p className="max-w-[54ch] text-base leading-relaxed text-gray lg:text-[17px]">
