@@ -90,7 +90,6 @@ export function Hero({
             <BackgroundVideo
               large={heroVideo.large}
               small={heroVideo.small}
-              poster={heroVideo.poster}
               className="absolute inset-0 size-full object-cover"
             />
           </div>
@@ -132,8 +131,16 @@ export function Hero({
 
         {/* Sizes step down from the old 82/100 to leave the rail its band. At
             88px the headline still owns the screen — the constraint on display
-            type here is the two lines it wraps to, not the point size. */}
-        <h1 className="hero-rise max-w-[17ch] text-[36px] leading-[1.04] font-bold tracking-[-0.03em] text-balance text-white [animation-delay:90ms] sm:text-[52px] lg:text-[76px] lg:leading-[1] xl:text-[88px]">
+            type here is the two lines it wraps to, not the point size.
+
+            1.12 is a floor, not a preference. Poppins puts the `g` tail 0.275em
+            under the baseline and the `f`, `h`, `d` and `l` ascenders 0.784em
+            over it, so two lines collide at anything under 1.059 — which is
+            what "Creating a world fit / for children." was doing at the 1 this
+            used to set, with the tail of the `g` landing 5px inside the line
+            below. One value at every size: display type wants tight leading,
+            but never tighter than the face's own ink. */}
+        <h1 className="hero-rise max-w-[17ch] text-[36px] leading-[1.12] font-bold tracking-[-0.03em] text-balance text-white [animation-delay:90ms] sm:text-[52px] lg:text-[76px] xl:text-[88px]">
           {headline}
         </h1>
 

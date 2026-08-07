@@ -29,12 +29,10 @@ type NetworkInformation = {
 export function BackgroundVideo({
   large,
   small,
-  poster,
   className = "",
 }: {
   large: VideoRendition;
   small: VideoRendition;
-  poster: string;
   className?: string;
 }) {
   const [rendition, setRendition] = useState<VideoRendition | null>(null);
@@ -84,7 +82,11 @@ export function BackgroundVideo({
       loop
       playsInline
       preload="auto"
-      poster={poster}
+      // No `poster` attribute. The caller already paints the same still as an
+      // optimised <Image> behind this element, and this video is opacity-0
+      // until `canplay` — so a poster here is a second copy of a picture nobody
+      // ever sees, fetched raw, straight past next/image. At 4K that was very
+      // nearly a megabyte of pure waste on every visit.
       aria-hidden="true"
       tabIndex={-1}
       onCanPlay={() => setReady(true)}

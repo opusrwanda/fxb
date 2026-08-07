@@ -27,6 +27,6 @@ export const heroVideo = {
     mp4: cdn("video/hero-480.mp4"),
   } satisfies VideoRendition,
   poster: "/media/hero-poster.jpg",
-  posterWidth: 1920,
-  posterHeight: 1080,
+  posterWidth: 3840,
+  posterHeight: 2160,
 } as const;
