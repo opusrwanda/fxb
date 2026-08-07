@@ -33,13 +33,13 @@ export function ProjectsDelivered() {
   const image = photo("itap-closing-rwamagana-01");
 
   return (
-    <section id="projects" className="relative isolate scroll-mt-36 overflow-hidden bg-blue">
+    <section id="projects" className="static-bg relative isolate scroll-mt-36 bg-blue">
       <Image
         src={image.url}
         alt="Participants and staff standing together at the closing of an FXB Rwanda project in Rwamagana"
         fill
         sizes="100vw"
-        className="-z-20 object-cover object-[50%_38%]"
+        className="static-bg-image -z-20 object-cover object-[50%_38%]"
       />
       <div className="band-scrim absolute inset-0 -z-10" aria-hidden="true" />
       <div className="grain absolute inset-0 -z-10" aria-hidden="true" />

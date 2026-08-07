@@ -30,7 +30,7 @@ export function PhotoBand({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="relative isolate flex min-h-[38svh] items-end overflow-hidden bg-blue py-14 lg:min-h-[46svh] lg:py-20">
+    <section className="static-bg relative isolate flex min-h-[38svh] items-end bg-blue py-14 lg:min-h-[46svh] lg:py-20">
       <Image
         src={image.url}
         // Decorative: the line over it is the point, and the pages this sits on
@@ -38,7 +38,7 @@ export function PhotoBand({
         alt=""
         fill
         sizes="100vw"
-        className="-z-20 object-cover"
+        className="static-bg-image -z-20 object-cover"
       />
       <div className="hero-scrim absolute inset-0 -z-10" aria-hidden="true" />
       <div

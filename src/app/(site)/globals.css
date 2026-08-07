@@ -353,6 +353,68 @@
     }
   }
 
+  /*
+    A photograph that holds still while the section scrolls over it.
+
+    `background-attachment: fixed` is the old way to do this and it does not
+    work on iOS Safari, where the image jumps or freezes at the wrong scale —
+    which rules it out for an audience this heavily on phones.
+
+    So the image is genuinely `position: fixed`, at viewport size, and the
+    section clips it. `clip-path` is what makes that work: an ancestor with a
+    clip path becomes the containing block for fixed descendants, so the image
+    stops being positioned against the viewport and starts being positioned
+    against — and cut to — this section. The result is the same effect with no
+    browser caveats: the picture stays put, the words travel over it.
+
+    `will-change: transform` on the image keeps it on its own compositor layer,
+    without which the clip is recalculated on the main thread every frame.
+  */
+  .static-bg {
+    clip-path: inset(0);
+  }
+
+  /*
+    `!important` because `next/image` with `fill` writes `position: absolute`
+    and its own inset as an inline style, and an inline style beats a
+    stylesheet rule. The alternative is dropping `fill` and hand-rolling the
+    cover behaviour it gives us; overriding four declarations is the smaller
+    price.
+  */
+  .static-bg > .static-bg-image {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100vw !important;
+    height: 100lvh !important;
+    will-change: transform;
+  }
+
+  /*
+    Reduced motion turns it off.
+
+    A background that does not move while its content does is parallax by
+    another name, and parallax is the specific thing this media query was
+    written for. The image goes back to being part of the section and scrolls
+    with it.
+  */
+  @media (prefers-reduced-motion: reduce) {
+    .static-bg {
+      clip-path: none;
+    }
+
+    .static-bg > .static-bg-image {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      will-change: auto;
+    }
+  }
+
   /* The track scrolls; the scrollbar itself would cut across the photographs. */
   .no-scrollbar {
     scrollbar-width: none;
