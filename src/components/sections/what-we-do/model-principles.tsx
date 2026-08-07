@@ -12,7 +12,7 @@ import { principles } from "@/lib/fxbvillage";
  */
 export function ModelPrinciples() {
   return (
-    <section id="principles" className="scroll-mt-36 bg-blue-08 py-24 lg:py-32">
+    <section id="principles" className="scroll-mt-[var(--h-anchor)] bg-blue-08 py-24 lg:py-32">
       <Container>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
           <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">

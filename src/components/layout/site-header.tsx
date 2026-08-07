@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, Mail, Menu, Phone, Plus, X } from "lucide-react";
+import { Mail, Menu, Phone, Plus, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/brand/logo";
 import { AnnualReportBanner } from "@/components/layout/annual-report-banner";
@@ -135,17 +135,18 @@ export function SiteHeader({
             : "border-b border-transparent bg-transparent",
       ].join(" ")}
     >
-      {/* The announcement and the utility strip both belong to the rest state
-          only; once the page moves they are gone until the visitor returns to
-          the top.
+      {/* The announcement never leaves and never changes size — it is outside
+          the collapsing wrapper below, and it has no dismiss control.
 
-          The banner collapsing with them is deliberate rather than incidental.
-          A banner that stayed would make the pinned bar permanently taller, and
-          the two sticky navigation bars — SectionNav and SubNav — pin against
-          that height by number. Every one of them would have had to become
-          dynamic, and would still have jumped the moment anybody pressed the
-          dismiss button. The announcement is at the top of every page, which is
-          what it was asked to be; it is not also in the way of every scroll. */}
+          That makes the pinned header permanently taller than the bar alone,
+          and the two sticky navigation bars — SectionNav and SubNav — pin
+          against that height by number. Rather than making them dynamic, the
+          number lives in one place: `--h-header` in globals.css, which is the
+          banner plus the pinned bar plus the hairline. */}
+      <AnnualReportBanner report={report} />
+
+      {/* The utility strip does belong to the rest state only; once the page
+          moves it is gone until the visitor returns to the top. */}
       <div
         className={[
           "overflow-hidden transition-[max-height,opacity] duration-[240ms] ease-out",
@@ -153,28 +154,29 @@ export function SiteHeader({
         ].join(" ")}
         aria-hidden={solid}
       >
-        <AnnualReportBanner report={report} />
-
-        <Container className="hidden items-center gap-9 border-b border-white-12 pt-5 pb-4 text-base font-medium text-white-94 lg:flex">
-          {details.externalSystems.map((system) => (
-            <a
-              key={system.label}
-              href={system.href}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="flex items-center gap-1.5 transition-colors duration-200 hover:text-white"
-              tabIndex={solid ? -1 : 0}
-            >
-              {system.label}
-              <ArrowUpRight className="size-4" aria-hidden="true" />
-            </a>
-          ))}
-          <a
-            href={`tel:${details.phoneHref}`}
-            className="ml-auto flex items-center gap-2 transition-colors duration-200 hover:text-white"
+        {/* Utility strip. Everything in it sits at the right-hand end, one step
+            down in size from the primary nav so it reads as secondary to it. */}
+        <Container className="hidden items-center justify-end gap-7 border-b border-white-12 pt-5 pb-4 text-sm font-medium text-white-94 lg:flex">
+          <Link
+            href="/get-involved/partners"
+            className="transition-colors duration-200 hover:text-white"
             tabIndex={solid ? -1 : 0}
           >
-            <Phone className="size-4" aria-hidden="true" />
+            Partner With Us
+          </Link>
+          <Link
+            href="/contact"
+            className="transition-colors duration-200 hover:text-white"
+            tabIndex={solid ? -1 : 0}
+          >
+            Contact Us
+          </Link>
+          <a
+            href={`tel:${details.phoneHref}`}
+            className="flex items-center gap-2 transition-colors duration-200 hover:text-white"
+            tabIndex={solid ? -1 : 0}
+          >
+            <Phone className="size-3.5" aria-hidden="true" />
             {details.phone}
           </a>
         </Container>
@@ -299,7 +301,7 @@ export function SiteHeader({
         id="mobile-nav"
         ref={drawerRef}
         hidden={!drawerOpen}
-        className="h-[calc(100dvh-4rem)] overflow-y-auto bg-blue pt-7 pb-16 lg:hidden"
+        className="h-[calc(100dvh-var(--h-header))] overflow-y-auto bg-blue pt-7 pb-16 lg:hidden"
       >
         <nav aria-label="Mobile">
           <ul>
@@ -360,28 +362,11 @@ export function SiteHeader({
           </ul>
         </nav>
 
-        <div className="mt-9 flex flex-col gap-4">
-          {details.externalSystems.map((system) => (
-            <a
-              key={system.label}
-              href={system.href}
-              target="_blank"
-              rel="noreferrer noopener"
-              // Padded to a 44px row like the nav links above. These were
-              // the last two 26px targets left in the drawer.
-              className="flex items-center gap-2.5 py-2.5 text-[17px] font-medium text-white-94"
-            >
-              {system.label}
-              <ArrowUpRight className="size-4" aria-hidden="true" />
-            </a>
-          ))}
-        </div>
-
         {/* The drawer used to end with ~150px of empty blue under the staff
             links. On a phone that is the most valuable space in the menu — the
             thumb is already there — so it carries the number to call and the
             address to write to instead of nothing. */}
-        <div className="mt-10 flex flex-col gap-1 border-t border-white-12 pt-6">
+        <div className="mt-9 flex flex-col gap-1 border-t border-white-12 pt-6">
           <a
             href={`tel:${details.phoneHref}`}
             className="flex items-center gap-3 py-2.5 text-[17px] font-medium text-white"

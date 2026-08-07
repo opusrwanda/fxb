@@ -49,7 +49,7 @@ export function SubNav({
   return (
     <nav
       aria-label={ariaLabel}
-      className="sticky top-[65px] z-30 border-b border-gray-15 bg-white lg:top-[73px]"
+      className="sticky top-[var(--h-header)] z-30 border-b border-gray-15 bg-white"
     >
       <Container>
         <ul className="no-scrollbar -mx-5 flex gap-1 overflow-x-auto px-5 sm:-mx-6 sm:px-6 lg:mx-0 lg:gap-2 lg:px-0">

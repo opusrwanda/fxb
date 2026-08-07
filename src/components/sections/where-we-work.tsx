@@ -240,7 +240,7 @@ export function WhereWeWork({ programmes }: { programmes: Programme[] }) {
   }, [byDistrict, highlighted]);
 
   return (
-    <section id="where-we-work" className="scroll-mt-32 bg-white py-24 lg:py-32">
+    <section id="where-we-work" className="scroll-mt-[var(--h-anchor)] bg-white py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">

@@ -80,7 +80,7 @@ export function SectionNav({ sections }: { sections: Section[] }) {
   return (
     <nav
       aria-label="On this page"
-      className="sticky top-[65px] z-30 border-b border-gray-15 bg-white lg:top-[73px]"
+      className="sticky top-[var(--h-header)] z-30 border-b border-gray-15 bg-white"
     >
       <Container>
         {/* Scrolls sideways rather than wrapping. Eight labels on a 390px

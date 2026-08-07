@@ -19,7 +19,7 @@ import { photo } from "@/lib/photos";
  */
 export function AreasOfIntervention() {
   return (
-    <section id="areas" className="scroll-mt-36 bg-white py-24 lg:py-32">
+    <section id="areas" className="scroll-mt-[var(--h-anchor)] bg-white py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
@@ -45,7 +45,7 @@ export function AreasOfIntervention() {
               {/* The anchor sits on the article rather than the Reveal
                   wrapper, which takes no id — and it is what the home page's
                   four pillars jump to, so it needs the header offset. */}
-              <article id={area.id} className="flex h-full scroll-mt-32 flex-col">
+              <article id={area.id} className="flex h-full scroll-mt-[var(--h-anchor)] flex-col">
                 <div className="wedge relative aspect-16/10 overflow-hidden">
                   <Image
                     src={photo(area.photo).url}

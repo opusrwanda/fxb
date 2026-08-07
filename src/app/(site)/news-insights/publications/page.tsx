@@ -73,7 +73,7 @@ export default async function PublicationsPage() {
                   <div
                     key={category.id}
                     id={category.anchor}
-                    className="scroll-mt-36"
+                    className="scroll-mt-[var(--h-anchor)]"
                   >
                     <Reveal className="flex flex-col gap-3">
                       <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">

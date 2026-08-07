@@ -236,7 +236,7 @@ export default async function PartnersPage() {
           section began hard against that line. */}
       <section
         id="development-partners"
-        className="scroll-mt-36 bg-white pt-14 pb-24 lg:pt-16 lg:pb-32"
+        className="scroll-mt-[var(--h-anchor)] bg-white pt-14 pb-24 lg:pt-16 lg:pb-32"
       >
         <Container>
           <SectionHeading
@@ -294,7 +294,7 @@ export default async function PartnersPage() {
       {/* Government */}
       <section
         id="government"
-        className="scroll-mt-36 bg-blue py-24 lg:py-32"
+        className="scroll-mt-[var(--h-anchor)] bg-blue py-24 lg:py-32"
       >
         <Container>
           <SectionHeading
@@ -337,7 +337,7 @@ export default async function PartnersPage() {
       </section>
 
       {/* Institutional donors */}
-      <section id="donors" className="scroll-mt-36 bg-white py-24 lg:py-32">
+      <section id="donors" className="scroll-mt-[var(--h-anchor)] bg-white py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow="INSTITUTIONAL DONORS"
@@ -411,7 +411,7 @@ export default async function PartnersPage() {
       </section>
 
       {/* Corporate */}
-      <section id="corporate" className="scroll-mt-36 bg-blue py-24 lg:py-32">
+      <section id="corporate" className="scroll-mt-[var(--h-anchor)] bg-blue py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow="CORPORATE PARTNERSHIPS"
@@ -451,7 +451,7 @@ export default async function PartnersPage() {
       {/* Become a partner */}
       <section
         id="become-a-partner"
-        className="scroll-mt-36 bg-white py-24 lg:py-32"
+        className="scroll-mt-[var(--h-anchor)] bg-white py-24 lg:py-32"
       >
         <Container>
           <SectionHeading eyebrow="BECOME A PARTNER" title="Let's work together" />
