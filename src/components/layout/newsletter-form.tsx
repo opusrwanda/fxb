@@ -79,7 +79,24 @@ export function NewsletterForm() {
           autoComplete="email"
           placeholder="Your email address"
           // Right padding clears the button sitting on top of the field.
-          className="w-full border-b border-white-40 bg-transparent pb-3 pr-12 text-base text-white transition-colors duration-300 outline-none placeholder:text-white-70 focus:border-white"
+          //
+          // FOCUS
+          //
+          // The site-wide ring is a green outline inside a white halo, and the
+          // halo is load-bearing: green on blue is 1.16:1, so inside a blue
+          // room the ring alone cannot be seen. This field had `outline-none`
+          // on it, which suppressed the green but left the halo behind — so
+          // clicking it drew a plain white rectangle with nothing inside it.
+          // That is not the ring, it is the half of the ring that carries no
+          // meaning.
+          //
+          // A box is the wrong shape here anyway. This is a ruled field, not a
+          // boxed one, so focus is said with the rule: the shadow redraws as a
+          // 2px bar sitting directly under the 1px border, which reads as one
+          // bright 3px underline. It is a shadow rather than a thicker border
+          // so the field does not shift by a pixel as it lands, and it is
+          // `focus-visible` so a mouse click does not summon it either.
+          className="w-full border-b border-white-40 bg-transparent pb-3 pr-12 text-base text-white transition-colors duration-300 outline-none placeholder:text-white-70 focus:border-white focus-visible:shadow-[0_2px_0_0_var(--color-white)]"
         />
         <button
           type="submit"
