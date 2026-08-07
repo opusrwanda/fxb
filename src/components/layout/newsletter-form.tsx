@@ -76,9 +76,15 @@ export function NewsletterForm() {
 
   return (
     <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-4">
-      {/* One row from sm up, stacked below it. Two ruled fields at half width
-          each read as a pair; stacked, they read as a queue. */}
-      <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
+      {/* One row from sm up, stacked below it. Two ruled fields side by side
+          read as a pair; stacked, they read as a queue.
+
+          Two parts to three rather than an even split. The email is the field
+          that has to hold a long address and the submit button inside its own
+          right-hand padding, while the name field holds a first name most of
+          the time — an even split gave the shorter value the same room as the
+          longer one and left the address cramped against the arrow. */}
+      <div className="grid gap-4 sm:grid-cols-[2fr_3fr] sm:gap-5">
         <div>
           <label htmlFor="newsletter-name" className="sr-only">
             Your name
