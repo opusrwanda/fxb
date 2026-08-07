@@ -116,12 +116,10 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
         </div>
 
         <div className="mt-12 flex flex-col gap-6 border-t border-white-12 pt-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col gap-3">
-            {/* self-start, or the flex column stretches the lockup to the full
-                column width and squashes it out of its 2.95:1 ratio. */}
-            <Logo variant="white" alt={details.name} className="h-10 self-start" />
-            <p className="text-sm text-white-94">{details.endorsement}</p>
-          </div>
+          {/* self-start, or the flex row stretches the lockup to the full
+              column width and squashes it out of its 2.95:1 ratio. The column
+              wrapper went with the endorsement line it was there to stack. */}
+          <Logo variant="white" alt={details.name} className="h-10 self-start" />
 
           {/* The external systems (Sugira Muryango, POMC) are deliberately not
               here — they are staff tools and the header's utility strip is

@@ -20,7 +20,6 @@
 export const brand = {
   name: "FXB Rwanda",
   legalName: "Francois Xavier Bagnoud",
-  endorsement: "Member of FXB Global",
   linktree: "https://linktr.ee/fxbrwanda",
 } as const;
 
