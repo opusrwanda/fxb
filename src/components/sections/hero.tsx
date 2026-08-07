@@ -123,7 +123,7 @@ export function Hero({
               className="h-0.5 w-6 shrink-0 bg-green"
               aria-hidden="true"
             />
-            <span className="text-[11px] font-semibold tracking-[0.18em] text-white lg:text-xs">
+            <span className="text-[22px] font-semibold tracking-[0.18em] text-white lg:text-[24px]">
               {eyebrow}
             </span>
           </p>

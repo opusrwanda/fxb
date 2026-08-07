@@ -72,7 +72,7 @@ export function TransformationJourney() {
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
-              <span className="text-xs font-semibold tracking-[0.14em] text-white-94">
+              <span className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
                 TRANSFORMATION JOURNEY
               </span>
             </div>

@@ -71,7 +71,7 @@ export function WhoWeAre() {
           <Reveal className="lg:col-span-4 lg:row-start-1">
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
-              <span className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+              <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
                 WHO WE ARE
               </span>
             </div>
