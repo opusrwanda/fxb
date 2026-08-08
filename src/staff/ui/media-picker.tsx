@@ -139,7 +139,12 @@ export function MediaPicker({
     <>
       <input type="hidden" name={name} value={selected ?? ""} />
 
-      <div className="flex items-center gap-4">
+      {/* `min-w-0` on both, and it is load-bearing rather than tidy. A flex
+          item defaults to `min-width: auto`, which means it refuses to shrink
+          below its own content — so the `truncate` on the description below had
+          nothing to truncate against and a long alt text pushed the whole
+          control out through the side of the sidebar rail it sits in. */}
+      <div className="flex min-w-0 items-center gap-4">
         <button
           ref={openerRef}
           id={id}
@@ -147,7 +152,7 @@ export function MediaPicker({
           onClick={() => setOpen(true)}
           aria-describedby={describedBy}
           aria-haspopup="dialog"
-          className="flex flex-1 items-center gap-4 rounded-card border border-gray-15 bg-white p-3 text-left transition-colors duration-300 hover:border-blue"
+          className="flex min-w-0 flex-1 items-center gap-4 rounded-card border border-gray-15 bg-white p-3 text-left transition-colors duration-300 hover:border-blue"
         >
           {chosen ? (
             kind === "image" ? (
@@ -172,7 +177,11 @@ export function MediaPicker({
             <span className="block truncate text-[15px] font-medium text-blue">
               {chosen ? chosen.filename : "Choose a file"}
             </span>
-            <span className="block truncate text-sm text-gray">
+            {/* No `block` here. `line-clamp-2` works by setting `display:
+                -webkit-box`, and a `block` after it in the class list wins —
+                which left the description running to six lines in a 200px
+                rail instead of two. */}
+            <span className="line-clamp-2 text-sm leading-snug text-gray">
               {chosen?.alt || (chosen ? "No description" : "Nothing selected")}
             </span>
           </span>
