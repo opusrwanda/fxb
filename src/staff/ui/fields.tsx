@@ -1,5 +1,6 @@
 import type { Field } from "../fields";
 import { RichTextEditor } from "./editor";
+import { MediaPicker } from "./media-picker";
 
 /**
  * The form controls, in the site's design language.
@@ -20,6 +21,8 @@ type MediaOption = {
   filename: string;
   alt: string;
   mimeType: string;
+  url: string;
+  thumb: Record<string, { url?: string }> | null;
 };
 
 const inputClass =
@@ -190,16 +193,18 @@ function Control({
           ? option.mimeType === "application/pdf"
           : option.mimeType.startsWith("image/"),
       );
+      // Picked by looking at it rather than by reading a filename. Falls back
+      // to this same list as a native select before hydration — see the note
+      // in `media-picker.tsx`.
       return (
-        <select {...shared} defaultValue={value ? String(value) : ""} className={inputClass}>
-          <option value="">— none —</option>
-          {options.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.filename}
-              {option.alt ? ` — ${option.alt.slice(0, 60)}` : ""}
-            </option>
-          ))}
-        </select>
+        <MediaPicker
+          name={shared.name}
+          id={shared.id}
+          describedBy={shared["aria-describedby"]}
+          value={value ? Number(value) : null}
+          options={options}
+          kind={field.accept === "document" ? "document" : "image"}
+        />
       );
     }
 
