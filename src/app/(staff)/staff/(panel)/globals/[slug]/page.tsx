@@ -8,6 +8,7 @@ import {
   type SiteSettingsData,
 } from "@/staff/db/schema";
 import { getMediaOptions } from "@/staff/queries/document";
+import { MediaPicker } from "@/staff/ui/media-picker";
 import {
   getGlobal,
   isGlobal,
@@ -210,21 +211,19 @@ export default async function GlobalPage({
                       >
                         Photograph
                       </label>
-                      <select
+                      {/* The same picker the collections use. This one listed
+                          filenames alone — not even the description the other
+                          select appended — so choosing the photograph beside a
+                          reach figure meant recognising `fostering-03.jpg`. */}
+                      <MediaPicker
                         id={`g-figure-${index}-photo`}
                         name={`figure-${index}-photo`}
-                        defaultValue={figure?.photoId ? String(figure.photoId) : ""}
-                        className={input}
-                      >
-                        <option value="">— none —</option>
-                        {mediaOptions
-                          .filter((option) => option.mimeType.startsWith("image/"))
-                          .map((option) => (
-                            <option key={option.id} value={option.id}>
-                              {option.filename}
-                            </option>
-                          ))}
-                      </select>
+                        value={figure?.photoId ?? null}
+                        kind="image"
+                        options={mediaOptions.filter((option) =>
+                          option.mimeType.startsWith("image/"),
+                        )}
+                      />
                     </div>
                   </fieldset>
                 );
