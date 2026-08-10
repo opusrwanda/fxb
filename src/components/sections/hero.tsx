@@ -13,9 +13,6 @@ type Cta = { label: string; href: string; primary?: boolean };
 /** A step in the trail above the eyebrow. */
 export type Crumb = { label: string; href: string };
 
-/** A figure carried at the fold. Kept to three — see the rail below. */
-export type HeroStat = { figure: string; label: string };
-
 /**
  * The hero room: full-bleed footage under a shaped scrim.
  *
@@ -24,24 +21,22 @@ export type HeroStat = { figure: string; label: string };
  * clip is ever bright enough to break them, the scrim rises rather than the
  * lockup switching early. Its geometry is documented in `globals.css`.
  *
- * The room is built in three bands, not one block:
+ * The room is built in two bands, not one block:
  *
  *   top     the header, drawn straight onto the footage
  *   middle  the argument — eyebrow, headline, body, actions
- *   bottom  the proof — three figures and the invitation to keep going
  *
- * That bottom band is the point of the section. A full-viewport hero that ends
- * in nothing tells a visitor the page is over; the rail spends the same pixels
- * saying it is not, and puts the organisation's three most quotable facts above
- * the fold where a first-time donor or partner actually reads them.
+ * There used to be a third: a hairline across the measure carrying three
+ * figures and a scroll cue. Home was the only page that ever set it, and it is
+ * gone by request, so the props and the band went with it rather than staying
+ * as an unused branch. If a fold-level rail is ever wanted again it wants
+ * rebuilding against whatever the page needs then.
  */
 export function Hero({
   eyebrow,
   headline,
   body,
   ctas = [],
-  stats = [],
-  scrollTo,
   withVideo = false,
   image,
   breadcrumbs = [],
@@ -50,10 +45,6 @@ export function Hero({
   headline: string;
   body?: string;
   ctas?: Cta[];
-  /** The fold-level proof rail. Three figures; more than that is a table. */
-  stats?: HeroStat[];
-  /** Anchor for the scroll cue. Omitted, the cue does not render. */
-  scrollTo?: string;
   withVideo?: boolean;
   /**
    * A photograph to stand behind the room, for the section landings that have
@@ -83,12 +74,12 @@ export function Hero({
     // growing past it. `min-h` rather than `h` so a very short or very narrow
     // device gets a taller hero instead of clipped copy.
     //
-    // Mobile top padding is 136px against a 96px mobile bar, not the 148px the
-    // desktop utility strip needs: with the rail added, a 375×667 phone is the
-    // one viewport where the budget genuinely does not close, and the 12px
-    // bought here is 12px the rail does not lose. On that device the figures
-    // still land above the fold and only the tail of a caption falls below it,
-    // which reads as an invitation rather than as a clipped section.
+    // Mobile top padding is 136px against a 96px mobile bar, rather than the
+    // 148px the desktop utility strip needs. That 12px was bought back for the
+    // figure rail on a 375×667 phone, which was the one viewport where the
+    // height budget did not close. The rail is gone and the budget is no longer
+    // tight, but the clearance is still correct against the shorter mobile bar,
+    // so it stays.
     <section
       className={`relative isolate flex flex-col overflow-hidden bg-blue pt-34 pb-8 lg:pt-[14.75rem] lg:pb-12 ${
         // A full viewport is worth it for footage; it is not worth it for a
@@ -163,9 +154,10 @@ export function Hero({
         </>
       )}
 
-      {/* `my-auto` rather than `justify-center` on the section: it centres this
-          band in whatever height the rail leaves, instead of centring the two
-          of them together and floating the rail off the bottom edge. */}
+      {/* `my-auto` on the sole child, which now centres it in the section the
+          same way `justify-center` would. Kept as-is: it was the correct form
+          when a rail sat below it, and it is the correct form if one ever
+          returns. */}
       <Container className="my-auto flex flex-col items-start gap-5 lg:gap-7">
         {breadcrumbs.length > 0 && (
           <nav aria-label="Breadcrumb" className="hero-rise">
@@ -255,64 +247,6 @@ export function Hero({
         )}
       </Container>
 
-      {(stats.length > 0 || scrollTo) && (
-        <Container
-          className={`hero-rise mt-8 [animation-delay:380ms] lg:mt-16 ${
-            // With no figures the only thing hanging off the rule is the scroll
-            // cue, and that cue is desktop-only — so on a phone the whole band
-            // would come out as a hairline with nothing under it.
-            stats.length > 0 ? "" : "hidden lg:block"
-          }`}
-        >
-          {/* One hairline across the measure, and the rail hangs off it. The
-              same gesture the impact band uses on white: a single rule saying
-              these figures are one statement, not three separate objects. */}
-          <div className="flex items-end justify-between gap-8 border-t border-white-40 pt-5 lg:pt-8">
-            {stats.length > 0 && (
-              <dl className="grid flex-1 grid-cols-3 gap-x-4 sm:gap-x-8 lg:max-w-4xl">
-                {stats.map((stat) => (
-                  <div key={stat.label} className="flex flex-col gap-1.5">
-                    {/* The condensed face, as everywhere else numerals are set
-                        large. Its whole licence in this system is impact
-                        figures, and this is the first place a visitor meets
-                        one. */}
-                    <dt className="font-display text-[25px] leading-[0.95] font-semibold tracking-[-0.01em] text-white tabular-nums sm:text-[38px] lg:text-[46px]">
-                      {stat.figure}
-                    </dt>
-                    <dd className="max-w-[24ch] text-xs leading-[1.35] text-white-94 sm:leading-snug lg:text-[13px]">
-                      {stat.label}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-
-            {scrollTo && (
-              // Desktop only. On a phone the gesture is the interface — nobody
-              // needs telling a page scrolls — and the rail has no width to
-              // spare there anyway.
-              <a
-                href={scrollTo}
-                // `ml-auto` because `justify-between` only pushes this right
-                // while the figures are there to push against it. With the rail
-                // empty it is the sole child and would sit at the left edge.
-                className="group ml-auto hidden shrink-0 items-center gap-4 pb-1 text-[11px] font-semibold tracking-[0.18em] text-white-94 transition-colors duration-300 hover:text-white lg:flex"
-              >
-                SCROLL
-                {/* Unlit rule, lit segment falling down it. The overflow clip is
-                    what makes it read as travel rather than as a blinking
-                    dash. */}
-                <span
-                  className="relative block h-11 w-px overflow-hidden bg-white-40"
-                  aria-hidden="true"
-                >
-                  <span className="hero-scroll-line absolute inset-x-0 top-0 block h-4 bg-white" />
-                </span>
-              </a>
-            )}
-          </div>
-        </Container>
-      )}
     </section>
   );
 }

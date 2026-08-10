@@ -274,11 +274,6 @@
     will-change: transform;
   }
 
-  /* The scroll cue: a lit segment falling down an unlit rule, on a long pause. */
-  .hero-scroll-line {
-    animation: hero-scroll-line 3400ms var(--ease-standard) infinite;
-  }
-
   /*
     The live node on the timeline.
 
@@ -551,15 +546,6 @@
   }
 }
 
-@keyframes hero-scroll-line {
-  from {
-    transform: translate3d(0, -100%, 0);
-  }
-  to {
-    transform: translate3d(0, 240%, 0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -589,11 +575,10 @@
     so opacity falls back to 1 and the transform to none. The content is simply
     present in its final position on the first frame.
 
-    The drift and the scroll cue are pure decoration and just stop.
+    The drift is pure decoration and just stops.
   */
   .hero-rise,
   .hero-drift,
-  .hero-scroll-line,
   .node-pulse {
     animation: none !important;
   }

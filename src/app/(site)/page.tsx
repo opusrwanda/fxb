@@ -10,11 +10,13 @@ import { WhoWeAre } from "@/components/sections/who-we-are";
 /**
  * The home page opens on footage and a headline, and nothing else.
  *
- * The hero used to carry a rail of three figures at the fold — reach, projects
- * delivered, and the 36-month length of the model. They are gone by request.
+ * The hero used to close on a rail: a hairline across the measure, three
+ * figures hanging off it — reach, projects delivered, the 36-month length of
+ * the model — and a scroll cue at the right. All of it is gone by request, the
+ * rule and the cue with the figures. The room now ends on the two buttons.
+ *
  * The figures still stand where they are the point rather than the garnish:
- * the impact band below, and Our Impact in full. The hairline and the scroll
- * cue stay, so the room still ends on an invitation rather than on an edge.
+ * the impact band below, and Our Impact in full.
  */
 export default async function Home() {
   const stories = await getStories();
@@ -35,7 +37,6 @@ export default async function Home() {
           { label: "Explore Our Work", href: "/what-we-do", primary: true },
           { label: "Our Impact", href: "/our-impact" },
         ]}
-        scrollTo="#who-we-are"
       />
 
       <WhoWeAre />
