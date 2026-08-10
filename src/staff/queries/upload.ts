@@ -123,13 +123,17 @@ export async function createMedia(
     };
   }
 
+  // Empty is allowed here, and the column takes it — `alt` is NOT NULL, not
+  // non-empty. Uploading from the picker does not stop to ask: interrupting
+  // somebody mid-upload with a modal prompt was worse than the gap it filled,
+  // and a description typed under duress to get past a dialog is not a good
+  // description anyway. The Media page is where it gets written, and a row
+  // without one is visible there and in the picker as "No description".
+  //
+  // The Media form still requires it — see `saveDocument`, which checks its
+  // own required fields before handing off. That is the route that exists to
+  // describe a file properly; this one exists to get the bytes in.
   const description = alt.trim();
-  if (!description) {
-    return {
-      ok: false,
-      error: "Describe what is in the file, so people using a screen reader know what it shows.",
-    };
-  }
 
   const filename = safeName(file.name, extension);
   const buffer = Buffer.from(await file.arrayBuffer());

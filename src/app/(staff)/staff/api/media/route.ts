@@ -58,6 +58,8 @@ export async function POST(request: Request) {
     media: {
       id: result.id,
       filename: result.filename,
+      // Usually empty: the picker uploads without stopping to ask for a
+      // description, and the Media page is where one gets written.
       alt: String(form.get("alt") ?? "").trim(),
       mimeType: result.mimeType,
       url: result.url,

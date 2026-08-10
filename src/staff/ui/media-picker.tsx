@@ -67,8 +67,7 @@ function preview(option: PickerOption) {
  * It is an addition, not a replacement. Everything above still holds — the
  * `<select>` is still what renders without JavaScript, and without JavaScript
  * there is no upload here either. The Media page is still the place that works
- * on any connection, and it is still where a file with a bad description gets
- * fixed.
+ * on any connection, and it is still where a file gets its description.
  */
 export function MediaPicker({
   name,
@@ -118,34 +117,24 @@ export function MediaPicker({
   /**
    * Take a file, and select it if it lands.
    *
-   * The description is asked for at the point of upload rather than left for
-   * later, because `alt` is NOT NULL and because the person who just chose the
-   * picture is the only one who knows what is in it. A prompt is a blunt
-   * control, but it is the one that cannot be skipped — and the field it fills
-   * is the difference between a screen reader saying "a woman standing in the
-   * shop she runs" and saying nothing at all.
+   * Choosing the file is the whole interaction — nothing is asked in between.
+   * This used to stop and prompt for a screen-reader description, on the
+   * reasoning that whoever just chose the picture is the one who knows what is
+   * in it. That reasoning was right and the control was wrong: a modal prompt
+   * on top of a modal dialog, quoting a 70-character filename, in the middle
+   * of a job that was already an interruption.
+   *
+   * So the description is not collected here. The row is created without one,
+   * which the column allows, and it reads as "No description" in this grid and
+   * on the Media page until somebody writes it. See `queries/upload.ts`.
    */
   const upload = useCallback(async (file: File) => {
-    const alt = window.prompt(
-      `Describe what is in “${file.name}”, for people using a screen reader.\n\nE.g. “A woman standing in the shop she runs”. Leave out “photo of”.`,
-      "",
-    );
-
-    // Cancelled. Not an error, and not something to complain about.
-    if (alt === null) return;
-
-    if (!alt.trim()) {
-      setUploadError("A description is required. Nothing was uploaded.");
-      return;
-    }
-
     setUploading(true);
     setUploadError(null);
 
     try {
       const body = new FormData();
       body.append("file", file);
-      body.append("alt", alt);
 
       const response = await fetch("/staff/api/media", { method: "POST", body });
       const result = await response.json();

@@ -297,6 +297,17 @@ export async function saveDocument(
     : null;
 
   if (id === null && upload instanceof File && upload.size > 0) {
+    // `createMedia` itself takes an empty description, because the picker
+    // uploads without stopping to ask for one. This form is the other route —
+    // the one whose whole job is describing a file — so it holds the field to
+    // its `required`, which the loop below would otherwise never reach.
+    for (const field of definitions) {
+      if (field.type === "file" || !field.required) continue;
+      if (!String(form.get(field.name) ?? "").trim()) {
+        return { ok: false, error: `${field.label} is required.` };
+      }
+    }
+
     const result = await createMedia(
       upload,
       String(form.get("alt") ?? ""),
