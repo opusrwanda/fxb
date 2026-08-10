@@ -50,3 +50,6 @@ next-env.d.ts
 
 # keep the template committed
 !.env.example
+
+# Applications: CVs sent through the careers form. Never in git.
+/applications/

@@ -320,17 +320,64 @@ export const pageHeaders = pgTable("page_headers", {
 
 export const opportunities = pgTable("opportunities", {
   id: serial("id").primaryKey(),
+  /**
+   * The URL segment, so an opening has a page of its own.
+   *
+   * It had none: every vacancy was printed in full on the Careers listing, so
+   * there was nothing to link to, nothing to send somebody, and nothing for a
+   * search engine to index as a job. A candidate could not bookmark the
+   * position they were applying for.
+   */
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
   title: text("title").notNull(),
   /** career | procurement */
   kind: varchar("kind", { length: 20 }).notNull(),
   /** The site stops showing it the day after this. */
   closesAt: date("closes_at", { mode: "string" }).notNull(),
   location: text("location"),
+  /** e.g. Full-time, Consultancy, Internship. Shown as a tag. */
+  employment: text("employment"),
+  /** One or two lines for the listing card, above the full description. */
+  summary: text("summary"),
   body: jsonb("body").$type<RichText>(),
   documentId: integer("document_id").references(() => media.id, { onDelete: "set null" }),
   status: varchar("status", { length: 20 }).notNull().default("draft").$type<Status>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * An application against an opening.
+ *
+ * Stored, not only emailed. A form that hands a person's application to an
+ * SMTP server and keeps no copy loses it the day the mailbox rejects a 4MB
+ * attachment or somebody archives the thread — and the applicant has no way of
+ * knowing. The row is the record; the email is the notification.
+ *
+ * The CV lives outside the media library on purpose. `media/` is served by an
+ * unauthenticated route at `/media/<filename>`, and a candidate's CV — name,
+ * address, phone, employment history — has no business at a public URL that
+ * needs only to be guessed. Uploads land in `applications/` instead, which
+ * nothing serves, and reach staff through an authenticated download.
+ */
+export const applications = pgTable("applications", {
+  id: serial("id").primaryKey(),
+  opportunityId: integer("opportunity_id")
+    .notNull()
+    .references(() => opportunities.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 200 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 40 }),
+  /** The covering letter, as typed. Plain text — this is not a rich field. */
+  message: text("message"),
+  /** On disk under `applications/`. Null when no CV was attached. */
+  cvFilename: varchar("cv_filename", { length: 255 }),
+  /** What the candidate called it, for the download. */
+  cvOriginalName: varchar("cv_original_name", { length: 255 }),
+  cvBytes: integer("cv_bytes"),
+  /** Whether the notification email actually left. */
+  notified: boolean("notified").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 /* ── The single documents ─────────────────────────────────────────────────── */

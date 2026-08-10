@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, LogOut } from "lucide-react";
 
-import { collections, globals, GROUPS, mailing } from "../collections";
+import { collections, globals, GROUPS, mailing, registers } from "../collections";
 import type { StaffUser } from "../auth/session";
 
 /**
@@ -62,6 +62,7 @@ export function StaffNav({ user }: { user: StaffUser }) {
           const entries = [
             ...collections.map((entry) => ({ ...entry, href: `/staff/${entry.slug}` })),
             ...mailing.map((entry) => ({ ...entry, href: `/staff/${entry.slug}` })),
+            ...registers.map((entry) => ({ ...entry, href: `/staff/${entry.slug}` })),
             ...globals.map((entry) => ({
               ...entry,
               href: `/staff/globals/${entry.slug}`,

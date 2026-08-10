@@ -211,8 +211,15 @@ export const socials = [
  * defensively when it finds no sentinels, so the two have to agree twice
  * before anything is lost.
  */
-const ARTICLE_ROUTE = /^\/news-insights\/(news|stories)\/[^/]+$/;
+const WHITE_GROUND = [
+  /^\/news-insights\/(news|stories)\/[^/]+$/,
+  // A vacancy page opens the same way an article does, and for the same
+  // reason: a job description is a document somebody reads, not a place on
+  // the site. The listing above it still opens with the room.
+  /^\/get-involved\/careers\/[^/]+$/,
+];
 
 export function hasTransparentHeader(pathname?: string): boolean {
-  return !ARTICLE_ROUTE.test(pathname ?? "");
+  const path = pathname ?? "";
+  return !WHITE_GROUND.some((route) => route.test(path));
 }

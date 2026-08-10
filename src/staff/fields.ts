@@ -374,6 +374,20 @@ export const fields: Record<string, Field[]> = {
 
   opportunities: [
     { name: "title", label: "Title", type: "text", required: true },
+    {
+      name: "slug",
+      label: "Web address",
+      type: "slug",
+      required: true,
+      help: "The last part of the address, e.g. programme-officer-nutrition. Lowercase letters, numbers and dashes.",
+    },
+    {
+      name: "summary",
+      label: "Summary",
+      type: "textarea",
+      rows: 2,
+      help: "One or two lines for the listing. What the role is, in the words somebody scanning a list would use.",
+    },
     { name: "body", label: "Details", type: "richtext" },
     {
       name: "documentId",
@@ -403,6 +417,13 @@ export const fields: Record<string, Field[]> = {
       help: "The site stops showing it after this date, so an old vacancy cannot be applied for by mistake.",
     },
     { name: "location", label: "Location", type: "text", sidebar: true, help: "e.g. Kamonyi District, or Kigali." },
+    {
+      name: "employment",
+      label: "Type",
+      type: "text",
+      sidebar: true,
+      help: "e.g. Full-time, Consultancy, Internship. Shown as a tag on the listing.",
+    },
     STATUS,
   ],
 

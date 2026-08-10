@@ -43,6 +43,13 @@
       "when": 1786120936746,
       "tag": "0005_magical_mindworm",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786367299987,
+      "tag": "0006_careers_openings",
+      "breakpoints": true
     }
   ]
 }

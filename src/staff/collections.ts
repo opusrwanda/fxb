@@ -5,6 +5,7 @@ import {
   Building2,
   FileText,
   Image as ImageIcon,
+  Inbox,
   Map,
   Milestone,
   Newspaper,
@@ -211,6 +212,26 @@ export const mailing: Entry[] = [
     description: "Write a newsletter and send it to the list.",
     icon: Send,
     group: "Mailing list",
+  },
+];
+
+/**
+ * The registers.
+ *
+ * Pages that list rows the website wrote, which nobody types here and nobody
+ * edits — the same reason `mailing` is separate from `collections`. An
+ * application is a record of something a person did on a particular day; it is
+ * read, replied to and kept, never corrected.
+ */
+export const registers: Entry[] = [
+  {
+    key: "applications",
+    slug: "applications",
+    label: "Applications",
+    singular: "application",
+    description: "People who have applied for a position through the website.",
+    icon: Inbox,
+    group: "People",
   },
 ];
 

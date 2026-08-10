@@ -8,11 +8,17 @@ import { file } from "./image";
 /** A vacancy or a procurement notice — the same shape, on two pages. */
 export type Opening = {
   id: number;
+  /** The URL segment. Each opening has a page of its own. */
+  slug: string;
   title: string;
   kind: "career" | "procurement";
   /** ISO timestamp. The site stops showing the opening after this date. */
   closesAt: string;
   location?: string;
+  /** Full-time, Consultancy, Internship — shown as a tag. */
+  employment?: string;
+  /** One or two lines for the listing card. */
+  summary?: string;
   body: RichText | null;
   /** The full terms of reference or job description, if there is one. */
   document: { url: string; bytes: number | null } | null;
@@ -28,10 +34,13 @@ const getAll = cached("opportunities", "opportunities", async (): Promise<Openin
 
   return rows.map(({ opening, document }) => ({
     id: opening.id,
+    slug: opening.slug,
     title: opening.title,
     kind: opening.kind as "career" | "procurement",
     closesAt: opening.closesAt,
     location: opening.location ?? undefined,
+    employment: opening.employment ?? undefined,
+    summary: opening.summary ?? undefined,
     body: opening.body,
     document: file(document),
   }));
@@ -54,4 +63,22 @@ export async function getOpenings(
     (opening) =>
       opening.kind === kind && new Date(opening.closesAt).getTime() >= today,
   );
+}
+
+/**
+ * One opening, by slug — closed ones included.
+ *
+ * Deliberately not filtered by the closing date, unlike the listing. Somebody
+ * following a link from an email or a search result the week after a vacancy
+ * closed should be told that it closed, on the page for the post they were
+ * looking for. A 404 there says the position never existed, which is both
+ * untrue and unhelpful; the page reads the date itself and shuts the form.
+ */
+export async function getOpening(slug: string): Promise<Opening | null> {
+  return (await getAll()).find((opening) => opening.slug === slug) ?? null;
+}
+
+/** True once the closing date has passed. */
+export function hasClosed(opening: Opening): boolean {
+  return new Date(opening.closesAt).getTime() < new Date().setHours(0, 0, 0, 0);
 }

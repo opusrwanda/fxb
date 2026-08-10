@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, Clock, MapPin } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { PhotoBand } from "@/components/sections/photo-band";
 import { getPhotos } from "@/cms/content/photos";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 import { formatDate } from "@/cms/content/date";
 import { getOpenings } from "@/cms/content/opportunities";
-import { formatBytes } from "@/cms/content/publications";
-import { Prose } from "@/components/layout/prose";
 
 export const metadata: Metadata = {
   title: "Careers",
@@ -18,15 +17,22 @@ export const metadata: Metadata = {
 };
 
 /**
- * Careers.
+ * Careers — the listing.
  *
- * The brief writes this page twice — once with vacancies and once without —
- * and the empty version is the one that runs today. Both states are built; the
- * page switches on whether the Opportunities collection holds a job vacancy
- * that has not passed its closing date.
+ * It used to be the listing and every job description at once: each vacancy
+ * printed its full body, its location, its closing date and its download in a
+ * row of the same list. Three vacancies made a page nobody could scan, and
+ * there was nothing to link to — no address for a particular post, nothing to
+ * send to a candidate, nothing for a search engine to index as a job, and
+ * nowhere to put an application form.
  *
- * The heading and intro change with the state too, because "Join Our Team" over
- * "there are no open positions" reads as a broken page.
+ * So this is a list of posts and nothing else: title, what it is, where it is,
+ * when it closes. The description and the form live on the post's own page,
+ * which is where somebody who has decided to read properly is going anyway.
+ *
+ * The empty state stays. The brief writes this page twice — once with
+ * vacancies and once without — and the heading changes with it, because "Join
+ * Our Team" over "there are no open positions" reads as a broken page.
  */
 export default async function CareersPage() {
   const photos = await getPhotos(["fostering-02.jpg"]);
@@ -47,10 +53,24 @@ export default async function CareersPage() {
         }
       />
 
-      <section className="bg-white pb-24 lg:pb-32">
+      <section className="bg-white pt-20 pb-24 lg:pt-28 lg:pb-32">
         {open ? (
           <Container>
-            <ul className="flex flex-col">
+            <Reveal className="flex flex-col gap-3">
+              <div className="flex items-center gap-4">
+                <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+                <span className="text-xs font-semibold tracking-[0.18em] text-gray-80">
+                  OPEN POSITIONS
+                </span>
+              </div>
+              <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
+                {vacancies.length === 1
+                  ? "One position is open"
+                  : `${vacancies.length} positions are open`}
+              </h2>
+            </Reveal>
+
+            <ul className="mt-12 flex flex-col">
               {vacancies.map((vacancy, index) => (
                 <Reveal
                   as="li"
@@ -58,33 +78,55 @@ export default async function CareersPage() {
                   delay={Math.min(index, 3) * 60}
                   className="border-t border-gray-15 last:border-b"
                 >
-                  <div className="flex flex-col gap-6 py-9 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-                    <div className="flex flex-col gap-3 lg:max-w-[44ch]">
-                      <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
+                  {/* The whole row is the link, not a "read more" at the end of
+                      it. A row that is a link everywhere is a target the size
+                      of the row; a link at the end of it is a target the size
+                      of two words, and on a phone it is the difference between
+                      tapping and aiming. */}
+                  <Link
+                    href={`/get-involved/careers/${vacancy.slug}`}
+                    className="group flex flex-col gap-6 py-9 transition-colors duration-300 lg:flex-row lg:items-center lg:justify-between lg:gap-16"
+                  >
+                    <div className="flex flex-col gap-3 lg:max-w-[52ch]">
+                      <h3 className="text-2xl font-bold tracking-[-0.02em] text-blue transition-colors duration-300 group-hover:text-green lg:text-[28px]">
                         {vacancy.title}
-                      </h2>
-                      {vacancy.location && (
-                        <p className="text-base text-gray">
-                          {vacancy.location}
+                      </h3>
+
+                      {vacancy.summary && (
+                        <p className="text-base leading-relaxed text-gray">
+                          {vacancy.summary}
                         </p>
                       )}
-                      <p className="text-sm font-semibold text-blue">
-                        Apply by {formatDate(vacancy.closesAt)}
-                      </p>
+
+                      <div className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-80">
+                        {vacancy.employment && (
+                          <span className="rounded-full bg-blue-08 px-3 py-1 text-xs font-semibold tracking-wide text-blue uppercase">
+                            {vacancy.employment}
+                          </span>
+                        )}
+                        {vacancy.location && (
+                          <span className="flex items-center gap-2">
+                            <MapPin className="size-4" aria-hidden="true" />
+                            {vacancy.location}
+                          </span>
+                        )}
+                        <span className="flex items-center gap-2">
+                          <Clock className="size-4" aria-hidden="true" />
+                          Closes {formatDate(vacancy.closesAt)}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex flex-1 flex-col items-start gap-5">
-                      <Prose data={vacancy.body} />
-                      {vacancy.document && (
-                        <Pill href={vacancy.document.url} variant="primary">
-                          Download the full pack
-                          {vacancy.document.bytes
-                            ? ` (${formatBytes(vacancy.document.bytes)})`
-                            : ""}
-                        </Pill>
-                      )}
-                    </div>
-                  </div>
+                    <span className="flex shrink-0 items-center gap-3 text-base font-semibold text-blue">
+                      View and apply
+                      <span className="flex size-10 items-center justify-center rounded-full border border-gray-15 transition-colors duration-500 group-hover:border-blue group-hover:bg-blue">
+                        <ArrowRight
+                          className="size-4 transition-colors duration-500 group-hover:text-white"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </span>
+                  </Link>
                 </Reveal>
               ))}
             </ul>
@@ -101,12 +143,12 @@ export default async function CareersPage() {
           />
         )}
       </section>
+
       {photos["fostering-02.jpg"] && (
         <PhotoBand image={photos["fostering-02.jpg"]}>
           The work is done by people who live where it happens.
         </PhotoBand>
       )}
-
     </>
   );
 }

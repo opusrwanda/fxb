@@ -325,6 +325,14 @@ async function migrateOpportunities() {
   const all = await rows<Record<string, never>>("select * from opportunities order by id");
   for (const row of all) {
     await db.insert(schema.opportunities).values({
+      // Payload had no slug for these — an opening was printed in full on the
+      // listing and had no page of its own. Derived the same way migration
+      // 0006 backfills the rows already in Postgres, id included, because the
+      // column is UNIQUE and two openings may share a title.
+      slug: `${String(row["title"] ?? "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")}-${row["id"]}`,
       title: row["title"] as string,
       kind: row["kind"] as string,
       closesAt: calendarDate(row["closes_at"] as string),
