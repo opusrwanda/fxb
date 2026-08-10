@@ -100,8 +100,16 @@ export function ArticleBody({
             over the 24ch headline and the 46ch standfirst at their largest
             sizes, so the three left edges line up and no line of text has to
             change measure to fit the column. `Prose` stays narrower inside
-            it, which is what a reading measure is for. */}
-        <div className="max-w-[52rem]">
+            it, which is what a reading measure is for.
+
+            Centred in the container, photograph included. Left-aligned, the
+            column sat against the left edge with 370px of empty white down
+            the right of every article — the page looked like it was waiting
+            for a sidebar that never arrived. The type inside stays ranged
+            left: centring a column is a page decision, centring its lines is
+            a typographic one, and body copy set centred has no fixed left
+            edge for the eye to return to. */}
+        <div className="mx-auto max-w-[52rem]">
           <Reveal className="flex flex-col gap-6">
             <nav aria-label="Breadcrumb">
               <ol className="flex flex-wrap items-center gap-1.5 text-sm text-gray-80">
