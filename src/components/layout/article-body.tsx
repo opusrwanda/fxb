@@ -2,7 +2,6 @@ import Image from "next/image";
 import type { Img } from "@/cms/content/image";
 import type { RichText } from "@/cms/content/news";
 import { saysNoMoreThan } from "@/cms/content/richtext";
-import type { SiteDetails } from "@/cms/content/settings";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Prose } from "@/components/layout/prose";
@@ -16,12 +15,17 @@ import type { Crumb } from "@/components/layout/page-header";
  * Both are the same document — headline, date, lead photograph, body — so they
  * share this rather than each keeping a copy.
  *
- * Where the body says no more than the excerpt already did, the page renders
- * the excerpt as a standfirst and says plainly that the rest is coming, instead
- * of printing the same sentence twice. The migration seeded each article's
- * excerpt as its opening paragraph so the team would have something to open
- * rather than an empty editor; this is the state that leaves, and it clears
- * itself the moment somebody writes a second sentence in `/staff`.
+ * Where the body says no more than the excerpt already did, the page prints
+ * the description and stops. It used to print an apology in its place — a
+ * panel headed "The full piece is being migrated", with a button offering to
+ * email the text. That was true of the migration and false of the site: all
+ * seven articles were in that state, so every news item and every story on
+ * the site led with a notice that it was not finished.
+ *
+ * A short article is not a broken one. The description is what FXB has
+ * written about that piece of work, so it is what the page shows, and the
+ * `Prose` body appears under it the moment somebody adds a second sentence in
+ * `/staff`.
  */
 export function ArticleBody({
   eyebrow,
@@ -34,7 +38,6 @@ export function ArticleBody({
   language,
   backHref,
   backLabel,
-  details,
 }: {
   eyebrow: string;
   breadcrumbs: Crumb[];
@@ -47,7 +50,6 @@ export function ArticleBody({
   language?: string;
   backHref: string;
   backLabel: string;
-  details: SiteDetails;
 }) {
   const written = !saysNoMoreThan(body, excerpt);
 
@@ -86,42 +88,21 @@ export function ArticleBody({
               </p>
             </Reveal>
 
-            {written ? (
+            {/* Nothing where the panel was. An article whose body adds
+                nothing to its standfirst is a short article, and it now reads
+                as one — the description above is the piece. */}
+            {written && (
               <Reveal delay={250} className="mt-10">
                 <Prose data={body} lang={language} />
-              </Reveal>
-            ) : (
-              <Reveal
-                delay={250}
-                className="wedge mt-12 flex flex-col items-start gap-5 bg-blue-08 p-8 lg:p-10"
-              >
-                <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
-                  The full piece is being migrated
-                </h2>
-                <p className="max-w-[58ch] text-base leading-relaxed text-gray">
-                  We are moving our archive across from the old site. This
-                  article&rsquo;s full text will appear here shortly — in the
-                  meantime, the team is glad to send it to you.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <Pill href={backHref} variant="primary">
-                    {backLabel}
-                  </Pill>
-                  <Pill href={`mailto:${details.email}`}>
-                    Request the full text
-                  </Pill>
-                </div>
               </Reveal>
             )}
           </div>
 
-          {written && (
-            <Reveal delay={360} className="mt-14">
-              <Pill href={backHref} variant="outline" size="lg">
-                {backLabel}
-              </Pill>
-            </Reveal>
-          )}
+          <Reveal delay={360} className="mt-14">
+            <Pill href={backHref} variant="outline" size="lg">
+              {backLabel}
+            </Pill>
+          </Reveal>
         </Container>
       </section>
     </>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/cms/content/date";
-import { getSiteDetails } from "@/cms/content/settings";
 import { getStories, getStory } from "@/cms/content/stories";
 import { ArticleBody } from "@/components/layout/article-body";
 
@@ -24,7 +23,7 @@ export default async function StoryPage(
   props: PageProps<"/news-insights/stories/[slug]">,
 ) {
   const { slug } = await props.params;
-  const [story, details] = await Promise.all([getStory(slug), getSiteDetails()]);
+  const story = await getStory(slug);
   if (!story) notFound();
 
   return (
@@ -41,7 +40,6 @@ export default async function StoryPage(
       image={story.image}
       backHref="/news-insights/stories"
       backLabel="All stories"
-      details={details}
     />
   );
 }

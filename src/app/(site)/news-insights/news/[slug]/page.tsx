@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/cms/content/date";
 import { getNews, getNewsItem } from "@/cms/content/news";
-import { getSiteDetails } from "@/cms/content/settings";
 import { ArticleBody } from "@/components/layout/article-body";
 
 /**
@@ -31,10 +30,7 @@ export default async function NewsArticlePage(
   props: PageProps<"/news-insights/news/[slug]">,
 ) {
   const { slug } = await props.params;
-  const [item, details] = await Promise.all([
-    getNewsItem(slug),
-    getSiteDetails(),
-  ]);
+  const item = await getNewsItem(slug);
   if (!item) notFound();
 
   return (
@@ -52,7 +48,6 @@ export default async function NewsArticlePage(
       language={item.language}
       backHref="/news-insights/news"
       backLabel="All news"
-      details={details}
     />
   );
 }
