@@ -35,7 +35,7 @@ export function SiteHeader({
   report: { title: string; slug: string } | null;
 }) {
   const pathname = usePathname();
-  const [pinned, setPinned] = useState(() => !hasTransparentHeader());
+  const [pinned, setPinned] = useState(() => !hasTransparentHeader(pathname));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   /** href of the section whose hover panel is open, or null. Desktop only. */
@@ -50,7 +50,7 @@ export function SiteHeader({
   const [renderedPath, setRenderedPath] = useState(pathname);
   if (renderedPath !== pathname) {
     setRenderedPath(pathname);
-    setPinned(!hasTransparentHeader());
+    setPinned(!hasTransparentHeader(pathname));
     setDrawerOpen(false);
     setExpanded(null);
     setPanel(null);
@@ -63,7 +63,13 @@ export function SiteHeader({
     const on = document.querySelector('[data-header-sentinel="on"]');
     const off = document.querySelector('[data-header-sentinel="off"]');
 
-    // No hero on this page: the header stays solid from the top.
+    // No hero on this page, so there is nothing to observe and the state set
+    // at mount is the final one. That makes `hasTransparentHeader` the single
+    // thing standing between a white-ground page and a white lockup on it:
+    // when it said `true` for every route, the article pages rendered
+    // transparent, found no sentinels here, and stayed invisible until the
+    // reader scrolled. Nothing in this effect can recover from that, which is
+    // why the fix belongs in the route check and not in a rescue here.
     if (!on || !off) return;
 
     const observerOn = new IntersectionObserver(([entry]) => {

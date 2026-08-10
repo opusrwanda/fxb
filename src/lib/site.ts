@@ -191,17 +191,28 @@ export const socials = [
  * opens onto white and keeps the header solid from scroll 0.
  */
 /**
- * Every page, now that every page opens with the hero room.
+ * Every page except the articles.
  *
- * This was a list of six, and it had to be kept in step by hand with the pages
- * that rendered `<Hero>` — the hazard its own comment above describes. That
- * hazard is gone: `PageHeader` delegates to `Hero`, so there is no page left
- * that opens on anything else, and no list to fall out of step.
+ * This was a hand-kept list of six routes, then `true` for everything once
+ * `PageHeader` started delegating to `Hero` and no page opened on anything
+ * else. Both are now wrong: news items and stories open on white, with their
+ * headline in blue type and their own photograph below it, because the hero
+ * room was giving every article the same irrelevant banner and setting
+ * hundred-character headlines at 88px.
  *
- * Safe against a page with no photograph, too. The room is `bg-blue` whether or
- * not a picture is set, so the white lockup always has a dark ground under it —
- * a transparent header can never end up white on white.
+ * A shape rather than a list, so it cannot fall out of step the way the
+ * original did: the two article routes are the exception, and the listings
+ * above them are not — `/news-insights/news` still opens with the room, only
+ * `/news-insights/news/<slug>` does not.
+ *
+ * Getting this wrong is not subtle. `false` on a hero page paints a solid bar
+ * over the photograph for one frame; `true` on a white page is a white lockup
+ * on white, invisible until the reader scrolls. `SiteHeader` also pins
+ * defensively when it finds no sentinels, so the two have to agree twice
+ * before anything is lost.
  */
-export function hasTransparentHeader(): boolean {
-  return true;
+const ARTICLE_ROUTE = /^\/news-insights\/(news|stories)\/[^/]+$/;
+
+export function hasTransparentHeader(pathname?: string): boolean {
+  return !ARTICLE_ROUTE.test(pathname ?? "");
 }
