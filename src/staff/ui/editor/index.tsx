@@ -44,8 +44,12 @@ const theme = {
     h2: "mt-6 mb-3 text-2xl font-bold tracking-[-0.02em] text-blue",
     h3: "mt-4 mb-2 text-xl font-bold tracking-[-0.01em] text-blue",
   },
+  // Body colour, not blue. Quoting a passage was recolouring it, which reads
+  // as the text having been changed rather than set apart — the rule down the
+  // left, the size and the light weight already say "this is a quotation", and
+  // they say it without touching the words. Matches `Prose`.
   quote:
-    "my-4 border-l-2 border-blue pl-6 text-lg leading-relaxed text-blue",
+    "my-4 border-l-2 border-blue pl-6 text-lg leading-relaxed text-gray",
   list: {
     ul: "mb-4 list-disc pl-6",
     ol: "mb-4 list-decimal pl-6",

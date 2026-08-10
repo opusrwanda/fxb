@@ -35,7 +35,7 @@ export function Prose({
         [&_a]:font-semibold [&_a]:text-blue [&_a]:underline [&_a]:underline-offset-4
         [&_ul]:max-w-[62ch] [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:max-w-[62ch] [&_ol]:list-decimal [&_ol]:pl-6
         [&_li]:mt-2 [&_li]:text-base [&_li]:leading-relaxed [&_li]:text-gray lg:[&_li]:text-[17px]
-        [&_blockquote]:border-l-2 [&_blockquote]:border-blue [&_blockquote]:pl-6 [&_blockquote]:text-[26px] [&_blockquote]:leading-[1.45] [&_blockquote]:font-extralight [&_blockquote]:tracking-[-0.01em] [&_blockquote]:text-blue
+        [&_blockquote]:border-l-2 [&_blockquote]:border-blue [&_blockquote]:pl-6 [&_blockquote]:text-[26px] [&_blockquote]:leading-[1.45] [&_blockquote]:font-extralight [&_blockquote]:tracking-[-0.01em] [&_blockquote]:text-gray
         ${className}`}
     >
       <RenderRichText data={data} />
