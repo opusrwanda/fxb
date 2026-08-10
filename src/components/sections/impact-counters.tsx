@@ -1,16 +1,24 @@
+import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { Counter } from "@/components/ui/counter";
 import { getReach } from "@/cms/content/impact";
+import { photo } from "@/lib/photos";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 
 /**
  * Our Impact — the stat band.
  *
- * The loudest gesture in the system: figures at display scale on a plain white
- * ground, with the label whispered underneath. No cards, no photographs, no
- * decoration competing with the numbers. This is the room where the numerals
- * carry the argument on their own.
+ * The loudest gesture in the system: figures at display scale, with the label
+ * whispered underneath. No cards, no decoration competing with the numbers.
+ * This is the room where the numerals carry the argument on their own.
+ *
+ * It stood on flat pale green until now. The photograph replaces that ground
+ * rather than joining it: the same treatment the hero and the photo bands use
+ * — fixed plate, scrim, grain — so the numerals sit in a room instead of on a
+ * swatch, and the whole page reads as one system. Everything in the band
+ * inverts to white with it; there is no reading blue numerals over a
+ * photograph.
  *
  * Figures are abbreviated so they can be set large — the exact counts live on
  * the Our Impact page. All four are taken verbatim from "Our Reach (Since
@@ -38,6 +46,20 @@ function display(value: number) {
 
 const exact = (value: number) => `${value.toLocaleString("en-GB")}+`;
 
+/**
+ * A schoolyard of children with their arms up, under open sky.
+ *
+ * Chosen for the top third as much as the subject: the sky and treeline are
+ * the only part of the frame the heading has to sit on, and they are empty.
+ * The faces run in a band across the middle where the numerals land, so no
+ * single subject ends up buried under a 124px figure — a crowd is the one
+ * composition that survives having type set over it.
+ *
+ * It is also the argument. The heading says the work is measured in lives
+ * rather than activities, and this is a picture of the lives.
+ */
+const BAND_PHOTO = "fxbvillage-tlf-14";
+
 export async function ImpactCounters() {
   const reach = await getReach();
   const stats = reach.figures
@@ -51,17 +73,40 @@ export async function ImpactCounters() {
   // No figures set is a real state — the band goes rather than showing zeros.
   if (stats.length === 0) return null;
 
+  const ground = photo(BAND_PHOTO);
+
   return (
-    <section id="our-impact" className="bg-green-10 py-32 lg:py-48">
+    <section
+      id="our-impact"
+      // `bg-blue` under the plate, not as the ground: it is what shows for the
+      // moment before the photograph paints, and a blue room fading to a
+      // photographed one is the same room. White on white would not be.
+      className="static-bg relative isolate bg-blue py-32 lg:py-48"
+    >
+      {/* Decorative. The heading and the four figures over it are what this
+          band says; describing the schoolyard first would only delay them. */}
+      <Image
+        src={ground.url}
+        alt=""
+        fill
+        sizes="100vw"
+        className="static-bg-image -z-20 object-cover"
+      />
+      {/* `band-scrim`, not the hero's: this band sets a four-column grid across
+          the whole measure, so there is no third of the frame safe to leave
+          bright. Its floor is documented in `globals.css`. */}
+      <div className="band-scrim absolute inset-0 -z-10" aria-hidden="true" />
+      <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
+
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">
             <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
-            <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
+            <span className="text-[24px] font-semibold tracking-[0.14em] text-white">
               OUR IMPACT
             </span>
           </div>
-          <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
+          <h2 className="text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
             Measured in lives, not activities
           </h2>
         </Reveal>
@@ -90,7 +135,7 @@ export async function ImpactCounters() {
               delay={Math.min(index, 3) * 60}
               className="flex flex-col-reverse justify-end"
             >
-              <dt className="max-w-[28ch] text-base leading-snug text-gray">
+              <dt className="max-w-[28ch] text-base leading-snug text-white-94">
                 {stat.caption}
               </dt>
               <dd className="flex flex-col gap-4 pb-4">
@@ -101,11 +146,12 @@ export async function ImpactCounters() {
                   // Steps back down at xl, where the grid goes to four columns
                   // and the measure is capped at 1200: a 276px column cannot
                   // hold "505K+" at 124px, and the figures ran into each other.
-                  // Blue, not grey. This band's own docstring calls the figures
-                  // the loudest gesture in the system, and they were set in the
-                  // quietest colour on the page — quieter than the heading above
-                  // them, so a 124px numeral was losing to 44px of type.
-                  className="font-display text-[80px] leading-[0.85] font-semibold tracking-[-0.01em] whitespace-nowrap text-blue tabular-nums sm:text-[104px] lg:text-[124px] xl:text-[104px]"
+                  // White, since the ground is a photograph. The rule this is
+                  // still obeying is the one that took it off grey and onto
+                  // blue: the loudest gesture in the system gets the loudest
+                  // value in the room, or a 124px numeral loses to 44px of
+                  // heading.
+                  className="font-display text-[80px] leading-[0.85] font-semibold tracking-[-0.01em] whitespace-nowrap text-white tabular-nums sm:text-[104px] lg:text-[124px] xl:text-[104px]"
                 />
               </dd>
             </Reveal>
@@ -113,7 +159,9 @@ export async function ImpactCounters() {
         </dl>
 
         <Reveal delay={580}>
-          <Pill href="/our-impact" size="lg" className="mt-16">
+          {/* `white`, as in the hero: a bordered dark pill on a photograph is
+              a hole, and the outline variant's ink is the page's dark grey. */}
+          <Pill href="/our-impact" size="lg" variant="white" className="mt-16">
             See Full Impact Report
           </Pill>
         </Reveal>
