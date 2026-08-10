@@ -70,6 +70,11 @@ export default async function EditPage({
 
   /** The value a control should start with, converted for display. */
   const valueOf = (name: string, type: string): unknown => {
+    // The file field has no column of its own — it stands for the bytes, which
+    // the row names in `filename`. Empty on a create, which is what makes the
+    // control render as an upload rather than as a statement of what is there.
+    if (type === "file") return document?.filename ?? null;
+
     const raw = document?.[name];
     if (type === "richtext") return richTextToEditorJson(raw as RichText | null);
     return raw;

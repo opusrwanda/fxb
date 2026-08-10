@@ -15,6 +15,7 @@ import {
 } from "../db";
 import type { RichText } from "../db/schema";
 import { fields } from "../fields";
+import { createMedia } from "./upload";
 import { bust } from "@/cms/revalidate";
 
 /**
@@ -280,7 +281,35 @@ export async function saveDocument(
   const definitions = fields[collection] ?? [];
   const values: Record<string, unknown> = {};
 
+  // Creating a media row is an upload, not an insert.
+  //
+  // Everything below writes form values into columns, and `filename`,
+  // `mimeType`, `filesize`, `width`, `height`, `url` and `sizes` are not form
+  // values — they are facts about bytes that have to be written to disk and
+  // measured first. Until this existed, `media` was the one collection whose
+  // "New file" button could not succeed: the form collected a description and
+  // a credit, and the insert failed on a NOT NULL filename.
+  //
+  // `createMedia` does the whole job and returns the row, so this hands off
+  // rather than merging its results back into the loop below.
+  const upload = definitions.some((field) => field.type === "file")
+    ? form.get("file")
+    : null;
+
+  if (id === null && upload instanceof File && upload.size > 0) {
+    const result = await createMedia(
+      upload,
+      String(form.get("alt") ?? ""),
+      String(form.get("credit") ?? ""),
+    );
+    return result.ok ? { ok: true, id: result.id } : result;
+  }
+
   for (const field of definitions) {
+    // The bytes are never a column. On an edit there is nothing to write, and
+    // on a create the branch above has already returned.
+    if (field.type === "file") continue;
+
     // A field the form did not send is left alone rather than written as null.
     // Two reasons: a column like `language` is NOT NULL with a default, so
     // nulling it fails outright; and a form that renders a subset of the fields

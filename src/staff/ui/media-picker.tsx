@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { FileText, Search, X } from "lucide-react";
+import { FileText, Loader2, Search, Upload, X } from "lucide-react";
 
 /** Never changes, so the store never notifies. */
 const noop = () => () => {};
@@ -54,6 +54,21 @@ function preview(option: PickerOption) {
  * Documents get the same dialog without the pictures. A PDF has no thumbnail,
  * and a grid of identical file glyphs would be a list of filenames again with
  * more spacing — so those are listed as rows.
+ *
+ * UPLOADING FROM HERE
+ *
+ * The dialog can also add to the library, because the alternative is worse
+ * than it sounds: a photograph that is not in the library yet meant leaving a
+ * half-written news item, going to Media, uploading, and coming back to a form
+ * that had been reset. The upload posts to `/staff/api/media` and the dialog
+ * stays open, so nothing typed is lost and the new file is selected the moment
+ * it lands.
+ *
+ * It is an addition, not a replacement. Everything above still holds — the
+ * `<select>` is still what renders without JavaScript, and without JavaScript
+ * there is no upload here either. The Media page is still the place that works
+ * on any connection, and it is still where a file with a bad description gets
+ * fixed.
  */
 export function MediaPicker({
   name,
@@ -81,10 +96,78 @@ export function MediaPicker({
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLButtonElement>(null);
 
+  // Files uploaded from inside the dialog, newest first.
+  //
+  // Held here rather than refetched because the page's option list came from
+  // the server on a render that has already happened — asking for it again
+  // means a round trip and a re-render of a form somebody is halfway through
+  // typing into. These are prepended to the server's list instead, and the
+  // next full load returns them to their place in it.
+  const [added, setAdded] = useState<PickerOption[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
   const close = useCallback(() => {
     setOpen(false);
     setQuery("");
+    setUploadError(null);
     openerRef.current?.focus();
+  }, []);
+
+  /**
+   * Take a file, and select it if it lands.
+   *
+   * The description is asked for at the point of upload rather than left for
+   * later, because `alt` is NOT NULL and because the person who just chose the
+   * picture is the only one who knows what is in it. A prompt is a blunt
+   * control, but it is the one that cannot be skipped — and the field it fills
+   * is the difference between a screen reader saying "a woman standing in the
+   * shop she runs" and saying nothing at all.
+   */
+  const upload = useCallback(async (file: File) => {
+    const alt = window.prompt(
+      `Describe what is in “${file.name}”, for people using a screen reader.\n\nE.g. “A woman standing in the shop she runs”. Leave out “photo of”.`,
+      "",
+    );
+
+    // Cancelled. Not an error, and not something to complain about.
+    if (alt === null) return;
+
+    if (!alt.trim()) {
+      setUploadError("A description is required. Nothing was uploaded.");
+      return;
+    }
+
+    setUploading(true);
+    setUploadError(null);
+
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      body.append("alt", alt);
+
+      const response = await fetch("/staff/api/media", { method: "POST", body });
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        setUploadError(result?.error ?? "The upload failed. Try again.");
+        return;
+      }
+
+      setAdded((current) => [result.media as PickerOption, ...current]);
+      setSelected(result.media.id);
+      // The search is almost certainly a filter that the new file does not
+      // match, and leaving it on hides the thing that just arrived.
+      setQuery("");
+    } catch {
+      setUploadError("The upload could not reach the server. Check the connection and try again.");
+    } finally {
+      setUploading(false);
+      // So the same file can be chosen twice in a row — a change event does
+      // not fire when the value has not changed.
+      if (fileRef.current) fileRef.current.value = "";
+    }
   }, []);
 
   // Escape closes, and the page behind does not scroll while it is open.
@@ -125,15 +208,19 @@ export function MediaPicker({
     );
   }
 
-  const chosen = options.find((option) => option.id === selected) ?? null;
+  // Anything uploaded in this dialog sits at the top of the library for as
+  // long as the page lives, so it is the first thing seen after it arrives.
+  const library = [...added, ...options];
+
+  const chosen = library.find((option) => option.id === selected) ?? null;
   const needle = query.trim().toLowerCase();
   const shown = needle
-    ? options.filter(
+    ? library.filter(
         (option) =>
           option.filename.toLowerCase().includes(needle) ||
           option.alt.toLowerCase().includes(needle)
       )
-    : options;
+    : library;
 
   return (
     <>
@@ -230,6 +317,37 @@ export function MediaPicker({
                   className="w-full rounded-full border border-gray-15 bg-white py-2.5 pl-11 pr-4 text-[15px] text-gray outline-none focus:border-blue"
                 />
               </label>
+              {/* A real `<input type="file">`, hidden and driven by the button
+                  beside it. The native control cannot be styled to match the
+                  panel and its own label reads "No file chosen", which is
+                  wrong here — the file is chosen from the grid below. */}
+              <input
+                ref={fileRef}
+                type="file"
+                className="sr-only"
+                accept={
+                  kind === "image"
+                    ? "image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml"
+                    : "application/pdf"
+                }
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) void upload(file);
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-blue px-5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-blue-90 disabled:opacity-60"
+              >
+                {uploading ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Upload className="size-4" aria-hidden="true" />
+                )}
+                {uploading ? "Uploading…" : "Upload"}
+              </button>
               <button
                 type="button"
                 onClick={close}
@@ -240,10 +358,22 @@ export function MediaPicker({
               </button>
             </div>
 
+            {uploadError && (
+              <p
+                role="alert"
+                className="border-b border-gray-15 bg-blue-08 px-5 py-3 text-sm text-gray"
+              >
+                <strong className="font-semibold text-blue">Not uploaded.</strong>{" "}
+                {uploadError}
+              </p>
+            )}
+
             <div className="min-h-0 flex-1 overflow-y-auto p-5">
               {shown.length === 0 ? (
                 <p className="py-16 text-center text-[15px] text-gray">
-                  Nothing matches “{query}”.
+                  {needle
+                    ? `Nothing matches “${query}”.`
+                    : "The library is empty. Upload the first file."}
                 </p>
               ) : kind === "image" ? (
                 <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

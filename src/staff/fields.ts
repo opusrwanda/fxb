@@ -30,7 +30,16 @@ export type Field = {
     | "upload"
     | "parent"
     | "list"
-    | "richtext";
+    | "richtext"
+    /**
+     * The bytes themselves, not a reference to them.
+     *
+     * `upload` picks a file that is already in the library; `file` is how one
+     * gets there. Only the media collection has it, and only when creating —
+     * replacing the bytes under an existing row would leave every page that
+     * already uses it showing something else.
+     */
+    | "file";
   help?: string;
   required?: boolean;
   sidebar?: boolean;
@@ -398,6 +407,13 @@ export const fields: Record<string, Field[]> = {
   ],
 
   media: [
+    {
+      name: "file",
+      label: "File",
+      type: "file",
+      required: true,
+      help: "A JPG, PNG, WebP, AVIF, GIF, SVG or PDF, up to 25MB. Smaller versions are made automatically.",
+    },
     {
       name: "alt",
       label: "Description",

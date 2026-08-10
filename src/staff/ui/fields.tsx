@@ -208,6 +208,36 @@ function Control({
       );
     }
 
+    case "file": {
+      // Editing rather than creating: the row already has bytes. Showing an
+      // empty file input here would invite somebody to swap the picture under
+      // every page that already uses it, so the existing file is stated and
+      // the control is not offered. Replacing means uploading a new file and
+      // repointing what used it.
+      const existing = typeof value === "string" ? value : null;
+      if (existing) {
+        return (
+          <p className="rounded-card border border-gray-15 bg-blue-08 px-4 py-3 text-[15px] text-gray">
+            <span className="font-medium text-blue">{existing}</span>
+            <span className="mt-1 block text-sm">
+              To change the picture, upload a new file and point the pages at
+              it — replacing these bytes would change every page already using
+              this one.
+            </span>
+          </p>
+        );
+      }
+
+      return (
+        <input
+          {...shared}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml,application/pdf"
+          className="w-full rounded-card border border-gray-15 bg-white p-3 text-[15px] text-gray file:mr-4 file:rounded-full file:border-0 file:bg-blue file:px-5 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-90"
+        />
+      );
+    }
+
     case "date":
       return (
         <input
