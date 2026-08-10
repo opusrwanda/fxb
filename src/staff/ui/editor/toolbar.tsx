@@ -42,7 +42,8 @@ import {
 
 import type { PickerOption } from "@/staff/ui/media-picker";
 import { ImageDialog } from "./image-dialog";
-import { $createImageNode, $createVideoNode, readVideoUrl } from "./nodes";
+import { VideoDialog } from "./video-dialog";
+import { $createImageNode, $createVideoNode, type VideoProvider } from "./nodes";
 
 /**
  * The editor's controls.
@@ -75,6 +76,7 @@ export function Toolbar() {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [picking, setPicking] = useState(false);
+  const [addingVideo, setAddingVideo] = useState(false);
 
   const sync = useCallback(() => {
     const selection = $getSelection();
@@ -194,29 +196,15 @@ export function Toolbar() {
     });
   };
 
-  const insertVideo = () => {
-    const url = window.prompt(
-      "Paste a YouTube or Vimeo address, or a link to a video file.",
-      "https://",
-    );
-    if (!url) return;
-
-    const video = readVideoUrl(url);
-    if (!video) {
-      // Said rather than swallowed. Inserting a block that cannot resolve to
-      // anything would put an empty frame on the published page, and the
-      // person who pasted the address is the only one who can fix it.
-      window.alert(
-        "That address was not recognised. Use a YouTube or Vimeo link, or a direct link to an .mp4 or .webm file.",
-      );
-      return;
-    }
-
-    const title = window.prompt("A title for the video, for screen readers and search.", "") ?? "";
-
+  const insertVideo = (video: {
+    provider: VideoProvider;
+    videoId: string;
+    title: string;
+  }) => {
+    setAddingVideo(false);
     editor.update(() => {
       $insertNodeToNearestRoot(
-        $createVideoNode(video.provider, video.videoId, title.trim()),
+        $createVideoNode(video.provider, video.videoId, video.title),
       );
     });
   };
@@ -274,7 +262,7 @@ export function Toolbar() {
       <Button label="Add a picture" onClick={() => setPicking(true)}>
         <ImageIcon className="size-4" aria-hidden="true" />
       </Button>
-      <Button label="Add a video" onClick={insertVideo}>
+      <Button label="Add a video" onClick={() => setAddingVideo(true)}>
         <Video className="size-4" aria-hidden="true" />
       </Button>
 
@@ -297,6 +285,9 @@ export function Toolbar() {
 
       {picking && (
         <ImageDialog onChoose={insertImage} onClose={() => setPicking(false)} />
+      )}
+      {addingVideo && (
+        <VideoDialog onAdd={insertVideo} onClose={() => setAddingVideo(false)} />
       )}
     </div>
   );
