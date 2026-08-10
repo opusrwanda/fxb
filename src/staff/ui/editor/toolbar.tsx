@@ -25,8 +25,10 @@ import {
   UNDO_COMMAND,
   COMMAND_PRIORITY_LOW,
 } from "lexical";
+import { $insertNodeToNearestRoot } from "@lexical/utils";
 import {
   Bold,
+  Image as ImageIcon,
   Italic,
   Link2,
   List,
@@ -35,16 +37,27 @@ import {
   Redo2,
   Underline,
   Undo2,
+  Video,
 } from "lucide-react";
+
+import type { PickerOption } from "@/staff/ui/media-picker";
+import { ImageDialog } from "./image-dialog";
+import { $createImageNode, $createVideoNode, readVideoUrl } from "./nodes";
 
 /**
  * The editor's controls.
  *
  * Only what this site's articles actually use: emphasis, two heading levels,
- * lists, a quote and a link. Every extra control is a decision an editor has to
- * make and a way for the page to stop looking like the rest of the site —
- * there is no font picker or colour swatch here on purpose, because the
- * typography is the design system's job, not the writer's.
+ * lists, a quote, a link, a picture and a video. Every extra control is a
+ * decision an editor has to make and a way for the page to stop looking like
+ * the rest of the site — there is no font picker or colour swatch here on
+ * purpose, because the typography is the design system's job, not the
+ * writer's.
+ *
+ * That is also why the picture and video controls ask so little. Neither has a
+ * size, an alignment or a float: a picture in an article is a band across the
+ * measure, and which band is `Prose`'s decision, made once, for every article.
+ * The writer chooses what goes in and where it sits in the flow.
  *
  * The buttons light up to show what the cursor is sitting in, so the toolbar
  * reports the state of the text rather than only acting on it.
@@ -61,6 +74,7 @@ export function Toolbar() {
   const [block, setBlock] = useState<Block>("paragraph");
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+  const [picking, setPicking] = useState(false);
 
   const sync = useCallback(() => {
     const selection = $getSelection();
@@ -167,6 +181,46 @@ export function Toolbar() {
     editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
   };
 
+  const insertImage = (option: PickerOption) => {
+    setPicking(false);
+    editor.update(() => {
+      // `$insertNodeToNearestRoot` rather than inserting into the selection: a
+      // picture is a block, and dropping a block node inside the paragraph the
+      // cursor happens to be in splits the paragraph in a way Lexical then has
+      // to repair. This puts it between blocks, where it belongs.
+      $insertNodeToNearestRoot(
+        $createImageNode(option.url, option.alt, option.id),
+      );
+    });
+  };
+
+  const insertVideo = () => {
+    const url = window.prompt(
+      "Paste a YouTube or Vimeo address, or a link to a video file.",
+      "https://",
+    );
+    if (!url) return;
+
+    const video = readVideoUrl(url);
+    if (!video) {
+      // Said rather than swallowed. Inserting a block that cannot resolve to
+      // anything would put an empty frame on the published page, and the
+      // person who pasted the address is the only one who can fix it.
+      window.alert(
+        "That address was not recognised. Use a YouTube or Vimeo link, or a direct link to an .mp4 or .webm file.",
+      );
+      return;
+    }
+
+    const title = window.prompt("A title for the video, for screen readers and search.", "") ?? "";
+
+    editor.update(() => {
+      $insertNodeToNearestRoot(
+        $createVideoNode(video.provider, video.videoId, title.trim()),
+      );
+    });
+  };
+
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-gray-15 bg-blue-08 px-2 py-2">
       <Button
@@ -217,6 +271,12 @@ export function Toolbar() {
       <Button label={link ? "Remove link" : "Add link"} active={link} onClick={toggleLink}>
         <Link2 className="size-4" aria-hidden="true" />
       </Button>
+      <Button label="Add a picture" onClick={() => setPicking(true)}>
+        <ImageIcon className="size-4" aria-hidden="true" />
+      </Button>
+      <Button label="Add a video" onClick={insertVideo}>
+        <Video className="size-4" aria-hidden="true" />
+      </Button>
 
       <Divider />
 
@@ -234,6 +294,10 @@ export function Toolbar() {
       >
         <Redo2 className="size-4" aria-hidden="true" />
       </Button>
+
+      {picking && (
+        <ImageDialog onChoose={insertImage} onClose={() => setPicking(false)} />
+      )}
     </div>
   );
 }

@@ -1,7 +1,26 @@
 import { NextResponse } from "next/server";
 
 import { currentUser } from "@/staff/auth/session";
+import { getMediaOptions } from "@/staff/queries/document";
 import { createMedia } from "@/staff/queries/upload";
+
+/**
+ * The library, for the editor.
+ *
+ * `MediaPicker` gets its options as props, because the page it sits on renders
+ * on the server and already has them. The rich text editor cannot: it is a
+ * decorator inside a form field, and threading the whole library through
+ * `FormField` to reach it would put a list of 163 files into the props of
+ * every document form whether or not it has an editor.
+ *
+ * So the editor asks for them when its dialog opens, and only then.
+ */
+export async function GET() {
+  const user = await currentUser();
+  if (!user) return NextResponse.json({ ok: false, error: "Not signed in." }, { status: 401 });
+
+  return NextResponse.json({ ok: true, media: await getMediaOptions() });
+}
 
 /**
  * Uploading from inside the picker.

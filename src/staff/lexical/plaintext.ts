@@ -27,6 +27,11 @@ function walk(nodes: RichTextNode[] | undefined, out: string[]): void {
       out.push("\n");
       continue;
     }
+    // Pictures and video carry no words. Skipped outright rather than left to
+    // fall through: they have no `children`, so walking them is harmless, but
+    // an image's description is not part of the article's text and would end
+    // up in a meta description as a sentence nobody wrote for that purpose.
+    if (node.type === "image" || node.type === "video") continue;
 
     walk(node.children, out);
     if (BLOCKS.has(node.type)) out.push("\n");

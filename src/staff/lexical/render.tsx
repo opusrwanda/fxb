@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { JSX } from "react";
 
@@ -84,6 +85,89 @@ function renderNode(node: RichTextNode, key: number): React.ReactNode {
 
     case "horizontalrule":
       return <hr key={key} />;
+
+    /**
+     * A picture placed in the article body.
+     *
+     * `next/image` with `fill` is not usable here: the intrinsic size is not
+     * in the stored node, and a picture in a body of text has no fixed box to
+     * fill. `width`/`height` at a nominal 1600×900 with `h-auto` in `Prose`
+     * gives the browser something to reserve and then lets the real aspect
+     * ratio take over, which is enough to stop the paragraph below it jumping
+     * when the file arrives.
+     *
+     * The description is whatever the library holds. Empty is rendered as
+     * empty — an `alt=""` marks a picture as decorative, which is wrong here
+     * but is at least silent, where inventing a description would be worse.
+     */
+    case "image": {
+      const src = typeof node.src === "string" ? node.src : "";
+      if (!src) return null;
+      const alt = typeof node.alt === "string" ? node.alt : "";
+
+      return (
+        <figure key={key}>
+          <Image
+            src={src}
+            alt={alt}
+            width={1600}
+            height={900}
+            // `100vw`, deliberately, even though the column is narrower than
+            // the viewport. A `ch` value here is not a width Next can resolve
+            // — it picked the 640px candidate for a slot 1120px wide, and the
+            // photograph arrived visibly soft. Over-fetching a step is the
+            // cheaper mistake, and the prose column is close to full width on
+            // the phones that pay for it.
+            sizes="100vw"
+          />
+          {alt && <figcaption>{alt}</figcaption>}
+        </figure>
+      );
+    }
+
+    /**
+     * A video, by provider.
+     *
+     * The embeds are the privacy-preserving hosts — `youtube-nocookie.com` and
+     * Vimeo's `dnt=1` — because an article on this site should not be setting
+     * advertising cookies on a reader who came to read about a school. Both
+     * are lazy-loaded: an embed is a whole second browser, and an article with
+     * three of them would otherwise load three of them before the words.
+     *
+     * A `file` is served with controls and no autoplay. Video that starts by
+     * itself in the middle of an article is a thing done to a reader, not for
+     * them.
+     */
+    case "video": {
+      const provider = node.provider as string;
+      const videoId = typeof node.videoId === "string" ? node.videoId : "";
+      if (!videoId) return null;
+      const title = (typeof node.title === "string" && node.title) || "Video";
+
+      if (provider === "file") {
+        return (
+          <video key={key} src={videoId} controls playsInline preload="metadata" title={title} />
+        );
+      }
+
+      const embed =
+        provider === "vimeo"
+          ? `https://player.vimeo.com/video/${encodeURIComponent(videoId)}?dnt=1`
+          : `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}`;
+
+      return (
+        <div key={key} className="aspect-video w-full">
+          <iframe
+            src={embed}
+            title={title}
+            loading="lazy"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="size-full rounded-card border-0"
+          />
+        </div>
+      );
+    }
 
     case "link":
     case "autolink": {

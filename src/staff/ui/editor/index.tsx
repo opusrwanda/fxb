@@ -14,6 +14,7 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import type { EditorState } from "lexical";
 
+import { ImageNode, VideoNode } from "./nodes";
 import { Toolbar } from "./toolbar";
 
 /**
@@ -83,7 +84,20 @@ export function RichTextEditor({
         initialConfig={{
           namespace: "fxb",
           theme,
-          nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode, AutoLinkNode],
+          // ImageNode and VideoNode are ours — see `nodes.tsx`. A node type
+          // that is not registered here throws when a stored document
+          // containing it is loaded, so this list and `lexical/render.tsx`
+          // have to move together.
+          nodes: [
+            HeadingNode,
+            QuoteNode,
+            ListNode,
+            ListItemNode,
+            LinkNode,
+            AutoLinkNode,
+            ImageNode,
+            VideoNode,
+          ],
           // A stored document is handed to Lexical as its starting state. An
           // empty string means a new document, and Lexical starts blank.
           editorState: initialJson && initialJson !== "" ? initialJson : undefined,

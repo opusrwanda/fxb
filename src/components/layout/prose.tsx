@@ -26,6 +26,11 @@ export function Prose({
   return (
     <div
       lang={lang}
+      // Pictures and video run to the full width of the column rather than the
+      // 62ch the text is held to. A body of type wants a measure it is
+      // comfortable to read along; a photograph wants to be seen, and capping
+      // it at the same 62ch would leave it the width of a paragraph on a
+      // desktop. The caption goes back to 62ch, because a caption is text.
       className={`flex flex-col gap-6
         [&_p]:max-w-[62ch] [&_p]:text-base [&_p]:leading-relaxed [&_p]:text-gray lg:[&_p]:text-[17px]
         [&_h2]:mt-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-[-0.02em] [&_h2]:text-blue
@@ -36,6 +41,10 @@ export function Prose({
         [&_ul]:max-w-[62ch] [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:max-w-[62ch] [&_ol]:list-decimal [&_ol]:pl-6
         [&_li]:mt-2 [&_li]:text-base [&_li]:leading-relaxed [&_li]:text-gray lg:[&_li]:text-[17px]
         [&_blockquote]:border-l-2 [&_blockquote]:border-blue [&_blockquote]:pl-6 [&_blockquote]:text-[26px] [&_blockquote]:leading-[1.45] [&_blockquote]:font-extralight [&_blockquote]:tracking-[-0.01em] [&_blockquote]:text-gray
+        [&_figure]:my-2 [&_figure]:flex [&_figure]:flex-col [&_figure]:gap-3
+        [&_figure_img]:h-auto [&_figure_img]:w-full [&_figure_img]:rounded-card
+        [&_figcaption]:max-w-[62ch] [&_figcaption]:text-sm [&_figcaption]:leading-relaxed [&_figcaption]:text-gray-80
+        [&_video]:h-auto [&_video]:w-full [&_video]:rounded-card [&_video]:bg-blue
         ${className}`}
     >
       <RenderRichText data={data} />
