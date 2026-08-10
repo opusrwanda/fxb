@@ -256,7 +256,14 @@ export function Hero({
       </Container>
 
       {(stats.length > 0 || scrollTo) && (
-        <Container className="hero-rise mt-8 [animation-delay:380ms] lg:mt-16">
+        <Container
+          className={`hero-rise mt-8 [animation-delay:380ms] lg:mt-16 ${
+            // With no figures the only thing hanging off the rule is the scroll
+            // cue, and that cue is desktop-only — so on a phone the whole band
+            // would come out as a hairline with nothing under it.
+            stats.length > 0 ? "" : "hidden lg:block"
+          }`}
+        >
           {/* One hairline across the measure, and the rail hangs off it. The
               same gesture the impact band uses on white: a single rule saying
               these figures are one statement, not three separate objects. */}
@@ -286,7 +293,10 @@ export function Hero({
               // spare there anyway.
               <a
                 href={scrollTo}
-                className="group hidden shrink-0 items-center gap-4 pb-1 text-[11px] font-semibold tracking-[0.18em] text-white-94 transition-colors duration-300 hover:text-white lg:flex"
+                // `ml-auto` because `justify-between` only pushes this right
+                // while the figures are there to push against it. With the rail
+                // empty it is the sole child and would sit at the left edge.
+                className="group ml-auto hidden shrink-0 items-center gap-4 pb-1 text-[11px] font-semibold tracking-[0.18em] text-white-94 transition-colors duration-300 hover:text-white lg:flex"
               >
                 SCROLL
                 {/* Unlit rule, lit segment falling down it. The overflow clip is
