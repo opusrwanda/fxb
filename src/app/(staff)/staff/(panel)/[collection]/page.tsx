@@ -25,10 +25,13 @@ export async function generateMetadata({
  */
 export default async function CollectionPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ collection: string }>;
+  searchParams: Promise<{ deleted?: string }>;
 }) {
   const { collection } = await params;
+  const { deleted } = await searchParams;
 
   const entry = findCollection(collection);
   if (!entry) notFound();
@@ -62,6 +65,18 @@ export default async function CollectionPage({
           New {entry.singular}
         </Link>
       </header>
+
+      {/* The edit page is gone by the time this renders, so the confirmation
+          has to land here or nowhere. */}
+      {deleted && (
+        <p
+          role="status"
+          className="mt-8 rounded-card border border-gray-15 bg-blue-08 px-5 py-4 text-[15px] text-gray"
+        >
+          <strong className="font-semibold text-blue">Deleted.</strong> It has
+          been removed from the website.
+        </p>
+      )}
 
       <div className="mt-10">
         {listing.rows.length > 0 ? (

@@ -5,6 +5,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { findCollection } from "@/staff/collections";
 import { mainFields, sidebarFields } from "@/staff/fields";
 import {
+  deleteDocument,
   getDocument,
   getMediaOptions,
   getParentOptions,
@@ -12,6 +13,7 @@ import {
   richTextToEditorJson,
   saveDocument,
 } from "@/staff/queries/document";
+import { ConfirmDialog } from "@/staff/ui/confirm-dialog";
 import { FormField } from "@/staff/ui/fields";
 import type { RichText } from "@/staff/db/schema";
 
@@ -113,6 +115,24 @@ export default async function EditPage({
     redirect(`/staff/${slugSegment}/${result.id}?saved=1`);
   }
 
+  /**
+   * Removing the document.
+   *
+   * `deleteDocument` has existed since the panel was built and nothing has
+   * ever called it — every collection offered Create and Edit and no way to
+   * take anything down, so a mistyped news item stayed published until
+   * somebody edited it into something else.
+   *
+   * The redirect goes to the listing, not back here: this page is about to
+   * describe a row that no longer exists.
+   */
+  async function remove() {
+    "use server";
+
+    await deleteDocument(key, numericId as number);
+    redirect(`/staff/${slugSegment}?deleted=1`);
+  }
+
   const title = creating ? `New ${entry.singular}` : nameOf();
 
   // Only three collections have a page of their own on the public site.
@@ -199,6 +219,32 @@ export default async function EditPage({
           )}
         </aside>
       </form>
+
+      {/* Outside the form, and deliberately. A second form cannot be nested
+          inside the first, and this should not sit beside Save either — the
+          two actions want distance between them, not adjacency. */}
+      {!creating && (
+        <div className="mt-12 flex flex-col gap-4 border-t border-gray-15 pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-[15px] font-semibold text-blue">
+              Delete this {entry.singular}
+            </h2>
+            <p className="mt-1 max-w-[62ch] text-sm leading-relaxed text-gray">
+              It is removed from the website immediately and cannot be brought
+              back. To take something off the site without losing it, set its
+              status to draft instead.
+            </p>
+          </div>
+
+          <ConfirmDialog
+            action={remove}
+            triggerLabel={`Delete ${entry.singular}`}
+            title={`Delete “${title}”?`}
+            body={`This ${entry.singular} will be removed from the website and from the panel. It cannot be undone, and there is no copy to restore from. If you only want it off the site for now, cancel and set its status to draft instead.`}
+            confirmLabel="Delete permanently"
+          />
+        </div>
+      )}
     </div>
   );
 }

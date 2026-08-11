@@ -1,3 +1,6 @@
+import { unlink } from "node:fs/promises";
+import path from "node:path";
+
 import { asc, eq, isNull } from "drizzle-orm";
 
 import {
@@ -376,7 +379,38 @@ export async function saveDocument(
 }
 
 export async function deleteDocument(collection: Key, id: number) {
+  // Deleting a media row leaves its bytes behind unless somebody removes them,
+  // and nothing else ever will — the filename only exists in the row that is
+  // about to go. Read it first, delete the row, then unlink. In that order: a
+  // file removed before a failed delete would leave a row pointing at nothing,
+  // which is the worse of the two halves to be left holding.
+  const files =
+    collection === "media" ? await mediaFilesFor(id) : [];
+
   const table = tableFor(collection);
   await db.delete(table as never).where(eq(table.id, id as never));
   bust(collection);
+
+  for (const name of files) {
+    await unlink(path.join(process.cwd(), "media", path.basename(name))).catch(
+      // Already gone, or never written. The row is what mattered.
+      () => {},
+    );
+  }
+}
+
+/** The original and every rendition belonging to one media row. */
+async function mediaFilesFor(id: number): Promise<string[]> {
+  const [row] = await db
+    .select({ filename: media.filename, sizes: media.sizes })
+    .from(media)
+    .where(eq(media.id, id));
+
+  if (!row) return [];
+
+  const renditions = Object.values(row.sizes ?? {})
+    .map((size) => (size as { filename?: string }).filename)
+    .filter((name): name is string => Boolean(name));
+
+  return [row.filename, ...renditions];
 }
