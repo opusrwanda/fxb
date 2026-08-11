@@ -12,6 +12,7 @@ import {
   Send,
   Settings,
   Sparkles,
+  UserCog,
   Users,
 } from "lucide-react";
 
@@ -224,6 +225,18 @@ export const mailing: Entry[] = [
  * read, replied to and kept, never corrected.
  */
 export const registers: Entry[] = [
+  {
+    key: "users",
+    slug: "users",
+    // Not "People": the sidebar already has a PEOPLE group heading over the
+    // board and the partners, and an item of the same name under Settings
+    // reads as a mistake.
+    label: "Staff accounts",
+    singular: "person",
+    description: "Who can sign in to this panel.",
+    icon: UserCog,
+    group: "Settings",
+  },
   {
     key: "applications",
     slug: "applications",
