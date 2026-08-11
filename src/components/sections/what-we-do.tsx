@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getSection } from "@/cms/content/sections";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
@@ -28,7 +29,9 @@ import { photo } from "@/lib/photos";
  * written content anywhere in the brief either.
  */
 
-export function WhatWeDo() {
+export async function WhatWeDo() {
+  const copy = await getSection("home:what-we-do");
+
   return (
     <section id="what-we-do" className="bg-blue py-24 lg:py-32">
       <Container>
@@ -37,16 +40,15 @@ export function WhatWeDo() {
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
-                WHAT WE DO
+                {copy.eyebrow}
               </span>
             </div>
             <h2 className="text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
-              Four areas of intervention
+              {copy.heading}
             </h2>
           </div>
           <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:text-lg">
-            Delivered together through the FXBVillage model, because families
-            never face one problem at a time.
+            {copy.body}
           </p>
         </Reveal>
 

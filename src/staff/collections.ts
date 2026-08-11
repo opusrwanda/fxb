@@ -12,6 +12,7 @@ import {
   Send,
   Settings,
   Sparkles,
+  Type,
   UserCog,
   Users,
 } from "lucide-react";
@@ -225,6 +226,15 @@ export const mailing: Entry[] = [
  * read, replied to and kept, never corrected.
  */
 export const registers: Entry[] = [
+  {
+    key: "sections",
+    slug: "sections",
+    label: "Section text",
+    singular: "section",
+    description: "The headings and introductions on the site's pages.",
+    icon: Type,
+    group: "Settings",
+  },
   {
     key: "users",
     slug: "users",

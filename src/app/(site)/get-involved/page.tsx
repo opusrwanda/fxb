@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSection } from "@/cms/content/sections";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
@@ -40,14 +41,15 @@ const routes = [
 ];
 
 export default async function GetInvolvedPage() {
+  const copy = await getSection("header:/get-involved");
   const photos = await getPhotos(["fostering-03.jpg"]);
   const banner = await getPageHeaderImage("/get-involved");
   return (
     <>
       <Hero
         image={banner}
-        headline="Together, we can create lasting change."
-        body="Sustainable development requires collaboration. Meaningful and lasting impact is achieved when communities, governments, donors, institutions, businesses and development organisations work together toward a shared vision."
+        headline={copy.heading ?? ""}
+        body={copy.body}
         ctas={[
           {
             label: "Become a Partner",

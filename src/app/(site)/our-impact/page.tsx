@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSection } from "@/cms/content/sections";
 import { Container } from "@/components/layout/container";
 import { getStories } from "@/cms/content/stories";
 import { Hero } from "@/components/sections/hero";
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
  * carousel to live.
  */
 export default async function OurImpactPage() {
+  const copy = await getSection("header:/our-impact");
   const banner = await getPageHeaderImage("/our-impact");
   const stories = await getStories();
 
@@ -34,8 +36,8 @@ export default async function OurImpactPage() {
     <>
       <Hero
         image={banner}
-        headline="Creating lasting change through resilient communities."
-        body="For more than three decades, FXB Rwanda has worked alongside vulnerable children, families and communities to address the root causes of poverty and vulnerability."
+        headline={copy.heading ?? ""}
+        body={copy.body}
         ctas={[
           { label: "Results at a Glance", href: "#results", primary: true },
           { label: "Success Stories", href: "/news-insights/stories" },

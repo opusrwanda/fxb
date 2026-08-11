@@ -50,6 +50,13 @@
       "when": 1786367299987,
       "tag": "0006_careers_openings",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1786432008976,
+      "tag": "0007_section_copy",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,5 @@
 import { getStories } from "@/cms/content/stories";
+import { getSection } from "@/cms/content/sections";
 import { Hero } from "@/components/sections/hero";
 import { ImpactStories } from "@/components/sections/impact-stories";
 import { ImpactCounters } from "@/components/sections/impact-counters";
@@ -19,6 +20,7 @@ import { WhoWeAre } from "@/components/sections/who-we-are";
  * the impact band below, and Our Impact in full.
  */
 export default async function Home() {
+  const copy = await getSection("header:/");
   const stories = await getStories();
 
   return (
@@ -30,9 +32,9 @@ export default async function Home() {
         // This one answers the question a first-time visitor actually arrives
         // with, which is whether this is a Rwandan organisation or a foreign
         // one operating here.
-        eyebrow="A RWANDAN NGO SINCE 1995"
-        headline="Creating a world fit for children."
-        body="FXB Rwanda empowers vulnerable children, families and communities through integrated interventions in education, health, nutrition, economic empowerment, child protection, HIV prevention, WASH and climate resilience."
+        eyebrow={copy.eyebrow}
+        headline={copy.heading ?? ""}
+        body={copy.body}
         ctas={[
           { label: "Explore Our Work", href: "/what-we-do", primary: true },
           { label: "Our Impact", href: "/our-impact" },

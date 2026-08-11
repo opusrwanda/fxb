@@ -1,0 +1,63 @@
+import { eq } from "drizzle-orm";
+
+import { db, sections } from "../db";
+import { SECTIONS } from "@/cms/content/sections";
+import { bust } from "@/cms/revalidate";
+
+/**
+ * Writing a section's copy.
+ *
+ * Only what differs from the default is stored, and a field cleared back to
+ * empty is stored as null rather than as an empty string — so "put it back"
+ * and "leave it blank" are the same gesture, and a row that matches the
+ * default everywhere is deleted rather than kept as a no-op.
+ */
+export type SectionInput = {
+  eyebrow: string;
+  heading: string;
+  body: string;
+};
+
+export async function saveSection(
+  key: string,
+  input: SectionInput,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  // The key comes from a form field, and a form field is not a permission.
+  // Only sections the code actually renders may be written; anything else
+  // would be a row nothing reads and a way to grow the table from outside.
+  if (!SECTIONS[key]) return { ok: false, error: "No such section." };
+
+  const value = (raw: string) => raw.trim() || null;
+
+  const row = {
+    eyebrow: value(input.eyebrow),
+    heading: value(input.heading),
+    body: value(input.body),
+  };
+
+  const empty = !row.eyebrow && !row.heading && !row.body;
+
+  if (empty) {
+    // Nothing overridden any more. Deleting is what makes the default the
+    // default again, rather than leaving a row of nulls behind that reads as
+    // an override in the table.
+    await db.delete(sections).where(eq(sections.key, key));
+  } else {
+    await db
+      .insert(sections)
+      .values({ key, ...row, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: sections.key,
+        set: { ...row, updatedAt: new Date() },
+      });
+  }
+
+  bust("sections");
+  return { ok: true };
+}
+
+/** Put a section back to what the code ships. */
+export async function resetSection(key: string): Promise<void> {
+  await db.delete(sections).where(eq(sections.key, key));
+  bust("sections");
+}

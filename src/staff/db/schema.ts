@@ -380,6 +380,29 @@ export const applications = pgTable("applications", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * Editable section copy.
+ *
+ * One row per section that the team is allowed to reword — a page header, a
+ * band on the home page — holding only what has been changed. A null column
+ * means "use what the code ships", so the site still has a complete, sensible
+ * set of words with an empty table, and resetting a section is deleting a row
+ * rather than remembering what it used to say.
+ *
+ * Keyed by a string rather than a serial id because the key is written in the
+ * code that reads it: `header:/contact`, `home:what-we-do`. An id would mean
+ * the panel and the components agreeing on a number nobody can see.
+ */
+export const sections = pgTable("sections", {
+  key: varchar("key", { length: 160 }).primaryKey(),
+  /** The small tracked-capitals line above the heading. */
+  eyebrow: text("eyebrow"),
+  heading: text("heading"),
+  /** The paragraph under it, where the section has one. */
+  body: text("body"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 /* ── The single documents ─────────────────────────────────────────────────── */
 
 export type SiteSettingsData = {

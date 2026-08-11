@@ -1,5 +1,6 @@
 import { Hero, type Crumb } from "@/components/sections/hero";
 import { getPageHeaderImage } from "@/cms/content/page-headers";
+import { getSection, headerKey } from "@/cms/content/sections";
 
 /**
  * The opening block for pages that do not carry the home page's footage.
@@ -21,6 +22,12 @@ import { getPageHeaderImage } from "@/cms/content/page-headers";
  * opening block existed.
  *
  * Video stays home-only. `Hero` takes a still here, never footage.
+ *
+ * THE WORDS ARE EDITABLE. The eyebrow, the title and the intro come from
+ * `getSection` keyed on the route, falling back to whatever the page passed.
+ * Because every section landing already routes through here, that made the
+ * whole site's headers editable without touching sixteen page files — see
+ * `cms/content/sections.ts`.
  */
 export type { Crumb };
 
@@ -42,13 +49,19 @@ export async function PageHeader({
    */
   path?: string;
 }) {
-  const banner = await getPageHeaderImage(path);
+  const [banner, copy] = await Promise.all([
+    getPageHeaderImage(path),
+    getSection(headerKey(path ?? ""), { eyebrow, heading: title, body: intro }),
+  ]);
 
   return (
     <Hero
-      eyebrow={eyebrow}
-      headline={title}
-      body={intro}
+      eyebrow={copy.eyebrow}
+      // The title is the `h1`: it has to be a string, so an override that
+      // somehow resolves to nothing falls back to what the page passed rather
+      // than rendering an empty heading.
+      headline={copy.heading || title}
+      body={copy.body}
       image={banner}
       breadcrumbs={breadcrumbs}
     />

@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
 import { photo } from "@/lib/photos";
+import { getSection } from "@/cms/content/sections";
 
 /**
  * Who We Are — the quiet room.
@@ -44,8 +45,9 @@ import { photo } from "@/lib/photos";
  */
 const STORY_PHOTO = "fxbvillage-tlf-05";
 
-export function WhoWeAre() {
+export async function WhoWeAre() {
   const story = photo(STORY_PHOTO);
+  const copy = await getSection("home:who-we-are");
 
   return (
     <section id="who-we-are" className="bg-white py-24 lg:py-32">
@@ -63,11 +65,11 @@ export function WhoWeAre() {
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                WHO WE ARE
+                {copy.eyebrow}
               </span>
             </div>
             <h2 className="mt-6 max-w-[20ch] text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-              Rooted here since 1995
+              {copy.heading}
             </h2>
           </Reveal>
 
@@ -100,8 +102,7 @@ export function WhoWeAre() {
             className="flex flex-col items-start justify-center gap-7 lg:col-span-6 lg:col-start-7"
           >
             <p className="max-w-[34ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[30px]">
-              A Rwandan NGO that began in the aftermath of the 1994 Genocide
-              against the Tutsi, and never left.
+              {copy.body}
             </p>
 
             <p className="max-w-[54ch] text-base leading-relaxed text-gray lg:text-[17px]">

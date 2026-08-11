@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSection } from "@/cms/content/sections";
 import { Hero } from "@/components/sections/hero";
 import { PhotoBand } from "@/components/sections/photo-band";
 import { getPhotos } from "@/cms/content/photos";
@@ -37,6 +38,7 @@ export const metadata: Metadata = {
  * see the note in `site.ts`.
  */
 export default async function WhatWeDoPage() {
+  const copy = await getSection("header:/what-we-do");
   // Three pictures for the top half of this page, which ran 4,260 pixels —
   // Our Approach through to the principles — without one.
   const photos = await getPhotos([
@@ -60,7 +62,7 @@ export default async function WhatWeDoPage() {
     <>
       <Hero
         image={banner}
-        headline="Families never face one problem at a time."
+        headline={copy.heading ?? ""}
         // The old body read "The FXBVillage model works on income, health,
         // education…", which handed the whole page to one project. FXBVillage
         // is the model that guides the work and by some distance the largest

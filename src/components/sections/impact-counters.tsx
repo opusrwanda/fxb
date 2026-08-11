@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { Counter } from "@/components/ui/counter";
 import { getReach } from "@/cms/content/impact";
+import { getSection } from "@/cms/content/sections";
 import { photo } from "@/lib/photos";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
@@ -61,7 +62,10 @@ const exact = (value: number) => `${value.toLocaleString("en-GB")}+`;
 const BAND_PHOTO = "fxbvillage-tlf-14";
 
 export async function ImpactCounters() {
-  const reach = await getReach();
+  const [reach, copy] = await Promise.all([
+    getReach(),
+    getSection("home:our-impact"),
+  ]);
   const stats = reach.figures
     .filter((figure) => figure.value !== null)
     .map((figure) => ({
@@ -103,11 +107,11 @@ export async function ImpactCounters() {
           <div className="flex items-center gap-4">
             <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
             <span className="text-[24px] font-semibold tracking-[0.14em] text-white">
-              OUR IMPACT
+              {copy.eyebrow}
             </span>
           </div>
           <h2 className="text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
-            Measured in lives, not activities
+            {copy.heading}
           </h2>
         </Reveal>
 
