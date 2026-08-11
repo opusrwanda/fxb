@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ChevronRight, Clock, Download, MapPin } from "lucide-react";
+import { ArrowLeft, ChevronRight, Clock, ExternalLink, MapPin } from "lucide-react";
 
 import { formatDate } from "@/cms/content/date";
 import { getOpening, getOpenings, hasClosed } from "@/cms/content/opportunities";
@@ -160,9 +160,14 @@ export default async function VacancyPage({
 
               {opening.document && (
                 <Reveal delay={240} className="mt-10">
-                  <Pill href={opening.document.url} variant="outline" size="lg">
-                    <Download className="mr-2 size-4" aria-hidden="true" />
-                    Download the full pack
+                  <Pill
+                    href={opening.document.url}
+                    variant="outline"
+                    size="lg"
+                    newTab
+                  >
+                    <ExternalLink className="mr-2 size-4" aria-hidden="true" />
+                    Read the full pack
                     {opening.document.bytes
                       ? ` (${formatBytes(opening.document.bytes)})`
                       : ""}

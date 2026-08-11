@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Download } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SubNav, newsInsightsNav } from "@/components/layout/sub-nav";
@@ -57,9 +57,12 @@ export default async function NewslettersPage() {
             <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {newsletters.map((issue, index) => (
                 <Reveal as="li" key={issue.slug} delay={Math.min(index, 3) * 60}>
+                  {/* Opened in a tab rather than forced down — see the note
+                      on the publications shelf. */}
                   <a
                     href={issue.file?.url ?? "#"}
-                    download
+                    target="_blank"
+                    rel="noreferrer noopener"
                     className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-500 hover:border-blue"
                   >
                     {issue.cover && (
@@ -85,8 +88,9 @@ export default async function NewslettersPage() {
                           : ""}
                       </span>
                       <span className="flex items-center gap-2 text-sm font-semibold text-blue">
-                        <Download className="size-4" aria-hidden="true" />
-                        Download
+                        <ExternalLink className="size-4" aria-hidden="true" />
+                        Read
+                        <span className="sr-only"> (opens in a new tab)</span>
                       </span>
                     </span>
                   </a>

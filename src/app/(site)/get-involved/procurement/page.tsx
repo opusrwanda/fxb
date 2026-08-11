@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Download } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { PhotoBand } from "@/components/sections/photo-band";
@@ -68,11 +68,13 @@ export default async function ProcurementPage() {
                       {tender.document && (
                         <a
                           href={tender.document.url}
-                          download
+                          target="_blank"
+                          rel="noreferrer noopener"
                           className="flex items-center gap-2.5 text-[15px] font-medium text-blue underline underline-offset-4 transition-colors duration-300 hover:text-green"
                         >
-                          <Download className="size-4" aria-hidden="true" />
+                          <ExternalLink className="size-4" aria-hidden="true" />
                           Terms of reference
+                          <span className="sr-only"> (opens in a new tab)</span>
                           {tender.document.bytes && (
                             <span className="text-gray-80">
                               ({formatBytes(tender.document.bytes)})

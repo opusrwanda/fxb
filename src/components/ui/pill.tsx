@@ -54,20 +54,38 @@ export function Pill({
   variant = "outline",
   size = "md",
   className = "",
+  newTab = false,
 }: {
   href: string;
   children: React.ReactNode;
   variant?: keyof typeof variants;
   size?: keyof typeof sizes;
   className?: string;
+  /**
+   * Open in a new tab, for a pill that points at a file rather than a page.
+   *
+   * A PDF opened in the current tab replaces the page somebody was reading
+   * with a document viewer and leaves Back as the only way out of it.
+   */
+  newTab?: boolean;
 }) {
+  const classes = `inline-flex items-center justify-center rounded-full whitespace-nowrap transition-colors duration-300 ${variants[variant]} ${
+    variant === "donate" ? DONATE_SIZE : sizes[size]
+  } ${className}`;
+
+  // A plain anchor for the new-tab case. `next/link` exists to prefetch and
+  // navigate a route on the client, and a file is neither.
+  if (newTab) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer noopener" className={classes}>
+        {children}
+        <span className="sr-only"> (opens in a new tab)</span>
+      </a>
+    );
+  }
+
   return (
-    <Link
-      href={href}
-      className={`inline-flex items-center justify-center rounded-full whitespace-nowrap transition-colors duration-300 ${variants[variant]} ${
-        variant === "donate" ? DONATE_SIZE : sizes[size]
-      } ${className}`}
-    >
+    <Link href={href} className={classes}>
       {children}
     </Link>
   );

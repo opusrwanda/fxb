@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Download, FileText } from "lucide-react";
+import { ExternalLink, FileText } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { PublicationTabs } from "@/components/layout/publication-tabs";
@@ -94,9 +94,22 @@ export default async function PublicationsPage() {
                             delay={Math.min(index, 3) * 60}
                             className="h-full"
                           >
+                            {/* Opened, not forced down. The `download`
+                                attribute overrides the Content-Type the
+                                media route already sends, so a reader who
+                                wanted to glance at one page of a 13MB annual
+                                report had to commit to the whole file and
+                                then find it in their downloads folder. Every
+                                browser can render a PDF; the ones that cannot
+                                fall back to downloading it anyway.
+
+                                A new tab because the listing is a shelf —
+                                somebody opening a report has usually not
+                                finished with the shelf. */}
                             <a
                               href={item.file?.url ?? "#"}
-                              download
+                              target="_blank"
+                              rel="noreferrer noopener"
                               className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-500 hover:border-blue"
                             >
                               {/* A cover where one exists, the file glyph where
@@ -143,11 +156,15 @@ export default async function PublicationsPage() {
                                   )}
                                 </span>
                                 <span className="flex items-center gap-2 text-sm font-semibold text-blue">
-                                  <Download
+                                  <ExternalLink
                                     className="size-4"
                                     aria-hidden="true"
                                   />
-                                  Download
+                                  Read
+                                  <span className="sr-only">
+                                    {" "}
+                                    (opens in a new tab)
+                                  </span>
                                 </span>
                               </span>
                             </a>
