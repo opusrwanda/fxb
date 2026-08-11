@@ -340,6 +340,43 @@ export async function saveDocument(
     values[field.name] = coerce(field, form);
   }
 
+  // The slug is derived, never asked for.
+  //
+  // Every collection with a page used to carry a "Web address" field: required,
+  // in the sidebar, with a sentence about hyphens and a warning that changing
+  // it breaks links. It made somebody writing a news item settle a question
+  // about URL syntax before they could save, and the answer was always the
+  // title with dashes in it.
+  //
+  // ON CREATE ONLY, and that is the important half. A published page's address
+  // is a promise: it is in search results, in emails, in whatever anybody has
+  // bookmarked. Re-deriving it when a headline is corrected would move the page
+  // and break all of them silently, from an edit that looked like fixing a
+  // typo. So the slug is set once and left alone.
+  if (id === null && SLUGGED.has(collection)) {
+    const source = String(
+      form.get("title") ?? form.get("name") ?? "",
+    ).trim();
+    values.slug = await uniqueSlug(collection, source);
+  }
+
+  // On a create, a null means "let the column decide", not "write null".
+  //
+  // An optional `select` renders an empty option and posts an empty string
+  // when nobody touches it, which `coerce` turns into null. For a nullable
+  // column that is correct. For `language` — NOT NULL with a default of "en" —
+  // it is an insert that Postgres refuses, and the panel could only report it
+  // as "Something required was left empty" about a field the writer had left
+  // alone on purpose. Creating a news item failed this way every time.
+  //
+  // Only on create. An edit must still be able to write null, or a value that
+  // has been cleared could never be cleared.
+  if (id === null) {
+    for (const [name, value] of Object.entries(values)) {
+      if (value === null) delete values[name];
+    }
+  }
+
   for (const field of definitions) {
     if (!field.required) continue;
     const value = values[field.name];
@@ -376,6 +413,66 @@ export async function saveDocument(
     console.error(`[staff] save failed for ${collection}`, error);
     return { ok: false, error: readableError(error) };
   }
+}
+
+/** The collections whose table has a slug column. */
+const SLUGGED = new Set<Key>([
+  "news",
+  "stories",
+  "programmes",
+  "publications",
+  "opportunities",
+]);
+
+/**
+ * A title, as a URL segment.
+ *
+ * NFKD first so "résilience" decomposes and the accents fall out as combining
+ * marks rather than the whole word being stripped — without it an accented
+ * French headline can slug down to almost nothing.
+ */
+function slugify(value: string): string {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 200);
+}
+
+/**
+ * The slug, with a number on the end if it is already taken.
+ *
+ * `slug` is UNIQUE on every one of these tables, and two documents may
+ * legitimately share a title — "Driver", reposted next year; two newsletters
+ * both called "Q3". Without this the second one fails the insert with a
+ * constraint error, which `readableError` can only report as "one of these
+ * values is already used by another entry" for a field the writer cannot see
+ * and did not fill in.
+ */
+async function uniqueSlug(collection: Key, source: string): Promise<string> {
+  const base = slugify(source) || collection;
+  const table = tableFor(collection) as unknown as { slug: never };
+
+  const taken = new Set(
+    (
+      await db
+        .select({ slug: table.slug })
+        .from(tableFor(collection) as never)
+    ).map((row) => (row as { slug: string }).slug),
+  );
+
+  if (!taken.has(base)) return base;
+
+  for (let n = 2; n < 500; n += 1) {
+    const candidate = `${base}-${n}`;
+    if (!taken.has(candidate)) return candidate;
+  }
+
+  // Five hundred documents sharing one title is not a real state, but a slug
+  // that cannot be generated must not become a slug that is silently blank.
+  return `${base}-${Date.now()}`;
 }
 
 export async function deleteDocument(collection: Key, id: number) {

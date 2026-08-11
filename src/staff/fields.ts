@@ -20,7 +20,6 @@ export type Field = {
   type:
     | "text"
     | "textarea"
-    | "slug"
     | "date"
     | "number"
     | "url"
@@ -62,14 +61,19 @@ const STATUS: Field = {
   ],
 };
 
-const SLUG = (example: string): Field => ({
-  name: "slug",
-  label: "Web address",
-  type: "slug",
-  sidebar: true,
-  required: true,
-  help: `The address on the website, e.g. ${example}. Lower case, words joined by hyphens. Changing it breaks existing links.`,
-});
+/**
+ * There is no slug field, deliberately.
+ *
+ * There was one on every collection that has a page — labelled "Web address",
+ * required, in the sidebar, with a sentence about hyphens and a warning that
+ * changing it breaks links. It asked somebody writing a news item to make a
+ * decision about URL syntax before they could save, and the honest answer to
+ * "what should this be?" was always "the title, with dashes".
+ *
+ * So the server does that. `saveDocument` derives the slug from the title on
+ * create and never touches it again — see the note there on why editing a
+ * title must not move the page.
+ */
 
 const districtOptions: Option[] = districts
   .map((d) => ({ label: `${d.name} (${d.province})`, value: d.name }))
@@ -87,7 +91,6 @@ export const fields: Record<string, Field[]> = {
       help: "One or two sentences, shown on the listing card.",
     },
     { name: "body", label: "Article", type: "richtext" },
-    SLUG("nutritional-campaign-gakenke"),
     { name: "date", label: "Date", type: "date", sidebar: true, required: true },
     {
       name: "language",
@@ -122,7 +125,6 @@ export const fields: Record<string, Field[]> = {
       help: "Shown on the carousel and the listing.",
     },
     { name: "body", label: "Story", type: "richtext" },
-    SLUG("chantal-gisagara-vegetable-garden"),
     { name: "date", label: "Date", type: "date", sidebar: true, required: true },
     {
       name: "photoId",
@@ -165,7 +167,6 @@ export const fields: Record<string, Field[]> = {
       sidebar: true,
       help: "Leave blank for a programme in its own right. Set it to FXBVillage for one of the FXBVillage projects — Mageragere, The Light Foundation, and whichever starts next — and it appears as a block under FXBVillage rather than beside it.",
     },
-    SLUG("sugira-muryango"),
     {
       name: "stage",
       label: "Stage",
@@ -227,7 +228,6 @@ export const fields: Record<string, Field[]> = {
       accept: "image",
       help: "Reports and newsletters normally have one; policy documents normally do not.",
     },
-    SLUG("annual-report-2025"),
     {
       name: "category",
       label: "Category",
@@ -374,13 +374,6 @@ export const fields: Record<string, Field[]> = {
 
   opportunities: [
     { name: "title", label: "Title", type: "text", required: true },
-    {
-      name: "slug",
-      label: "Web address",
-      type: "slug",
-      required: true,
-      help: "The last part of the address, e.g. programme-officer-nutrition. Lowercase letters, numbers and dashes.",
-    },
     {
       name: "summary",
       label: "Summary",

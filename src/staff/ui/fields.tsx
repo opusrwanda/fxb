@@ -271,17 +271,6 @@ function Control({
         />
       );
 
-    case "slug":
-      return (
-        <input
-          {...shared}
-          type="text"
-          defaultValue={(value as string) ?? ""}
-          pattern="[a-z0-9-]+"
-          className={`${inputClass} font-mono text-sm`}
-        />
-      );
-
     default:
       return (
         <input
