@@ -17,27 +17,23 @@ import { photo } from "@/lib/photos";
  * nothing — a third of the page width, blank, immediately after a full-viewport
  * video. `lg:sticky` was supposed to earn that space, but the section is not
  * tall enough for anything to stick to, so it never travelled and the column
- * just read as a hole. The photograph finishes the column, and the figures move
- * under the prose so the two columns end within twenty pixels of each other.
+ * just read as a hole.
+ *
+ * The four figures that used to balance it — 1995, 4 provinces, 54 projects, 6
+ * running — are gone by request. Two of them repeated something the reader had
+ * already been told a moment earlier, and they were doing structural work as
+ * much as editorial: they were what made the two columns end level.
+ *
+ * So the balance is structural now instead. The heading runs across the top,
+ * the photograph and the prose sit side by side beneath it, and the plate is
+ * `h-full` rather than a fixed ratio — the picture is exactly as tall as the
+ * words beside it, whatever they say, and there is no leftover column to leave
+ * empty. A floor stops it going squat if the copy is ever cut back further.
  *
  * The copy is condensed from Our Story in the content brief — the 1995 arrival,
  * the 2000 model, the 2012 registration, and where the work stands today. The
  * full timeline belongs on the Who We Are page, not here.
  */
-
-/**
- * Counts drawn from the content brief and the Brand Guiding Tool.
- *
- * Two of these repeat something the reader has already been told: 1995 is in
- * the heading directly above the grid, and 54 is in the hero rail one screen
- * up. Both are worth a decision before launch — see the note in the handover.
- */
-const figures = [
-  ["1995", "Working in Rwanda since"],
-  ["4", "Provinces, plus Kigali"],
-  ["54", "FXBVillage projects delivered"],
-  ["6", "Projects running today"],
-];
 
 /**
  * The only portrait in the supplied library, and it happens to be the one
@@ -54,52 +50,40 @@ export function WhoWeAre() {
   return (
     <section id="who-we-are" className="bg-white py-24 lg:py-32">
       <Container>
-        {/* Four children on an explicit two-by-two, so the stack order on a
-            phone is not the column order on a desktop.
+        {/* Three children, not four. The heading runs the full measure, then
+            the photograph and the words share the row under it.
 
-            The split falls between the standfirst and the paragraph under it,
-            and that is what makes both orders work. On a desktop it puts the
-            label and the standfirst on one row and the photograph and the rest
-            of the prose on the next, so the photograph starts level with the
-            body copy instead of hanging 190px below a two-line heading. On a
-            phone the same split reads statement → photograph → detail, which is
-            the natural place for a picture to land. Holding the photograph in
-            the label column instead would have dropped it between the heading
-            and the sentence it illustrates; leaving it last put it after "Read
-            our story", where it read as the opening of the next section. */}
-        <div className="grid gap-x-10 gap-y-12 lg:grid-cols-12">
-          <Reveal className="lg:col-span-4 lg:row-start-1">
+            The stack on a phone is heading → photograph → prose, which is the
+            order the old two-by-two was arranged to produce and the natural
+            place for a picture to land: it opens the statement rather than
+            closing it. Holding it after "Read our story" would read as the
+            beginning of the next section. */}
+        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-12">
+          <Reveal className="lg:col-span-12">
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
                 WHO WE ARE
               </span>
             </div>
-            <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
+            <h2 className="mt-6 max-w-[20ch] text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               Rooted here since 1995
             </h2>
           </Reveal>
 
-          <Reveal delay={140} className="lg:col-span-7 lg:col-start-6 lg:row-start-1">
-            <p className="max-w-[38ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[32px]">
-              A Rwandan NGO that began in the aftermath of the 1994 Genocide
-              against the Tutsi, and never left.
-            </p>
-          </Reveal>
-
           {/* The wedge, so the one photograph in a white room still carries the
-              mark. Capped in height on a phone, where a 4:5 crop at full width
-              is 480px of an 844px screen for a single supporting image. */}
-          <Reveal
-            delay={290}
-            className="lg:col-span-4 lg:col-start-1 lg:row-start-2"
-          >
-            <div className="wedge relative aspect-4/5 max-h-[60svh] overflow-hidden lg:max-h-none">
+              mark. `h-full` from `lg` and a 4:5 ratio below it: on a phone the
+              ratio is the only thing sizing it, and on a desktop the row does —
+              which is what keeps its bottom edge level with the last line of
+              prose beside it. Capped in height on a phone, where a 4:5 crop at
+              full width is 480px of an 844px screen for one supporting image. */}
+          <Reveal delay={140} className="lg:col-span-5">
+            <div className="wedge relative aspect-4/5 max-h-[60svh] overflow-hidden lg:aspect-auto lg:h-full lg:max-h-none lg:min-h-[26rem]">
               <Image
                 src={story.url}
                 alt="A man walking a boy in school uniform to the gates of his primary school"
                 fill
-                sizes="(min-width: 1024px) 32vw, 90vw"
+                sizes="(min-width: 1024px) 40vw, 90vw"
                 // Framed hard to the bottom of the plate. The original is
                 // roughly a third empty sky, and a hazy white sky against a
                 // white page has no edge — the top corners of the frame simply
@@ -112,10 +96,15 @@ export function WhoWeAre() {
           </Reveal>
 
           <Reveal
-            delay={430}
-            className="flex flex-col items-start gap-9 lg:col-span-7 lg:col-start-6 lg:row-start-2"
+            delay={280}
+            className="flex flex-col items-start justify-center gap-7 lg:col-span-6 lg:col-start-7"
           >
-            <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
+            <p className="max-w-[34ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[30px]">
+              A Rwandan NGO that began in the aftermath of the 1994 Genocide
+              against the Tutsi, and never left.
+            </p>
+
+            <p className="max-w-[54ch] text-base leading-relaxed text-gray lg:text-[17px]">
               FXB International came to Rwanda in 1995 to walk with vulnerable
               children, widows and families on the road back to self-reliance.
               The FXBVillage model followed in 2000, and in 2012 we became a
@@ -125,28 +114,9 @@ export function WhoWeAre() {
               Bagnoud, into its fourth decade.
             </p>
 
-            <div className="h-px w-full bg-gray-15" aria-hidden="true" />
-
-            {/* Two by two, not four across. In a seven-column measure four
-                figures got 170px each and every label but one wrapped, so the
-                row came out ragged along the bottom. Half as many columns is
-                twice the width, which is enough for each label to sit on a
-                single line, and the second row is height this column needed
-                anyway to finish level with the photograph. */}
-            <dl className="grid w-full grid-cols-2 gap-x-8 gap-y-10">
-              {figures.map(([figure, label]) => (
-                <div key={label} className="flex flex-col gap-1.5">
-                  <dt className="text-3xl font-bold tracking-[-0.04em] text-blue lg:text-4xl">
-                    {figure}
-                  </dt>
-                  <dd className="text-sm leading-snug text-gray">{label}</dd>
-                </div>
-              ))}
-            </dl>
-
             <Link
               href="/who-we-are"
-              className="group flex items-center gap-3 text-lg font-semibold text-blue"
+              className="group mt-1 flex items-center gap-3 text-lg font-semibold text-blue"
             >
               Read our story
               <span className="flex size-9 items-center justify-center rounded-full border border-gray-15 transition-colors duration-500 group-hover:border-blue group-hover:bg-blue">
