@@ -346,6 +346,28 @@ export const opportunities = pgTable("opportunities", {
 });
 
 /**
+ * A message from the contact form.
+ *
+ * Stored as well as emailed, for the same reason applications are: a form that
+ * hands somebody's message to an SMTP server and keeps no copy loses it the
+ * day the mailbox refuses one, and the sender has no way of knowing. The row
+ * is the record; the email is the notification.
+ */
+export const messages = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 200 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 40 }),
+  subject: text("subject"),
+  message: text("message").notNull(),
+  /** Whether the notification email actually left. */
+  notified: boolean("notified").notNull().default(false),
+  /** Marked in the panel once somebody has replied. */
+  handled: boolean("handled").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
  * An application against an opening.
  *
  * Stored, not only emailed. A form that hands a person's application to an

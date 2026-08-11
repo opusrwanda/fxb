@@ -1,16 +1,26 @@
+import { eq } from "drizzle-orm";
+
+import { getSiteDetails } from "@/cms/content/settings";
+import { db, messages } from "@/staff/db";
+import { getTransport, mailConfig } from "@/staff/mail/transport";
+
 /**
  * Contact form.
  *
- * Same rule as the newsletter route: it fails loudly rather than quietly. A
- * contact form that shows a thank-you and drops the message is worse than no
- * form at all — the sender believes they have reached someone and stops trying.
+ * The rule has not changed — it fails loudly rather than quietly, because a
+ * form that shows a thank-you and drops the message is worse than no form at
+ * all — but what it does has.
  *
- * Until `CONTACT_ENDPOINT` is configured this returns 503 and the form tells
- * the visitor to email the office directly, with the address in the message.
+ * It used to post to a `CONTACT_ENDPOINT` that was never configured, so every
+ * message on the live site was refused with "our contact form is not connected
+ * yet". That was honest and it was still a form nobody could use. There is a
+ * working mailbox now, so it writes the message down and emails it, in that
+ * order and for the same reason applications do: the row is the record, the
+ * email is the notification, and a mail server having a bad afternoon must not
+ * lose somebody's message.
  *
- * Set `CONTACT_ENDPOINT` to whatever FXB settles on — a transactional mail API
- * (Resend, Postmark, Brevo), a form service, or an internal handler — and add
- * `CONTACT_TOKEN` if it needs a key.
+ * The reply-to is the sender, so answering from the office inbox goes back to
+ * them rather than to FXB's own address.
  */
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -74,40 +84,68 @@ export async function POST(request: Request) {
     }
   }
 
-  const endpoint = process.env.CONTACT_ENDPOINT;
-
-  if (!endpoint) {
+  let id: number;
+  try {
+    const [row] = await db
+      .insert(messages)
+      .values({ name, email, phone: phone || null, subject: subject || null, message })
+      .returning({ id: messages.id });
+    id = row.id;
+  } catch (error) {
+    console.error("[contact] insert failed", error);
     return Response.json(
       {
         error:
-          "Our contact form is not connected yet. Please email info@fxbrwanda.org and we will come back to you.",
+          "We could not record your message just now. Please try again, or email info@fxbrwanda.org.",
       },
-      { status: 503 }
+      { status: 500 },
     );
   }
 
-  const token = process.env.CONTACT_TOKEN;
-
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify(fields),
-  });
-
-  if (!response.ok) {
-    return Response.json(
-      {
-        error:
-          "We could not send your message just now. Please try again, or email info@fxbrwanda.org.",
-      },
-      { status: 502 }
-    );
-  }
+  // Recorded, so the sender is told the truth whatever happens next. A failure
+  // past this point is logged and the row carries `notified: false` for
+  // somebody to chase — it is not the sender's problem to solve.
+  void notify(id, fields).catch((error) =>
+    console.error("[contact] notification failed", error),
+  );
 
   return Response.json({
-    message: "Thank you — your message is on its way. We will be in touch.",
+    message: "Thank you — your message has reached us. We will be in touch.",
   });
+}
+
+async function notify(
+  id: number,
+  fields: { name: string; email: string; phone: string; subject: string; message: string },
+): Promise<void> {
+  const config = mailConfig();
+  if (!config) {
+    console.warn(`[contact] #${id} recorded but SMTP is not configured`);
+    return;
+  }
+
+  const details = await getSiteDetails();
+
+  await getTransport(config).sendMail({
+    from: `"${config.fromName}" <${config.fromAddress}>`,
+    to: details.email,
+    replyTo: fields.email,
+    subject: fields.subject
+      ? `Contact form: ${fields.subject}`
+      : `Contact form: ${fields.name}`,
+    text: [
+      `Name:  ${fields.name}`,
+      `Email: ${fields.email}`,
+      fields.phone ? `Phone: ${fields.phone}` : null,
+      fields.subject ? `Subject: ${fields.subject}` : null,
+      "",
+      fields.message,
+      "",
+      `Recorded as message #${id} in the staff panel.`,
+    ]
+      .filter((line) => line !== null)
+      .join("\n"),
+  });
+
+  await db.update(messages).set({ notified: true }).where(eq(messages.id, id));
 }

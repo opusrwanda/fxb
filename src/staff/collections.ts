@@ -6,6 +6,7 @@ import {
   FileText,
   Image as ImageIcon,
   Inbox,
+  Mail,
   Map,
   Milestone,
   Newspaper,
@@ -246,6 +247,15 @@ export const registers: Entry[] = [
     description: "Who can sign in to this panel.",
     icon: UserCog,
     group: "Settings",
+  },
+  {
+    key: "messages",
+    slug: "messages",
+    label: "Messages",
+    singular: "message",
+    description: "Everything sent through the contact form.",
+    icon: Mail,
+    group: "People",
   },
   {
     key: "applications",
