@@ -521,6 +521,10 @@ export const campaigns = pgTable("campaigns", {
   subject: text("subject").notNull(),
   /** The grey line after the subject in an inbox. Worth writing; often is not. */
   preheader: text("preheader"),
+  /** e.g. "Quarterly Newsletter". Printed over the headline with the date. */
+  edition: text("edition"),
+  /** The photograph across the top, under the logo. */
+  heroId: integer("hero_id").references(() => media.id, { onDelete: "set null" }),
   body: jsonb("body").$type<RichText>(),
   /** draft | sending | sent */
   status: varchar("status", { length: 20 }).notNull().default("draft"),

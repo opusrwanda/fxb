@@ -5,11 +5,12 @@ import { ArrowLeft, Send } from "lucide-react";
 
 import { campaigns, db } from "@/staff/db";
 import { currentUser } from "@/staff/auth/session";
-import { parseRichText, richTextToEditorJson } from "@/staff/queries/document";
+import { getMediaOptions, parseRichText, richTextToEditorJson } from "@/staff/queries/document";
 import { campaignProgress, clearFailures, sendCampaign } from "@/staff/mail/send";
 import { subscriberCounts } from "@/staff/mail/subscribers";
 import { mailConfig } from "@/staff/mail/transport";
 import { RichTextEditor } from "@/staff/ui/editor";
+import { MediaPicker } from "@/staff/ui/media-picker";
 
 export const metadata = { title: "Campaign" };
 
@@ -45,11 +46,18 @@ export default async function CampaignPage({
 
   if (!creating && !campaign) notFound();
 
-  const [counts, progress, user] = await Promise.all([
+  const [counts, progress, user, mediaOptions] = await Promise.all([
     subscriberCounts(),
     creating ? null : campaignProgress(numericId!),
     currentUser(),
+    getMediaOptions(),
   ]);
+
+  // Only pictures. The hero is a photograph across the top of the letter, and
+  // a PDF in that slot would render as a broken box in every inbox.
+  const images = mediaOptions.filter((option) =>
+    option.mimeType.startsWith("image/"),
+  );
 
   const configured = mailConfig() !== null;
   const alreadySent = campaign?.status === "sent";
@@ -60,6 +68,8 @@ export default async function CampaignPage({
     const values = {
       subject: String(formData.get("subject") ?? "").trim(),
       preheader: String(formData.get("preheader") ?? "").trim() || null,
+      edition: String(formData.get("edition") ?? "").trim() || null,
+      heroId: Number(formData.get("heroId")) || null,
       body: parseRichText(String(formData.get("body") ?? "")),
       updatedAt: new Date(),
     };
@@ -164,6 +174,42 @@ export default async function CampaignPage({
             defaultValue={campaign?.preheader ?? ""}
             className={input}
           />
+        </div>
+
+        <div className="grid gap-7 sm:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="edition" className="text-sm font-semibold text-blue">
+              Edition
+            </label>
+            <p className="text-[13px] leading-relaxed text-gray-80">
+              Printed in small capitals over the headline, with the date beside
+              it — e.g. &ldquo;Quarterly Newsletter&rdquo;.
+            </p>
+            <input
+              id="edition"
+              name="edition"
+              defaultValue={campaign?.edition ?? ""}
+              className={input}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span id="hero-label" className="text-sm font-semibold text-blue">
+              Photograph at the top
+            </span>
+            <p className="text-[13px] leading-relaxed text-gray-80">
+              Runs the full width under the logo. Left empty, the letter opens
+              on the headline instead.
+            </p>
+            <MediaPicker
+              name="heroId"
+              id="heroId"
+              describedBy="hero-label"
+              value={campaign?.heroId ?? null}
+              options={images}
+              kind="image"
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-2">

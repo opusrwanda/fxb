@@ -1,6 +1,7 @@
 import { and, eq, sql } from "drizzle-orm";
 
-import { campaigns, campaignSends, db, subscribers } from "../db";
+import { campaigns, campaignSends, db, media, subscribers } from "../db";
+import { getReach } from "@/cms/content/impact";
 import { getSiteDetails } from "@/cms/content/settings";
 import { renderCampaign } from "./render";
 import { getTransport, mailConfig, readableSmtpError } from "./transport";
@@ -69,17 +70,59 @@ export async function sendCampaign(
 
   const from = `"${config.fromName}" <${config.fromAddress}>`;
 
+  /**
+   * Everything the template needs that is not the campaign's own words.
+   *
+   * Gathered once rather than per recipient: a five-hundred-person send would
+   * otherwise re-read the impact figures and the site details five hundred
+   * times for a letter in which they are identical.
+   */
+  const hero = campaign.heroId
+    ? (
+        await db
+          .select({ url: media.url })
+          .from(media)
+          .where(eq(media.id, campaign.heroId))
+      )[0]?.url
+    : null;
+
+  const reach = await getReach();
+  const shell = {
+    subject: campaign.subject,
+    preheader: campaign.preheader,
+    edition: campaign.edition,
+    editionDate: campaign.sentAt
+      ? formatEditionDate(campaign.sentAt)
+      : formatEditionDate(new Date()),
+    heroUrl: hero ?? null,
+    logoUrl: "/img/logo-colour.png",
+    // Three at most — the template's band is three columns. Taken from the
+    // same Impact figures the site prints, so a newsletter cannot quote a
+    // number the website disagrees with.
+    stats: reach.figures
+      .filter((figure) => figure.value !== null)
+      .slice(0, 3)
+      .map((figure) => ({
+        figure: (figure.value as number).toLocaleString("en-GB"),
+        label: figure.label,
+      })),
+    socials: details.socials.map((social) => ({
+      label: social.label,
+      href: social.href,
+    })),
+    body: campaign.body,
+    siteUrl: siteUrl(),
+    organisation: details.name,
+    address,
+    email: details.email,
+  };
+
   // A test goes to one address and is never recorded, so it does not count
   // against the campaign or stop the real recipient getting it later.
   if (testTo) {
     const { html, text } = renderCampaign({
-      subject: campaign.subject,
-      preheader: campaign.preheader,
-      body: campaign.body,
+      ...shell,
       unsubscribeUrl: `${siteUrl()}/newsletter/unsubscribe?token=preview`,
-      siteUrl: siteUrl(),
-      organisation: details.name,
-      address,
     });
 
     try {
@@ -129,13 +172,8 @@ export async function sendCampaign(
 
   for (const person of batch) {
     const { html, text } = renderCampaign({
-      subject: campaign.subject,
-      preheader: campaign.preheader,
-      body: campaign.body,
+      ...shell,
       unsubscribeUrl: `${siteUrl()}/newsletter/unsubscribe?token=${person.unsubscribeToken}`,
-      siteUrl: siteUrl(),
-      organisation: details.name,
-      address,
     });
 
     try {
@@ -237,4 +275,14 @@ export async function clearFailures(campaignId: number) {
         eq(campaignSends.status, "failed"),
       ),
     );
+}
+
+/** "11 August 2026", for the line over the headline. */
+function formatEditionDate(value: Date): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(value);
 }
