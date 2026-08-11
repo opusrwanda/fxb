@@ -7,7 +7,6 @@ import {
   createUser,
   deleteUser,
   listUsers,
-  setRole,
 } from "@/staff/queries/users";
 import { ConfirmDialog } from "@/staff/ui/confirm-dialog";
 import { PasswordField } from "@/staff/ui/password-field";
@@ -32,9 +31,11 @@ const input =
  * every user in the database was seeded, so adding a colleague meant a
  * database client and a hand-computed scrypt hash.
  *
- * Admin-only, and checked here rather than only hidden from the sidebar. A
- * hidden link is a hint, not a permission; an editor who knows the URL is
- * still an editor.
+ * ONE ROLE. There was an admin-only gate here, a role picker on the form and
+ * a selector on every row; FXB asked for all of it gone. This is one
+ * communications team, everybody in it is trusted with the website, and a
+ * permission nobody wants to withhold is a control three people have to think
+ * about for nothing. Anyone signed in can add a colleague.
  *
  * Changing your own password sits on the same page, and is not decoration: an
  * account created here starts with a password somebody else chose and had to
@@ -50,20 +51,18 @@ export default async function UsersPage({
   const me = await currentUser();
   if (!me) redirect("/staff/login");
 
-  const admin = me.role === "admin";
-  const people = admin ? await listUsers() : [];
+  const people = await listUsers();
 
   async function add(formData: FormData) {
     "use server";
 
     const actor = await currentUser();
-    if (actor?.role !== "admin") redirect("/staff");
+    if (!actor) redirect("/staff/login");
 
     const result = await createUser({
       name: String(formData.get("name") ?? ""),
       email: String(formData.get("email") ?? ""),
       password: String(formData.get("password") ?? ""),
-      role: String(formData.get("role") ?? "editor"),
     });
 
     if (!result.ok) {
@@ -71,23 +70,6 @@ export default async function UsersPage({
     }
     revalidatePath("/staff/users");
     redirect("/staff/users?added=1");
-  }
-
-  async function changeRole(formData: FormData) {
-    "use server";
-
-    const actor = await currentUser();
-    if (actor?.role !== "admin") redirect("/staff");
-
-    const result = await setRole(
-      Number(formData.get("id")),
-      String(formData.get("role") ?? "editor"),
-    );
-    if (!result.ok) {
-      redirect(`/staff/users?error=${encodeURIComponent(result.error)}`);
-    }
-    revalidatePath("/staff/users");
-    redirect("/staff/users");
   }
 
   async function changePassword(formData: FormData) {
@@ -125,8 +107,8 @@ export default async function UsersPage({
           Staff accounts
         </h1>
         <p className="max-w-[58ch] text-base leading-relaxed text-gray">
-          Everyone who can sign in to this panel. Admins can add and remove
-          colleagues; editors can do everything else.
+          Everyone who can sign in to this panel. Anyone here can add a
+          colleague, and everybody can do the same things.
         </p>
       </header>
 
@@ -158,163 +140,129 @@ export default async function UsersPage({
         </p>
       )}
 
-      {admin && (
-        <>
-          <section className="mt-10">
-            <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
-              Add somebody
-            </h2>
-            <form
-              action={add}
-              className="mt-5 grid gap-5 rounded-card border border-gray-15 p-6 sm:grid-cols-2"
+      <section className="mt-10">
+        <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
+          Add somebody
+        </h2>
+        <form
+          action={add}
+          className="mt-5 grid gap-5 rounded-card border border-gray-15 p-6 sm:grid-cols-2"
+        >
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="user-name"
+              className="text-sm font-semibold text-blue"
             >
-              <div className="flex flex-col gap-2">
-                <label htmlFor="user-name" className="text-sm font-semibold text-blue">
-                  Name
-                </label>
-                <input id="user-name" name="name" required maxLength={200} className={input} />
-              </div>
+              Name
+            </label>
+            <input
+              id="user-name"
+              name="name"
+              required
+              maxLength={200}
+              className={input}
+            />
+          </div>
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="user-email" className="text-sm font-semibold text-blue">
-                  Email address
-                </label>
-                <input
-                  id="user-email"
-                  name="email"
-                  type="email"
-                  required
-                  maxLength={255}
-                  autoComplete="off"
-                  className={input}
-                />
-              </div>
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="user-email"
+              className="text-sm font-semibold text-blue"
+            >
+              Email address
+            </label>
+            <input
+              id="user-email"
+              name="email"
+              type="email"
+              required
+              maxLength={255}
+              autoComplete="off"
+              className={input}
+            />
+          </div>
 
-              <div className="flex flex-col gap-2">
-                {/* The same control the sign-in uses, so a long password can be
+          <div className="flex flex-col gap-2">
+            {/* The same control the sign-in uses, so a long password can be
                     read back while typing rather than guessed at. It carries
                     its own label, which is why there is not one here. */}
-                <PasswordField
-                  label="First password"
-                  name="password"
-                  autoComplete="new-password"
-                  required
-                />
-                <p className="text-[13px] leading-relaxed text-gray-80">
-                  At least 12 characters — four ordinary words is a good one.
-                  Tell it to them in person; they can change it here once they
-                  are in.
+            <PasswordField
+              label="First password"
+              name="password"
+              autoComplete="new-password"
+              required
+            />
+            <p className="text-[13px] leading-relaxed text-gray-80">
+              At least 12 characters — four ordinary words is a good one. Tell
+              it to them in person; they can change it here once they are in.
+            </p>
+          </div>
+
+          <div className="sm:col-span-2">
+            <button
+              type="submit"
+              className="inline-flex h-12 items-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
+            >
+              Add person
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section className="mt-14">
+        <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
+          {people.length} {people.length === 1 ? "person" : "people"}
+        </h2>
+
+        <ul className="mt-5 flex flex-col gap-4">
+          {people.map((person) => (
+            <li
+              key={person.id}
+              className="flex flex-col gap-4 rounded-card border border-gray-15 p-5 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="min-w-0">
+                <p className="text-[15px] font-semibold text-blue">
+                  {person.name}
+                  {person.id === me.id && (
+                    <span className="ml-2 rounded-full bg-blue-08 px-2.5 py-0.5 text-xs font-semibold text-blue">
+                      you
+                    </span>
+                  )}
+                </p>
+                <p className="mt-1 truncate text-sm text-gray">
+                  {person.email} · added {dateFormat.format(person.createdAt)}
                 </p>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="user-role" className="text-sm font-semibold text-blue">
-                  Role
-                </label>
-                <p id="user-role-help" className="text-[13px] leading-relaxed text-gray-80">
-                  Only an admin can add or remove people.
-                </p>
-                <select
-                  id="user-role"
-                  name="role"
-                  defaultValue="editor"
-                  aria-describedby="user-role-help"
-                  className={input}
-                >
-                  <option value="editor">Editor</option>
-                  <option value="admin">Admin</option>
-                </select>
+              <div className="flex shrink-0 items-center gap-5">
+                {person.id !== me.id && (
+                  <ConfirmDialog
+                    action={async () => {
+                      "use server";
+                      const actor = await currentUser();
+                      if (!actor) redirect("/staff/login");
+                      const result = await deleteUser(person.id, actor.id);
+                      if (!result.ok) {
+                        redirect(
+                          `/staff/users?error=${encodeURIComponent(result.error)}`,
+                        );
+                      }
+                      revalidatePath("/staff/users");
+                      redirect("/staff/users");
+                    }}
+                    triggerLabel="Remove"
+                    title={`Remove ${person.name}?`}
+                    body={`${person.name} will no longer be able to sign in, and will be signed out anywhere they currently are. Nothing they have written is affected. This cannot be undone, but the account can be created again.`}
+                    confirmLabel="Remove access"
+                  />
+                )}
               </div>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-              <div className="sm:col-span-2">
-                <button
-                  type="submit"
-                  className="inline-flex h-12 items-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
-                >
-                  Add person
-                </button>
-              </div>
-            </form>
-          </section>
-
-          <section className="mt-14">
-            <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
-              {people.length} {people.length === 1 ? "person" : "people"}
-            </h2>
-
-            <ul className="mt-5 flex flex-col gap-4">
-              {people.map((person) => (
-                <li
-                  key={person.id}
-                  className="flex flex-col gap-4 rounded-card border border-gray-15 p-5 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="min-w-0">
-                    <p className="text-[15px] font-semibold text-blue">
-                      {person.name}
-                      {person.id === me!.id && (
-                        <span className="ml-2 rounded-full bg-blue-08 px-2.5 py-0.5 text-xs font-semibold text-blue">
-                          you
-                        </span>
-                      )}
-                    </p>
-                    <p className="mt-1 truncate text-sm text-gray">
-                      {person.email} · added {dateFormat.format(person.createdAt)}
-                    </p>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-5">
-                    <form action={changeRole} className="flex items-center gap-2">
-                      <input type="hidden" name="id" value={person.id} />
-                      <label htmlFor={`role-${person.id}`} className="sr-only">
-                        Role for {person.name}
-                      </label>
-                      <select
-                        id={`role-${person.id}`}
-                        name="role"
-                        defaultValue={person.role}
-                        className="rounded-full border border-gray-15 bg-white px-4 py-2 text-sm text-gray outline-none focus:border-blue"
-                      >
-                        <option value="editor">Editor</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                      <button
-                        type="submit"
-                        className="text-sm font-semibold text-blue underline underline-offset-4"
-                      >
-                        Set
-                      </button>
-                    </form>
-
-                    {person.id !== me!.id && (
-                      <ConfirmDialog
-                        action={async () => {
-                          "use server";
-                          const actor = await currentUser();
-                          if (actor?.role !== "admin") redirect("/staff");
-                          const result = await deleteUser(person.id, actor.id);
-                          if (!result.ok) {
-                            redirect(
-                              `/staff/users?error=${encodeURIComponent(result.error)}`,
-                            );
-                          }
-                          revalidatePath("/staff/users");
-                          redirect("/staff/users");
-                        }}
-                        triggerLabel="Remove"
-                        title={`Remove ${person.name}?`}
-                        body={`${person.name} will no longer be able to sign in, and will be signed out anywhere they currently are. Nothing they have written is affected. This cannot be undone, but the account can be created again.`}
-                        confirmLabel="Remove access"
-                      />
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-        </>
-      )}
-
-      <section className={admin ? "mt-14" : "mt-10"}>
+      <section className="mt-14">
         <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
           Change your password
         </h2>

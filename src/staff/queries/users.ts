@@ -1,4 +1,4 @@
-import { asc, eq, ne, and, count } from "drizzle-orm";
+import { asc, count, eq } from "drizzle-orm";
 
 import { db, users, sessions } from "../db";
 import { hashPassword, verifyPassword } from "../auth/password";
@@ -12,9 +12,17 @@ import { hashPassword, verifyPassword } from "../auth/password";
  * meant a database client and a hand-computed scrypt hash. This is that
  * comment made true.
  *
- * Roles stay at two. A permissions matrix is what you build when you do not
- * know who the users are; this is one communications team, and the only
- * question they actually have is who is allowed to add a colleague.
+ * THERE IS ONE ROLE, and everybody has it.
+ *
+ * The schema carries an `admin`/`editor` column and this used to act on it —
+ * an admin-only page, a role picker on the form, a per-row selector. FXB asked
+ * for it gone: this is one communications team, everybody in it is trusted
+ * with the website, and a permission nobody wants to withhold is a control
+ * three people have to think about for no benefit.
+ *
+ * The column stays and every account is written as `admin`, so turning roles
+ * back on later is a matter of writing the UI again rather than a migration
+ * and a backfill. Nothing reads the value today.
  */
 
 export type StaffAccount = {
@@ -55,11 +63,9 @@ export async function createUser(input: {
   name: string;
   email: string;
   password: string;
-  role: string;
 }): Promise<UserResult> {
   const name = input.name.trim();
   const email = input.email.trim().toLowerCase();
-  const role = input.role === "admin" ? "admin" : "editor";
 
   if (!name) return { ok: false, error: "Please give the person's name." };
   if (!EMAIL.test(email)) {
@@ -85,31 +91,12 @@ export async function createUser(input: {
   await db.insert(users).values({
     name,
     email,
-    role,
+    // Written rather than left to the column default, which is still
+    // "editor". One role for now — see the note at the top.
+    role: "admin",
     passwordHash: await hashPassword(input.password),
   });
 
-  return { ok: true };
-}
-
-/**
- * Change somebody's role.
- *
- * Refuses to remove the last admin. An account nobody can add users from is a
- * panel that needs a database client to recover, and the person most likely to
- * do it is an admin demoting themselves while tidying up.
- */
-export async function setRole(id: number, role: string): Promise<UserResult> {
-  const next = role === "admin" ? "admin" : "editor";
-
-  if (next === "editor" && (await lastAdmin(id))) {
-    return {
-      ok: false,
-      error: "This is the only admin. Make somebody else an admin first.",
-    };
-  }
-
-  await db.update(users).set({ role: next, updatedAt: new Date() }).where(eq(users.id, id));
   return { ok: true };
 }
 
@@ -124,13 +111,13 @@ export async function deleteUser(id: number, actingId: number): Promise<UserResu
   if (id === actingId) {
     return {
       ok: false,
-      error: "You cannot remove your own account. Ask another admin to do it.",
+      error: "You cannot remove your own account. Ask a colleague to do it.",
     };
   }
-  if (await lastAdmin(id)) {
+  if (await lastAccount()) {
     return {
       ok: false,
-      error: "This is the only admin. Make somebody else an admin first.",
+      error: "This is the only account. Add another before removing this one.",
     };
   }
 
@@ -180,20 +167,14 @@ export async function changeOwnPassword(
   return { ok: true };
 }
 
-/** True when `id` is an admin and no other admin exists. */
-async function lastAdmin(id: number): Promise<boolean> {
-  const [subject] = await db
-    .select({ role: users.role })
-    .from(users)
-    .where(eq(users.id, id))
-    .limit(1);
-
-  if (subject?.role !== "admin") return false;
-
-  const [{ others }] = await db
-    .select({ others: count() })
-    .from(users)
-    .where(and(eq(users.role, "admin"), ne(users.id, id)));
-
-  return others === 0;
+/**
+ * True when there is only one account left.
+ *
+ * Deleting it would leave a panel nobody can sign in to, recoverable only with
+ * a database client and a hand-computed hash — which is exactly the state this
+ * page was built to get FXB out of.
+ */
+async function lastAccount(): Promise<boolean> {
+  const [{ total }] = await db.select({ total: count() }).from(users);
+  return total <= 1;
 }
