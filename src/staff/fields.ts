@@ -79,6 +79,26 @@ const districtOptions: Option[] = districts
   .map((d) => ({ label: `${d.name} (${d.province})`, value: d.name }))
   .sort((a, b) => a.label.localeCompare(b.label));
 
+/**
+ * Where a post is based, as a list rather than a text box.
+ *
+ * It was free text with the help "e.g. Kamonyi District, or Kigali", which is
+ * two spellings of the answer in the hint itself — and the site prints this
+ * verbatim on the careers listing, so "Kamonyi", "Kamonyi District" and
+ * "kamonyi" all shipped as written and read as three different places.
+ *
+ * The same thirty districts the programme map is built from, so a location
+ * typed here can never disagree with one drawn there. Two broader answers go
+ * first because they are the ones a vacancy actually uses most: a head-office
+ * post is in Kigali rather than in Gasabo, and a roving one is not in a
+ * district at all.
+ */
+const locationOptions: Option[] = [
+  { label: "City of Kigali", value: "City of Kigali" },
+  { label: "Nationwide", value: "Nationwide" },
+  ...districtOptions,
+];
+
 export const fields: Record<string, Field[]> = {
   news: [
     { name: "title", label: "Headline", type: "text", required: true },
@@ -409,7 +429,14 @@ export const fields: Record<string, Field[]> = {
       required: true,
       help: "The site stops showing it after this date, so an old vacancy cannot be applied for by mistake.",
     },
-    { name: "location", label: "Location", type: "text", sidebar: true, help: "e.g. Kamonyi District, or Kigali." },
+    {
+      name: "location",
+      label: "Location",
+      type: "select",
+      sidebar: true,
+      options: locationOptions,
+      help: "Where the post is based.",
+    },
     {
       name: "employment",
       label: "Type",

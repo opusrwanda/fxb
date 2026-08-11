@@ -135,17 +135,42 @@ function Control({
         </label>
       );
 
-    case "select":
+    case "select": {
+      const options = field.options ?? [];
+      const current = typeof value === "string" ? value : "";
+
+      /**
+       * A stored value the list no longer offers is kept, not dropped.
+       *
+       * A `<select>` whose `defaultValue` matches nothing falls back to its
+       * first option, and the next Save writes that — so turning a free-text
+       * field into a list would quietly relabel every row that had been typed
+       * by hand, and nobody would see it happen. Location is exactly that
+       * case: it was a text box until now, and rows may hold "Kamonyi
+       * District" where the list offers "Kamonyi".
+       *
+       * The old value sits at the top, marked, until somebody chooses
+       * deliberately.
+       */
+      const orphan =
+        current && !options.some((option) => option.value === current)
+          ? current
+          : null;
+
       return (
-        <select {...shared} defaultValue={(value as string) ?? ""} className={inputClass}>
+        <select {...shared} defaultValue={current} className={inputClass}>
           {!field.required && <option value="">—</option>}
-          {(field.options ?? []).map((option) => (
+          {orphan && (
+            <option value={orphan}>{orphan} — not on the list</option>
+          )}
+          {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </select>
       );
+    }
 
     case "multiselect": {
       const selected = new Set(Array.isArray(value) ? (value as string[]) : []);
