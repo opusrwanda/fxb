@@ -5,11 +5,11 @@ import { ArrowLeft, Send } from "lucide-react";
 
 import { campaigns, db } from "@/staff/db";
 import { currentUser } from "@/staff/auth/session";
-import { getMediaOptions, parseRichText, richTextToEditorJson } from "@/staff/queries/document";
+import { getMediaOptions } from "@/staff/queries/document";
 import { campaignProgress, clearFailures, sendCampaign } from "@/staff/mail/send";
 import { subscriberCounts } from "@/staff/mail/subscribers";
 import { mailConfig } from "@/staff/mail/transport";
-import { RichTextEditor } from "@/staff/ui/editor";
+import { CampaignBuilder } from "@/staff/ui/campaign-builder";
 import { MediaPicker } from "@/staff/ui/media-picker";
 
 export const metadata = { title: "Campaign" };
@@ -70,7 +70,7 @@ export default async function CampaignPage({
       preheader: String(formData.get("preheader") ?? "").trim() || null,
       edition: String(formData.get("edition") ?? "").trim() || null,
       heroId: Number(formData.get("heroId")) || null,
-      body: parseRichText(String(formData.get("body") ?? "")),
+      content: parseContent(String(formData.get("content") ?? "")),
       updatedAt: new Date(),
     };
 
@@ -213,14 +213,13 @@ export default async function CampaignPage({
         </div>
 
         <div className="flex flex-col gap-2">
-          <span id="body-label" className="text-sm font-semibold text-blue">
-            The email
-          </span>
-          <RichTextEditor
-            name="body"
-            initialJson={richTextToEditorJson(campaign?.body)}
-            ariaLabelledBy="body-label"
-          />
+          <span className="text-sm font-semibold text-blue">The newsletter</span>
+          <p className="text-[13px] leading-relaxed text-gray-80">
+            Built the way the template lays one out. Everything except a
+            story&rsquo;s headline is optional, and anything left empty is left
+            out of the email rather than sent as a blank frame.
+          </p>
+          <CampaignBuilder name="content" initial={campaign?.content ?? null} />
         </div>
 
         <button
@@ -356,4 +355,19 @@ function Note({ tone, children }: { tone: "ok" | "bad"; children: React.ReactNod
       {children}
     </p>
   );
+}
+
+/**
+ * The builder posts its structure as JSON in a hidden field.
+ *
+ * Parsed rather than trusted: it is a form value, and a malformed one must
+ * leave the campaign as it was rather than throwing on save.
+ */
+function parseContent(raw: string) {
+  if (!raw.trim()) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
 }

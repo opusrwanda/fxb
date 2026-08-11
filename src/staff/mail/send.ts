@@ -2,6 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 
 import { campaigns, campaignSends, db, media, subscribers } from "../db";
 import { getReach } from "@/cms/content/impact";
+import { getNews } from "@/cms/content/news";
 import { getSiteDetails } from "@/cms/content/settings";
 import { renderCampaign } from "./render";
 import { getTransport, mailConfig, readableSmtpError } from "./transport";
@@ -86,7 +87,15 @@ export async function sendCampaign(
       )[0]?.url
     : null;
 
-  const reach = await getReach();
+  const [reach, latest] = await Promise.all([getReach(), getNews()]);
+
+  // "More from FXB Rwanda": the two most recent published items, so the block
+  // is current without anybody typing it out.
+  const teasers = latest.slice(0, 2).map((item) => ({
+    headline: item.title,
+    url: `${siteUrl()}/news-insights/news/${item.slug}`,
+    imageUrl: item.image?.url,
+  }));
   const shell = {
     subject: campaign.subject,
     preheader: campaign.preheader,
@@ -110,7 +119,9 @@ export async function sendCampaign(
       label: social.label,
       href: social.href,
     })),
-    body: campaign.body,
+    content: campaign.content,
+    legacyBody: campaign.body,
+    news: teasers,
     siteUrl: siteUrl(),
     organisation: details.name,
     address,
@@ -173,6 +184,10 @@ export async function sendCampaign(
   for (const person of batch) {
     const { html, text } = renderCampaign({
       ...shell,
+      // The template greets by first name. A subscriber who only gave an
+      // address gets "our friend", which is what the template's own fallback
+      // says.
+      firstName: person.name?.split(" ")[0] ?? null,
       unsubscribeUrl: `${siteUrl()}/newsletter/unsubscribe?token=${person.unsubscribeToken}`,
     });
 

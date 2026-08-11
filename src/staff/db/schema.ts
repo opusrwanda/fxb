@@ -516,6 +516,38 @@ export const subscribers = pgTable("subscribers", {
  * sharing a name in the same panel is how somebody attaches a report to an
  * email blast by mistake.
  */
+/** One story module in a newsletter. Every field is optional but the headline. */
+export type CampaignStory = {
+  eyebrow?: string;
+  imageUrl?: string;
+  headline?: string;
+  excerpt?: string;
+  url?: string;
+  quote?: string;
+  quoteAuthor?: string;
+  videoUrl?: string;
+  videoThumbnailUrl?: string;
+  videoTitle?: string;
+  photoAUrl?: string;
+  photoBUrl?: string;
+  bannerHeadline?: string;
+  bannerSubtext?: string;
+  bannerCtaLabel?: string;
+  bannerCtaUrl?: string;
+};
+
+export type CampaignContent = {
+  /** Two or three sentences setting up the edition, under the greeting. */
+  intro?: string;
+  stories?: CampaignStory[];
+  galleryTitle?: string;
+  galleryImages?: string[];
+  /** The impact band, filled from the site's own figures. */
+  showStats?: boolean;
+  /** "More From FXB Rwanda" — the two most recent news items. */
+  showNews?: boolean;
+};
+
 export const campaigns = pgTable("campaigns", {
   id: serial("id").primaryKey(),
   subject: text("subject").notNull(),
@@ -525,6 +557,19 @@ export const campaigns = pgTable("campaigns", {
   edition: text("edition"),
   /** The photograph across the top, under the logo. */
   heroId: integer("hero_id").references(() => media.id, { onDelete: "set null" }),
+  /**
+   * The newsletter, as the template lays it out.
+   *
+   * The template is not a letter with formatting — it is a structure: an
+   * intro, then repeating story modules each bundling a photograph, a
+   * headline, an excerpt, a testimonial, a video, a pair of photographs and
+   * its own call-to-action banner, then a gallery and the closing blocks. So
+   * the campaign stores that structure rather than a rich-text body, and the
+   * renderer assembles the template from it.
+   *
+   * `body` is kept for the campaigns written before this existed.
+   */
+  content: jsonb("content").$type<CampaignContent>(),
   body: jsonb("body").$type<RichText>(),
   /** draft | sending | sent */
   status: varchar("status", { length: 20 }).notNull().default("draft"),

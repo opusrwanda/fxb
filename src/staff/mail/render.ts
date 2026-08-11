@@ -1,4 +1,9 @@
-import type { RichText, RichTextNode } from "../db/schema";
+import type {
+  CampaignContent,
+  CampaignStory,
+  RichText,
+  RichTextNode,
+} from "../db/schema";
 
 /**
  * A campaign, as an email.
@@ -200,9 +205,12 @@ export function renderCampaign({
   editionDate,
   heroUrl,
   logoUrl,
+  content,
+  legacyBody,
+  firstName,
   stats,
+  news,
   socials,
-  body,
   unsubscribeUrl,
   siteUrl,
   organisation,
@@ -211,16 +219,22 @@ export function renderCampaign({
 }: {
   subject: string;
   preheader?: string | null;
-  /** e.g. "Quarterly Newsletter". Sits over the headline with the date. */
   edition?: string | null;
   /** Already formatted for display. */
   editionDate?: string | null;
   heroUrl?: string | null;
   logoUrl: string;
-  /** Up to three figures for the impact band. Empty and the band is dropped. */
+  content: CampaignContent | null;
+  /**
+   * The rich-text body of a campaign written before the template existed.
+   * Rendered in place of the story modules so an old draft still sends.
+   */
+  legacyBody?: RichText | null;
+  /** The recipient's name, for the greeting. Blank becomes "our friend". */
+  firstName?: string | null;
   stats?: { figure: string; label: string }[];
+  news?: { headline: string; url: string; imageUrl?: string }[];
   socials?: { label: string; href: string }[];
-  body: RichText | null;
   unsubscribeUrl: string;
   siteUrl: string;
   organisation: string;
@@ -229,12 +243,147 @@ export function renderCampaign({
 }): RenderedEmail {
   ORIGIN = siteUrl.replace(/\/$/, "");
 
-  const content = (body?.root?.children ?? []).map(toHtml).join("");
-  const band = (stats ?? []).slice(0, 3);
+  const stories = (content?.stories ?? []).filter(
+    (story) => story.headline || story.excerpt || story.imageUrl,
+  );
+  const gallery = (content?.galleryImages ?? []).filter(Boolean);
+  const band = content?.showStats === false ? [] : (stats ?? []).slice(0, 3);
+  const teasers = content?.showNews === false ? [] : (news ?? []).slice(0, 2);
 
-  /** One 600px-wide table. Every block in the template is one of these. */
+  /** One 600px table. Every block in the template is one of these. */
   const block = (inner: string, background = "#ffffff", extra = "") =>
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background-color:${background};${extra}"><tr>${inner}</tr></table>`;
+
+  const para = (text: string) =>
+    esc(text)
+      .split(/\n{2,}/)
+      .map(
+        (chunk, index) =>
+          `<p style="margin:${index === 0 ? "0" : "14px 0 0"};">${chunk.replace(/\n/g, "<br />")}</p>`,
+      )
+      .join("");
+
+  /**
+   * One story module.
+   *
+   * Every part below the headline is optional and drops out entirely when it
+   * is empty — an edition with a story that has no video should not send a
+   * blank frame where the video would be. The banner alternates blue and green
+   * down the letter, as the template does across its two worked examples.
+   */
+  const storyModule = (story: CampaignStory, index: number) => {
+    const accent = index % 2 === 0 ? BLUE : GREEN;
+    const parts: string[] = [];
+
+    parts.push(
+      block(
+        `<td class="mobile-padding" style="padding:30px 30px 0;font-family:${FONT};">
+          ${
+            story.eyebrow
+              ? `<p style="margin:0 0 12px;font-size:12px;font-weight:600;color:${BLUE};text-transform:uppercase;letter-spacing:1px;">${esc(story.eyebrow)}</p>`
+              : ""
+          }
+          ${
+            story.imageUrl
+              ? `<img src="${esc(absolute(story.imageUrl))}" width="540" alt="" style="display:block;width:100%;height:auto;border-radius:6px;" />`
+              : ""
+          }
+          ${
+            story.headline
+              ? `<h2 style="margin:16px 0 10px;font-size:20px;line-height:27px;font-weight:800;color:${BLUE};font-family:${FONT};">${esc(story.headline)}</h2>`
+              : ""
+          }
+          ${
+            story.excerpt
+              ? `<div style="font-size:15px;line-height:24px;color:${GRAY};">${para(story.excerpt)}</div>`
+              : ""
+          }
+          ${
+            story.url
+              ? `<p style="margin:14px 0 0;"><a href="${esc(story.url)}" style="font-family:${FONT};font-size:14px;font-weight:700;color:${BLUE};text-decoration:none;">Read the full story &rarr;</a></p>`
+              : ""
+          }
+        </td>`,
+      ),
+    );
+
+    if (story.quote) {
+      parts.push(
+        block(
+          `<td class="mobile-padding" style="padding:24px 40px;font-family:${FONT};">
+            <p style="margin:0 0 10px;font-size:32px;line-height:1;color:${GREEN};font-weight:700;">&ldquo;</p>
+            <p style="margin:0 0 12px;font-size:16px;line-height:25px;font-style:italic;font-weight:300;color:${BLUE};">${esc(story.quote)}</p>
+            ${
+              story.quoteAuthor
+                ? `<p style="margin:0;font-size:13px;font-weight:700;color:${GRAY};">&mdash; ${esc(story.quoteAuthor)}</p>`
+                : ""
+            }
+          </td>`,
+          LIGHT,
+        ),
+      );
+    }
+
+    if (story.videoUrl) {
+      // A link, never an embed: Gmail and Outlook both strip the iframe, so
+      // the template links out from a thumbnail and so does this.
+      parts.push(
+        block(
+          `<td class="mobile-padding" style="padding:24px 30px 10px;">
+            ${
+              story.videoThumbnailUrl
+                ? `<a href="${esc(story.videoUrl)}" style="text-decoration:none;display:block;"><img src="${esc(absolute(story.videoThumbnailUrl))}" width="540" alt="${esc(story.videoTitle ?? "")}" style="display:block;width:100%;height:auto;border-radius:6px;" /></a>`
+                : ""
+            }
+            <p style="margin:12px 0 0;font-family:${FONT};font-weight:600;font-size:14px;">
+              <a href="${esc(story.videoUrl)}" style="color:${BLUE};text-decoration:none;">&#9658;&nbsp; ${esc(story.videoTitle || "Watch the video")}</a>
+            </p>
+          </td>`,
+        ),
+      );
+    }
+
+    if (story.photoAUrl || story.photoBUrl) {
+      const cell = (url?: string) =>
+        url
+          ? `<td class="stack-column two-col-photo" width="268" valign="top" style="width:268px;padding:0 4px;"><img src="${esc(absolute(url))}" width="268" alt="" style="display:block;width:100%;height:180px;object-fit:cover;border-radius:6px;" /></td>`
+          : "";
+      parts.push(
+        block(
+          `<td class="mobile-padding" style="padding:18px 22px 26px;">
+            <table role="presentation" width="556" cellpadding="0" cellspacing="0" style="width:556px;max-width:556px;"><tr>${cell(story.photoAUrl)}${cell(story.photoBUrl)}</tr></table>
+          </td>`,
+        ),
+      );
+    }
+
+    if (story.bannerHeadline || story.bannerCtaUrl) {
+      parts.push(
+        block(
+          `<td align="center" style="padding:26px 30px;font-family:${FONT};">
+            ${
+              story.bannerHeadline
+                ? `<p style="margin:0 0 6px;font-size:17px;font-weight:800;color:#ffffff;">${esc(story.bannerHeadline)}</p>`
+                : ""
+            }
+            ${
+              story.bannerSubtext
+                ? `<p style="margin:0 0 16px;font-size:13px;font-weight:400;color:#ffffff;">${esc(story.bannerSubtext)}</p>`
+                : ""
+            }
+            ${
+              story.bannerCtaUrl
+                ? `<a href="${esc(story.bannerCtaUrl)}" style="background-color:#ffffff;border-radius:24px;color:${accent};display:inline-block;font-family:${FONT};font-size:14px;font-weight:700;line-height:20px;text-align:center;text-decoration:none;padding:11px 26px;word-break:break-word;">${esc(story.bannerCtaLabel || "Find out more")}</a>`
+                : ""
+            }
+          </td>`,
+          accent,
+        ),
+      );
+    }
+
+    return parts.join("\n");
+  };
 
   const html = `<!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -255,6 +404,7 @@ export function renderCampaign({
     .mobile-padding{padding-left:20px!important;padding-right:20px!important;}
     .hero-title{font-size:24px!important;line-height:32px!important;}
     .stat-number{font-size:26px!important;}
+    .two-col-photo{width:100%!important;display:block!important;margin-bottom:12px;}
   }
 </style>
 </head>
@@ -293,12 +443,46 @@ ${
   )}
 
   ${block(
-    `<td style="padding:16px 30px 0;"><div style="border-top:3px solid ${GREEN};width:60px;"></div></td>`,
+    `<td class="mobile-padding" style="padding:12px 30px 24px;font-family:${FONT};font-weight:400;font-size:15px;line-height:24px;color:${GRAY};">
+      <p style="margin:0 0 14px;">Dear ${esc(firstName?.trim() || "our friend")},</p>
+      ${content?.intro ? para(content.intro) : ""}
+    </td>`,
   )}
 
   ${block(
-    `<td class="mobile-padding" style="padding:20px 30px 28px;font-family:${FONT};font-weight:400;font-size:15px;line-height:24px;color:${GRAY};">${content}</td>`,
+    `<td style="padding:0 30px;"><div style="border-top:3px solid ${GREEN};width:60px;"></div></td>`,
   )}
+
+  ${
+    stories.length > 0
+      ? stories.map(storyModule).join("\n")
+      : legacyBody
+        ? block(
+            `<td class="mobile-padding" style="padding:24px 30px 28px;font-family:${FONT};font-size:15px;line-height:24px;color:${GRAY};">${(legacyBody.root?.children ?? []).map(toHtml).join("")}</td>`,
+          )
+        : ""
+  }
+
+  ${
+    gallery.length > 0
+      ? block(
+          `<td class="mobile-padding" style="padding:30px 22px 26px;font-family:${FONT};">
+            ${
+              content?.galleryTitle
+                ? `<p style="margin:0 0 14px 8px;font-size:12px;font-weight:600;color:${BLUE};text-transform:uppercase;letter-spacing:1px;">${esc(content.galleryTitle)}</p>`
+                : ""
+            }
+            <table role="presentation" width="556" cellpadding="0" cellspacing="0" style="width:556px;max-width:556px;"><tr>${gallery
+              .slice(0, 3)
+              .map(
+                (url) =>
+                  `<td class="stack-column two-col-photo" valign="top" style="padding:0 4px;"><img src="${esc(absolute(url))}" width="176" alt="" style="display:block;width:100%;height:130px;object-fit:cover;border-radius:6px;" /></td>`,
+              )
+              .join("")}</tr></table>
+          </td>`,
+        )
+      : ""
+  }
 
   ${
     band.length > 0
@@ -309,7 +493,7 @@ ${
                 <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:1px;color:${GREEN};text-transform:uppercase;white-space:nowrap;">Our impact</p>
               </td>
             </tr></table>
-            <!-- table-layout:fixed is what stops a long figure forcing the
+            <!-- table-layout:fixed is what stops a long figure forcing its
                  cell wider than its share and pushing past the container. -->
             <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:560px;table-layout:fixed;"><tr>
               ${band
@@ -324,6 +508,32 @@ ${
             </tr></table>
           </td>`,
           BLUE,
+        )
+      : ""
+  }
+
+  ${
+    teasers.length > 0
+      ? block(
+          `<td class="mobile-padding" style="padding:30px 30px 26px;font-family:${FONT};">
+            <p style="margin:0 0 14px;font-size:12px;font-weight:600;color:${BLUE};text-transform:uppercase;letter-spacing:1px;">More from ${esc(organisation)}</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+              ${teasers
+                .map(
+                  (item, index) =>
+                    `<td class="stack-column two-col-photo" width="48%" valign="top" style="padding-${index === 0 ? "right" : "left"}:10px;">
+                      ${
+                        item.imageUrl
+                          ? `<img src="${esc(absolute(item.imageUrl))}" width="260" alt="" style="display:block;width:100%;height:auto;border-radius:6px;margin-bottom:10px;" />`
+                          : ""
+                      }
+                      <p style="margin:0 0 6px;font-size:15px;font-weight:700;color:${BLUE};line-height:20px;">${esc(item.headline)}</p>
+                      <a href="${esc(item.url)}" style="font-family:${FONT};font-size:13px;color:${BLUE};text-decoration:none;">Read more &rarr;</a>
+                    </td>`,
+                )
+                .join("")}
+            </tr></table>
+          </td>`,
         )
       : ""
   }
@@ -372,17 +582,35 @@ ${
     subject,
     [edition, editionDate].filter(Boolean).join(" · "),
     "",
-    (body?.root?.children ?? []).map(toText).join("").trim(),
+    `Dear ${firstName?.trim() || "our friend"},`,
+    content?.intro ?? "",
     "",
+    ...stories.flatMap((story) =>
+      [
+        story.headline,
+        story.excerpt,
+        story.url ? `Read the full story: ${story.url}` : "",
+        story.quote ? `"${story.quote}"${story.quoteAuthor ? ` — ${story.quoteAuthor}` : ""}` : "",
+        story.videoUrl ? `${story.videoTitle || "Watch the video"}: ${story.videoUrl}` : "",
+        story.bannerHeadline,
+        story.bannerCtaUrl ? `${story.bannerCtaLabel || "Find out more"}: ${story.bannerCtaUrl}` : "",
+        "",
+      ].filter(Boolean),
+    ),
+    stories.length === 0 && legacyBody
+      ? (legacyBody.root?.children ?? []).map(toText).join("")
+      : "",
     ...band.map((stat) => `${stat.figure} — ${stat.label}`),
     "",
-    `${organisation}`,
+    ...teasers.map((item) => `${item.headline}: ${item.url}`),
+    "",
+    organisation,
     address,
     siteUrl,
     "",
     `Unsubscribe: ${unsubscribeUrl}`,
   ]
-    .filter((line) => line !== undefined)
+    .filter((line) => line !== undefined && line !== null)
     .join("\n")
     .replace(/\n{3,}/g, "\n\n");
 

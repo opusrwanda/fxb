@@ -71,6 +71,13 @@
       "when": 1786434265027,
       "tag": "0009_campaign_hero",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1786435243211,
+      "tag": "0010_campaign_content",
+      "breakpoints": true
     }
   ]
 }
