@@ -40,6 +40,20 @@
   /* The same alpha as `blue-16`, so the map's resting districts sit at exactly
      the weight its highlighted ones used to. */
   --color-green-16: #008d0029;
+  /*
+    The quiet ground.
+
+    Not a fifth colour — the same grey as everything else in this block, at the
+    lowest alpha the system uses. It resolves to about #F5F5F5 on white, which
+    is enough to separate one full-width band from the next without reading as
+    a tinted room the way `blue-08` and `green-10` do.
+
+    Those two are the site's device for "this band is a different kind of
+    thing"; this one is for "this band is the same kind of thing, one step
+    back". Where We Work is the case: a map and a list of districts, between
+    two white rooms.
+  */
+  --color-gray-06: #5353530f;
   --color-gray-15: #53535326;
   --color-gray-40: #53535366;
   --color-white-12: #ffffff1f;
