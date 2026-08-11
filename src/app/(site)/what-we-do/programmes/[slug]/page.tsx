@@ -102,24 +102,6 @@ export default async function ProgrammePage({
             </Reveal>
           )}
 
-          {project.unconfirmed && (
-            <Reveal>
-              {/* Draft copy renders the real design and says so. Without this
-                  the only thing distinguishing placeholder text from FXB's own
-                  words would be a note nobody reading the page can see.
-                  Unticking "Description not yet confirmed" in /staff removes
-                  it. */}
-              <p className="wedge border border-gray-15 bg-blue-08 px-6 py-4 text-[15px] leading-relaxed text-gray">
-                <strong className="font-semibold text-blue">
-                  Draft description.
-                </strong>{" "}
-                This account of {project.name} is a working draft prepared for
-                layout review and has not been confirmed by FXB Rwanda. Figures
-                and dates are illustrative.
-              </p>
-            </Reveal>
-          )}
-
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-16">
             <Reveal className="lg:col-span-7">
               {project.summary || !isEmpty(project.body) ? (

@@ -34,7 +34,6 @@ export type Programme = {
   /** A system of the programme's own — a dashboard, a portal. Most have none. */
   href?: string;
   /** FXB has not confirmed the description; the page says so while this is set. */
-  unconfirmed: boolean;
   image: Img | null;
 };
 
@@ -56,7 +55,6 @@ const toProgramme = ({ programme: p, photo }: Row): Programme => ({
   funder: p.funder ?? undefined,
   components: p.components ?? [],
   href: p.externalUrl ?? undefined,
-  unconfirmed: p.unconfirmed,
   image: image(photo),
 });
 

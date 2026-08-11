@@ -1,0 +1,1 @@
+ALTER TABLE "programmes" DROP COLUMN "unconfirmed";

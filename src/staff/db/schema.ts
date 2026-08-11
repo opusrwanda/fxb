@@ -229,7 +229,6 @@ export const programmes = pgTable("programmes", {
   funder: text("funder"),
   externalUrl: text("external_url"),
   /** Shows a notice saying FXB has not confirmed the description yet. */
-  unconfirmed: boolean("unconfirmed").notNull().default(false),
   status: varchar("status", { length: 20 }).notNull().default("draft").$type<Status>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

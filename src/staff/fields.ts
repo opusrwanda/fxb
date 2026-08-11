@@ -222,13 +222,6 @@ export const fields: Record<string, Field[]> = {
       accept: "image",
       sidebar: true,
     },
-    {
-      name: "unconfirmed",
-      label: "Description not yet confirmed",
-      type: "checkbox",
-      sidebar: true,
-      help: "Shows a notice on the programme's page. Untick once FXB has approved the wording.",
-    },
     STATUS,
   ],
 
