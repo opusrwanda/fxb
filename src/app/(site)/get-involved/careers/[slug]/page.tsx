@@ -70,7 +70,10 @@ export default async function VacancyPage({
   return (
     <article className="bg-white pt-[calc(4rem+3.5rem)] pb-24 lg:pt-[calc(4.5rem+5rem)] lg:pb-32">
       <Container>
-        <div className="mx-auto max-w-[52rem]">
+        {/* The header runs the full measure above both columns, so the trail,
+            the title and the facts about the post read as one block rather
+            than as the top of the left-hand one. */}
+        <div>
           <Reveal className="flex flex-col gap-6">
             <nav aria-label="Breadcrumb">
               <ol className="flex flex-wrap items-center gap-1.5 text-sm text-gray-80">
@@ -130,74 +133,104 @@ export default async function VacancyPage({
 
           <div className="mt-10 h-px w-full bg-gray-15" aria-hidden="true" />
 
-          {opening.summary && (
-            <Reveal delay={110} className="mt-10">
-              <p className="max-w-[46ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
-                {opening.summary}
-              </p>
-            </Reveal>
-          )}
+          {/* Two columns from `lg`: the description reads on the left, the form
+              stays in view on the right.
 
-          {opening.body && (
-            <Reveal delay={180} className="mt-10">
-              <Prose data={opening.body} />
-            </Reveal>
-          )}
+              8/4 of twelve, which lands at 781/363 inside the 1200 measure —
+              the ratio asked for, and it falls out of the grid rather than
+              being two hand-set percentages that stop adding up the first time
+              the gap changes. Below `lg` they stack, description first: a form
+              above the thing it is a form for asks somebody to apply for a job
+              they have not read. */}
+          <div className="mt-10 grid gap-12 lg:grid-cols-12 lg:gap-14">
+            <div className="lg:col-span-8">
+              {opening.summary && (
+                <Reveal delay={110}>
+                  <p className="max-w-[46ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
+                    {opening.summary}
+                  </p>
+                </Reveal>
+              )}
 
-          {opening.document && (
-            <Reveal delay={240} className="mt-10">
-              <Pill href={opening.document.url} variant="outline" size="lg">
-                <Download className="mr-2 size-4" aria-hidden="true" />
-                Download the full pack
-                {opening.document.bytes
-                  ? ` (${formatBytes(opening.document.bytes)})`
-                  : ""}
-              </Pill>
-            </Reveal>
-          )}
+              {opening.body && (
+                <Reveal delay={180} className={opening.summary ? "mt-10" : ""}>
+                  <Prose data={opening.body} />
+                </Reveal>
+              )}
 
-          <div className="mt-16 h-px w-full bg-gray-15" aria-hidden="true" />
+              {opening.document && (
+                <Reveal delay={240} className="mt-10">
+                  <Pill href={opening.document.url} variant="outline" size="lg">
+                    <Download className="mr-2 size-4" aria-hidden="true" />
+                    Download the full pack
+                    {opening.document.bytes
+                      ? ` (${formatBytes(opening.document.bytes)})`
+                      : ""}
+                  </Pill>
+                </Reveal>
+              )}
 
-          <Reveal delay={300} className="mt-16">
-            <h2
-              id="apply"
-              className="scroll-mt-28 text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[32px]"
-            >
-              {closed ? "Applications have closed" : "Apply for this position"}
-            </h2>
+              <Reveal delay={300} className="mt-14 border-t border-gray-15 pt-10">
+                <Link
+                  href="/get-involved/careers"
+                  className="inline-flex items-center gap-2 text-base font-semibold text-blue transition-colors duration-300 hover:text-green"
+                >
+                  <ArrowLeft className="size-4" aria-hidden="true" />
+                  All positions
+                </Link>
+              </Reveal>
+            </div>
 
-            {closed ? (
-              <p className="mt-4 max-w-[58ch] text-base leading-relaxed text-gray">
-                This position closed on {formatDate(opening.closesAt)} and is no
-                longer accepting applications. New openings are posted on the
-                careers page whenever they arise.
-              </p>
-            ) : (
-              <>
-                <p className="mt-4 max-w-[58ch] text-base leading-relaxed text-gray">
-                  Applications close on {formatDate(opening.closesAt)}. We read
-                  every application and reply to those we would like to take
-                  further.
-                </p>
-                <div className="mt-8">
-                  <ApplicationForm
-                    opportunityId={opening.id}
-                    title={opening.title}
-                  />
+            <aside className="lg:col-span-4">
+              {/* `top-28` clears the pinned bar plus a little air, and that is
+                  the whole of it — no height cap.
+
+                  A cap with `overflow-y-auto` was the first attempt, on the
+                  reasoning that a panel taller than the viewport would pin
+                  with its Submit button permanently off-screen. It solved a
+                  problem that does not exist and caused one that does: the
+                  card was cut off mid-field at the cap, with no visible
+                  scrollbar to say why.
+
+                  Sticky releases at the bottom of its containing block, and
+                  the containing block here is a grid cell that grows to fit
+                  this card. So a panel too tall to pin fully simply travels up
+                  as the section ends, bringing its lower half — and the button
+                  — into view. Nothing is unreachable. */}
+              <div className="lg:sticky lg:top-28">
+                <div className="wedge bg-blue-08 p-6 lg:p-7">
+                  <h2
+                    id="apply"
+                    className="scroll-mt-28 text-xl font-bold tracking-[-0.02em] text-blue lg:text-2xl"
+                  >
+                    {closed ? "Applications have closed" : "Apply for this position"}
+                  </h2>
+
+                  {closed ? (
+                    <p className="mt-3 text-[15px] leading-relaxed text-gray">
+                      This position closed on {formatDate(opening.closesAt)} and
+                      is no longer accepting applications. New openings are
+                      posted on the careers page whenever they arise.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="mt-3 text-[15px] leading-relaxed text-gray">
+                        Closes {formatDate(opening.closesAt)}. We read every
+                        application and reply to those we would like to take
+                        further.
+                      </p>
+                      <div className="mt-6">
+                        <ApplicationForm
+                          opportunityId={opening.id}
+                          title={opening.title}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
-              </>
-            )}
-          </Reveal>
-
-          <Reveal delay={360} className="mt-14">
-            <Link
-              href="/get-involved/careers"
-              className="inline-flex items-center gap-2 text-base font-semibold text-blue transition-colors duration-300 hover:text-green"
-            >
-              <ArrowLeft className="size-4" aria-hidden="true" />
-              All positions
-            </Link>
-          </Reveal>
+              </div>
+            </aside>
+          </div>
         </div>
       </Container>
     </article>

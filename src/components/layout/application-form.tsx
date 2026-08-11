@@ -70,11 +70,11 @@ export function ApplicationForm({
   // than one.
   if (state.status === "ok") {
     return (
-      <div className="wedge flex flex-col gap-4 bg-blue-08 p-8 lg:p-10">
-        <h3 className="text-xl font-bold tracking-[-0.02em] text-blue">
+      <div className="flex flex-col gap-3 border-t border-gray-15 pt-6">
+        <h3 className="text-lg font-bold tracking-[-0.02em] text-blue">
           Application received
         </h3>
-        <p role="status" className="max-w-[58ch] text-base leading-relaxed text-gray">
+        <p role="status" className="text-[15px] leading-relaxed text-gray">
           {state.message}
         </p>
       </div>
@@ -83,7 +83,11 @@ export function ApplicationForm({
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5">
-      <div className="grid gap-5 sm:grid-cols-2">
+      {/* One field per row, always. `sm:grid-cols-2` keys off the viewport
+          rather than the container it is in, so a two-up row inside the 363px
+          sidebar became two 150px fields on a desktop — narrower than they are
+          on a phone. */}
+      <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
           <label htmlFor="apply-name" className="text-sm font-medium text-blue">
             Full name
@@ -153,7 +157,7 @@ export function ApplicationForm({
         <textarea
           id="apply-message"
           name="message"
-          rows={6}
+          rows={4}
           maxLength={5000}
           className={`${field} resize-y`}
         />
