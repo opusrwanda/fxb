@@ -99,6 +99,13 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     heading: "Creating lasting change through resilient communities.",
     body: "For more than three decades, FXB Rwanda has worked alongside vulnerable children, families and communities to address the root causes of poverty and vulnerability.",
   },
+  "header:/our-impact/stories": {
+    page: "Our Impact",
+    label: "Impact Stories header",
+    eyebrow: "IMPACT STORIES",
+    heading: "People, not projects",
+    body: "Behind every programme is a story of hope, resilience and transformation. Discover how the lives of children, families and communities are changing through the support of FXB Rwanda and its partners.",
+  },
   "header:/get-involved": {
     page: "Get Involved",
     label: "Page header",
@@ -145,13 +152,6 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     heading: "News from FXB Rwanda",
     body: "Keep up with the latest developments: announcements, programme updates, partnership news, project launches, achievements and other organisational milestones.",
   },
-  "header:/news-insights/stories": {
-    page: "News & Insights",
-    label: "Stories header",
-    eyebrow: "STORIES",
-    heading: "People, not projects",
-    body: "Behind every programme is a story of hope, resilience and transformation. Discover how the lives of children, families and communities are changing through the support of FXB Rwanda and its partners.",
-  },
   "header:/news-insights/publications": {
     page: "News & Insights",
     label: "Publications header",
@@ -166,8 +166,8 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     heading: "Four times a year",
     body: "Our quarterly newsletter gathers the districts, the programmes and the people in one place.",
   },
-  "header:/our-impact/media-gallery": {
-    page: "Our Impact",
+  "header:/news-insights/media-gallery": {
+    page: "News & Insights",
     label: "Media Gallery header",
     eyebrow: "MEDIA GALLERY",
     heading: "The work, as photographed",

@@ -22,12 +22,6 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        // The nav lists "Success Stories" under Our Impact and "Stories" under
-        // News & Insights, but they are the same three stories. Rather than
-        // publish them at two URLs — which splits the ranking and doubles the
-        // maintenance — the Our Impact route redirects to the canonical one.
-        // Temporary, not permanent: which of the two should be canonical is
-        // FXB's call, and a 308 would be cached in browsers for good.
         // The section landing showed a three-item teaser under a tab bar whose
         // lit tab said "Latest News" — so arriving at News & Insights gave you
         // a preview of the news and a control you still had to click to reach
@@ -37,10 +31,43 @@ const nextConfig: NextConfig = {
         destination: "/news-insights/news",
         permanent: false,
       },
+      /**
+       * The two sections stopped overlapping, and three addresses moved.
+       *
+       * Our Impact and News & Insights each listed Publications, the Media
+       * Gallery and the same three stories, so half of each menu was the other
+       * one. They were split on what a reader is after — what changed, versus
+       * what is new — and the pages followed their menus: stories to Our
+       * Impact, the gallery to News & Insights.
+       *
+       * PERMANENT, unlike the temporary redirect that used to sit here. The
+       * old one existed because nobody had decided which of two duplicate URLs
+       * was canonical; that is decided now, and a 308 is what tells a search
+       * engine to move the ranking across rather than treat the new address as
+       * a second copy. Three stories are already indexed at the old paths.
+       */
       {
+        source: "/news-insights/stories",
+        destination: "/our-impact/stories",
+        permanent: true,
+      },
+      {
+        source: "/news-insights/stories/:slug",
+        destination: "/our-impact/stories/:slug",
+        permanent: true,
+      },
+      {
+        source: "/our-impact/media-gallery",
+        destination: "/news-insights/media-gallery",
+        permanent: true,
+      },
+      {
+        // Never a real page — it was the Our Impact menu's name for the
+        // stories listing, back when both menus had one. Kept because it has
+        // been in the nav and may be bookmarked.
         source: "/our-impact/success-stories",
-        destination: "/news-insights/stories",
-        permanent: false,
+        destination: "/our-impact/stories",
+        permanent: true,
       },
     ];
   },

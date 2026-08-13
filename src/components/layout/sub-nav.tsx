@@ -90,7 +90,25 @@ export function SubNav({
  */
 export const newsInsightsNav: SubNavItem[] = [
   { href: "/news-insights/news", label: "Latest News" },
-  { href: "/news-insights/stories", label: "Stories" },
-  { href: "/news-insights/publications", label: "Publications" },
   { href: "/news-insights/newsletters", label: "Newsletters" },
+  { href: "/news-insights/publications", label: "Publications" },
+  // Moved here from Our Impact, where it sat next to a Publications entry that
+  // was itself a link into this section. The gallery is a record of what has
+  // happened rather than evidence of what changed, so it belongs with the news
+  // and the newsletter — and this bar is the reason moving it costs nothing:
+  // it is now reachable from all three of its siblings.
+  { href: "/news-insights/media-gallery", label: "Media Gallery" },
 ];
+
+/**
+ * Our Impact has no tab bar, deliberately.
+ *
+ * It is not a set of sibling pages. It is one long page — the figures, the
+ * areas, the evidence — with Impact Stories underneath it and a cross-link out
+ * to the annual reports. A bar of three tabs where one is an anchor on the page
+ * you are already reading and another leaves the section entirely would be
+ * describing a structure that does not exist.
+ *
+ * Impact Stories therefore carries a back link to Our Impact, the way an
+ * article does, rather than a bar. See `our-impact/stories/page.tsx`.
+ */

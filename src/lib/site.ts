@@ -129,25 +129,43 @@ export const primaryNav: NavItem[] = [
     label: "Our Impact",
     href: "/our-impact",
     blurb:
-      "What the work has changed, measured in lives rather than activities — with the reports and the evidence behind it.",
+      "What the work has changed, measured in lives rather than activities — the figures, the people behind them, and the reports that evidence it.",
+    /**
+     * Three entries, and none of them repeated next door.
+     *
+     * This menu and News & Insights used to overlap on three of five items —
+     * Publications and Media Gallery appeared in both, and the same three
+     * stories were listed as "Success Stories" here and "Stories" there. A
+     * reader cannot tell two menus apart when half of each is the other, and
+     * the practical effect was that nobody could say which section anything
+     * lived in.
+     *
+     * So the two were split on what the reader is actually after. Our Impact
+     * answers "what changed": the figures, the people it changed for, and the
+     * reports that evidence it. News & Insights answers "what is new": what we
+     * have said, published, sent and photographed.
+     *
+     * Annual Reports is the one deliberate cross-link left. The reports are
+     * publications and live on that page, but somebody looking for evidence of
+     * impact looks here — so the entry points across rather than duplicating
+     * the listing.
+     */
     children: [
       { label: "Results at a Glance", href: "/our-impact#results" },
-      { label: "Success Stories", href: "/our-impact/success-stories" },
-      { label: "Publications", href: "/news-insights/publications" },
+      { label: "Impact Stories", href: "/our-impact/stories" },
       { label: "Annual Reports", href: "/news-insights/publications#annual-reports" },
-      { label: "Media Gallery", href: "/our-impact/media-gallery" },
     ],
   },
   {
     label: "News & Insights",
     href: "/news-insights",
     blurb:
-      "Programme news, accounts from the districts, and everything we publish — reports, policies and the quarterly newsletter.",
+      "Programme news, everything we publish, the quarterly newsletter, and the work as photographed.",
     children: [
       { label: "Latest News", href: "/news-insights/news" },
-      { label: "Stories", href: "/news-insights/stories" },
-      { label: "Publications", href: "/news-insights/publications" },
       { label: "Newsletters", href: "/news-insights/newsletters" },
+      { label: "Publications", href: "/news-insights/publications" },
+      { label: "Media Gallery", href: "/news-insights/media-gallery" },
     ],
   },
   {

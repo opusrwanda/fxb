@@ -340,7 +340,7 @@ function publicHref(collection: string, slug: string): string {
     case "news":
       return `/news-insights/news/${slug}`;
     case "stories":
-      return `/news-insights/stories/${slug}`;
+      return `/our-impact/stories/${slug}`;
     case "programmes":
       return `/what-we-do/programmes/${slug}`;
     default:

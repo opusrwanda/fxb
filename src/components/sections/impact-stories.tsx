@@ -249,7 +249,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
                 <article className="flex h-full flex-col gap-6">
                   {story.image && (
                     <Link
-                      href={`/news-insights/stories/${story.slug}`}
+                      href={`/our-impact/stories/${story.slug}`}
                       className="group relative block aspect-16/10 overflow-hidden rounded-card"
                     >
                       <Image
@@ -273,7 +273,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
                     {/* Clamped so one long headline cannot drag the row of
                       buttons out of line with the others. */}
                     <h3 className="line-clamp-3 text-[28px] leading-[1.15] font-bold tracking-[-0.02em] text-white lg:text-[36px]">
-                      <Link href={`/news-insights/stories/${story.slug}`}>
+                      <Link href={`/our-impact/stories/${story.slug}`}>
                         {story.title}
                       </Link>
                     </h3>
@@ -281,7 +281,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
                     {/* Pushed to the bottom, so a one-line headline and a
                       three-line one still put their button on the same line. */}
                     <Pill
-                      href={`/news-insights/stories/${story.slug}`}
+                      href={`/our-impact/stories/${story.slug}`}
                       variant="outlineLight"
                       className="mt-auto"
                     >
@@ -296,7 +296,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
 
         <Container className="mt-12 flex items-center justify-between gap-6">
           <Link
-            href="/news-insights/stories"
+            href="/our-impact/stories"
             className="group flex items-center gap-2.5 text-base font-medium text-white"
           >
             View all stories

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { SubNav, newsInsightsNav } from "@/components/layout/sub-nav";
 import { Reveal } from "@/components/ui/reveal";
 import { photos, type PhotoGroup } from "@/lib/photos";
 
@@ -49,14 +50,16 @@ export default function MediaGalleryPage() {
   return (
     <>
       <PageHeader
-        path="/our-impact/media-gallery"
-        breadcrumbs={[{ label: "Our Impact", href: "/our-impact" }]}
+        path="/news-insights/media-gallery"
+        breadcrumbs={[{ label: "News & Insights", href: "/news-insights" }]}
         eyebrow="MEDIA GALLERY"
         title="The work, as photographed"
         intro={`${photos.length} photographs from our programmes across Rwanda.`}
       />
 
-      <section className="bg-white pb-24 lg:pb-32">
+      <SubNav items={newsInsightsNav} ariaLabel="News and Insights" />
+
+      <section className="bg-white pt-14 pb-24 lg:pt-16 lg:pb-32">
         <Container className="flex flex-col gap-16 lg:gap-24">
           {GROUP_ORDER.map((group) => {
             const set = photos.filter((item) => item.group === group);

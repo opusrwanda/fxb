@@ -101,7 +101,7 @@ export function WhyItWorks() {
             <Pill href="/our-impact" variant="primary" size="lg">
               Our Impact
             </Pill>
-            <Pill href="/our-impact/success-stories" size="lg">
+            <Pill href="/our-impact/stories" size="lg">
               Success Stories
             </Pill>
           </div>

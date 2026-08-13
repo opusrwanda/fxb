@@ -62,8 +62,8 @@ export default async function NewsPage() {
             body="Announcements, programme updates and partnership news will appear here as they are published."
             actions={[
               {
-                label: "Read our stories",
-                href: "/news-insights/stories",
+                label: "Read our impact stories",
+                href: "/our-impact/stories",
                 primary: true,
               },
             ]}

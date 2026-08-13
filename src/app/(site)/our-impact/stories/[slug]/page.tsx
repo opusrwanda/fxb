@@ -10,7 +10,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(
-  props: PageProps<"/news-insights/stories/[slug]">,
+  props: PageProps<"/our-impact/stories/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
   const story = await getStory(slug);
@@ -20,7 +20,7 @@ export async function generateMetadata(
 }
 
 export default async function StoryPage(
-  props: PageProps<"/news-insights/stories/[slug]">,
+  props: PageProps<"/our-impact/stories/[slug]">,
 ) {
   const { slug } = await props.params;
   const story = await getStory(slug);
@@ -28,17 +28,17 @@ export default async function StoryPage(
 
   return (
     <ArticleBody
-      eyebrow="STORY"
+      eyebrow="IMPACT STORY"
       breadcrumbs={[
-        { label: "News & Insights", href: "/news-insights" },
-        { label: "Stories", href: "/news-insights/stories" },
+        { label: "Our Impact", href: "/our-impact" },
+        { label: "Impact Stories", href: "/our-impact/stories" },
       ]}
       title={story.title}
       date={formatDate(story.date)}
       excerpt={story.excerpt}
       body={story.body}
       image={story.image}
-      backHref="/news-insights/stories"
+      backHref="/our-impact/stories"
       backLabel="All stories"
     />
   );

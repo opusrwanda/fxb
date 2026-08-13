@@ -2,23 +2,29 @@ import type { Metadata } from "next";
 import { ArticleCard } from "@/components/cards/article-card";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
-import { SubNav, newsInsightsNav } from "@/components/layout/sub-nav";
 import { formatDate } from "@/cms/content/date";
 import { getStories } from "@/cms/content/stories";
 import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = {
-  title: "Stories",
+  title: "Impact Stories",
   description:
     "How the lives of children, families and communities are changing through the support of FXB Rwanda and its partners.",
 };
 
 /**
- * Stories.
+ * Impact Stories.
  *
- * The canonical listing for impact stories. "Success Stories" in the Our Impact
- * menu redirects here rather than rendering the same three stories at a second
- * URL — see the redirect in `next.config.ts`.
+ * Under Our Impact, and it took two goes to get here. These three stories were
+ * listed in both menus — "Success Stories" under Our Impact, "Stories" under
+ * News & Insights — with the first redirecting to the second, so the menus
+ * disagreed about where they lived and the URL settled it in favour of the
+ * section they were not really about.
+ *
+ * They are about it now. A story is the answer to "what changed for a person",
+ * which is the question this whole section exists to answer; it is not news,
+ * and it does not go stale the way news does. Both old addresses redirect here
+ * — see `next.config.ts`.
  *
  * The brief's instruction for this section is one line and worth keeping in
  * view: "This section should focus on people, not projects."
@@ -29,14 +35,12 @@ export default async function StoriesPage() {
   return (
     <>
       <PageHeader
-        path="/news-insights/stories"
-        breadcrumbs={[{ label: "News & Insights", href: "/news-insights" }]}
-        eyebrow="STORIES"
+        path="/our-impact/stories"
+        breadcrumbs={[{ label: "Our Impact", href: "/our-impact" }]}
+        eyebrow="IMPACT STORIES"
         title="People, not projects"
         intro="Behind every programme is a story of hope, resilience and transformation. Discover how the lives of children, families and communities are changing through the support of FXB Rwanda and its partners."
       />
-
-      <SubNav items={newsInsightsNav} ariaLabel="News and Insights" />
 
       <section className="bg-white pt-14 pb-24 lg:pt-16 lg:pb-32">
         {stories.length > 0 ? (
@@ -45,7 +49,7 @@ export default async function StoriesPage() {
               {stories.map((story, index) => (
                 <ArticleCard
                   key={story.slug}
-                  href={`/news-insights/stories/${story.slug}`}
+                  href={`/our-impact/stories/${story.slug}`}
                   title={story.title}
                   excerpt={story.excerpt}
                   date={formatDate(story.date)}

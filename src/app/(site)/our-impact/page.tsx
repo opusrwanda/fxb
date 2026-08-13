@@ -40,7 +40,7 @@ export default async function OurImpactPage() {
         body={copy.body}
         ctas={[
           { label: "Results at a Glance", href: "#results", primary: true },
-          { label: "Success Stories", href: "/news-insights/stories" },
+          { label: "Impact Stories", href: "/our-impact/stories" },
         ]}
       />
 
@@ -108,17 +108,23 @@ export default async function OurImpactPage() {
               >
                 Publications
               </Pill>
-              {/* The brief files four things under Our Impact — success
-                  stories, publications, annual reports and the media gallery.
-                  Three of them were reachable from this page and the annual
-                  reports were not, even though they are the single document a
-                  donor or institutional partner comes to an impact page
-                  looking for. They live on the publications page under their
-                  own anchor. */}
+              {/* Annual reports are the single document a donor or an
+                  institutional partner comes to an impact page looking for,
+                  and they were the one thing here you could not get to. They
+                  live on the publications page under their own anchor.
+
+                  This band stays a cross-link even though publications and the
+                  gallery are now filed under News & Insights, and that is not
+                  the duplication the menus had: a menu that lists the same
+                  page twice leaves a reader unable to say which section owns
+                  it, whereas a sentence promising the evidence and then
+                  pointing at it is doing a job. The heading says what these
+                  are — the record behind the figures — rather than restating
+                  the other menu. */}
               <Pill href="/news-insights/publications#annual-reports" size="lg">
                 Annual Reports
               </Pill>
-              <Pill href="/our-impact/media-gallery" size="lg">
+              <Pill href="/news-insights/media-gallery" size="lg">
                 Media Gallery
               </Pill>
             </div>
