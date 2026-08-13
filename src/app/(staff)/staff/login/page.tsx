@@ -9,12 +9,19 @@ import {
   currentUser,
   pruneExpiredSessions,
 } from "@/staff/auth/session";
+import {
+  clearPending,
+  issueCode,
+  otpAvailable,
+  pruneExpiredCodes,
+} from "@/staff/auth/otp";
+import { sendLoginCode } from "@/staff/mail/login-code";
 import { PasswordField } from "@/staff/ui/password-field";
 
 export const metadata: Metadata = { title: "Sign in" };
 
 /**
- * Sign in.
+ * Sign in, step one of two.
  *
  * A team signing in to change their own website should see their own
  * organisation, not a piece of software they have never heard of — an
@@ -23,6 +30,10 @@ export const metadata: Metadata = { title: "Sign in" };
  *
  * The form posts to a server action rather than an API route, so it works
  * before any JavaScript has loaded and there is no fetch to get wrong.
+ *
+ * The password no longer signs anybody in by itself. It gets them a code,
+ * emailed to the address on the account, and `/staff/login/verify` is where
+ * that code is spent. See `auth/otp.ts` for why.
  */
 async function signIn(formData: FormData) {
   "use server";
@@ -48,19 +59,47 @@ async function signIn(formData: FormData) {
   if (!user || !ok) redirect(failed);
 
   await pruneExpiredSessions();
-  await createSession(user.id);
-  redirect("/staff");
+
+  /**
+   * No mail on this server means no second step.
+   *
+   * Demanding an emailed code from a box that cannot send email is a panel
+   * nobody can sign in to, and the moment that is most likely is a fresh
+   * deploy where the SMTP variables have not been set — which is exactly when
+   * somebody needs to get in and fix it. It is logged rather than hidden.
+   */
+  if (!otpAvailable()) {
+    console.warn(
+      "[login] SMTP is not configured, so the sign-in code was skipped. Set SMTP_USER and SMTP_PASSWORD to turn the second step back on.",
+    );
+    await createSession(user.id);
+    redirect("/staff");
+  }
+
+  await pruneExpiredCodes();
+
+  const code = await issueCode(user.id);
+  const sent = await sendLoginCode(user.email, user.name, code);
+
+  if (!sent.ok) {
+    await clearPending();
+    redirect(
+      `/staff/login?error=${encodeURIComponent(sent.error ?? "")}&email=${encodeURIComponent(email)}`,
+    );
+  }
+
+  redirect("/staff/login/verify");
 }
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; email?: string }>;
+  searchParams: Promise<{ error?: string; email?: string; changed?: string }>;
 }) {
   // Already signed in — no reason to show the form again.
   if (await currentUser()) redirect("/staff");
 
-  const { error, email } = await searchParams;
+  const { error, email, changed } = await searchParams;
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-linear-to-b from-blue-08 to-white px-6 py-16">
@@ -79,15 +118,42 @@ export default async function LoginPage({
           The staff panel for the FXB Rwanda website.
         </p>
 
+        {changed && (
+          <p
+            role="status"
+            className="mt-6 rounded-card border border-green/30 bg-green-10 px-5 py-4 text-[15px] leading-relaxed text-gray"
+          >
+            <strong className="font-semibold text-green">
+              Password changed.
+            </strong>{" "}
+            Sign in with the new one.
+          </p>
+        )}
+
+        {/* "1" is the wrong-credentials case, which deliberately says nothing
+            about which half was wrong. Anything else is a real sentence about
+            something that went wrong on our side — usually the code failing to
+            send — and repeating it is more use than hiding it. */}
         {error && (
           <p
             role="alert"
             className="mt-6 rounded-card border border-gray-15 bg-blue-08 px-5 py-4 text-[15px] leading-relaxed text-gray"
           >
-            <strong className="font-semibold text-blue">
-              That did not work.
-            </strong>{" "}
-            Check the email address and password and try again.
+            {error === "1" ? (
+              <>
+                <strong className="font-semibold text-blue">
+                  That did not work.
+                </strong>{" "}
+                Check the email address and password and try again.
+              </>
+            ) : (
+              <>
+                <strong className="font-semibold text-blue">
+                  Not signed in.
+                </strong>{" "}
+                {error}
+              </>
+            )}
           </p>
         )}
 

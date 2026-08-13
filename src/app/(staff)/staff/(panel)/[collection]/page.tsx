@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
 
 import { findCollection } from "@/staff/collections";
+import { requireAccess } from "@/staff/auth/guard";
+import { canCreate } from "@/staff/auth/permissions";
 import { getListing } from "@/staff/queries/list";
 import { ListTable } from "@/staff/ui/table";
 
@@ -36,6 +38,8 @@ export default async function CollectionPage({
   const entry = findCollection(collection);
   if (!entry) notFound();
 
+  const user = await requireAccess(entry.key, "read");
+
   const listing = await getListing(entry.key);
   if (!listing) notFound();
 
@@ -57,13 +61,15 @@ export default async function CollectionPage({
           </p>
         </div>
 
-        <Link
-          href={`/staff/${entry.slug}/new`}
-          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          New {entry.singular}
-        </Link>
+        {canCreate(user, entry.key) && (
+          <Link
+            href={`/staff/${entry.slug}/new`}
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            New {entry.singular}
+          </Link>
+        )}
       </header>
 
       {/* The edit page is gone by the time this renders, so the confirmation

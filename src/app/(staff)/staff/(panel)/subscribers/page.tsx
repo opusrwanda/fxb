@@ -9,6 +9,8 @@ import {
   subscribe,
   subscriberCounts,
 } from "@/staff/mail/subscribers";
+import { requireAccess, requireAdmin } from "@/staff/auth/guard";
+import { canExportSubscribers, canSeeSubscribers } from "@/staff/auth/permissions";
 
 export const metadata = { title: "Subscribers" };
 
@@ -38,10 +40,31 @@ export default async function SubscribersPage({
   searchParams: Promise<{ added?: string; error?: string }>;
 }) {
   const { added, error } = await searchParams;
-  const [people, counts] = await Promise.all([listSubscribers(), subscriberCounts()]);
+
+  const user = await requireAccess("subscribers", "read");
+
+  /**
+   * An editor gets the number and not the names.
+   *
+   * The count is ordinary editorial information — it is the answer to "how
+   * many people will read this", which is a fair thing for somebody writing a
+   * newsletter to want. The rows are several hundred people's email addresses,
+   * given to FXB for a newsletter and for nothing else, and every extra pair
+   * of eyes on them is a copy that can leave.
+   *
+   * So the query is not run at all rather than run and hidden. A list that is
+   * fetched and then not rendered is still a list that was sent to the
+   * browser's memory, and one careless change away from being visible.
+   */
+  const full = canSeeSubscribers(user);
+  const [people, counts] = await Promise.all([
+    full ? listSubscribers() : Promise.resolve([]),
+    subscriberCounts(),
+  ]);
 
   async function add(formData: FormData) {
     "use server";
+    await requireAdmin("subscribers");
     const result = await subscribe({
       email: String(formData.get("email") ?? ""),
       name: String(formData.get("name") ?? ""),
@@ -53,18 +76,21 @@ export default async function SubscribersPage({
 
   async function unsubscribe(formData: FormData) {
     "use server";
+    await requireAdmin("subscribers");
     await setSubscriberStatus(Number(formData.get("id")), "unsubscribed");
     revalidatePath("/staff/subscribers");
   }
 
   async function resubscribe(formData: FormData) {
     "use server";
+    await requireAdmin("subscribers");
     await setSubscriberStatus(Number(formData.get("id")), "subscribed");
     revalidatePath("/staff/subscribers");
   }
 
   async function remove(formData: FormData) {
     "use server";
+    await requireAdmin("subscribers");
     await deleteSubscriber(Number(formData.get("id")));
     revalidatePath("/staff/subscribers");
   }
@@ -82,9 +108,9 @@ export default async function SubscribersPage({
           Subscribers
         </h1>
         <p className="max-w-[58ch] text-base leading-relaxed text-gray">
-          Everyone who has asked to receive the newsletter. Most sign up through
-          the forms on the website; you can add someone here if they ask in
-          person.
+          {full
+            ? "Everyone who has asked to receive the newsletter. Most sign up through the forms on the website; you can add someone here if they ask in person."
+            : "How many people have asked to receive the newsletter."}
         </p>
       </header>
 
@@ -93,14 +119,30 @@ export default async function SubscribersPage({
         <Figure value={counts.unsubscribed} label="unsubscribed" />
         <Figure value={counts.total} label="ever" />
 
-        <Link
-          href="/staff/subscribers/export"
-          className="ml-auto inline-flex h-10 items-center gap-2 rounded-full border border-blue px-5 text-sm font-semibold text-blue transition-colors duration-300 hover:bg-blue-08"
-        >
-          <Download className="size-4" aria-hidden="true" />
-          Export CSV
-        </Link>
+        {canExportSubscribers(user) && (
+          <Link
+            href="/staff/subscribers/export"
+            className="ml-auto inline-flex h-10 items-center gap-2 rounded-full border border-blue px-5 text-sm font-semibold text-blue transition-colors duration-300 hover:bg-blue-08"
+          >
+            <Download className="size-4" aria-hidden="true" />
+            Export CSV
+          </Link>
+        )}
       </div>
+
+      {/* Said plainly rather than left as an absence. Somebody who has seen
+          this page over a colleague's shoulder will notice the list is missing
+          and should not have to wonder whether it is broken. */}
+      {!full && (
+        <p className="mt-8 max-w-[62ch] rounded-card border border-gray-15 bg-blue-08 px-5 py-4 text-[15px] leading-relaxed text-gray">
+          <strong className="font-semibold text-blue">
+            The addresses themselves are admin-only.
+          </strong>{" "}
+          These are people who gave FXB an email address for the newsletter and
+          nothing else, so the list is kept to the smallest number of people it
+          can be. An admin can add someone, take someone off, or export it.
+        </p>
+      )}
 
       {(added || error) && (
         <p
@@ -111,6 +153,7 @@ export default async function SubscribersPage({
         </p>
       )}
 
+      {full && (
       <form
         action={add}
         className="mt-8 flex flex-col gap-4 rounded-[20px_20px_0_20px] border border-gray-15 p-6 sm:flex-row sm:items-end"
@@ -140,7 +183,9 @@ export default async function SubscribersPage({
           Add
         </button>
       </form>
+      )}
 
+      {full && (
       <div className="mt-10 overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
@@ -223,6 +268,7 @@ export default async function SubscribersPage({
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }

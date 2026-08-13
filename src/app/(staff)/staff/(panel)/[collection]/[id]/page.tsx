@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 
 import { findCollection } from "@/staff/collections";
+import { requireAccess, requireUser } from "@/staff/auth/guard";
+import { canDeleteDocument, canEditDocument } from "@/staff/auth/permissions";
 import { mainFields, sidebarFields } from "@/staff/fields";
 import {
   deleteDocument,
@@ -15,7 +17,7 @@ import {
 } from "@/staff/queries/document";
 import { ConfirmDialog } from "@/staff/ui/confirm-dialog";
 import { FormField } from "@/staff/ui/fields";
-import type { RichText } from "@/staff/db/schema";
+import type { RichText, Status } from "@/staff/db/schema";
 
 export async function generateMetadata({
   params,
@@ -57,6 +59,10 @@ export default async function EditPage({
   const numericId = creating ? null : Number(id);
   if (!creating && !Number.isInteger(numericId)) notFound();
 
+  // Reading is the floor. Whether this person may also *change* what they are
+  // reading is settled below, once we know who wrote it.
+  const user = await requireAccess(entry.key, creating ? "write" : "read");
+
   const [document, mediaOptions, parentOptions] = await Promise.all([
     creating ? null : getDocument(entry.key, numericId as number),
     getMediaOptions(),
@@ -68,7 +74,24 @@ export default async function EditPage({
   if (!creating && !document) notFound();
 
   const main = mainFields(entry.key);
-  const rail = sidebarFields(entry.key);
+  const rail = sidebarFields(
+    entry.key,
+    user.role,
+    document?.status as Status | undefined,
+  );
+
+  /**
+   * May this person change what they are looking at?
+   *
+   * Two different questions wearing one name. On a create it is "may you add
+   * one of these at all", which `requireAccess` has already answered. On an
+   * edit it is "is this yours" — an editor writes their own news and reads
+   * everybody else's, and a document with no recorded author belongs to the
+   * admins, which is every document written before authorship existed.
+   */
+  const authorId = (document?.authorId as number | null | undefined) ?? null;
+  const writable = creating || canEditDocument(user, entry.key, authorId);
+  const deletable = !creating && canDeleteDocument(user, entry.key, authorId);
 
   /** The value a control should start with, converted for display. */
   const valueOf = (name: string, type: string): unknown => {
@@ -104,7 +127,11 @@ export default async function EditPage({
   async function save(formData: FormData) {
     "use server";
 
-    const result = await saveDocument(key, numericId, formData);
+    // The role is read from the session here, not carried from the render.
+    // Closing over the user object would mean a page rendered before somebody
+    // was demoted still saved with the permissions they had when it loaded.
+    const actor = await requireUser();
+    const result = await saveDocument(key, numericId, formData, actor);
 
     if (!result.ok) {
       redirect(
@@ -129,7 +156,15 @@ export default async function EditPage({
   async function remove() {
     "use server";
 
-    await deleteDocument(key, numericId as number);
+    const actor = await requireUser();
+    const result = await deleteDocument(key, numericId as number, actor);
+
+    if (!result.ok) {
+      redirect(
+        `/staff/${slugSegment}/${id}?error=${encodeURIComponent(result.error ?? "")}`,
+      );
+    }
+
     redirect(`/staff/${slugSegment}?deleted=1`);
   }
 
@@ -172,58 +207,89 @@ export default async function EditPage({
         </p>
       )}
 
-      <form action={save} className="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-x-12">
-        <div className="flex flex-col gap-7 lg:col-span-8">
-          {main.map((field) => (
-            <FormField
-              key={field.name}
-              field={field}
-              value={valueOf(field.name, field.type)}
-              mediaOptions={mediaOptions}
-                  parentOptions={parentOptions}
-            />
-          ))}
-        </div>
+      {/* Said once, plainly, above the form — rather than leaving somebody to
+          work out from greyed-out boxes why nothing they type stays. */}
+      {!writable && (
+        <p className="mt-6 rounded-card border border-gray-15 bg-blue-08 px-5 py-4 text-[15px] leading-relaxed text-gray">
+          <strong className="font-semibold text-blue">
+            You are reading this, not editing it.
+          </strong>{" "}
+          {readOnlyReason(entry.group, authorId)}
+        </p>
+      )}
 
-        <aside className="flex flex-col gap-7 lg:col-span-4">
-          <div className="flex flex-col gap-7 rounded-[20px_20px_0_20px] border border-gray-15 p-6">
-            {rail.map((field) => (
+      <form action={save} className="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-x-12">
+        {/* One `disabled` on a fieldset turns off every input, select,
+            textarea and button inside it, which is the whole read-only mode
+            for everything except the rich text editor — a contenteditable div,
+            which the browser does not know to disable. That one is told
+            separately. */}
+        <fieldset
+          disabled={!writable}
+          className="contents"
+          aria-label={writable ? undefined : "Read only"}
+        >
+          <div className="flex flex-col gap-7 lg:col-span-8">
+            {main.map((field) => (
               <FormField
                 key={field.name}
                 field={field}
                 value={valueOf(field.name, field.type)}
                 mediaOptions={mediaOptions}
-                  parentOptions={parentOptions}
+                parentOptions={parentOptions}
+                readOnly={!writable}
               />
             ))}
           </div>
 
-          <button
-            type="submit"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
-          >
-            {creating ? `Create ${entry.singular}` : "Save changes"}
-          </button>
+          <aside className="flex flex-col gap-7 lg:col-span-4">
+            <div className="flex flex-col gap-7 rounded-[20px_20px_0_20px] border border-gray-15 p-6">
+              {rail.map((field) => (
+                <FormField
+                  key={field.name}
+                  field={field}
+                  value={valueOf(field.name, field.type)}
+                  mediaOptions={mediaOptions}
+                  parentOptions={parentOptions}
+                  readOnly={!writable}
+                />
+              ))}
+            </div>
 
-          {href && (
-            <a
-              href={href}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-blue"
-            >
-              View on the website
-              <ExternalLink className="size-4" aria-hidden="true" />
-              <span className="sr-only">(opens in a new tab)</span>
-            </a>
-          )}
-        </aside>
+            {writable && (
+              <button
+                type="submit"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
+              >
+                {creating ? `Create ${entry.singular}` : "Save changes"}
+              </button>
+            )}
+
+            {href && (
+              <a
+                href={href}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-blue"
+              >
+                View on the website
+                <ExternalLink className="size-4" aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
+          </aside>
+        </fieldset>
       </form>
 
       {/* Outside the form, and deliberately. A second form cannot be nested
           inside the first, and this should not sit beside Save either — the
-          two actions want distance between them, not adjacency. */}
-      {!creating && (
+          two actions want distance between them, not adjacency.
+
+          Shown only to somebody who may actually do it. An editor sees no
+          delete on their own news — taking a published page down is an admin's
+          call, and setting the status back to draft does the thing they
+          usually want without the part that cannot be undone. */}
+      {deletable && (
         <div className="mt-12 flex flex-col gap-4 border-t border-gray-15 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-[15px] font-semibold text-blue">
@@ -247,6 +313,25 @@ export default async function EditPage({
       )}
     </div>
   );
+}
+
+/**
+ * Why the form is greyed out, in the terms the reader is in.
+ *
+ * Two different situations produce the same screen and want different
+ * sentences. One is "this part of the site is not yours to change", which is
+ * about the role. The other is "this particular piece of writing is somebody
+ * else's", which is about the document — and that one has to say what to do
+ * next, because the person reading it usually has a reason to want the edit.
+ */
+function readOnlyReason(group: string, authorId: number | null): string {
+  if (group === "Publishing" || group === "Library") {
+    return authorId === null
+      ? "This was here before the panel recorded who writes what, so only an admin can change it."
+      : "A colleague wrote this. Ask them, or ask an admin, if it needs changing.";
+  }
+
+  return `${group} is looked after by the admins. You can read it here, and an admin can change it.`;
 }
 
 /** Where this document lives on the public site, where it has a page of its own. */

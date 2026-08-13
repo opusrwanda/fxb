@@ -3,6 +3,8 @@ import { desc, eq } from "drizzle-orm";
 import { Check, Undo2 } from "lucide-react";
 
 import { db, messages } from "@/staff/db";
+import { requireAccess, requireAdmin } from "@/staff/auth/guard";
+import { isAdmin } from "@/staff/auth/permissions";
 
 export const metadata = { title: "Messages" };
 
@@ -28,10 +30,17 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
  * the inbox.
  */
 export default async function MessagesPage() {
+  // People is read-only for an editor: they can see what has come in — useful
+  // context for what to write about — and marking a message dealt with is a
+  // claim about who is answering it, which belongs with the admins.
+  const user = await requireAccess("messages", "read");
+  const canHandle = isAdmin(user);
+
   const rows = await db.select().from(messages).orderBy(desc(messages.createdAt));
 
   async function setHandled(formData: FormData) {
     "use server";
+    await requireAdmin("messages");
     await db
       .update(messages)
       .set({ handled: formData.get("handled") === "1" })
@@ -111,6 +120,7 @@ export default async function MessagesPage() {
                       </span>
                     )}
 
+                    {canHandle && (
                     <form action={setHandled}>
                       <input type="hidden" name="id" value={row.id} />
                       <input
@@ -135,6 +145,7 @@ export default async function MessagesPage() {
                         )}
                       </button>
                     </form>
+                    )}
                   </div>
                 </div>
 

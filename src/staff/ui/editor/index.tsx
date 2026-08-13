@@ -69,12 +69,24 @@ export function RichTextEditor({
   name,
   initialJson,
   ariaLabelledBy,
+  readOnly = false,
 }: {
   /** The form field the JSON is posted under. */
   name: string;
   /** The stored Lexical document, as JSON. Empty for a new document. */
   initialJson: string;
   ariaLabelledBy?: string;
+  /**
+   * Show the document without offering to change it.
+   *
+   * For somebody whose role lets them read this collection and not write to
+   * it. `disabled` on the surrounding fieldset takes care of every other
+   * control on the page, because they are ordinary form elements and the
+   * browser knows what disabling one means. A Lexical editor is a `div` with
+   * `contenteditable` on it, so the browser does not: without this, a person
+   * with read access could type into a body they have no way to save.
+   */
+  readOnly?: boolean;
 }) {
   const [value, setValue] = useState(initialJson);
 
@@ -84,6 +96,7 @@ export function RichTextEditor({
         initialConfig={{
           namespace: "fxb",
           theme,
+          editable: !readOnly,
           // ImageNode and VideoNode are ours — see `nodes.tsx`. A node type
           // that is not registered here throws when a stored document
           // containing it is loaded, so this list and `lexical/render.tsx`
@@ -108,7 +121,7 @@ export function RichTextEditor({
           },
         }}
       >
-        <Toolbar />
+        {!readOnly && <Toolbar />}
 
         <RichTextPlugin
           contentEditable={

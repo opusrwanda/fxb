@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { and, eq, gt, lt } from "drizzle-orm";
 
 import { db, sessions, users } from "../db";
+import type { Role } from "../db/schema";
 
 /**
  * Signed-in sessions.
@@ -26,7 +27,7 @@ export type StaffUser = {
   id: number;
   email: string;
   name: string;
-  role: string;
+  role: Role;
 };
 
 export async function createSession(userId: number): Promise<void> {

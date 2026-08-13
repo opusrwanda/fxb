@@ -3,6 +3,7 @@ import { desc } from "drizzle-orm";
 import { Plus, Send } from "lucide-react";
 
 import { campaigns, db } from "@/staff/db";
+import { requireAdmin } from "@/staff/auth/guard";
 import { subscriberCounts } from "@/staff/mail/subscribers";
 import { mailConfig } from "@/staff/mail/transport";
 
@@ -16,6 +17,11 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
 });
 
 export default async function CampaignsPage() {
+  // Admin only. An editor gets the subscriber count on the subscribers page,
+  // which is what FXB's rule grants them; a campaign is the letter itself,
+  // sitting one button away from several hundred inboxes.
+  await requireAdmin("campaigns");
+
   const [rows, counts] = await Promise.all([
     db.select().from(campaigns).orderBy(desc(campaigns.createdAt)),
     subscriberCounts(),

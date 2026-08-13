@@ -33,11 +33,21 @@ export function FormField({
   value,
   mediaOptions,
   parentOptions,
+  readOnly = false,
 }: {
   field: Field;
   value: unknown;
   mediaOptions: MediaOption[];
   parentOptions: ParentOption[];
+  /**
+   * Only the rich text editor needs telling.
+   *
+   * A read-only form is wrapped in a disabled `<fieldset>`, and the browser
+   * disables every input, select, textarea and button inside one for free.
+   * The editor is the exception — see `RichTextEditor` — so the flag goes no
+   * further than that one case.
+   */
+  readOnly?: boolean;
 }) {
   const id = `field-${field.name}`;
   const help = field.help ? `${id}-help` : undefined;
@@ -60,7 +70,7 @@ export function FormField({
         </p>
       )}
 
-      <Control field={field} id={id} help={help} value={value} mediaOptions={mediaOptions} parentOptions={parentOptions} />
+      <Control field={field} id={id} help={help} value={value} mediaOptions={mediaOptions} parentOptions={parentOptions} readOnly={readOnly} />
     </div>
   );
 }
@@ -72,6 +82,7 @@ function Control({
   value,
   mediaOptions,
   parentOptions,
+  readOnly,
 }: {
   field: Field;
   id: string;
@@ -79,6 +90,7 @@ function Control({
   value: unknown;
   mediaOptions: MediaOption[];
   parentOptions: ParentOption[];
+  readOnly?: boolean;
 }) {
   const shared = {
     id,
@@ -107,6 +119,7 @@ function Control({
           name={field.name}
           initialJson={(value as string) ?? ""}
           ariaLabelledBy={id}
+          readOnly={readOnly}
         />
       );
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Download, ExternalLink } from "lucide-react";
 
+import { requireAccess } from "@/staff/auth/guard";
 import { listApplications } from "@/staff/queries/applications";
 import { formatBytes } from "@/cms/content/publications";
 
@@ -32,6 +33,10 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
  * which is exactly the case somebody needs to be told about.
  */
 export default async function ApplicationsPage() {
+  // Read-only for an editor, which is the whole page anyway: nothing here has
+  // ever been editable.
+  await requireAccess("applications", "read");
+
   const rows = await listApplications();
 
   return (

@@ -1,35 +1,28 @@
 import { asc, count, eq } from "drizzle-orm";
 
 import { db, users, sessions } from "../db";
+import type { Role } from "../db/schema";
 import { hashPassword, verifyPassword } from "../auth/password";
 
 /**
  * Managing who can sign in.
  *
- * The schema has said since it was written that `admin` can manage other
- * people and `editor` can do everything else — and nothing has ever created a
- * second account. Every user in the database was seeded, so adding a colleague
- * meant a database client and a hand-computed scrypt hash. This is that
- * comment made true.
+ * There are two roles again. For a while there was one, and everybody had it —
+ * the reasoning being that this is one communications team and a permission
+ * nobody wants to withhold is a control three people have to think about for
+ * nothing. That held until somebody outside the team needed to write a story,
+ * at which point the only options were handing them the mailing list and the
+ * staff accounts as well, or not giving them an account.
  *
- * THERE IS ONE ROLE, and everybody has it.
- *
- * The schema carries an `admin`/`editor` column and this used to act on it —
- * an admin-only page, a role picker on the form, a per-row selector. FXB asked
- * for it gone: this is one communications team, everybody in it is trusted
- * with the website, and a permission nobody wants to withhold is a control
- * three people have to think about for no benefit.
- *
- * The column stays and every account is written as `admin`, so turning roles
- * back on later is a matter of writing the UI again rather than a migration
- * and a backfill. Nothing reads the value today.
+ * What each role means is `src/staff/auth/permissions.ts`, not here. This file
+ * is only the creating, deleting and re-roling of the rows.
  */
 
 export type StaffAccount = {
   id: number;
   email: string;
   name: string;
-  role: string;
+  role: Role;
   createdAt: Date;
 };
 
@@ -63,6 +56,7 @@ export async function createUser(input: {
   name: string;
   email: string;
   password: string;
+  role: Role;
 }): Promise<UserResult> {
   const name = input.name.trim();
   const email = input.email.trim().toLowerCase();
@@ -91,12 +85,55 @@ export async function createUser(input: {
   await db.insert(users).values({
     name,
     email,
-    // Written rather than left to the column default, which is still
-    // "editor". One role for now — see the note at the top.
-    role: "admin",
+    // Anything that is not exactly "admin" is an editor. The role arrives from
+    // a form, and a select can be made to post whatever somebody likes; a
+    // string this did not recognise must not end up in the column, where the
+    // permission checks would read it as neither role and fall through.
+    role: input.role === "admin" ? "admin" : "editor",
     passwordHash: await hashPassword(input.password),
   });
 
+  return { ok: true };
+}
+
+/**
+ * Change somebody's role.
+ *
+ * The last admin cannot be demoted. An FXB panel with no admin is one where
+ * nobody can add an account, change the settings or send a newsletter, and the
+ * only way out is a database client — which is the state the staff accounts
+ * page was built to get them out of. It is the same reasoning as the last
+ * account not being deletable, one step further in.
+ *
+ * Demoting yourself is allowed as long as somebody else is an admin. It is a
+ * strange thing to want and an easy thing to reverse by asking them.
+ */
+export async function setRole(id: number, role: Role): Promise<UserResult> {
+  const next: Role = role === "admin" ? "admin" : "editor";
+
+  if (next === "editor") {
+    const [{ total }] = await db
+      .select({ total: count() })
+      .from(users)
+      .where(eq(users.role, "admin"));
+
+    const [target] = await db
+      .select({ role: users.role })
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
+
+    if (!target) return { ok: false, error: "That account no longer exists." };
+    if (target.role === "admin" && total <= 1) {
+      return {
+        ok: false,
+        error:
+          "This is the only admin. Make somebody else an admin before changing this one.",
+      };
+    }
+  }
+
+  await db.update(users).set({ role: next, updatedAt: new Date() }).where(eq(users.id, id));
   return { ok: true };
 }
 
@@ -119,6 +156,30 @@ export async function deleteUser(id: number, actingId: number): Promise<UserResu
       ok: false,
       error: "This is the only account. Add another before removing this one.",
     };
+  }
+
+  // The same floor `setRole` holds: removing the last admin leaves a panel
+  // where nothing in Settings can be opened by anybody, and no route back to
+  // one that can. Deleting the account is just the other way to arrive there.
+  const [target] = await db
+    .select({ role: users.role })
+    .from(users)
+    .where(eq(users.id, id))
+    .limit(1);
+
+  if (target?.role === "admin") {
+    const [{ total }] = await db
+      .select({ total: count() })
+      .from(users)
+      .where(eq(users.role, "admin"));
+
+    if (total <= 1) {
+      return {
+        ok: false,
+        error:
+          "This is the only admin. Make somebody else an admin before removing this account.",
+      };
+    }
   }
 
   await db.delete(users).where(eq(users.id, id));

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { RotateCcw } from "lucide-react";
 
 import { getSectionsForPanel } from "@/cms/content/sections";
+import { requireAdmin } from "@/staff/auth/guard";
 import { resetSection, saveSection } from "@/staff/queries/sections";
 
 export const metadata = { title: "Section text" };
@@ -33,12 +34,20 @@ export default async function SectionsPage({
   searchParams: Promise<{ saved?: string; reset?: string }>;
 }) {
   const { saved, reset } = await searchParams;
+
+  // Admin only. This is the copy on every public page of the site, and an
+  // empty field here silently restores a default — which is a reasonable thing
+  // to be able to do and not a reasonable thing to do by accident.
+  await requireAdmin("sections");
+
   const all = await getSectionsForPanel();
 
   const pages = [...new Set(all.map((section) => section.page))];
 
   async function save(formData: FormData) {
     "use server";
+
+    await requireAdmin("sections");
 
     const key = String(formData.get("key") ?? "");
     await saveSection(key, {
@@ -52,6 +61,7 @@ export default async function SectionsPage({
   async function reverse(formData: FormData) {
     "use server";
 
+    await requireAdmin("sections");
     await resetSection(String(formData.get("key") ?? ""));
     redirect("/staff/sections?reset=1");
   }

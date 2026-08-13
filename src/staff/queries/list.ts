@@ -13,6 +13,7 @@ import {
   publications,
   stories,
 } from "../db";
+import type { Status } from "../db/schema";
 
 /**
  * What a listing shows, per collection.
@@ -29,7 +30,7 @@ export type Cell =
   | { kind: "text"; value: string }
   | { kind: "muted"; value: string }
   | { kind: "date"; value: string }
-  | { kind: "status"; value: "draft" | "published" }
+  | { kind: "status"; value: Status }
   | { kind: "pill"; value: string }
   | { kind: "thumb"; url: string | null; alt: string };
 

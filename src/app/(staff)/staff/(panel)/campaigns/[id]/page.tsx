@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { ArrowLeft, Send } from "lucide-react";
 
 import { campaigns, db } from "@/staff/db";
-import { currentUser } from "@/staff/auth/session";
+import { requireAdmin } from "@/staff/auth/guard";
 import { getMediaOptions } from "@/staff/queries/document";
 import { campaignProgress, clearFailures, sendCampaign } from "@/staff/mail/send";
 import { subscriberCounts } from "@/staff/mail/subscribers";
@@ -46,10 +46,14 @@ export default async function CampaignPage({
 
   if (!creating && !campaign) notFound();
 
-  const [counts, progress, user, mediaOptions] = await Promise.all([
+  // Admin only, and re-checked in each of the actions below. Writing a
+  // campaign and sending one are the same page, and the send is the single
+  // thing in this panel that no undo exists for.
+  const user = await requireAdmin("campaigns");
+
+  const [counts, progress, mediaOptions] = await Promise.all([
     subscriberCounts(),
     creating ? null : campaignProgress(numericId!),
-    currentUser(),
     getMediaOptions(),
   ]);
 
@@ -64,6 +68,8 @@ export default async function CampaignPage({
 
   async function save(formData: FormData) {
     "use server";
+
+    const actor = await requireAdmin("campaigns");
 
     const values = {
       subject: String(formData.get("subject") ?? "").trim(),
@@ -81,7 +87,9 @@ export default async function CampaignPage({
     if (numericId === null) {
       const [created] = await db
         .insert(campaigns)
-        .values(values)
+        // Who wrote it, recorded on the create and never touched again — an
+        // admin correcting a subject line does not become its author.
+        .values({ ...values, authorId: actor.id })
         .returning({ id: campaigns.id });
       redirect(`/staff/campaigns/${created.id}?saved=1`);
     }
@@ -92,6 +100,7 @@ export default async function CampaignPage({
 
   async function sendTest(formData: FormData) {
     "use server";
+    await requireAdmin("campaigns");
     const to = String(formData.get("testTo") ?? "").trim();
     const report = await sendCampaign(numericId!, { testTo: to });
     redirect(
@@ -103,6 +112,9 @@ export default async function CampaignPage({
 
   async function sendToList(formData: FormData) {
     "use server";
+    // The one action in the panel with no undo. Checked here as well as on the
+    // page, because this is an endpoint and the page is only a page.
+    await requireAdmin("campaigns");
     const limitRaw = String(formData.get("limit") ?? "").trim();
     const report = await sendCampaign(numericId!, {
       limit: limitRaw ? Number(limitRaw) : undefined,
@@ -116,6 +128,7 @@ export default async function CampaignPage({
 
   async function retryFailures() {
     "use server";
+    await requireAdmin("campaigns");
     await clearFailures(numericId!);
     redirect(`/staff/campaigns/${numericId}?saved=1`);
   }

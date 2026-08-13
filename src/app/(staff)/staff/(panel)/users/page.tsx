@@ -1,15 +1,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { currentUser } from "@/staff/auth/session";
-import {
-  changeOwnPassword,
-  createUser,
-  deleteUser,
-  listUsers,
-} from "@/staff/queries/users";
+import { requireAdmin } from "@/staff/auth/guard";
+import { createUser, deleteUser, listUsers, setRole } from "@/staff/queries/users";
 import { ConfirmDialog } from "@/staff/ui/confirm-dialog";
 import { PasswordField } from "@/staff/ui/password-field";
+import type { Role } from "@/staff/db/schema";
 
 export const metadata = { title: "Staff accounts" };
 
@@ -23,24 +19,33 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
 const input =
   "w-full rounded-card border border-gray-15 bg-white px-4 py-3 text-[15px] text-gray transition-colors duration-300 outline-none focus:border-blue";
 
+/** The two roles, described in terms of what the person will be able to do. */
+const ROLES: { value: Role; label: string; blurb: string }[] = [
+  {
+    value: "editor",
+    label: "Editor",
+    blurb:
+      "Writes news, stories and publications, and uploads to the library. Can publish their own work, or send it to an admin to check first. Everything else — programmes, people, the mailing list, the settings — they can read and not change.",
+  },
+  {
+    value: "admin",
+    label: "Admin",
+    blurb:
+      "Everything, including the things that cannot be undone: sending to the mailing list, exporting it, deleting, the site settings, and adding or removing colleagues.",
+  },
+];
+
 /**
- * Who can sign in.
+ * Who can sign in, and as what.
  *
- * The schema has said since it was written that `admin` manages other people
- * and `editor` does everything else, and nothing had ever created an account —
- * every user in the database was seeded, so adding a colleague meant a
- * database client and a hand-computed scrypt hash.
+ * Admin only, and that is the point of the page rather than an aside: this is
+ * where somebody is handed the mailing list and the settings, so it is exactly
+ * the page an editor must not be able to open.
  *
- * ONE ROLE. There was an admin-only gate here, a role picker on the form and
- * a selector on every row; FXB asked for all of it gone. This is one
- * communications team, everybody in it is trusted with the website, and a
- * permission nobody wants to withhold is a control three people have to think
- * about for nothing. Anyone signed in can add a colleague.
- *
- * Changing your own password sits on the same page, and is not decoration: an
- * account created here starts with a password somebody else chose and had to
- * pass on, and without this that password stays shared for as long as the
- * account exists.
+ * Changing your own password is NOT here any more. It used to be, which was
+ * fine when everybody could open this page and is not now — an editor has a
+ * password and has to be able to change it. It lives at `/staff/account`,
+ * which everybody signed in can reach.
  */
 export default async function UsersPage({
   searchParams,
@@ -48,21 +53,23 @@ export default async function UsersPage({
   searchParams: Promise<{ error?: string; added?: string; changed?: string }>;
 }) {
   const { error, added, changed } = await searchParams;
-  const me = await currentUser();
-  if (!me) redirect("/staff/login");
+  const me = await requireAdmin("users");
 
   const people = await listUsers();
 
   async function add(formData: FormData) {
     "use server";
 
-    const actor = await currentUser();
-    if (!actor) redirect("/staff/login");
+    // Re-checked inside the action, not inherited from the render. A server
+    // action is an endpoint; the page having refused to render for an editor
+    // does not stop one posting to it.
+    await requireAdmin("users");
 
     const result = await createUser({
       name: String(formData.get("name") ?? ""),
       email: String(formData.get("email") ?? ""),
       password: String(formData.get("password") ?? ""),
+      role: String(formData.get("role") ?? "editor") === "admin" ? "admin" : "editor",
     });
 
     if (!result.ok) {
@@ -72,26 +79,21 @@ export default async function UsersPage({
     redirect("/staff/users?added=1");
   }
 
-  async function changePassword(formData: FormData) {
+  async function changeRole(formData: FormData) {
     "use server";
 
-    const actor = await currentUser();
-    if (!actor) redirect("/staff/login");
+    await requireAdmin("users");
 
-    const result = await changeOwnPassword(
-      actor.id,
-      String(formData.get("current") ?? ""),
-      String(formData.get("next") ?? ""),
+    const result = await setRole(
+      Number(formData.get("id")),
+      String(formData.get("role") ?? "editor") === "admin" ? "admin" : "editor",
     );
 
     if (!result.ok) {
       redirect(`/staff/users?error=${encodeURIComponent(result.error)}`);
     }
-
-    // Every session for the account has just been dropped, this one included,
-    // so there is nowhere to go but the sign-in — which is the honest outcome
-    // and not a bug.
-    redirect("/staff/login?changed=1");
+    revalidatePath("/staff/users");
+    redirect("/staff/users?changed=1");
   }
 
   return (
@@ -107,8 +109,8 @@ export default async function UsersPage({
           Staff accounts
         </h1>
         <p className="max-w-[58ch] text-base leading-relaxed text-gray">
-          Everyone who can sign in to this panel. Anyone here can add a
-          colleague, and everybody can do the same things.
+          Everyone who can sign in to this panel, and what each of them is able
+          to do. Only admins can open this page.
         </p>
       </header>
 
@@ -118,7 +120,8 @@ export default async function UsersPage({
           className="mt-8 rounded-card border border-green/30 bg-green-10 px-5 py-4 text-[15px] text-gray"
         >
           <strong className="font-semibold text-green">Added.</strong> They can
-          sign in with the address and password you set.
+          sign in with the address and password you set. A code will be emailed
+          to them each time they do.
         </p>
       )}
 
@@ -127,7 +130,8 @@ export default async function UsersPage({
           role="status"
           className="mt-8 rounded-card border border-green/30 bg-green-10 px-5 py-4 text-[15px] text-gray"
         >
-          <strong className="font-semibold text-green">Changed.</strong>
+          <strong className="font-semibold text-green">Changed.</strong> It
+          takes effect the next time they load a page.
         </p>
       )}
 
@@ -149,10 +153,7 @@ export default async function UsersPage({
           className="mt-5 grid gap-5 rounded-card border border-gray-15 p-6 sm:grid-cols-2"
         >
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="user-name"
-              className="text-sm font-semibold text-blue"
-            >
+            <label htmlFor="user-name" className="text-sm font-semibold text-blue">
               Name
             </label>
             <input
@@ -165,10 +166,7 @@ export default async function UsersPage({
           </div>
 
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="user-email"
-              className="text-sm font-semibold text-blue"
-            >
+            <label htmlFor="user-email" className="text-sm font-semibold text-blue">
               Email address
             </label>
             <input
@@ -180,12 +178,16 @@ export default async function UsersPage({
               autoComplete="off"
               className={input}
             />
+            <p className="text-[13px] leading-relaxed text-gray-80">
+              Sign-in codes are sent here, so it has to be an address they can
+              actually read.
+            </p>
           </div>
 
           <div className="flex flex-col gap-2">
             {/* The same control the sign-in uses, so a long password can be
-                    read back while typing rather than guessed at. It carries
-                    its own label, which is why there is not one here. */}
+                read back while typing rather than guessed at. It carries its
+                own label, which is why there is not one here. */}
             <PasswordField
               label="First password"
               name="password"
@@ -194,9 +196,42 @@ export default async function UsersPage({
             />
             <p className="text-[13px] leading-relaxed text-gray-80">
               At least 12 characters — four ordinary words is a good one. Tell
-              it to them in person; they can change it here once they are in.
+              it to them in person; they can change it under Your account once
+              they are in.
             </p>
           </div>
+
+          {/* Radios rather than a select, because the choice needs a sentence
+              of explanation each and a dropdown has nowhere to put one. This
+              is a decision somebody makes once per colleague and should be
+              able to make on what is in front of them. */}
+          <fieldset className="flex flex-col gap-3">
+            <legend className="text-sm font-semibold text-blue">
+              What they can do
+            </legend>
+            {ROLES.map((role, index) => (
+              <label
+                key={role.value}
+                className="flex cursor-pointer gap-3 rounded-card border border-gray-15 p-4 transition-colors duration-300 hover:border-blue has-checked:border-blue has-checked:bg-blue-08"
+              >
+                <input
+                  type="radio"
+                  name="role"
+                  value={role.value}
+                  defaultChecked={index === 0}
+                  className="mt-1 size-4 shrink-0 accent-blue"
+                />
+                <span>
+                  <span className="block text-[15px] font-semibold text-blue">
+                    {role.label}
+                  </span>
+                  <span className="mt-1 block text-[13px] leading-relaxed text-gray">
+                    {role.blurb}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </fieldset>
 
           <div className="sm:col-span-2">
             <button
@@ -234,13 +269,43 @@ export default async function UsersPage({
                 </p>
               </div>
 
-              <div className="flex shrink-0 items-center gap-5">
+              <div className="flex shrink-0 flex-wrap items-center gap-5">
+                {/* A select that submits on change would move somebody
+                    between roles on a mis-click. It submits on a button, and
+                    the button says which way it is going. */}
+                <form action={changeRole} className="flex items-center gap-2">
+                  <input type="hidden" name="id" value={person.id} />
+                  <label
+                    htmlFor={`role-${person.id}`}
+                    className="text-sm font-medium text-gray-80"
+                  >
+                    Role
+                  </label>
+                  <select
+                    id={`role-${person.id}`}
+                    name="role"
+                    defaultValue={person.role}
+                    className="rounded-card border border-gray-15 bg-white px-3 py-2 text-sm text-gray outline-none focus:border-blue"
+                  >
+                    {ROLES.map((role) => (
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="submit"
+                    className="rounded-full px-3 py-2 text-sm font-semibold text-blue transition-colors duration-300 hover:bg-blue-08"
+                  >
+                    Save
+                  </button>
+                </form>
+
                 {person.id !== me.id && (
                   <ConfirmDialog
                     action={async () => {
                       "use server";
-                      const actor = await currentUser();
-                      if (!actor) redirect("/staff/login");
+                      const actor = await requireAdmin("users");
                       const result = await deleteUser(person.id, actor.id);
                       if (!result.ok) {
                         redirect(
@@ -260,44 +325,6 @@ export default async function UsersPage({
             </li>
           ))}
         </ul>
-      </section>
-
-      <section className="mt-14">
-        <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
-          Change your password
-        </h2>
-        <p className="mt-2 max-w-[58ch] text-sm leading-relaxed text-gray">
-          You will be signed out everywhere and will need to sign in again with
-          the new one.
-        </p>
-
-        <form
-          action={changePassword}
-          className="mt-5 grid max-w-xl gap-5 rounded-card border border-gray-15 p-6"
-        >
-          <PasswordField
-            label="Current password"
-            name="current"
-            autoComplete="current-password"
-            required
-          />
-
-          <PasswordField
-            label="New password"
-            name="next"
-            autoComplete="new-password"
-            required
-          />
-
-          <div>
-            <button
-              type="submit"
-              className="inline-flex h-12 items-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
-            >
-              Change password
-            </button>
-          </div>
-        </form>
       </section>
     </div>
   );

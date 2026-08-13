@@ -7,6 +7,7 @@ import {
   type ImpactData,
   type SiteSettingsData,
 } from "@/staff/db/schema";
+import { requireAdmin } from "@/staff/auth/guard";
 import { getMediaOptions } from "@/staff/queries/document";
 import { MediaPicker } from "@/staff/ui/media-picker";
 import {
@@ -96,6 +97,10 @@ export default async function GlobalPage({
   const { saved } = await searchParams;
   if (!isGlobal(slug)) notFound();
 
+  // Both globals are Settings: the organisation's own address and phone
+  // number, and the reach figures printed across the home page. Admin only.
+  await requireAdmin(slug);
+
   const isImpact = slug === "impact";
   const title = isImpact ? "Impact figures" : "Site details";
 
@@ -114,6 +119,7 @@ export default async function GlobalPage({
 
   async function save(formData: FormData) {
     "use server";
+    await requireAdmin(slug);
     if (isImpact) await saveImpact(formData, figureCount);
     else await saveSiteSettings(formData);
     redirect(`/staff/globals/${slug}?saved=1`);

@@ -33,8 +33,31 @@ import {
  * this" rather than "when a migration last touched the row".
  */
 
-/** Draft or published. The site reads only what is published. */
-export type Status = "draft" | "published";
+/**
+ * Where a document is in its life. The site reads only what is published.
+ *
+ * `in_review` is an editor saying "I have finished this, an admin should look
+ * before it goes out" — it is not a different kind of draft to the database or
+ * to the website, both of which treat anything that is not `published` as not
+ * there. It exists so the panel can tell the difference between something
+ * somebody is still writing and something waiting on a person.
+ */
+export type Status = "draft" | "in_review" | "published";
+
+/**
+ * What somebody may do once they are signed in.
+ *
+ * `admin` runs the site: everything, including the settings and the mailing
+ * list. `editor` writes for it — their own news, stories, publications and
+ * newsletters, and the library they need to illustrate them. Everything else
+ * they can read and not change.
+ *
+ * Two roles and not a permissions matrix, still. The matrix lives in
+ * `src/staff/auth/permissions.ts` as code, so the answer to "may this person do
+ * this" is one function rather than a table of checkboxes somebody has to keep
+ * correct.
+ */
+export type Role = "admin" | "editor";
 
 /* ── People who can sign in ───────────────────────────────────────────────── */
 
@@ -45,13 +68,13 @@ export const users = pgTable("users", {
   /** scrypt, as `salt:hash`. See `src/staff/auth/password.ts`. */
   passwordHash: text("password_hash").notNull(),
   /**
-   * `admin` can manage other people; `editor` can do everything else.
+   * `admin` or `editor`. See the `Role` type above for what each one means.
    *
-   * Two roles rather than a permissions matrix. A matrix is what you build when
-   * you do not know who the users are; this is one communications team, and the
-   * only question they actually have is who is allowed to add a colleague.
+   * The default is `editor`, which is the safe direction for a column to fall
+   * back to: a row written by something that has forgotten to set a role gets
+   * the smaller set of permissions, not the larger one.
    */
-  role: varchar("role", { length: 20 }).notNull().default("editor"),
+  role: varchar("role", { length: 20 }).notNull().default("editor").$type<Role>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -71,6 +94,46 @@ export const sessions = pgTable("sessions", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * A sign-in halfway through.
+ *
+ * The password is the first step and this is the second: a six-digit code sent
+ * to the address on the account, which has to come back before a session
+ * exists. That is what makes a stolen or reused password not enough on its own
+ * — and passwords here are chosen by a colleague and passed on somehow, so
+ * "reused" is the realistic case rather than the paranoid one.
+ *
+ * A row of its own rather than a field on the session, because there is no
+ * session yet. Nothing about this row grants access; it is a question waiting
+ * for an answer, and the cookie the browser holds is only its id.
+ *
+ * THE CODE IS HASHED, like a password. It is short-lived and only six digits,
+ * but it is a credential while it lives, and a database that anybody can read
+ * a live code out of is one where the second step is decoration.
+ */
+export const loginCodes = pgTable("login_codes", {
+  /** 32 random bytes, hex. This is what the pending-sign-in cookie carries. */
+  id: varchar("id", { length: 64 }).primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  /** scrypt, as `salt:hash` — the same format and the same function as a password. */
+  codeHash: text("code_hash").notNull(),
+  /**
+   * Wrong guesses so far.
+   *
+   * Six digits is a million possibilities, which sounds ample and is not: a
+   * script can try them all in an afternoon if nothing stops it. Five attempts
+   * and the row is spent, so the code has to be guessed in five rather than in
+   * a million.
+   */
+  attempts: integer("attempts").notNull().default(0),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  /** Set when the code has been used, so it cannot be replayed. */
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -104,6 +167,15 @@ export const media = pgTable("media", {
   url: text("url").notNull(),
   /** The generated renditions, keyed by name: thumbnail, card, wide. */
   sizes: jsonb("sizes").$type<Record<string, MediaSize>>().notNull().default({}),
+  /**
+   * Who uploaded it. Null for everything that predates the column.
+   *
+   * An editor may delete a file they put there and not one somebody else did,
+   * which is the only reason this is recorded. `set null` rather than cascade:
+   * a photograph outlives the colleague who uploaded it, and losing the row
+   * would break every page using the picture.
+   */
+  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -170,6 +242,16 @@ export const news = pgTable("news", {
    */
   language: varchar("language", { length: 5 }).notNull().default("en"),
   photoId: integer("photo_id").references(() => media.id, { onDelete: "set null" }),
+  /**
+   * Who wrote it. Null for everything written before the column existed.
+   *
+   * An editor may edit their own work and read everybody else's; an admin may
+   * edit anything. That is the whole use of this column, and it is why null
+   * means admin-only rather than "anyone": the documents already in the
+   * database have no author, and guessing one would hand an editor the right
+   * to rewrite years of published news on the strength of a default.
+   */
+  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
   status: varchar("status", { length: 20 }).notNull().default("draft").$type<Status>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -183,6 +265,8 @@ export const stories = pgTable("stories", {
   body: jsonb("body").$type<RichText>(),
   date: date("date", { mode: "string" }).notNull(),
   photoId: integer("photo_id").references(() => media.id, { onDelete: "set null" }),
+  /** Who wrote it. See `news.authorId`. */
+  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
   status: varchar("status", { length: 20 }).notNull().default("draft").$type<Status>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -243,6 +327,8 @@ export const publications = pgTable("publications", {
   date: date("date", { mode: "string" }).notNull(),
   fileId: integer("file_id").references(() => media.id, { onDelete: "set null" }),
   coverId: integer("cover_id").references(() => media.id, { onDelete: "set null" }),
+  /** Who added it. See `news.authorId`. */
+  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
   status: varchar("status", { length: 20 }).notNull().default("draft").$type<Status>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -593,7 +679,15 @@ export const campaigns = pgTable("campaigns", {
    */
   content: jsonb("content").$type<CampaignContent>(),
   body: jsonb("body").$type<RichText>(),
-  /** draft | sending | sent */
+  /** Who wrote it. See `news.authorId`. */
+  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
+  /**
+   * draft | in_review | sending | sent
+   *
+   * `in_review` is an editor handing a finished newsletter to an admin, since
+   * sending is the one thing in this panel an editor cannot do. Without it the
+   * handover happens over WhatsApp and the admin has to be told which draft.
+   */
   status: varchar("status", { length: 20 }).notNull().default("draft"),
   sentAt: timestamp("sent_at", { withTimezone: true }),
   /** How many it actually reached, filled in as it sends. */

@@ -431,7 +431,10 @@ async function migrateUsers() {
       // first guess and takes one edit to correct.
       name: row.email.split("@")[0],
       passwordHash,
-      role: "admin",
+      // Everybody arriving from Payload was an administrator of it, and the
+      // panel now distinguishes the two roles — so this has to say which, in
+      // a way the column's type will accept rather than as a loose string.
+      role: "admin" as const,
       updatedAt: new Date(),
     };
     await db

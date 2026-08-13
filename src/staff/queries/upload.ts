@@ -106,6 +106,17 @@ export async function createMedia(
   file: File,
   alt: string,
   credit?: string | null,
+  /**
+   * Who uploaded it.
+   *
+   * Recorded so an editor can take back a file they added and cannot remove
+   * one somebody else is using. Optional because both callers are inside the
+   * signed-in panel and both pass it — the parameter is last and optional so
+   * that a caller which genuinely has no user, if one is ever written, gets a
+   * file owned by nobody rather than a file owned by whoever happened to be
+   * first in the table.
+   */
+  authorId?: number,
 ): Promise<UploadResult> {
   if (!file || file.size === 0) return { ok: false, error: "Choose a file to upload." };
   if (file.size > MAX_BYTES) {
@@ -194,6 +205,7 @@ export async function createMedia(
         height,
         url: `/media/${filename}`,
         sizes,
+        authorId: authorId ?? null,
       })
       .returning({ id: media.id });
 

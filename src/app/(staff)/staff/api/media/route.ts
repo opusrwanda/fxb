@@ -63,6 +63,7 @@ export async function POST(request: Request) {
     file,
     String(form.get("alt") ?? ""),
     String(form.get("credit") ?? ""),
+    user.id,
   );
 
   if (!result.ok) {

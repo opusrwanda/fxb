@@ -1,4 +1,6 @@
 import { districts } from "@/lib/districts";
+import { STATUS_LABELS, statusesFor } from "./auth/permissions";
+import type { Role, Status } from "./db/schema";
 
 /**
  * What each document is made of.
@@ -48,18 +50,55 @@ export type Field = {
   rows?: number;
 };
 
-const STATUS: Field = {
-  name: "status",
-  label: "Status",
-  type: "select",
-  sidebar: true,
-  required: true,
-  help: "Only published documents appear on the website.",
-  options: [
-    { label: "Draft — not on the website", value: "draft" },
-    { label: "Published — live", value: "published" },
-  ],
+/**
+ * Where the document is up to.
+ *
+ * The options depend on who is looking, which is why the field is built rather
+ * than declared: an editor is offered "send to an admin to check" and an admin
+ * is not, because an admin sending work to themselves is a queue of one that
+ * nobody empties. `statusesFor` is the single answer to which — this only
+ * dresses it.
+ */
+const status = (role: Role, current?: Status): Field => {
+  const offered = statusesFor(role);
+
+  /**
+   * Whatever it is now is always on the list, even if this person would not
+   * have chosen it.
+   *
+   * An admin is not offered "send to an admin to check" — but an editor's
+   * submission arrives at that status, and an admin is exactly who opens it. A
+   * select whose value is not among its options does not show that value; it
+   * shows the first one. So an admin opening a submitted story would have seen
+   * "Draft", and saving anything at all would have quietly unsubmitted it.
+   */
+  const values =
+    current && !offered.includes(current) ? [current, ...offered] : [...offered];
+
+  return {
+    name: "status",
+    label: "Status",
+    type: "select",
+    sidebar: true,
+    required: true,
+    help:
+      role === "admin"
+        ? "Only published documents appear on the website."
+        : "Only published documents appear on the website. You can publish this yourself, or send it to an admin to look at first.",
+    options: values.map((value) => ({ label: STATUS_LABELS[value], value })),
+  };
 };
+
+/**
+ * The placeholder that marks where the status control goes.
+ *
+ * The definitions below are a plain list read by three different callers, and
+ * the status field is the one entry that cannot be written down until we know
+ * who is asking. So the list carries this, and `sidebarFields` swaps it for the
+ * real thing — which keeps the ordering of the rail where it is declared,
+ * rather than appending status to the end of every collection.
+ */
+const STATUS: Field = { name: "status", label: "Status", type: "select", sidebar: true };
 
 /**
  * There is no slug field, deliberately.
@@ -463,5 +502,11 @@ export const fields: Record<string, Field[]> = {
 export const mainFields = (collection: string) =>
   (fields[collection] ?? []).filter((field) => !field.sidebar);
 
-export const sidebarFields = (collection: string) =>
-  (fields[collection] ?? []).filter((field) => field.sidebar);
+export const sidebarFields = (
+  collection: string,
+  role: Role = "admin",
+  current?: Status,
+) =>
+  (fields[collection] ?? [])
+    .filter((field) => field.sidebar)
+    .map((field) => (field.name === "status" ? status(role, current) : field));

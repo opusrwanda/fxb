@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { LayoutDashboard, LogOut, UserRound } from "lucide-react";
 
 import { collections, globals, GROUPS, mailing, registers } from "../collections";
+import { canSee } from "../auth/permissions";
 import type { StaffUser } from "../auth/session";
 
 /**
@@ -67,7 +68,17 @@ export function StaffNav({ user }: { user: StaffUser }) {
               ...entry,
               href: `/staff/globals/${entry.slug}`,
             })),
-          ].filter((entry) => entry.group === group);
+          ]
+            .filter((entry) => entry.group === group)
+            // What a role cannot reach is not shown greyed out — it is not
+            // shown. A disabled row in a sidebar is a permanent advertisement
+            // for something somebody will never be able to click, and the
+            // honest sidebar for an editor is the one that describes the panel
+            // they actually have.
+            .filter((entry) => canSee(user, entry.key));
+
+          // Settings empties out completely for an editor, and a heading over
+          // nothing is worse than no heading.
           if (entries.length === 0) return null;
 
           return (
@@ -92,8 +103,27 @@ export function StaffNav({ user }: { user: StaffUser }) {
       <div className="flex flex-col gap-3 border-t border-white-12 pt-5">
         <div className="px-3">
           <p className="truncate text-sm font-semibold text-white">{user.name}</p>
-          <p className="truncate text-xs text-white-70">{user.email}</p>
+          {/* The role is stated rather than left to be inferred from which
+              items are missing. Somebody who cannot find Staff accounts should
+              be able to see why in one glance, instead of concluding the panel
+              is broken. */}
+          <p className="truncate text-xs text-white-70">
+            {user.role === "admin" ? "Admin" : "Editor"} · {user.email}
+          </p>
         </div>
+
+        {/* Your own account is not in Settings, which an editor cannot open.
+            Changing your own password has to be reachable by everybody who has
+            one — an account here starts with a password a colleague chose and
+            passed on somehow, and a panel where that cannot be changed is one
+            where it stays shared forever. */}
+        <NavLink
+          href="/staff/account"
+          label="Your account"
+          icon={UserRound}
+          active={isActive("/staff/account")}
+        />
+
         <form action="/staff/logout" method="post">
           <button
             type="submit"

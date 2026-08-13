@@ -16,7 +16,9 @@ import {
   stories,
 } from "@/staff/db";
 import { collections, globals } from "@/staff/collections";
-import { currentUser } from "@/staff/auth/session";
+import { requireUser } from "@/staff/auth/guard";
+import { canSee, isAdmin } from "@/staff/auth/permissions";
+import { pendingByAuthor, pendingReview } from "@/staff/queries/review";
 
 export const metadata = { title: "Dashboard" };
 
@@ -79,8 +81,24 @@ async function counts() {
   );
 }
 
-export default async function DashboardPage() {
-  const [user, entries] = await Promise.all([currentUser(), counts()]);
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ denied?: string }>;
+}) {
+  const { denied } = await searchParams;
+  const user = await requireUser();
+
+  const [all, waiting] = await Promise.all([
+    counts(),
+    // An admin sees everything waiting; an editor sees what they themselves
+    // handed over and have not had back.
+    isAdmin(user) ? pendingReview() : pendingByAuthor(user.id),
+  ]);
+
+  // The tiles are the panel, so they follow the same rule the sidebar does:
+  // what a role cannot open is not shown.
+  const entries = all.filter((entry) => canSee(user, entry.key));
 
   const outstanding = entries.reduce((sum, entry) => sum + entry.drafts, 0);
   const hour = new Date().getUTCHours();
@@ -96,7 +114,7 @@ export default async function DashboardPage() {
           </span>
         </div>
         <h1 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-          {greeting}, {user?.name}
+          {greeting}, {user.name}
         </h1>
         <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
           {outstanding > 0 ? (
@@ -112,6 +130,67 @@ export default async function DashboardPage() {
           )}
         </p>
       </header>
+
+      {/* Somebody who followed a link into a part of the panel their role does
+          not cover lands back here. Saying so is the difference between a
+          permission and a page that appears to be broken. */}
+      {denied && (
+        <p
+          role="status"
+          className="mt-8 rounded-card border border-gray-15 bg-blue-08 px-5 py-4 text-[15px] leading-relaxed text-gray"
+        >
+          <strong className="font-semibold text-blue">
+            That part of the panel is admin-only.
+          </strong>{" "}
+          You are signed in as an editor, so {deniedLabel(denied)} is not
+          something you can open. An admin can, and can change your role if you
+          need it.
+        </p>
+      )}
+
+      {waiting.length > 0 && (
+        <section className="mt-10 rounded-[20px_20px_0_20px] border border-gray-15 p-6">
+          <h2 className="text-[15px] font-semibold text-blue">
+            {isAdmin(user)
+              ? `${waiting.length} ${waiting.length === 1 ? "item is" : "items are"} waiting for you to check`
+              : `You have sent ${waiting.length} ${waiting.length === 1 ? "item" : "items"} to be checked`}
+          </h2>
+          <p className="mt-1 max-w-[62ch] text-sm leading-relaxed text-gray">
+            {isAdmin(user)
+              ? "An editor has finished these and asked for a look before they go out. Open one, read it, and set it to published — or back to draft to send it back."
+              : "Nobody has published these yet. They are not on the website until an admin sets them to published."}
+          </p>
+
+          <ul className="mt-5 flex flex-col">
+            {waiting.map((item) => (
+              <li
+                key={`${item.slug}-${item.id}`}
+                className="border-t border-gray-15 last:border-b"
+              >
+                <Link
+                  href={`/staff/${item.slug}/${item.id}`}
+                  className="group flex items-center justify-between gap-6 py-4"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate text-[15px] font-semibold text-blue">
+                      {item.title}
+                    </span>
+                    <span className="block text-sm text-gray-80">
+                      {item.collection}
+                      {item.author ? ` · ${item.author}` : ""} ·{" "}
+                      {waitingSince.format(item.updatedAt)}
+                    </span>
+                  </span>
+                  <ArrowUpRight
+                    className="size-4 shrink-0 text-gray-80 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {entries.map((entry) => (
@@ -158,11 +237,15 @@ export default async function DashboardPage() {
         ))}
       </ul>
 
+      {/* Settings is admin-only in its entirety, so for an editor this whole
+          block — heading included — is simply not there. */}
+      {globals.some((entry) => canSee(user, entry.key)) && (
+        <>
       <h2 className="mt-14 text-xs font-semibold tracking-[0.14em] text-gray-80">
         SETTINGS
       </h2>
       <ul className="mt-6 flex flex-col">
-        {globals.map((entry) => (
+        {globals.filter((entry) => canSee(user, entry.key)).map((entry) => (
           <li key={entry.key} className="border-t border-gray-15 last:border-b">
             <Link
               href={`/staff/globals/${entry.slug}`}
@@ -187,6 +270,32 @@ export default async function DashboardPage() {
           </li>
         ))}
       </ul>
+        </>
+      )}
     </div>
   );
 }
+
+/** The `?denied=` key, as something to put in a sentence. */
+function deniedLabel(key: string): string {
+  const named = [...collections, ...globals].find((entry) => entry.key === key);
+  if (named) return named.label;
+
+  return (
+    {
+      users: "Staff accounts",
+      sections: "Section text",
+      campaigns: "Email campaigns",
+      subscribers: "Subscribers",
+      messages: "Messages",
+      settings: "Settings",
+    }[key] ?? "that page"
+  );
+}
+
+/** "waiting since 3 Feb" — a date, not a countdown. */
+const waitingSince = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});

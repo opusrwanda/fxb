@@ -16,7 +16,15 @@ import {
   publications,
   stories,
 } from "../db";
-import type { RichText } from "../db/schema";
+import type { RichText, Status } from "../db/schema";
+import type { StaffUser } from "../auth/session";
+import {
+  accessTo,
+  canDeleteDocument,
+  canEditDocument,
+  isAdmin,
+  statusesFor,
+} from "../auth/permissions";
 import { fields } from "../fields";
 import { createMedia } from "./upload";
 import { bust } from "@/cms/revalidate";
@@ -276,11 +284,81 @@ function readableError(error: unknown): string {
   return "Could not save. Please check the fields and try again.";
 }
 
+/**
+ * The collections that record who wrote the document.
+ *
+ * Only the ones an editor may write. There is no point recording an author on
+ * a board member or a page banner: those are admin-only, and an author column
+ * exists to answer "is this yours", which for an admin is always yes.
+ */
+const AUTHORED = new Set<Key>(["news", "stories", "publications", "media"]);
+
+/** Who wrote it, for the collections that know. Null everywhere else. */
+export async function authorOf(
+  collection: Key,
+  id: number,
+): Promise<number | null> {
+  if (!AUTHORED.has(collection)) return null;
+
+  const table = tableFor(collection) as unknown as { id: never; authorId: never };
+  const rows = await db
+    .select({ authorId: table.authorId })
+    .from(tableFor(collection) as never)
+    .where(eq(table.id, id as never))
+    .limit(1);
+
+  return (rows[0] as { authorId: number | null } | undefined)?.authorId ?? null;
+}
+
 export async function saveDocument(
   collection: Key,
   id: number | null,
   form: FormData,
+  actor: StaffUser,
 ): Promise<SaveResult> {
+  /**
+   * The permission check, on the server, at the write.
+   *
+   * Not in the page that renders the form. A server action is an endpoint, and
+   * an endpoint that is only ever called by a form somebody can see is still an
+   * endpoint anybody signed in can call. The form decides what is offered; this
+   * decides what happens.
+   */
+  if (accessTo(actor, collection) !== "write") {
+    return { ok: false, error: "You do not have permission to change this." };
+  }
+
+  if (id !== null) {
+    const owner = await authorOf(collection, id);
+    if (!canEditDocument(actor, collection, owner)) {
+      return {
+        ok: false,
+        error:
+          "This was written by somebody else. Ask an admin if it needs changing.",
+      };
+    }
+  }
+
+  /**
+   * The status has to be one that exists, and one this person may set.
+   *
+   * A select posts whatever the browser sends, which is whatever the page
+   * offered — and pages can be replayed. An admin may set any of the three,
+   * including `in_review`, because leaving a submitted document at that status
+   * while correcting a typo in it is a thing an admin does. An editor is held
+   * to the list their own form offered.
+   */
+  const submitted = form.get("status");
+  if (typeof submitted === "string" && submitted) {
+    const allowed: readonly string[] = isAdmin(actor)
+      ? (["draft", "in_review", "published"] satisfies Status[])
+      : statusesFor(actor.role);
+
+    if (!allowed.includes(submitted)) {
+      return { ok: false, error: "You cannot set that status." };
+    }
+  }
+
   const definitions = fields[collection] ?? [];
   const values: Record<string, unknown> = {};
 
@@ -315,6 +393,7 @@ export async function saveDocument(
       upload,
       String(form.get("alt") ?? ""),
       String(form.get("credit") ?? ""),
+      actor.id,
     );
     return result.ok ? { ok: true, id: result.id } : result;
   }
@@ -389,6 +468,11 @@ export async function saveDocument(
   }
 
   values.updatedAt = new Date();
+
+  // Whoever creates it owns it, and ownership never moves on an edit — an
+  // admin correcting an editor's typo must not quietly become the author and
+  // take the document away from the person who wrote it.
+  if (id === null && AUTHORED.has(collection)) values.authorId = actor.id;
 
   const table = tableFor(collection);
 
@@ -475,7 +559,24 @@ async function uniqueSlug(collection: Key, source: string): Promise<string> {
   return `${base}-${Date.now()}`;
 }
 
-export async function deleteDocument(collection: Key, id: number) {
+export async function deleteDocument(
+  collection: Key,
+  id: number,
+  actor: StaffUser,
+): Promise<{ ok: boolean; error?: string }> {
+  // The same reasoning as the check in `saveDocument`, and more load-bearing:
+  // a delete here is immediate and total, so the one place it must be right is
+  // the server.
+  if (!canDeleteDocument(actor, collection, await authorOf(collection, id))) {
+    return {
+      ok: false,
+      error:
+        collection === "media"
+          ? "Somebody else uploaded this file. Ask an admin to remove it."
+          : "Only an admin can delete this. To take it off the website, set it back to draft.",
+    };
+  }
+
   // Deleting a media row leaves its bytes behind unless somebody removes them,
   // and nothing else ever will — the filename only exists in the row that is
   // about to go. Read it first, delete the row, then unlink. In that order: a
@@ -494,6 +595,8 @@ export async function deleteDocument(collection: Key, id: number) {
       () => {},
     );
   }
+
+  return { ok: true };
 }
 
 /** The original and every rendition belonging to one media row. */

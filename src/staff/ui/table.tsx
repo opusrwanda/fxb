@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Cell, Row } from "../queries/list";
+import { STATUS_PILLS } from "../auth/permissions";
 
 /**
  * The listing table.
@@ -114,24 +115,38 @@ function CellValue({ cell }: { cell: Cell }) {
         </span>
       );
 
-    case "status":
-      // Green for live, outlined for not. Colour alone would leave the two
+    case "status": {
+      // Green for live, outlined for not. Colour alone would leave them
       // indistinguishable to anyone who cannot separate them, so the word is
       // the signal and the colour reinforces it.
-      return cell.value === "published" ? (
-        <span className="inline-flex items-center gap-2 text-xs font-semibold text-green">
-          <span className="size-1.5 rounded-full bg-green" aria-hidden="true" />
-          Published
-        </span>
-      ) : (
-        <span className="inline-flex items-center gap-2 text-xs font-semibold text-gray-80">
+      //
+      // Awaiting approval is filled rather than outlined, and blue rather than
+      // green. It is not a draft — nobody is still working on it — and it is
+      // not on the website either. The filled dot is what makes it read as
+      // something waiting on a person rather than something unfinished.
+      const live = cell.value === "published";
+      const waiting = cell.value === "in_review";
+
+      return (
+        <span
+          className={`inline-flex items-center gap-2 text-xs font-semibold ${
+            live ? "text-green" : waiting ? "text-blue" : "text-gray-80"
+          }`}
+        >
           <span
-            className="size-1.5 rounded-full border border-gray-40"
+            className={
+              live
+                ? "size-1.5 rounded-full bg-green"
+                : waiting
+                  ? "size-1.5 rounded-full bg-blue"
+                  : "size-1.5 rounded-full border border-gray-40"
+            }
             aria-hidden="true"
           />
-          Draft
+          {STATUS_PILLS[cell.value]}
         </span>
       );
+    }
 
     case "thumb":
       return cell.url ? (
