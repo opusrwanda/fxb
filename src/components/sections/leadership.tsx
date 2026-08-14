@@ -45,17 +45,27 @@ export async function Leadership() {
           </h2>
         </Reveal>
 
-        {/* Two across, and the name beside the portrait rather than under it.
-            Four up with centred captions is what every board page does, this
-            one included until now. */}
+        {/* Two across, with the name under the portrait.
+
+            The name sat beside it for a while, on the reasoning that four up
+            with centred captions is what every board page does. Two of those
+            three things were the problem: at two across, a portrait with the
+            name alongside can only be as tall as two lines of type, which held
+            these to 144px on a page with a thousand pixels of room. Under the
+            portrait, the picture gets the width of the column — 288px, twice
+            what it was — and the caption still has somewhere to go.
+
+            Centred, because the portrait is a circle. A circle with its
+            caption ranged left has no edge for the text to line up against,
+            so the words read as having slipped off it. */}
         {board.length > 0 ? (
-          <ul className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:gap-x-16 lg:gap-y-12">
+          <ul className="mt-14 grid gap-x-10 gap-y-14 sm:grid-cols-2 lg:gap-x-16">
             {board.map((member, index) => (
               <Reveal
                 as="li"
                 key={member.name}
                 delay={60 + Math.min(index, 3) * 60}
-                className="flex items-center gap-5 lg:gap-7"
+                className="group flex flex-col items-center text-center"
               >
                 {/* No disc behind the portrait.
 
@@ -70,24 +80,29 @@ export async function Leadership() {
                     Which is also why `object-top`. The clip takes the bottom of
                     the frame, and on a cut-out that is the torso — the thing you
                     can afford to lose. Centred, it took a slice of chin. */}
-                <div className="relative size-28 shrink-0 overflow-hidden rounded-full lg:size-36">
+                <div className="relative size-56 overflow-hidden rounded-full lg:size-72">
                   {member.portrait && (
                     <Image
                       src={member.portrait.url}
                       alt=""
                       width={member.portrait.width}
                       height={member.portrait.height}
-                      sizes="(min-width: 1024px) 144px, 112px"
-                      className="size-full object-cover object-top"
+                      sizes="(min-width: 1024px) 288px, 224px"
+                      // The zoom is on the picture inside a clip that does not
+                      // move, so the portrait grows within its circle rather
+                      // than the circle growing on the page and shoving the
+                      // row. `motion-transform` is what drops it for a reader
+                      // who asked for less movement.
+                      className="motion-transform size-full object-cover object-top transition-transform duration-700 ease-(--ease-standard) group-hover:scale-110"
                     />
                   )}
                 </div>
 
-                <div className="min-w-0">
-                  <h3 className="text-lg leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-xl">
+                <div className="mt-6 min-w-0">
+                  <h3 className="text-xl leading-snug font-semibold tracking-[-0.02em] text-blue lg:text-[22px]">
                     {member.name}
                   </h3>
-                  <p className="mt-1 text-sm text-gray">{member.role}</p>
+                  <p className="mt-1.5 text-[15px] text-gray">{member.role}</p>
                 </div>
               </Reveal>
             ))}
