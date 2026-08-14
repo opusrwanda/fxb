@@ -1,7 +1,12 @@
 import { eq } from "drizzle-orm";
 
 import { db, globals } from "../db";
-import type { ImpactData, PromoBannerData, SiteSettingsData } from "../db/schema";
+import type {
+  ImpactData,
+  PromoBannerData,
+  PromoBannerHeight,
+  SiteSettingsData,
+} from "../db/schema";
 import { bust } from "@/cms/revalidate";
 
 /**
@@ -135,11 +140,20 @@ export async function savePromoBanner(form: FormData) {
   const imageId = str(form, "imageId");
   const until = str(form, "until");
 
+  // Anything unrecognised falls back to the middle size rather than reaching
+  // the stylesheet as a class name that does not exist, which would render a
+  // strip with no height at all.
+  const height = str(form, "height");
+
   const data: PromoBannerData = {
     enabled: form.get("enabled") === "on",
     imageId: imageId === "" ? null : Number(imageId),
     href: str(form, "href"),
     until: until === "" ? null : until,
+    height:
+      height === "short" || height === "tall"
+        ? (height as PromoBannerHeight)
+        : "medium",
   };
 
   await put("banner", data);

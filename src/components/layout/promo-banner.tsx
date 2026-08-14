@@ -23,13 +23,37 @@ import type { PromoBanner as Banner } from "@/cms/content/banner";
  *
  * THE HEIGHT IS DECLARED ONCE, below, because three places have to agree about
  * it: the strip, the spacer that pushes the document down, and the header's
- * own offset. Three copies of `h-14` would be three chances for the header to
+ * own offset. Three copies of `h-24` would be three chances for the header to
  * overlap the banner by four pixels on one breakpoint.
+ *
+ * Three sizes rather than one, because how tall a banner should be is a
+ * judgement about the artwork and not a fact about the site — a wordmark and a
+ * date read fine in a thin band, and a strip carrying a photograph and a
+ * headline needs the room. The first version was a single fixed 56px band,
+ * which turned out to be too short for the artwork FXB actually has.
  */
 
-/** The strip's height, and the two measurements derived from it. */
-export const PROMO_HEIGHT = "h-11 sm:h-12 lg:h-14";
-export const PROMO_OFFSET = "top-11 sm:top-12 lg:top-14";
+export type PromoHeight = "short" | "medium" | "tall";
+
+/**
+ * Each row is a pair, and the pair is the point: a height and the offset that
+ * matches it, written next to each other so they cannot be changed apart.
+ * Every value grows across the breakpoints, because a band that reads well on
+ * a laptop is half the screen on a phone.
+ */
+const HEIGHTS: Record<PromoHeight, { strip: string; offset: string }> = {
+  // A wordmark, a date, a line of type.
+  short: { strip: "h-12 sm:h-14 lg:h-16", offset: "top-12 sm:top-14 lg:top-16" },
+  // The default: enough for artwork with a headline in it.
+  medium: { strip: "h-16 sm:h-20 lg:h-24", offset: "top-16 sm:top-20 lg:top-24" },
+  // A designed strip with a photograph. Deliberately the largest on offer —
+  // past this it stops being a banner and starts being the page.
+  tall: { strip: "h-24 sm:h-32 lg:h-40", offset: "top-24 sm:top-32 lg:top-40" },
+};
+
+/** Unknown or unset falls back to the middle size, never to no height at all. */
+export const promoHeight = (height: PromoHeight | undefined | null) =>
+  HEIGHTS[height ?? "medium"] ?? HEIGHTS.medium;
 
 /**
  * Where the strip is allowed to appear.
@@ -44,6 +68,8 @@ export const showsPromo = (pathname: string | null): boolean => pathname === "/"
 export function PromoBanner({ banner }: { banner: Banner | null }) {
   const pathname = usePathname();
   if (!banner || !showsPromo(pathname)) return null;
+
+  const size = promoHeight(banner.height);
 
   const strip = (
     <Image
@@ -65,7 +91,7 @@ export function PromoBanner({ banner }: { banner: Banner | null }) {
   return (
     <>
       <div
-        className={`fixed inset-x-0 top-0 z-60 overflow-hidden bg-blue ${PROMO_HEIGHT}`}
+        className={`fixed inset-x-0 top-0 z-60 overflow-hidden bg-blue ${size.strip}`}
       >
         {banner.href ? (
           <Link href={banner.href} className="relative block size-full">
@@ -80,7 +106,7 @@ export function PromoBanner({ banner }: { banner: Banner | null }) {
           underneath it. This puts the height back — everything below shifts
           down by exactly the strip, the header included, and no page needs to
           know the banner exists. */}
-      <div className={PROMO_HEIGHT} aria-hidden="true" />
+      <div className={size.strip} aria-hidden="true" />
     </>
   );
 }

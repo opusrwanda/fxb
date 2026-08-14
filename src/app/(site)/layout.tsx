@@ -95,6 +95,7 @@ export default async function RootLayout({
           details={details}
           report={report && { title: report.title, slug: report.slug }}
           hasPromo={banner !== null}
+          promoHeight={banner?.height}
         />
         <main id="main" className="lg:col-span-7 lg:col-start-6">
           {children}

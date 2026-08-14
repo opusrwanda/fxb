@@ -131,6 +131,7 @@ export default async function GlobalPage({
     imageId: null,
     href: "",
     until: null,
+    height: "medium",
   }) as PromoBannerData;
 
   // A spare blank row, so adding a figure does not need a button that adds one.
@@ -288,12 +289,12 @@ export default async function GlobalPage({
                 Banner image
               </label>
               <p id="g-imageId-help" className="text-[13px] leading-relaxed text-gray-80">
-                A wide, short strip — around 2400 × 300 pixels. It runs the full
-                width of the screen at about 56 pixels tall, so anything close
-                to square will be cropped to a band through its middle. Upload
-                it to the library first; the description you gave it there is
-                what a screen reader reads out, so it should say what the
-                campaign is.
+                A wide strip, running the full width of the screen at whichever
+                height you pick below. Around 2400 × 400 pixels suits the
+                medium size; anything close to square will be cropped to a band
+                through its middle. Upload it to the library first — the
+                description you gave it there is what a screen reader reads out,
+                so it should say what the campaign is.
               </p>
               <MediaPicker
                 id="g-imageId"
@@ -305,6 +306,45 @@ export default async function GlobalPage({
                 )}
               />
             </div>
+
+            <fieldset className="flex flex-col gap-3">
+              <legend className="text-sm font-semibold text-blue">
+                How tall the strip is
+              </legend>
+              <p className="text-[13px] leading-relaxed text-gray-80">
+                Pick the one that suits the artwork. A wordmark and a date read
+                fine in a thin band; a strip with a photograph and a headline in
+                it needs the room.
+              </p>
+              {(
+                [
+                  { value: "short", label: "Short", note: "A thin band — a wordmark, a date, one line of type." },
+                  { value: "medium", label: "Medium", note: "The usual choice. Room for artwork with a headline in it." },
+                  { value: "tall", label: "Tall", note: "A designed strip with a photograph. Any bigger and it stops being a banner." },
+                ] as const
+              ).map((size) => (
+                <label
+                  key={size.value}
+                  className="flex cursor-pointer gap-3 rounded-card border border-gray-15 p-4 transition-colors duration-300 hover:border-blue has-checked:border-blue has-checked:bg-blue-08"
+                >
+                  <input
+                    type="radio"
+                    name="height"
+                    value={size.value}
+                    defaultChecked={(banner.height ?? "medium") === size.value}
+                    className="mt-1 size-4 shrink-0 accent-blue"
+                  />
+                  <span>
+                    <span className="block text-[15px] font-semibold text-blue">
+                      {size.label}
+                    </span>
+                    <span className="mt-1 block text-[13px] leading-relaxed text-gray">
+                      {size.note}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
 
             <Field
               label="Where it goes when clicked"

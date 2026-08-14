@@ -9,7 +9,11 @@ import { AnnualReportBanner } from "@/components/layout/annual-report-banner";
 import { Container } from "@/components/layout/container";
 import type { SiteDetails } from "@/cms/content/settings";
 import { hasTransparentHeader, primaryNav } from "@/lib/site";
-import { PROMO_OFFSET, showsPromo } from "@/components/layout/promo-banner";
+import {
+  promoHeight,
+  showsPromo,
+  type PromoHeight,
+} from "@/components/layout/promo-banner";
 
 /**
  * Site header — two states, one continuous transition.
@@ -30,6 +34,7 @@ export function SiteHeader({
   details,
   report,
   hasPromo = false,
+  promoHeight: promoSize,
 }: {
   /** The contact details and external systems, from the CMS. */
   details: SiteDetails;
@@ -43,6 +48,8 @@ export function SiteHeader({
    * the route test happens here — see `showsPromo`.
    */
   hasPromo?: boolean;
+  /** The strip's size, so this bar sits exactly on top of it. */
+  promoHeight?: PromoHeight;
 }) {
   const pathname = usePathname();
   const [pinned, setPinned] = useState(() => !hasTransparentHeader(pathname));
@@ -173,7 +180,7 @@ export function SiteHeader({
         // Pushed down by exactly the campaign strip's height when one is
         // showing. The two measurements are declared together in
         // `promo-banner.tsx` so they cannot drift apart at one breakpoint.
-        promo ? PROMO_OFFSET : "top-0",
+        promo ? promoHeight(promoSize).offset : "top-0",
         // `solid`, not `pinned`. The logo and the nav links already switched on
         // `solid`, so keying the fill off `pinned` meant a hover at the top of
         // a page collapsed the bar and darkened its type while leaving the

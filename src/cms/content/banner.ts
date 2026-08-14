@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { db, globals, media } from "@/staff/db";
-import type { PromoBannerData } from "@/staff/db/schema";
+import type { PromoBannerData, PromoBannerHeight } from "@/staff/db/schema";
 import { image, type Img } from "./image";
 import { cached } from "./cache";
 
@@ -21,6 +21,7 @@ export type PromoBanner = {
   image: Img;
   /** Empty where it should show without being clickable. */
   href: string;
+  height: PromoBannerHeight;
 };
 
 export const getPromoBanner = cached(
@@ -59,6 +60,12 @@ export const getPromoBanner = cached(
     // The picture has been deleted from the library since the banner was set.
     if (!picture) return null;
 
-    return { image: picture, href: banner.href ?? "" };
+    return {
+      image: picture,
+      href: banner.href ?? "",
+      // Banners saved before the size existed have no height at all, and the
+      // middle size is what they were closest to.
+      height: banner.height ?? "medium",
+    };
   },
 );

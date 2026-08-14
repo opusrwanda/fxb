@@ -589,7 +589,20 @@ export type PromoBannerData = {
   href: string;
   /** ISO date, or null to run until switched off. Inclusive — the last day it shows. */
   until: string | null;
+  /**
+   * How tall the strip is.
+   *
+   * A setting rather than one number in the stylesheet, because how tall a
+   * banner should be is a judgement about the artwork rather than a fact about
+   * the site: a wordmark and a date read fine in a thin band, and a strip with
+   * a photograph and a headline in it needs the room. Three sizes rather than
+   * a pixel field — a free number is a way to make the home page look wrong,
+   * and every value in between these is one somebody would have to justify.
+   */
+  height: PromoBannerHeight;
 };
+
+export type PromoBannerHeight = "short" | "medium" | "tall";
 
 /**
  * Globals — the documents a site has exactly one of.
