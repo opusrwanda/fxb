@@ -157,7 +157,11 @@ export async function ModelPillars() {
                           {pillar.icon && (
                             <BrandIcon
                               id={pillar.icon}
-                              className="size-11 text-white"
+                              // 64px, up from 44. Bare on the blue rather than
+                              // in a container, so there is nothing around it
+                              // to keep it in proportion to — it simply has to
+                              // be large enough to read as the drawing it is.
+                              className="size-16 text-white"
                             />
                           )}
                           <p className="text-sm font-semibold tracking-[0.14em] text-white-94">

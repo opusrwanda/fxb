@@ -105,11 +105,19 @@ export async function AreasOfIntervention() {
                       bare on the card and looked like it had a tinted box
                       behind it whose artwork ran to the edges — that box was an
                       extraction artefact, not a container, and is gone. This is
-                      the container it looked like it wanted: 56px, tinted, with
-                      the drawing inset 12px on every side. */}
-                  <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-blue-08">
+                      the container it looked like it wanted: tinted, round,
+                      with the drawing inset evenly on every side.
+
+                      80px holding a 48px drawing, up from 56 holding 32. These
+                      are the site's own icons and the one place they are drawn
+                      at any size — at 32px the distinguishing detail in them,
+                      which is what tells a reader that this card is about
+                      health rather than education, was too small to read. The
+                      proportion is kept so the ring still looks like a
+                      container rather than a border. */}
+                  <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-blue-08">
                     {area.icon && (
-                      <BrandIcon id={area.icon} className="size-8" />
+                      <BrandIcon id={area.icon} className="size-12" />
                     )}
                   </span>
                   <h3 className="text-[28px] font-bold tracking-[-0.02em] text-blue lg:text-[32px]">
