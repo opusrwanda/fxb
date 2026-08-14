@@ -14,6 +14,7 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import type { EditorState } from "lexical";
 
+import { ImageDragPlugin } from "./image-drag-plugin";
 import { ImageNode, VideoNode } from "./nodes";
 import { Toolbar } from "./toolbar";
 
@@ -127,11 +128,19 @@ export function RichTextEditor({
           contentEditable={
             <ContentEditable
               aria-labelledby={ariaLabelledBy}
+              // The resize maths measures against this element: a width
+              // dragged in pixels is stored as a percentage of the column the
+              // picture actually sits in, not of the window.
+              data-editor-content=""
               className="min-h-[24rem] px-5 py-4 outline-none"
             />
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
+
+        {/* Where a dragged picture lands. The drag itself starts on the
+            image; this is the half that knows the document. */}
+        <ImageDragPlugin />
 
         <HistoryPlugin />
         <ListPlugin />

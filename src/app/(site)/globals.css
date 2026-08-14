@@ -610,3 +610,80 @@
     overflow-x: auto;
   }
 }
+
+/* ── Pictures placed inside an article ─────────────────────────────────────
+
+  A photograph in a body of text can now carry a width, an alignment and
+  whether the paragraphs flow around it — chosen in the staff panel, stored on
+  the image node, and rendered here.
+
+  WHY THIS IS CSS AND NOT INLINE STYLES. The width has to be a plain inline
+  value, because it is a number nobody knew when the stylesheet was written; the
+  float has to stop applying below `sm`, and an inline style cannot hold a media
+  query. So the width arrives as a custom property and every rule that uses it
+  lives in here, where a breakpoint can switch it off.
+
+  ON A PHONE, NOTHING FLOATS. A picture at 33% of a 360px screen is 120px wide
+  with three words of text beside it, which is not a layout — it is a column of
+  hyphens. Below `sm` every figure is full width and on its own line, whatever
+  was chosen, and the choice takes effect again at the first width where it
+  reads.
+*/
+.article-prose figure {
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+/*
+  Floats are taken out of the flow, so a picture beside a short paragraph hangs
+  below the end of the article and over whatever follows it. This is the
+  clearfix that stops that — on the prose container, so the escape is contained
+  by the article rather than by the page.
+*/
+.article-prose::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+@media (min-width: 640px) {
+  .article-prose figure {
+    width: var(--figure-width, 100%);
+    max-width: 100%;
+  }
+
+  /* On its own line, aligned within the column. */
+  .article-prose figure[data-align="left"] {
+    margin-right: auto;
+  }
+  .article-prose figure[data-align="center"] {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .article-prose figure[data-align="right"] {
+    margin-left: auto;
+  }
+
+  /*
+    Text flowing around it. The margin is asymmetric — the gap belongs between
+    the picture and the words running past it, and putting it on both sides
+    would indent the picture from the edge it was aligned to.
+  */
+  .article-prose figure[data-wrap="true"][data-align="left"] {
+    float: left;
+    margin: 0.5rem 2rem 1.5rem 0;
+  }
+  .article-prose figure[data-wrap="true"][data-align="right"] {
+    float: right;
+    margin: 0.5rem 0 1.5rem 2rem;
+  }
+
+  /*
+    A caption under a narrow picture belongs to the picture, so it takes the
+    picture's width rather than the 62ch the body text is held to.
+  */
+  .article-prose figure figcaption {
+    max-width: 100%;
+  }
+}

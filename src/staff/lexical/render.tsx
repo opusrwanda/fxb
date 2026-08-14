@@ -105,20 +105,54 @@ function renderNode(node: RichTextNode, key: number): React.ReactNode {
       if (!src) return null;
       const alt = typeof node.alt === "string" ? node.alt : "";
 
+      /**
+       * How it was placed, if anybody placed it.
+       *
+       * Every one of these is absent from an article written before the panel
+       * offered the controls, so each falls back to what those articles have
+       * always rendered as: full width, centred, no wrapping. Read defensively
+       * — this is JSON from a database column, and a node written by a future
+       * editor is not required to agree with this renderer.
+       */
+      const align =
+        node.align === "left" || node.align === "right" ? node.align : "center";
+      const width =
+        typeof node.width === "number" && node.width > 0
+          ? Math.min(100, Math.round(node.width))
+          : null;
+      // Centred and wrapped is not a thing — there is no side for the text to
+      // run down — so the pair is resolved here rather than trusted.
+      const wrap = node.wrap === true && align !== "center";
+
       return (
-        <figure key={key}>
+        <figure
+          key={key}
+          data-align={align}
+          data-wrap={wrap ? "true" : undefined}
+          // A custom property rather than `width`, so the stylesheet can
+          // ignore it below `sm` where nothing floats. See globals.css.
+          style={width === null ? undefined : ({ "--figure-width": `${width}%` } as React.CSSProperties)}
+        >
           <Image
             src={src}
             alt={alt}
             width={1600}
             height={900}
-            // `100vw`, deliberately, even though the column is narrower than
-            // the viewport. A `ch` value here is not a width Next can resolve
-            // — it picked the 640px candidate for a slot 1120px wide, and the
-            // photograph arrived visibly soft. Over-fetching a step is the
-            // cheaper mistake, and the prose column is close to full width on
-            // the phones that pay for it.
-            sizes="100vw"
+            /**
+             * What slot the browser should assume when picking a file.
+             *
+             * `100vw` for a full-width picture: the prose column is close to
+             * the full viewport on the phones that pay for the bytes, and a
+             * `ch` value is not something Next can resolve — it picked the
+             * 640px candidate for a slot 1120px wide and the photograph
+             * arrived visibly soft.
+             *
+             * A placed picture narrows on desktop and still fills the width on
+             * a phone, which is exactly what the media query says, so the hint
+             * says the same thing rather than over-fetching a picture that is
+             * a third of a column.
+             */
+            sizes={width === null ? "100vw" : `(min-width: 640px) ${width}vw, 100vw`}
           />
           {alt && <figcaption>{alt}</figcaption>}
         </figure>
