@@ -183,7 +183,7 @@ function SectionHeading({
           aria-hidden="true"
         />
         <span
-          className={`text-xs font-semibold tracking-[0.14em] ${
+          className={`text-[24px] font-semibold tracking-[0.14em] ${
             dark ? "text-white-94" : "text-gray-80"
           }`}
         >
@@ -250,7 +250,7 @@ export default async function PartnersPage() {
             </Reveal>
 
             <Reveal delay={290}>
-              <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+              <p className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
                 WHY PARTNER WITH FXB RWANDA?
               </p>
               <div className="mt-6">
@@ -260,7 +260,7 @@ export default async function PartnersPage() {
           </div>
 
           <Reveal delay={360} className="mt-14">
-            <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+            <p className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
               AREAS OF COLLABORATION
             </p>
           </Reveal>
@@ -269,7 +269,7 @@ export default async function PartnersPage() {
           </Reveal>
 
           <Reveal delay={500} className="mt-14">
-            <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+            <p className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
               OUR DEVELOPMENT PARTNERS
             </p>
           </Reveal>
@@ -312,7 +312,7 @@ export default async function PartnersPage() {
           </div>
 
           <Reveal delay={360} className="mt-14">
-            <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
+            <p className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
               WORKING TOGETHER FOR SUSTAINABLE SOLUTIONS
             </p>
           </Reveal>
@@ -342,7 +342,7 @@ export default async function PartnersPage() {
                 reach communities most in need.
               </p>
               <div>
-                <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                <p className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
                   YOUR INVESTMENT CONTRIBUTES TO
                 </p>
                 <ul className="mt-5 flex flex-col gap-3">
@@ -368,7 +368,7 @@ export default async function PartnersPage() {
             </Reveal>
 
             <Reveal delay={290}>
-              <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+              <p className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
                 OUR COMMITMENT TO DONORS
               </p>
               <ul className="mt-5 flex flex-col gap-3">
@@ -388,7 +388,7 @@ export default async function PartnersPage() {
           </div>
 
           <Reveal delay={360} className="mt-14">
-            <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+            <p className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
               OUR DONORS
             </p>
           </Reveal>
@@ -423,7 +423,7 @@ export default async function PartnersPage() {
           </Reveal>
 
           <Reveal delay={220} className="mt-10">
-            <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
+            <p className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
               WAYS COMPANIES CAN PARTNER WITH US
             </p>
           </Reveal>
@@ -432,7 +432,7 @@ export default async function PartnersPage() {
           </div>
 
           <Reveal delay={360} className="mt-14">
-            <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
+            <p className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
               LET&rsquo;S CREATE IMPACT TOGETHER
             </p>
           </Reveal>
@@ -461,7 +461,7 @@ export default async function PartnersPage() {
           </Reveal>
 
           <Reveal delay={220} className="mt-10">
-            <p className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+            <p className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
               PARTNERSHIP OPPORTUNITIES
             </p>
           </Reveal>
