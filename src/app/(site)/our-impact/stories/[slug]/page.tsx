@@ -26,6 +26,19 @@ export default async function StoryPage(
   const story = await getStory(slug);
   if (!story) notFound();
 
+  // The newest stories, minus this one. See the news article page for why
+  // recency rather than a similarity nobody curated. Five fetched so that
+  // dropping the current one still leaves four.
+  const related = (await getStories(5))
+    .filter((other) => other.slug !== story.slug)
+    .slice(0, 4)
+    .map((other) => ({
+      href: `/our-impact/stories/${other.slug}`,
+      title: other.title,
+      date: formatDate(other.date),
+      image: other.image,
+    }));
+
   return (
     <ArticleBody
       eyebrow="IMPACT STORY"
@@ -40,6 +53,8 @@ export default async function StoryPage(
       image={story.image}
       backHref="/our-impact/stories"
       backLabel="All stories"
+      related={related}
+      relatedHeading="MORE STORIES"
     />
   );
 }

@@ -7,6 +7,7 @@ import { saysNoMoreThan } from "@/cms/content/richtext";
 import { Container } from "@/components/layout/container";
 import { Prose } from "@/components/layout/prose";
 import { Pill } from "@/components/ui/pill";
+import { RelatedArticles, type RelatedItem } from "@/components/layout/related-articles";
 import { Reveal } from "@/components/ui/reveal";
 import type { Crumb } from "@/components/sections/hero";
 
@@ -64,6 +65,8 @@ export function ArticleBody({
   language,
   backHref,
   backLabel,
+  related = [],
+  relatedHeading = "More to read",
 }: {
   eyebrow: string;
   breadcrumbs: Crumb[];
@@ -76,6 +79,9 @@ export function ArticleBody({
   language?: string;
   backHref: string;
   backLabel: string;
+  /** Other pieces to offer beside the article. Empty hides the column. */
+  related?: RelatedItem[];
+  relatedHeading?: string;
 }) {
   const written = !saysNoMoreThan(body, excerpt);
 
@@ -102,14 +108,27 @@ export function ArticleBody({
             change measure to fit the column. `Prose` stays narrower inside
             it, which is what a reading measure is for.
 
-            Centred in the container, photograph included. Left-aligned, the
-            column sat against the left edge with 370px of empty white down
-            the right of every article — the page looked like it was waiting
-            for a sidebar that never arrived. The type inside stays ranged
-            left: centring a column is a page decision, centring its lines is
-            a typographic one, and body copy set centred has no fixed left
-            edge for the eye to return to. */}
-        <div className="mx-auto max-w-[52rem]">
+            It used to be centred in the container with 370px of empty white
+            down its right — the page looked like it was waiting for a sidebar
+            that never arrived. One has arrived. The article keeps its 52rem
+            and the white it was wasting is now what to read next, held in
+            place while the piece scrolls past.
+
+            The pair is centred as a pair, and falls back to the old centred
+            column on its own wherever there is nothing to put beside it — a
+            grid track reserved for an empty aside would reinstate exactly the
+            gap this fixes. The type inside stays ranged left: centring a
+            column is a page decision, centring its lines is a typographic
+            one, and body copy set centred has no fixed left edge for the eye
+            to return to. */}
+        <div
+          className={
+            related.length > 0
+              ? "mx-auto grid max-w-[52rem] gap-16 lg:max-w-none lg:grid-cols-[minmax(0,52rem)_17rem] lg:justify-center lg:gap-14 xl:gap-20"
+              : "mx-auto max-w-[52rem]"
+          }
+        >
+          <div className="min-w-0">
           <Reveal className="flex flex-col gap-6">
             <nav aria-label="Breadcrumb">
               <ol className="flex flex-wrap items-center gap-1.5 text-sm text-gray-80">
@@ -201,11 +220,14 @@ export function ArticleBody({
             )}
           </div>
 
-          <Reveal delay={360} className="mt-14">
-            <Pill href={backHref} variant="outline" size="lg">
-              {backLabel}
-            </Pill>
-          </Reveal>
+            <Reveal delay={360} className="mt-14">
+              <Pill href={backHref} variant="outline" size="lg">
+                {backLabel}
+              </Pill>
+            </Reveal>
+          </div>
+
+          <RelatedArticles items={related} heading={relatedHeading} />
         </div>
       </Container>
     </article>

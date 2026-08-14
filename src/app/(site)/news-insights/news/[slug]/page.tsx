@@ -33,6 +33,29 @@ export default async function NewsArticlePage(
   const item = await getNewsItem(slug);
   if (!item) notFound();
 
+  /**
+   * What to read next: the most recent news, minus this piece.
+   *
+   * Recency rather than similarity, and deliberately. "Related" on a site with
+   * a few dozen articles and no tags means either a keyword match nobody
+   * curated or a category of one — both produce a column that looks
+   * hand-picked and is not. The newest four are honestly what they are, and on
+   * a site publishing a handful of items a month they are also usually the
+   * most relevant thing available.
+   *
+   * Five are fetched so that removing the current article still leaves four.
+   */
+  const related = (await getNews(5))
+    .filter((other) => other.slug !== item.slug)
+    .slice(0, 4)
+    .map((other) => ({
+      href: `/news-insights/news/${other.slug}`,
+      title: other.title,
+      date: formatDate(other.date),
+      image: other.image,
+      language: other.language,
+    }));
+
   return (
     <ArticleBody
       eyebrow="NEWS"
@@ -48,6 +71,8 @@ export default async function NewsArticlePage(
       language={item.language}
       backHref="/news-insights/news"
       backLabel="All news"
+      related={related}
+      relatedHeading="MORE NEWS"
     />
   );
 }
