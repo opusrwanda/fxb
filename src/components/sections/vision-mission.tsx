@@ -1,3 +1,18 @@
+import {
+  Award,
+  BadgeCheck,
+  Compass,
+  Eye,
+  Handshake,
+  HeartHandshake,
+  Lightbulb,
+  type LucideIcon,
+  Scale,
+  ShieldCheck,
+  Target,
+  Telescope,
+} from "lucide-react";
+
 import { Container } from "@/components/layout/container";
 import { getSection } from "@/cms/content/sections";
 import { Reveal } from "@/components/ui/reveal";
@@ -74,10 +89,47 @@ function emphasise(text: string, phrases: readonly string[]) {
     );
 }
 
+/**
+ * An icon per value, matched on the word rather than the position.
+ *
+ * The values are editable — a board added Accountability and Creativity and
+ * Innovation in the August revision — so a list keyed by index would silently
+ * hand Teamwork's icon to whatever took its place. Matching on the first word
+ * survives "Creativity and Innovation" being shortened to "Creativity", which
+ * is the kind of edit that actually happens.
+ *
+ * Anything unrecognised gets the compass rose. A value with no icon of its own
+ * still needs to sit in a row of cards that all have one, and a neutral mark is
+ * better than a gap or a guess.
+ */
+const VALUE_ICONS: Record<string, LucideIcon> = {
+  integrity: ShieldCheck,
+  teamwork: HeartHandshake,
+  honesty: BadgeCheck,
+  accountability: Scale,
+  creativity: Lightbulb,
+  innovation: Lightbulb,
+  transparency: Eye,
+  respect: Handshake,
+  excellence: Award,
+  commitment: Target,
+};
+
+const iconFor = (value: string): LucideIcon => {
+  const words = value.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+  for (const word of words) {
+    if (VALUE_ICONS[word]) return VALUE_ICONS[word];
+  }
+  return Compass;
+};
+
 export async function VisionMission({ details }: { details: SiteDetails }) {
   const copy = await getSection("who-we-are:vision");
   return (
-    <section id="vision" className="scroll-mt-32 bg-blue py-32 lg:py-48">
+    // 24/32 rather than 32/48. The room was padded for two columns of bare
+    // text and a numbered list; the panels carry their own inset now, so the
+    // old padding left a field of empty blue under the values.
+    <section id="vision" className="scroll-mt-32 bg-blue py-24 lg:py-32">
       <Container>
         <Reveal className="flex items-center gap-4">
           <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
@@ -86,49 +138,92 @@ export async function VisionMission({ details }: { details: SiteDetails }) {
           </span>
         </Reveal>
 
-        <div className="mt-14 grid gap-12 lg:grid-cols-2 lg:gap-20">
+        {/* Vision and mission as two panels rather than two columns of bare
+            text on the ground.
+
+            They were set straight onto the blue, which made the room one
+            uninterrupted field of colour with words floating in it — the two
+            statements read as one long paragraph broken by a heading. A panel
+            gives each of them an edge, and the pair then reads as two things
+            said rather than one thing said at length.
+
+            `white/8` and not a second colour: the panel has to be visible
+            against the blue without becoming a card in a different palette,
+            and a tint of the ground itself is the only fill that cannot
+            introduce one. */}
+        <div className="mt-14 grid gap-6 lg:grid-cols-2 lg:gap-8">
           <Reveal delay={140}>
-            <h2 className="text-xs font-semibold tracking-[0.14em] text-white-94">
-              OUR VISION
-            </h2>
-            {/* Weight and white carry the emphasis, not a fifth colour and not
-                capitals. Both tokens used here clear AA on blue — the quieter
-                one is `white-94` at 4.61:1, not one of the decorative alphas,
-                because these are words and not a hairline. */}
-            <p className="mt-5 text-3xl leading-[1.25] tracking-[-0.03em] lg:text-[40px] lg:leading-[1.15]">
-              {emphasise(details.vision, details.visionEmphasis)}
-            </p>
+            <div className="wedge flex h-full flex-col gap-6 bg-white/8 p-8 lg:p-10">
+              <div className="flex items-center gap-4">
+                <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-white/12">
+                  <Telescope className="size-7 text-white" aria-hidden="true" />
+                </span>
+                <h2 className="text-xs font-semibold tracking-[0.14em] text-white-94">
+                  OUR VISION
+                </h2>
+              </div>
+
+              {/* Weight and white carry the emphasis, not a fifth colour and
+                  not capitals. Both tokens used here clear AA on blue — the
+                  quieter one is `white-94` at 4.61:1, not one of the
+                  decorative alphas, because these are words and not a
+                  hairline. */}
+              <p className="text-[28px] leading-[1.25] tracking-[-0.03em] lg:text-[36px] lg:leading-[1.18]">
+                {emphasise(details.vision, details.visionEmphasis)}
+              </p>
+            </div>
           </Reveal>
 
           <Reveal delay={290}>
-            <h2 className="text-xs font-semibold tracking-[0.14em] text-white-94">
-              OUR MISSION
-            </h2>
-            <p className="mt-5 text-lg leading-relaxed text-white-94 lg:text-xl lg:leading-relaxed">
-              {details.mission}
-            </p>
+            <div className="wedge flex h-full flex-col gap-6 bg-white/8 p-8 lg:p-10">
+              <div className="flex items-center gap-4">
+                <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-white/12">
+                  <Compass className="size-7 text-white" aria-hidden="true" />
+                </span>
+                <h2 className="text-xs font-semibold tracking-[0.14em] text-white-94">
+                  OUR MISSION
+                </h2>
+              </div>
+
+              <p className="text-lg leading-relaxed text-white-94 lg:text-xl lg:leading-relaxed">
+                {details.mission}
+              </p>
+            </div>
           </Reveal>
         </div>
 
-        <Reveal delay={430} className="mt-16 lg:mt-24">
-          <div className="h-px w-full bg-white-12" aria-hidden="true" />
-          <h2 className="mt-12 text-xs font-semibold tracking-[0.14em] text-white-94">
+        <Reveal delay={430} className="mt-16 lg:mt-20">
+          <h2 className="text-xs font-semibold tracking-[0.14em] text-white-94">
             OUR GUIDING VALUES
           </h2>
-          <ul className="mt-8 grid gap-8 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3">
-            {details.values.map((value, index) => (
-              <li key={value} className="flex items-baseline gap-5">
-                <span
-                  className="text-sm font-semibold text-white-94"
-                  aria-hidden="true"
+
+          {/* The numerals are gone. They were carrying the rhythm because the
+              values arrive from the brief as bare words with nothing under
+              them — but a number in front of a value implies a ranking the
+              board has not made, and an icon does the same structural job
+              without claiming Integrity outranks Teamwork.
+
+              Still two up from `sm` and three from `lg`, so the last row runs
+              short rather than stretching. The count is editable and has to
+              hold for four or six as well; wrapping is the only rule that
+              does. */}
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {details.values.map((value) => {
+              const Icon = iconFor(value);
+              return (
+                <li
+                  key={value}
+                  className="wedge flex items-center gap-5 bg-white/8 px-6 py-6"
                 >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="text-2xl font-bold tracking-[-0.02em] text-white lg:text-[28px]">
-                  {value}
-                </span>
-              </li>
-            ))}
+                  <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/12">
+                    <Icon className="size-6 text-white" aria-hidden="true" />
+                  </span>
+                  <span className="text-xl font-bold tracking-[-0.02em] text-white lg:text-[22px]">
+                    {value}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </Reveal>
       </Container>
