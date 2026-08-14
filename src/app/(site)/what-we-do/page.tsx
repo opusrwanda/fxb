@@ -4,7 +4,7 @@ import { Hero } from "@/components/sections/hero";
 import { WhatWeDoNav } from "@/components/layout/what-we-do-nav";
 import { PhotoBand } from "@/components/sections/photo-band";
 import { getPhotos } from "@/cms/content/photos";
-import { getPageHeaderImage } from "@/cms/content/page-headers";
+import { getPageBanner } from "@/cms/content/page-headers";
 import { Approach } from "@/components/sections/what-we-do/approach";
 import { AreasOfIntervention } from "@/components/sections/what-we-do/areas-of-intervention";
 import { ModelIntro } from "@/components/sections/what-we-do/model-intro";
@@ -47,7 +47,7 @@ export default async function WhatWeDoPage() {
     "fxbvillage-tlf-11.jpg",
     "fxbvillage-tlf-04.jpg",
   ]);
-  const banner = await getPageHeaderImage("/what-we-do");
+  const banner = await getPageBanner("/what-we-do");
   const programmes = await getCurrentProgrammes();
   const journeyCopy = await getSection("what-we-do:journey");
   // Derived, not written down. The hero makes a claim about how much of this
@@ -62,7 +62,8 @@ export default async function WhatWeDoPage() {
   return (
     <>
       <Hero
-        image={banner}
+        image={banner.image}
+        video={banner.video}
         headline={copy.heading ?? ""}
         // The old body read "The FXBVillage model works on income, health,
         // education…", which handed the whole page to one project. FXBVillage

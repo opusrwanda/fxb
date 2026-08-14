@@ -418,6 +418,16 @@ export const pageHeaders = pgTable("page_headers", {
   /** A route such as `/contact`, or `*` for the site-wide default. */
   path: varchar("path", { length: 120 }).notNull().unique(),
   imageId: integer("image_id").references(() => media.id, { onDelete: "set null" }),
+  /**
+   * Footage behind the banner, where the page should move rather than sit.
+   *
+   * The photograph stays required alongside it and becomes the poster: it is
+   * what paints first and carries the LCP, and it is what a visitor on
+   * Save-Data, reduced motion or a slow connection sees instead of the video.
+   * A banner with footage and no still would be a blue rectangle on exactly
+   * the connections that can least afford the alternative.
+   */
+  videoId: integer("video_id").references(() => media.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

@@ -1,5 +1,5 @@
 import { Hero, type Crumb } from "@/components/sections/hero";
-import { getPageHeaderImage } from "@/cms/content/page-headers";
+import { getPageBanner } from "@/cms/content/page-headers";
 import { getSection, headerKey } from "@/cms/content/sections";
 
 /**
@@ -50,7 +50,7 @@ export async function PageHeader({
   path?: string;
 }) {
   const [banner, copy] = await Promise.all([
-    getPageHeaderImage(path),
+    getPageBanner(path),
     getSection(headerKey(path ?? ""), { eyebrow, heading: title, body: intro }),
   ]);
 
@@ -62,7 +62,8 @@ export async function PageHeader({
       // than rendering an empty heading.
       headline={copy.heading || title}
       body={copy.body}
-      image={banner}
+      image={banner.image}
+      video={banner.video}
       breadcrumbs={breadcrumbs}
     />
   );

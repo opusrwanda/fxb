@@ -46,7 +46,7 @@ export type Field = {
   sidebar?: boolean;
   options?: Option[];
   /** For upload fields: narrows what the picker offers. */
-  accept?: "image" | "document";
+  accept?: "image" | "document" | "video";
   rows?: number;
 };
 
@@ -400,6 +400,13 @@ export const fields: Record<string, Field[]> = {
       type: "upload",
       accept: "image",
       help: "Landscape, and busy at the edges rather than the middle — the title sits over the left of it. A dark scrim is laid over the whole picture so white type stays legible, so a bright photograph is fine.",
+    },
+    {
+      name: "videoId",
+      label: "Background video",
+      type: "upload",
+      accept: "video",
+      help: "Optional. An MP4 or WebM loop, silent, up to 60MB — a short one at 1080p is about 10MB. The photograph above stays and becomes the still behind it: it is what paints first, and what somebody on a slow connection or with reduced motion set sees instead of the footage. A video with no photograph is not used.",
     },
   ],
 

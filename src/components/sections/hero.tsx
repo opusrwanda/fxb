@@ -39,6 +39,7 @@ export function Hero({
   ctas = [],
   withVideo = false,
   image,
+  video,
   breadcrumbs = [],
 }: {
   eyebrow?: string;
@@ -56,6 +57,14 @@ export function Hero({
    */
   image?: Img | null;
   /**
+   * Footage behind the room, uploaded through Page banners.
+   *
+   * Only ever alongside `image`, which stays as the poster — `getPageBanner`
+   * drops a video that has no still, because the still is what paints first
+   * and what a visitor on Save-Data or reduced motion is left with.
+   */
+  video?: { url: string; type: string } | null;
+  /**
    * The trail above the eyebrow, for the pages that sit inside a section.
    *
    * Lives here rather than in a second component because every page on the
@@ -66,7 +75,12 @@ export function Hero({
 }) {
   // Footage wins where there is any: the poster is a frame of it, so a still
   // behind the video would never be seen.
-  const backdrop = !withVideo && image ? image : null;
+  const backdrop = !withVideo && image && !video ? image : null;
+
+  // An uploaded banner video plays over its own still, the same arrangement the
+  // home page's CDN footage uses — one plate, poster underneath, video fading
+  // in over it once the browser is idle and the connection allows.
+  const banner = !withVideo && video && image ? { video, image } : null;
   return (
     // Exactly one viewport tall. Top padding clears the full rest-state header
     // — banner + utility strip + the 128px bar — and the content is sized to
@@ -108,6 +122,34 @@ export function Hero({
               className="object-cover"
             />
           </div>
+          <div className="hero-scrim absolute inset-0 -z-10" aria-hidden="true" />
+          <div
+            className="hero-scrim-edges absolute inset-0 -z-10"
+            aria-hidden="true"
+          />
+          <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
+        </>
+      )}
+
+      {banner && (
+        <>
+          <div className="hero-drift absolute inset-0 -z-20">
+            <Image
+              src={banner.image.url}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+            <BackgroundVideo
+              src={banner.video}
+              className="absolute inset-0 size-full object-cover"
+            />
+          </div>
+
+          {/* The same scrims the home page's footage gets. A moving picture
+              behind white type needs them more than a still does, not less. */}
           <div className="hero-scrim absolute inset-0 -z-10" aria-hidden="true" />
           <div
             className="hero-scrim-edges absolute inset-0 -z-10"

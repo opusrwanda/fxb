@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Hero } from "@/components/sections/hero";
-import { getPageHeaderImage } from "@/cms/content/page-headers";
+import { getPageBanner } from "@/cms/content/page-headers";
 import { Partners } from "@/components/sections/partners";
 import { PhotoBand } from "@/components/sections/photo-band";
 import { getPhotos } from "@/cms/content/photos";
@@ -44,11 +44,12 @@ export default async function GetInvolvedPage() {
   const copy = await getSection("header:/get-involved");
   const waysCopy = await getSection("get-involved:ways-in");
   const photos = await getPhotos(["fostering-03.jpg"]);
-  const banner = await getPageHeaderImage("/get-involved");
+  const banner = await getPageBanner("/get-involved");
   return (
     <>
       <Hero
-        image={banner}
+        image={banner.image}
+        video={banner.video}
         headline={copy.heading ?? ""}
         body={copy.body}
         ctas={[

@@ -82,7 +82,7 @@ export function MediaPicker({
   describedBy?: string;
   value: number | null;
   options: PickerOption[];
-  kind: "image" | "document";
+  kind: "image" | "document" | "video";
 }) {
   const mounted = useSyncExternalStore(
     noop,
@@ -287,7 +287,13 @@ export function MediaPicker({
             ref={dialogRef}
             role="dialog"
             aria-modal="true"
-            aria-label={kind === "image" ? "Choose a photograph" : "Choose a document"}
+            aria-label={
+              kind === "image"
+                ? "Choose a photograph"
+                : kind === "video"
+                  ? "Choose a video"
+                  : "Choose a document"
+            }
             className="flex max-h-[92vh] w-full max-w-5xl flex-col rounded-t-card bg-white sm:rounded-card"
           >
             <div className="flex items-center gap-4 border-b border-gray-15 p-5">
@@ -317,7 +323,9 @@ export function MediaPicker({
                 accept={
                   kind === "image"
                     ? "image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml"
-                    : "application/pdf"
+                    : kind === "video"
+                      ? "video/mp4,video/webm"
+                      : "application/pdf"
                 }
                 onChange={(event) => {
                   const file = event.target.files?.[0];

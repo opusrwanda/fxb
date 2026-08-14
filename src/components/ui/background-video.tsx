@@ -29,10 +29,21 @@ type NetworkInformation = {
 export function BackgroundVideo({
   large,
   small,
+  src,
   className = "",
 }: {
-  large: VideoRendition;
-  small: VideoRendition;
+  large?: VideoRendition;
+  small?: VideoRendition;
+  /**
+   * A single uploaded file, for a page banner.
+   *
+   * The home page's hero has two renditions on the CDN and picks between them
+   * by viewport; a banner uploaded through the library is one file, so a phone
+   * gets the same bytes as a laptop. FXB asked for library uploads knowing
+   * that — see `upload.ts`. Every guard below still applies, which is what
+   * keeps the file off the connections that can least afford it.
+   */
+  src?: { url: string; type: string };
   className?: string;
 }) {
   const [rendition, setRendition] = useState<VideoRendition | null>(null);
@@ -52,8 +63,20 @@ export function BackgroundVideo({
       return;
     }
 
-    const start = () =>
-      setRendition(window.innerWidth > 1024 ? large : small);
+    const start = () => {
+      if (src) {
+        // One file, and it is whichever type it was uploaded as. The other
+        // source is left empty rather than pointed at the same file under the
+        // wrong type, which some browsers will try and fail to decode.
+        setRendition(
+          src.type === "video/webm"
+            ? { webm: src.url, mp4: "" }
+            : { webm: "", mp4: src.url },
+        );
+        return;
+      }
+      if (large && small) setRendition(window.innerWidth > 1024 ? large : small);
+    };
 
     // Wait for idle so the video never competes with the critical path.
     // Safari below 17 has no requestIdleCallback, hence the timeout fallback.
@@ -67,7 +90,7 @@ export function BackgroundVideo({
 
     const id = window.setTimeout(start, 1200);
     return () => window.clearTimeout(id);
-  }, [large, small]);
+  }, [large, small, src]);
 
   if (!rendition) return null;
 
@@ -91,8 +114,8 @@ export function BackgroundVideo({
       tabIndex={-1}
       onCanPlay={() => setReady(true)}
     >
-      <source src={rendition.webm} type="video/webm" />
-      <source src={rendition.mp4} type="video/mp4" />
+      {rendition.webm && <source src={rendition.webm} type="video/webm" />}
+      {rendition.mp4 && <source src={rendition.mp4} type="video/mp4" />}
     </video>
   );
 }

@@ -37,7 +37,27 @@ const ALLOWED: Record<string, string> = {
   "image/gif": ".gif",
   "image/svg+xml": ".svg",
   "application/pdf": ".pdf",
+  /**
+   * Video, for a page banner that moves.
+   *
+   * `lib/media.ts` says video never ships from the Next.js origin, and that is
+   * still the better arrangement — the home page's hero is on Bunny with a
+   * small rendition for phones and guards that skip it entirely on Save-Data
+   * or 2G. FXB asked to be able to upload one here instead, so this serves it
+   * from the app.
+   *
+   * What that costs, stated plainly: one file for every device, so a phone
+   * gets the same bytes as a laptop, and the app server sends them. The guards
+   * in `BackgroundVideo` still apply — reduced motion, Save-Data and slow
+   * connections see the poster and never fetch the file — which is what keeps
+   * the worst case off the people who can least afford it.
+   */
+  "video/mp4": ".mp4",
+  "video/webm": ".webm",
 };
+
+/** Is this one of the two video types above? */
+const isVideo = (type: string) => type === "video/mp4" || type === "video/webm";
 
 /**
  * 25MB.
@@ -47,6 +67,15 @@ const ALLOWED: Record<string, string> = {
  * to wait for the upload; a 25MB original at 1Mbps is three and a half minutes.
  */
 const MAX_BYTES = 25 * 1024 * 1024;
+
+/**
+ * 60MB, for video only.
+ *
+ * A usable 1080p banner loop is around 10MB; this leaves room for a longer or
+ * higher-rate one without leaving the door open to a 400MB export straight off
+ * a camera going onto a page every visitor loads.
+ */
+const VIDEO_MAX_BYTES = 60 * 1024 * 1024;
 
 /**
  * The renditions, and why these three.
@@ -119,10 +148,21 @@ export async function createMedia(
   authorId?: number,
 ): Promise<UploadResult> {
   if (!file || file.size === 0) return { ok: false, error: "Choose a file to upload." };
-  if (file.size > MAX_BYTES) {
+
+  /**
+   * Video gets a larger ceiling, and it is still a ceiling.
+   *
+   * A usable 1080p banner loop is around 10MB; 60 leaves room for a longer or
+   * higher-rate one without leaving the door open to somebody dropping a
+   * 400MB export straight off a camera onto a page every visitor loads.
+   */
+  const limit = isVideo(file.type) ? VIDEO_MAX_BYTES : MAX_BYTES;
+  if (file.size > limit) {
     return {
       ok: false,
-      error: `That file is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is 25MB — try exporting it smaller.`,
+      error: `That file is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is ${
+        limit / 1024 / 1024
+      }MB${isVideo(file.type) ? " for video — export it shorter, or at a lower bitrate." : " — try exporting it smaller."}`,
     };
   }
 
@@ -130,7 +170,8 @@ export async function createMedia(
   if (!extension) {
     return {
       ok: false,
-      error: "That file type is not accepted. Upload a JPG, PNG, WebP, AVIF, GIF, SVG or PDF.",
+      error:
+        "That file type is not accepted. Upload a JPG, PNG, WebP, AVIF, GIF, SVG or PDF, or an MP4 or WebM video.",
     };
   }
 
@@ -159,7 +200,8 @@ export async function createMedia(
   // A PDF has no pixels, and sharp does not read SVG dimensions reliably
   // enough to store as truth. Both are stored as originals with no renditions,
   // which is exactly what the picker's fallback is for.
-  const raster = file.type.startsWith("image/") && file.type !== "image/svg+xml";
+  const raster =
+    file.type.startsWith("image/") && file.type !== "image/svg+xml";
 
   if (raster) {
     try {

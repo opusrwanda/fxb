@@ -3,7 +3,7 @@ import { getSection } from "@/cms/content/sections";
 import { Container } from "@/components/layout/container";
 import { getStories } from "@/cms/content/stories";
 import { Hero } from "@/components/sections/hero";
-import { getPageHeaderImage } from "@/cms/content/page-headers";
+import { getPageBanner } from "@/cms/content/page-headers";
 import { ImpactStories } from "@/components/sections/impact-stories";
 import { Reach } from "@/components/sections/our-impact/reach";
 import { Pill } from "@/components/ui/pill";
@@ -30,13 +30,14 @@ export const metadata: Metadata = {
 export default async function OurImpactPage() {
   const copy = await getSection("header:/our-impact");
   const storiesCopy = await getSection("band:impact-stories");
-  const banner = await getPageHeaderImage("/our-impact");
+  const banner = await getPageBanner("/our-impact");
   const stories = await getStories();
 
   return (
     <>
       <Hero
-        image={banner}
+        image={banner.image}
+        video={banner.video}
         headline={copy.heading ?? ""}
         body={copy.body}
         ctas={[

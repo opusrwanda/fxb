@@ -229,7 +229,9 @@ function Control({
       const options = mediaOptions.filter((option) =>
         field.accept === "document"
           ? option.mimeType === "application/pdf"
-          : option.mimeType.startsWith("image/"),
+          : field.accept === "video"
+            ? option.mimeType.startsWith("video/")
+            : option.mimeType.startsWith("image/"),
       );
       // Picked by looking at it rather than by reading a filename. Falls back
       // to this same list as a native select before hydration — see the note
@@ -241,7 +243,13 @@ function Control({
           describedBy={shared["aria-describedby"]}
           value={value ? Number(value) : null}
           options={options}
-          kind={field.accept === "document" ? "document" : "image"}
+          kind={
+            field.accept === "document"
+              ? "document"
+              : field.accept === "video"
+                ? "video"
+                : "image"
+          }
         />
       );
     }

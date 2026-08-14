@@ -7,7 +7,7 @@ import {
 import { getSiteDetails } from "@/cms/content/settings";
 import { Hero } from "@/components/sections/hero";
 import { getMilestones } from "@/cms/content/milestones";
-import { getPageHeaderImage } from "@/cms/content/page-headers";
+import { getPageBanner } from "@/cms/content/page-headers";
 import { Leadership } from "@/components/sections/leadership";
 import { OurStory } from "@/components/sections/our-story";
 import { VisionMission } from "@/components/sections/vision-mission";
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
  */
 export default async function WhoWeArePage() {
   const [banner, milestones, completed] = await Promise.all([
-    getPageHeaderImage("/who-we-are"),
+    getPageBanner("/who-we-are"),
     getMilestones(),
     getPhasedOutProgrammes(),
   ]);
@@ -50,7 +50,8 @@ export default async function WhoWeArePage() {
   return (
     <>
       <Hero
-        image={banner}
+        image={banner.image}
+        video={banner.video}
         headline="A local NGO, rooted here since 1995."
         body="FXB Rwanda is a registered Rwandan NGO and a member of FXB Global, carrying the legacy of François-Xavier Bagnoud into its fourth decade — across all four provinces and the City of Kigali."
         ctas={[
