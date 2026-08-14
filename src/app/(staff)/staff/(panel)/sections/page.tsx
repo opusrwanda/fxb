@@ -82,6 +82,7 @@ export default async function SectionsPage({
             title: String(formData.get(`item-${index}-title`) ?? "").trim(),
             body: String(formData.get(`item-${index}-body`) ?? "").trim() || undefined,
             icon: String(formData.get(`item-${index}-icon`) ?? "").trim() || undefined,
+            points: readPoints(String(formData.get(`item-${index}-points`) ?? "")),
           })).filter((item) => item.title !== "");
 
     await saveSection(key, {
@@ -383,6 +384,30 @@ function SectionItems({
 
             <div className="flex flex-col gap-2">
               <label
+                htmlFor={`${sectionKey}-item-${index}-points`}
+                className="text-sm font-semibold text-blue"
+              >
+                Points inside this block
+              </label>
+              <p className="text-[13px] leading-relaxed text-gray-80">
+                One per line. Put a dash between a point&rsquo;s name and its
+                sentence where it has both — “Home visits — coaching every
+                household”. Leave empty where the block is just a title and
+                some text.
+              </p>
+              <textarea
+                id={`${sectionKey}-item-${index}-points`}
+                name={`item-${index}-points`}
+                rows={4}
+                defaultValue={(item.points ?? [])
+                  .map((point) => (point.body ? `${point.title} — ${point.body}` : point.title))
+                  .join("\n")}
+                className={input}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label
                 htmlFor={`${sectionKey}-item-${index}-icon`}
                 className="text-sm font-semibold text-blue"
               >
@@ -411,4 +436,31 @@ function SectionItems({
       </div>
     </div>
   );
+}
+
+
+/**
+ * The points inside a block, read back out of one textarea.
+ *
+ * One per line, with an optional em or en dash separating a name from its
+ * sentence. A textarea rather than a repeating sub-form because these are
+ * short and there are often five of them: a form that nests is a form nobody
+ * fills in, and the dash is a convention somebody can see in the field itself
+ * rather than a rule they have to be told.
+ */
+function readPoints(raw: string): { title: string; body?: string }[] | undefined {
+  const points = raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [title, ...rest] = line.split(/\s+[—–-]\s+/);
+      const body = rest.join(" — ").trim();
+      return { title: title.trim(), body: body || undefined };
+    })
+    .filter((point) => point.title !== "");
+
+  // Undefined rather than an empty array, so a block with no points does not
+  // carry an empty list around in the JSON.
+  return points.length > 0 ? points : undefined;
 }

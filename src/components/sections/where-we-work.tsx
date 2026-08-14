@@ -199,10 +199,19 @@ function ProjectLink({
 export function WhereWeWork({
   programmes,
   completed = [],
+  copy,
 }: {
   programmes: Programme[];
   /** Phased-out projects. They colour their districts and nothing else. */
   completed?: Programme[];
+  /**
+   * The section's words, read by the page.
+   *
+   * This is a client component — the map filters itself as you click — so it
+   * cannot await them. The heading here is computed from the live counts and
+   * stays that way; only the line above it is editable.
+   */
+  copy?: { eyebrow?: string };
 }) {
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [active, setActive] = useState<string | null>(null);
@@ -310,7 +319,7 @@ export function WhereWeWork({
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                WHERE WE WORK
+                {copy?.eyebrow ?? "WHERE WE WORK"}
               </span>
             </div>
             <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">

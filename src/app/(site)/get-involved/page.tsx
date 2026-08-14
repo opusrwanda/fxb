@@ -42,6 +42,7 @@ const routes = [
 
 export default async function GetInvolvedPage() {
   const copy = await getSection("header:/get-involved");
+  const waysCopy = await getSection("get-involved:ways-in");
   const photos = await getPhotos(["fostering-03.jpg"]);
   const banner = await getPageHeaderImage("/get-involved");
   return (
@@ -71,7 +72,7 @@ export default async function GetInvolvedPage() {
                 </span>
               </div>
               <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-                Four ways in
+                {waysCopy.heading}
               </h2>
             </Reveal>
 

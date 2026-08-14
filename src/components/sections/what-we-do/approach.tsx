@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
+import { getSection } from "@/cms/content/sections";
+import { SECTORS as shipped } from "@/lib/sectors";
 import { Reveal } from "@/components/ui/reveal";
 import type { Img } from "@/cms/content/image";
 
@@ -39,18 +41,13 @@ import type { Img } from "@/cms/content/image";
  * further down and five do not, and a link that lands somewhere approximately
  * related is worse than no link at all.
  */
-const SECTORS = [
-  "Child protection",
-  "Education",
-  "Health",
-  "Nutrition",
-  "Economic empowerment",
-  "Agriculture",
-  "Water and sanitation",
-  "Climate resilience",
-  "Community health",
-];
-export function Approach({ image }: { image?: Img | null }) {
+export async function Approach({ image }: { image?: Img | null }) {
+  const approach = await getSection("what-we-do:approach");
+  const challenge = await getSection("what-we-do:challenge");
+  const sectors = await getSection("what-we-do:sectors");
+  const SECTORS =
+    sectors.items.length > 0 ? sectors.items.map((item) => item.title) : shipped;
+
   return (
     <>
       <section id="approach" className="scroll-mt-36 bg-white py-24 lg:py-32">
@@ -64,11 +61,11 @@ export function Approach({ image }: { image?: Img | null }) {
               <div className="flex items-center gap-4">
                 <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
                 <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                  OUR APPROACH
+                  {approach.eyebrow}
                 </span>
               </div>
               <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-balance text-blue lg:text-[42px] lg:leading-[1.08]">
-                Empowering communities through integrated development
+                {approach.heading}
               </h2>
             </Reveal>
 
@@ -161,11 +158,11 @@ export function Approach({ image }: { image?: Img | null }) {
               <div className="flex items-center gap-4">
                 <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
                 <span className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
-                  THE CHALLENGE
+                  {challenge.eyebrow}
                 </span>
               </div>
               <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
-                The challenge of child poverty
+                {challenge.heading}
               </h2>
             </Reveal>
 

@@ -537,6 +537,15 @@ export type SectionItem = {
   body?: string;
   /** An id from the site's own icon set, where the list is illustrated. */
   icon?: string;
+  /**
+   * A list inside the block — the interventions under a pillar, the focus
+   * areas on an intervention card, the sectors under the approach.
+   *
+   * One level deep and no further. Two would need a form that nests, and
+   * nothing on this site has ever wanted it: every list here is a flat run of
+   * short entries, some of which happen to carry a sentence.
+   */
+  points?: { title: string; body?: string }[];
 };
 
 export const sections = pgTable("sections", {

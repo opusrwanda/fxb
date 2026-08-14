@@ -38,6 +38,7 @@ const STEP = 170;
 
 export function TransformationJourney({
   copy,
+  items,
 }: {
   /**
    * The section's words, read by the page.
@@ -46,7 +47,20 @@ export function TransformationJourney({
    * page that renders it does, and the defaults stay in the registry.
    */
   copy?: { eyebrow?: string; heading?: string; body?: string };
+  /**
+   * The steps, from the panel where somebody has edited them.
+   *
+   * The step number is the position in the list rather than a field, so
+   * reordering or removing a phase cannot leave "3" above what is now the
+   * second one.
+   */
+  items?: { title: string; body?: string }[];
 }) {
+  const phases =
+    items && items.length > 0
+      ? items.map((item) => ({ period: item.title, body: item.body ?? "" }))
+      : journey.map((phase) => ({ period: phase.period, body: phase.body }));
+
   const ref = useRef<HTMLOListElement>(null);
   const [shown, setShown] = useState(false);
 
@@ -100,12 +114,12 @@ export function TransformationJourney({
           ref={ref}
           className="mt-16 grid gap-y-10 lg:mt-20 lg:grid-cols-4 lg:gap-x-10"
         >
-          {journey.map((phase, index) => {
+          {phases.map((phase, index) => {
             const last = index === journey.length - 1;
 
             return (
               <li
-                key={phase.step}
+                key={phase.period}
                 className="relative flex gap-6 lg:flex-col lg:gap-0"
               >
                 {/* Track and progress, two layers.
@@ -145,7 +159,7 @@ export function TransformationJourney({
                   style={{ transitionDelay: delay(index, 140) }}
                 >
                   <span className="font-display text-xl leading-none font-semibold text-blue tabular-nums">
-                    {phase.step}
+                    {index + 1}
                   </span>
                 </span>
 

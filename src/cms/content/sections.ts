@@ -4,6 +4,10 @@ import { db, media, sections } from "@/staff/db";
 import type { SectionItem } from "@/staff/db/schema";
 import { cached } from "./cache";
 import { image, type Img } from "./image";
+import { areas } from "@/lib/areas";
+import { SECTORS } from "@/lib/sectors";
+import { journey, pillars, principles } from "@/lib/fxbvillage";
+import { PILLAR_ICONS } from "@/lib/fxbvillage-icons";
 
 export type { SectionItem };
 
@@ -245,18 +249,34 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Transformation Journey band",
     eyebrow: "TRANSFORMATION JOURNEY",
     heading: "36 months to change a life, sustainably",
+    // The step number is the position in the list, so it is not a field
+    // somebody can get out of step with the order.
+    items: journey.map((phase) => ({ title: phase.period, body: phase.body })),
   },
   "what-we-do:principles": {
     page: "What We Do",
     label: "Guiding Principles band",
     eyebrow: "GUIDING PRINCIPLES",
     heading: "Built on three principles",
+    items: principles.map((principle) => ({
+      title: principle.title,
+      body: principle.body,
+    })),
   },
   "what-we-do:pillars": {
     page: "What We Do",
     label: "The Pillars band",
     eyebrow: "THE PILLARS",
     heading: "Five pillars, delivered together",
+    items: pillars.map((pillar) => ({
+      title: pillar.title,
+      body: pillar.lead,
+      icon: PILLAR_ICONS[pillar.id],
+      points: pillar.interventions.map((intervention) => ({
+        title: intervention.name,
+        body: intervention.body,
+      })),
+    })),
   },
   "what-we-do:why-it-works": {
     page: "What We Do",
@@ -269,11 +289,38 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Areas of Intervention band",
     eyebrow: "AREAS OF INTERVENTION",
     heading: "Four areas, one household",
+    items: areas.map((area) => ({
+      title: area.label,
+      body: area.blurb,
+      icon: area.id,
+      points: area.focus.map((focus) => ({ title: focus })),
+    })),
   },
   "what-we-do:projects-delivered": {
     page: "What We Do",
     label: "FXBVillage Projects band",
     eyebrow: "FXBVILLAGE PROJECTS",
+  },
+  "what-we-do:sectors": {
+    page: "What We Do",
+    label: "Sectors list (under Our Approach)",
+    items: SECTORS.map((sector) => ({ title: sector })),
+  },
+
+  /* ── Who We Are, continued ──────────────────────────────────────────────── */
+
+  "who-we-are:vision": {
+    page: "Who We Are",
+    label: "Vision, Mission & Values band",
+    eyebrow: "VISION, MISSION & VALUES",
+  },
+
+  /* ── Get Involved ───────────────────────────────────────────────────────── */
+
+  "get-involved:ways-in": {
+    page: "Get Involved",
+    label: "Four ways in band",
+    heading: "Four ways in",
   },
 
   /* ── Our Impact ─────────────────────────────────────────────────────────── */

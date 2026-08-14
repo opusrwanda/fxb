@@ -37,8 +37,18 @@ export async function ModelPrinciples() {
 
           <Reveal delay={140} className="lg:col-span-7 lg:col-start-6">
             <Accordion
-              items={principles.map((principle) => ({
-                id: principle.id,
+              // The accordion wants an id per panel. Editable principles have
+              // no id of their own — a title is what identifies one to the
+              // person who typed it — so the position stands in. Stable within
+              // a render, which is all an accordion needs it for.
+              items={(copy.items.length > 0
+                ? copy.items
+                : principles.map((principle) => ({
+                    title: principle.title,
+                    body: principle.body,
+                  }))
+              ).map((principle, index) => ({
+                id: `principle-${index}`,
                 title: principle.title,
                 content: (
                   <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">

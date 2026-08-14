@@ -1,4 +1,5 @@
 import { Container } from "@/components/layout/container";
+import { getSection } from "@/cms/content/sections";
 import { Reveal } from "@/components/ui/reveal";
 import type { SiteDetails } from "@/cms/content/settings";
 
@@ -73,14 +74,15 @@ function emphasise(text: string, phrases: readonly string[]) {
     );
 }
 
-export function VisionMission({ details }: { details: SiteDetails }) {
+export async function VisionMission({ details }: { details: SiteDetails }) {
+  const copy = await getSection("who-we-are:vision");
   return (
     <section id="vision" className="scroll-mt-32 bg-blue py-32 lg:py-48">
       <Container>
         <Reveal className="flex items-center gap-4">
           <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
           <span className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
-            VISION, MISSION & VALUES
+            {copy.eyebrow}
           </span>
         </Reveal>
 

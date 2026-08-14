@@ -21,6 +21,36 @@ import { photo } from "@/lib/photos";
  */
 export async function AreasOfIntervention() {
   const copy = await getSection("what-we-do:areas");
+
+  /**
+   * The cards, with the panel's words over the code's structure.
+   *
+   * The length follows the panel once anything has been edited there, so
+   * removing a card removes it. Everything a card needs that is not words —
+   * its anchor, its photograph, the id the home page's pillars link to — comes
+   * from the array below by position, because none of those is a thing anybody
+   * would want to type. A fifth card added in the panel therefore has no
+   * photograph of its own and renders without one rather than borrowing
+   * somebody else's.
+   */
+  const cards = (
+    copy.items.length > 0
+      ? copy.items
+      : areas.map((area) => ({
+          title: area.label,
+          body: area.blurb,
+          icon: area.id,
+          points: area.focus.map((focus) => ({ title: focus })),
+        }))
+  ).map((item, index) => ({
+    id: areas[index]?.id ?? `area-${index}`,
+    label: item.title,
+    blurb: item.body ?? "",
+    icon: (item.icon ?? areas[index]?.id) as IconId | undefined,
+    focus: (item.points ?? []).map((point) => point.title),
+    photo: areas[index]?.photo,
+    alt: areas[index]?.alt ?? "",
+  }));
   return (
     <SectionBand section={copy} id="areas" className="scroll-mt-36 bg-green-10 py-24 lg:py-32">
       <Container>
@@ -43,12 +73,17 @@ export async function AreasOfIntervention() {
         </Reveal>
 
         <ul className="mt-14 grid gap-8 lg:grid-cols-2 lg:gap-10">
-          {areas.map((area, index) => (
+          {cards.map((area, index) => (
             <Reveal as="li" key={area.id} delay={60 + Math.min(index, 3) * 60}>
               {/* The anchor sits on the article rather than the Reveal
                   wrapper, which takes no id — and it is what the home page's
                   four pillars jump to, so it needs the header offset. */}
               <article id={area.id} className="flex h-full scroll-mt-32 flex-col">
+                {/* Absent rather than empty on a card added in the panel,
+                    which has no photograph of its own. `next/image` throws on
+                    a blank `src`, and a card without a picture reads perfectly
+                    well as one. */}
+                {area.photo && (
                 <div className="wedge relative aspect-16/10 overflow-hidden">
                   <Image
                     src={photo(area.photo).url}
@@ -58,6 +93,7 @@ export async function AreasOfIntervention() {
                     className="object-cover"
                   />
                 </div>
+                )}
 
                 {/* The guide draws one icon per area of intervention, keyed by
                     the same ids `areas.ts` uses, so the pairing is the data's
@@ -72,7 +108,9 @@ export async function AreasOfIntervention() {
                       the container it looked like it wanted: 56px, tinted, with
                       the drawing inset 12px on every side. */}
                   <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-blue-08">
-                    <BrandIcon id={area.id as IconId} className="size-8" />
+                    {area.icon && (
+                      <BrandIcon id={area.icon} className="size-8" />
+                    )}
                   </span>
                   <h3 className="text-[28px] font-bold tracking-[-0.02em] text-blue lg:text-[32px]">
                     {area.label}

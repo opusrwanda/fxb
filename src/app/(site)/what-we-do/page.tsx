@@ -105,7 +105,7 @@ export default async function WhatWeDoPage() {
         </PhotoBand>
       )}
 
-      <TransformationJourney copy={journeyCopy} />
+      <TransformationJourney copy={journeyCopy} items={journeyCopy.items} />
       <ModelPrinciples />
 
       {photos["fxbvillage-tlf-11.jpg"] && (

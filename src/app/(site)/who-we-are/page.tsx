@@ -41,6 +41,7 @@ export default async function WhoWeArePage() {
   // are two bands of one page, and awaiting them one after the other would make
   // the second query wait on the first for no reason.
   const storyCopy = await getSection("who-we-are:story");
+  const mapCopy = await getSection("who-we-are:where-we-work");
   const [details, programmes] = await Promise.all([
     getSiteDetails(),
     getCurrentProgrammes(),
@@ -60,7 +61,7 @@ export default async function WhoWeArePage() {
 
       <OurStory milestones={milestones} copy={storyCopy} />
       <VisionMission details={details} />
-      <WhereWeWork programmes={programmes} completed={completed} />
+      <WhereWeWork programmes={programmes} completed={completed} copy={mapCopy} />
       <Leadership />
     </>
   );

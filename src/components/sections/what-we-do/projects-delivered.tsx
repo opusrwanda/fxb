@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
+import { getSection } from "@/cms/content/sections";
 import { Counter } from "@/components/ui/counter";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
@@ -30,6 +31,7 @@ import { photo } from "@/lib/photos";
  * `Counter`, so the behaviour under reduced motion is the same too.
  */
 export async function ProjectsDelivered() {
+  const copy = await getSection("what-we-do:projects-delivered");
   const { projectsDelivered } = await getReach();
   const image = photo("itap-closing-rwamagana-01");
 
@@ -51,7 +53,7 @@ export async function ProjectsDelivered() {
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-white">
-                FXBVILLAGE PROJECTS
+                {copy.eyebrow}
               </span>
             </div>
 

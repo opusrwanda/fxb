@@ -3,6 +3,7 @@ import { Container } from "@/components/layout/container";
 import { SectionBand } from "@/components/layout/section-band";
 import { getSection } from "@/cms/content/sections";
 import { Reveal } from "@/components/ui/reveal";
+import { PILLAR_ICONS } from "@/lib/fxbvillage-icons";
 import { pillars } from "@/lib/fxbvillage";
 import { getPhotos } from "@/cms/content/photos";
 import { BrandIcon, type IconId } from "@/components/brand/icon";
@@ -46,23 +47,6 @@ import { BrandIcon, type IconId } from "@/components/brand/icon";
  * brief's words and nothing else — no filenames, no layout. Falling off the end
  * of this list is survivable: the panel simply renders without a picture.
  */
-/**
- * The brand icon for each pillar.
- *
- * The guide draws one per pillar and they were sitting in the set unused — the
- * areas of intervention were the only section reading it. Four ids match the
- * pillar's own; `health-and-wash` is drawn as `wash-and-health`, which is the
- * one place the two vocabularies disagree and the reason this is a map rather
- * than a cast.
- */
-const PILLAR_ICONS: Record<string, IconId> = {
-  "home-visits-and-coaching": "home-visits-and-coaching",
-  "economic-empowerment": "economic-empowerment",
-  "nutrition-and-food-security": "nutrition-and-food-security",
-  "education-and-access-to-information": "education-and-access-to-information",
-  "health-and-wash": "wash-and-health",
-};
-
 const PILLAR_PHOTOS = [
   "sugira-muryango-02.jpg", // home visits and coaching
   "fxbvillage-tlf-11.jpg", // economic empowerment
@@ -73,6 +57,40 @@ const PILLAR_PHOTOS = [
 
 export async function ModelPillars() {
   const copy = await getSection("what-we-do:pillars");
+
+  /**
+   * The pillars, with the panel's words over the code's structure.
+   *
+   * Same arrangement as the Areas cards: the length follows the panel once
+   * anything has been edited there, and the photograph — which is not a thing
+   * anybody would want to type — comes from the array below by position. A
+   * sixth pillar added in the panel renders without one.
+   */
+  const cards = (
+    copy.items.length > 0
+      ? copy.items
+      : pillars.map((pillar) => ({
+          title: pillar.title,
+          body: pillar.lead,
+          icon: PILLAR_ICONS[pillar.id],
+          points: pillar.interventions.map((intervention) => ({
+            title: intervention.name,
+            body: intervention.body,
+          })),
+        }))
+  ).map((item, index) => ({
+    key: `${index}-${item.title}`,
+    title: item.title,
+    lead: item.body,
+    icon: (item.icon ?? PILLAR_ICONS[pillars[index]?.id ?? ""]) as
+      | IconId
+      | undefined,
+    interventions: (item.points ?? []).map((point) => ({
+      name: point.title,
+      body: point.body ?? "",
+    })),
+    photo: PILLAR_PHOTOS[index],
+  }));
   const photos = await getPhotos(PILLAR_PHOTOS);
 
   return (
@@ -99,12 +117,12 @@ export async function ModelPillars() {
           scroll to after the final pillar has stuck, or the last one is still
           moving when the section ends and never gets a moment of its own. */}
       <ol className="mt-14 lg:mt-20">
-        {pillars.map((pillar, index) => {
-          const image = photos[PILLAR_PHOTOS[index]];
+        {cards.map((pillar, index) => {
+          const image = pillar.photo ? photos[pillar.photo] : undefined;
 
           return (
             <li
-              key={pillar.id}
+              key={pillar.key}
               // Only where a panel fits on the screen.
               //
               // A sticky element taller than the viewport pins its top and
@@ -136,9 +154,9 @@ export async function ModelPillars() {
                             says what the pillar is about, the number says where
                             it sits in the five. */}
                         <div className="flex items-center gap-4">
-                          {PILLAR_ICONS[pillar.id] && (
+                          {pillar.icon && (
                             <BrandIcon
-                              id={PILLAR_ICONS[pillar.id]}
+                              id={pillar.icon}
                               className="size-11 text-white"
                             />
                           )}
