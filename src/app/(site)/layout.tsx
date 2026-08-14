@@ -5,6 +5,8 @@ import { getLatestAnnualReport } from "@/cms/content/publications";
 import { getSiteDetails } from "@/cms/content/settings";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { PromoBanner } from "@/components/layout/promo-banner";
+import { getPromoBanner } from "@/cms/content/banner";
 
 /**
  * Poppins, in the five weights the brand sheet names.
@@ -67,9 +69,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [details, report] = await Promise.all([
+  const [details, report, banner] = await Promise.all([
     getSiteDetails(),
     getLatestAnnualReport(),
+    getPromoBanner(),
   ]);
 
   return (
@@ -84,9 +87,14 @@ export default async function RootLayout({
         >
           Skip to content
         </a>
+        {/* Above the header, and pinned there. Renders nothing unless a
+            campaign is switched on and this is the home page. */}
+        <PromoBanner banner={banner} />
+
         <SiteHeader
           details={details}
           report={report && { title: report.title, slug: report.slug }}
+          hasPromo={banner !== null}
         />
         <main id="main" className="lg:col-span-7 lg:col-start-6">
           {children}

@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import {
   DEFAULT_VALUES,
   type ImpactData,
+  type PromoBannerData,
   type SiteSettingsData,
 } from "@/staff/db/schema";
 import { requireAdmin } from "@/staff/auth/guard";
@@ -15,6 +16,7 @@ import {
   isGlobal,
   PLATFORMS,
   saveImpact,
+  savePromoBanner,
   saveSiteSettings,
 } from "@/staff/queries/globals";
 
@@ -24,7 +26,14 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return { title: slug === "impact" ? "Impact figures" : "Site details" };
+  return {
+    title:
+      slug === "impact"
+        ? "Impact figures"
+        : slug === "banner"
+          ? "Home page banner"
+          : "Site details",
+  };
 }
 
 const input =
@@ -80,11 +89,11 @@ function Field({
 }
 
 /**
- * The two single documents.
+ * The single documents.
  *
  * A global has no listing and no "add another", because there is one office
- * address and one set of reach figures. So this is the whole of it: open, edit,
- * save.
+ * address, one set of reach figures and one banner. So this is the whole of
+ * it: open, edit, save.
  */
 export default async function GlobalPage({
   params,
@@ -97,22 +106,32 @@ export default async function GlobalPage({
   const { saved } = await searchParams;
   if (!isGlobal(slug)) notFound();
 
-  // Both globals are Settings: the organisation's own address and phone
-  // number, and the reach figures printed across the home page. Admin only.
+  // Every global is Settings: the organisation's own address and phone number,
+  // the reach figures printed across the home page, and the campaign strip
+  // above it. Admin only.
   await requireAdmin(slug);
 
   const isImpact = slug === "impact";
-  const title = isImpact ? "Impact figures" : "Site details";
+  const isBanner = slug === "banner";
+  const title = isImpact
+    ? "Impact figures"
+    : isBanner
+      ? "Home page banner"
+      : "Site details";
 
   const [data, mediaOptions] = await Promise.all([
-    isImpact
-      ? getGlobal<ImpactData>("impact")
-      : getGlobal<SiteSettingsData>("site-details"),
+    getGlobal<ImpactData | SiteSettingsData | PromoBannerData>(slug),
     getMediaOptions(),
   ]);
 
   const impact = (data ?? { figures: [], projectsDelivered: 0, note: null }) as ImpactData;
   const site = data as SiteSettingsData | null;
+  const banner = (data ?? {
+    enabled: false,
+    imageId: null,
+    href: "",
+    until: null,
+  }) as PromoBannerData;
 
   // A spare blank row, so adding a figure does not need a button that adds one.
   const figureCount = isImpact ? impact.figures.length + 1 : 0;
@@ -121,6 +140,7 @@ export default async function GlobalPage({
     "use server";
     await requireAdmin(slug);
     if (isImpact) await saveImpact(formData, figureCount);
+    else if (isBanner) await savePromoBanner(formData);
     else await saveSiteSettings(formData);
     redirect(`/staff/globals/${slug}?saved=1`);
   }
@@ -141,7 +161,9 @@ export default async function GlobalPage({
       <p className="mt-3 max-w-[58ch] text-base leading-relaxed text-gray">
         {isImpact
           ? "The reach figures on the home page and Our Impact. Leave a number blank where MEL has not split it out — the site shows the block without a figure rather than inventing one."
-          : "The address, phone, email, social links, vision and mission that appear across the website."}
+          : isBanner
+            ? "A strip across the top of the home page, for the weeks when something is running that the whole site should lead with — Kwibuka, a fundraising appeal. Off the rest of the year."
+            : "The address, phone, email, social links, vision and mission that appear across the website."}
       </p>
 
       {saved && (
@@ -235,6 +257,69 @@ export default async function GlobalPage({
                 );
               })}
             </div>
+          </>
+        ) : isBanner ? (
+          <>
+            {/* The switch first, because it is the field that is actually
+                touched. The picture and the link are set once when a campaign
+                is prepared; this is what turns it on the morning it starts and
+                off the morning it ends. */}
+            <label className="flex cursor-pointer items-start gap-3 rounded-card border border-gray-15 p-5 transition-colors duration-300 has-checked:border-blue has-checked:bg-blue-08">
+              <input
+                type="checkbox"
+                name="enabled"
+                defaultChecked={banner.enabled}
+                className="mt-0.5 size-4 shrink-0 accent-blue"
+              />
+              <span>
+                <span className="block text-[15px] font-semibold text-blue">
+                  Show the banner on the home page
+                </span>
+                <span className="mt-1 block text-[13px] leading-relaxed text-gray">
+                  Switch it off when the campaign ends. The picture and the link
+                  are kept, so bringing it back next year is this tick and
+                  nothing else.
+                </span>
+              </span>
+            </label>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="g-imageId" className="text-sm font-semibold text-blue">
+                Banner image
+              </label>
+              <p id="g-imageId-help" className="text-[13px] leading-relaxed text-gray-80">
+                A wide, short strip — around 2400 × 300 pixels. It runs the full
+                width of the screen at about 56 pixels tall, so anything close
+                to square will be cropped to a band through its middle. Upload
+                it to the library first; the description you gave it there is
+                what a screen reader reads out, so it should say what the
+                campaign is.
+              </p>
+              <MediaPicker
+                id="g-imageId"
+                name="imageId"
+                value={banner.imageId}
+                kind="image"
+                options={mediaOptions.filter((option) =>
+                  option.mimeType.startsWith("image/"),
+                )}
+              />
+            </div>
+
+            <Field
+              label="Where it goes when clicked"
+              name="href"
+              value={banner.href}
+              help="A page on this site, starting with a slash — /get-involved/donate — or a full address beginning https:// for somewhere else. Leave it empty and the strip shows without being clickable."
+            />
+
+            <Field
+              label="Stop showing after"
+              name="until"
+              type="date"
+              value={banner.until}
+              help="Optional, and the field that stops a Kwibuka strip still being up in June. The banner shows through this day and takes itself down the morning after. Leave it empty to run until you switch it off."
+            />
           </>
         ) : (
           <>

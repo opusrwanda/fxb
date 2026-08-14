@@ -101,6 +101,7 @@ const AREAS: Record<string, Area> = {
   users: "settings",
   "site-settings": "settings",
   impact: "settings",
+  banner: "settings",
 };
 
 /**

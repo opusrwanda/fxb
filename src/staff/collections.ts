@@ -8,6 +8,7 @@ import {
   Inbox,
   Mail,
   Map,
+  Megaphone,
   Milestone,
   Newspaper,
   Send,
@@ -43,7 +44,7 @@ export type CollectionKey =
   | "opportunities"
   | "media";
 
-export type GlobalKey = "site-settings" | "impact";
+export type GlobalKey = "site-settings" | "impact" | "banner";
 
 export type Entry = {
   key: string;
@@ -168,6 +169,16 @@ export const globals: Entry[] = [
     singular: "impact figures",
     description: "The reach figures on the home page and Our Impact.",
     icon: Sparkles,
+    group: "Settings",
+  },
+  {
+    key: "banner",
+    slug: "banner",
+    label: "Home page banner",
+    singular: "home page banner",
+    description:
+      "A campaign strip across the top of the home page — Kwibuka, a fundraising appeal. Off the rest of the year.",
+    icon: Megaphone,
     group: "Settings",
   },
 ];

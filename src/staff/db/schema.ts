@@ -566,6 +566,32 @@ export type ImpactData = {
 };
 
 /**
+ * The strip across the top of the home page.
+ *
+ * For the weeks when something is running that the whole site should lead
+ * with — Kwibuka, a fundraising appeal — and nothing the rest of the year.
+ *
+ * A picture and a link, and deliberately nothing else. FXB's campaigns arrive
+ * as artwork already made for the poster and the Instagram post, so a banner
+ * that let somebody retype the words in a text field would be a second version
+ * of a message that already exists, drifting from the first.
+ *
+ * `until` is a date the banner stops showing by itself. It is optional and it
+ * is the field that stops a Kwibuka strip still being up in June: a banner
+ * comes down when somebody remembers, and the whole point of a banner is that
+ * it is up during a week when everybody is busy.
+ */
+export type PromoBannerData = {
+  enabled: boolean;
+  /** A row in `media`. The image's own `alt` is what a screen reader reads. */
+  imageId: number | null;
+  /** Where it goes when clicked. Internal path or full URL. */
+  href: string;
+  /** ISO date, or null to run until switched off. Inclusive — the last day it shows. */
+  until: string | null;
+};
+
+/**
  * Globals — the documents a site has exactly one of.
  *
  * One table with a slug and a `jsonb` payload, rather than a table per global.

@@ -1,22 +1,23 @@
 import { eq } from "drizzle-orm";
 
 import { db, globals } from "../db";
-import type { ImpactData, SiteSettingsData } from "../db/schema";
+import type { ImpactData, PromoBannerData, SiteSettingsData } from "../db/schema";
 import { bust } from "@/cms/revalidate";
 
 /**
- * The two single documents.
+ * The single documents.
  *
- * Both are one `jsonb` payload, so reading and writing them is reading and
+ * Each is one `jsonb` payload, so reading and writing one is reading and
  * writing one row. The forms are hand-built rather than generated: there are
- * exactly two of these, they have nested shapes the generic field system does
- * not cover, and a bespoke form for each is less code than the machinery that
- * would generate them.
+ * three of these, they have nested shapes the generic field system does not
+ * cover, and a bespoke form each is less code than the machinery that would
+ * generate them.
  */
 
 export const GLOBAL_SLUGS = {
   "site-details": "site-settings",
   impact: "impact",
+  banner: "promo-banner",
 } as const;
 
 export type GlobalRoute = keyof typeof GLOBAL_SLUGS;
@@ -121,4 +122,25 @@ export async function saveImpact(form: FormData, figureCount: number) {
   };
 
   await put("impact", data);
+}
+
+/**
+ * The home page's campaign strip.
+ *
+ * Switched off rather than emptied when a campaign ends: keeping the picture
+ * and the link means next April is a tick rather than finding the artwork
+ * again. `enabled` is the only thing that has to change to bring it back.
+ */
+export async function savePromoBanner(form: FormData) {
+  const imageId = str(form, "imageId");
+  const until = str(form, "until");
+
+  const data: PromoBannerData = {
+    enabled: form.get("enabled") === "on",
+    imageId: imageId === "" ? null : Number(imageId),
+    href: str(form, "href"),
+    until: until === "" ? null : until,
+  };
+
+  await put("banner", data);
 }

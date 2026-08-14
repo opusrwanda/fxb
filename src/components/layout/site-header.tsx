@@ -9,6 +9,7 @@ import { AnnualReportBanner } from "@/components/layout/annual-report-banner";
 import { Container } from "@/components/layout/container";
 import type { SiteDetails } from "@/cms/content/settings";
 import { hasTransparentHeader, primaryNav } from "@/lib/site";
+import { PROMO_OFFSET, showsPromo } from "@/components/layout/promo-banner";
 
 /**
  * Site header — two states, one continuous transition.
@@ -28,11 +29,20 @@ import { hasTransparentHeader, primaryNav } from "@/lib/site";
 export function SiteHeader({
   details,
   report,
+  hasPromo = false,
 }: {
   /** The contact details and external systems, from the CMS. */
   details: SiteDetails;
   /** The newest annual report, for the announcement. Null when there is none. */
   report: { title: string; slug: string } | null;
+  /**
+   * Whether a campaign strip is pinned above this bar.
+   *
+   * The layout knows the banner exists; only this component knows the route.
+   * Both halves of the answer are needed, so the data comes in as a prop and
+   * the route test happens here — see `showsPromo`.
+   */
+  hasPromo?: boolean;
 }) {
   const pathname = usePathname();
   const [pinned, setPinned] = useState(() => !hasTransparentHeader(pathname));
@@ -44,6 +54,9 @@ export function SiteHeader({
   const drawerRef = useRef<HTMLDivElement>(null);
 
   const openPanel = primaryNav.find((item) => item.href === panel);
+
+  // A banner that exists, on a route that shows one.
+  const promo = hasPromo && showsPromo(pathname);
 
   // Reset on navigation, during render rather than in an effect, so the header
   // never paints the wrong state for a frame. The drawer closes with it.
@@ -156,7 +169,11 @@ export function SiteHeader({
         if (event.key === "Escape") setPanel(null);
       }}
       className={[
-        "fixed inset-x-0 top-0 z-50 motion-size transition-[background-color,box-shadow,border-color] duration-500 ease-(--ease-standard)",
+        "fixed inset-x-0 z-50 motion-size transition-[background-color,box-shadow,border-color] duration-500 ease-(--ease-standard)",
+        // Pushed down by exactly the campaign strip's height when one is
+        // showing. The two measurements are declared together in
+        // `promo-banner.tsx` so they cannot drift apart at one breakpoint.
+        promo ? PROMO_OFFSET : "top-0",
         // `solid`, not `pinned`. The logo and the nav links already switched on
         // `solid`, so keying the fill off `pinned` meant a hover at the top of
         // a page collapsed the bar and darkened its type while leaving the
