@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
@@ -139,6 +140,31 @@ function unreadableParts(json: string): string[] {
   }
 }
 
+/**
+ * Keeps Lexical's own read/write flag in step with the prop.
+ *
+ * `initialConfig` is read once, when the composer is created, and never again —
+ * the name is not a hint, it is the whole contract. Everything else on this
+ * page reacted to pressing Edit: the toolbar appeared, the fieldset came alive,
+ * the heading changed. The body did not, because React saw the same component
+ * in the same place and kept the editor it already had, still holding the
+ * `editable: false` it was born with. Reloading the page built a new one, which
+ * is why the panel worked if you refreshed and looked broken if you did not.
+ *
+ * Setting it in an effect is the supported way round. Remounting the editor
+ * would also work and would throw away the undo history and the cursor every
+ * time somebody switched mode.
+ */
+function EditableSync({ editable }: { editable: boolean }) {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    editor.setEditable(editable);
+  }, [editor, editable]);
+
+  return null;
+}
+
 export function RichTextEditor({
   name,
   initialJson,
@@ -247,6 +273,10 @@ export function RichTextEditor({
           },
         }}
       >
+        {/* Keeps Lexical's flag in step with the prop — see above. Without it
+            the panel needs a refresh before the body will accept typing. */}
+        <EditableSync editable={!readOnly && !locked} />
+
         {!readOnly && !locked && <Toolbar />}
 
         <RichTextPlugin
