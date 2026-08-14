@@ -8,7 +8,14 @@
  * with whatever it holds.
  *
  * Nothing is invented. A 2024 Annual Report the site claims to have and cannot
- * produce is worse than a page that says it is coming.
+ * produce is worse than a page that does not mention one.
+ *
+ * Each category also used to carry an `examples` list — what the brief said
+ * belonged on that shelf — rendered whenever the shelf was empty under the
+ * heading "COMING TO THIS PAGE". It has gone with the panel that showed it: a
+ * list of documents drawn from a brief is not a list of documents FXB has, and
+ * printing one next to an invitation to email for a copy asked the public to
+ * write in for things nobody had promised existed.
  */
 export type PublicationCategory =
   | "annual-report"
@@ -39,8 +46,6 @@ export const categories: {
   /** Anchor the header menu links to, where it has one. */
   anchor: string;
   description: string;
-  /** What the brief says belongs here, shown while the shelf is empty. */
-  examples: string[];
 }[] = [
   {
     id: "annual-report",
@@ -48,7 +53,6 @@ export const categories: {
     anchor: "annual-reports",
     description:
       "A full account of each year's programmes, reach and finances.",
-    examples: ["2025 Annual Report", "2024 Annual Report", "2023 Annual Report"],
   },
   {
     id: "project-report",
@@ -56,13 +60,6 @@ export const categories: {
     anchor: "project-reports",
     description:
       "Evidence from the field: what we set out to do, what happened, and what we learned.",
-    examples: [
-      "Final reports",
-      "Baseline studies",
-      "Mid-term evaluations",
-      "Endline evaluations",
-      "Lessons learned",
-    ],
   },
   {
     id: "policy",
@@ -70,24 +67,12 @@ export const categories: {
     anchor: "policy-documents",
     description:
       "How we work, and the commitments we hold ourselves to — particularly around children.",
-    examples: [
-      "Safeguarding Policy",
-      "Child Protection Policy",
-      "Code of Conduct",
-      "Strategic Plan",
-    ],
   },
   {
     id: "brochure",
     label: "Brochures & Factsheets",
     anchor: "brochures",
     description: "Short introductions to the organisation and its programmes.",
-    examples: [
-      "Organisation profile",
-      "Programme brochures",
-      "Project factsheets",
-      "Infographics",
-    ],
   },
 ];
 
@@ -114,9 +99,9 @@ export const categories: {
  *
  * Covers are real FXB Rwanda photographs used as stand-in cover art.
  *
- * Deleting this array restores the "coming to this page" panels exactly as they
- * were — the shelves already handle empty, and that is still the correct state
- * until FXB supplies the files.
+ * Deleting this array changes nothing on the site. The rows it seeded live in
+ * the database now, and an empty shelf no longer renders anything at all — the
+ * category simply drops off the page until something is published on it.
  */
 export const publications: Publication[] = [
   {

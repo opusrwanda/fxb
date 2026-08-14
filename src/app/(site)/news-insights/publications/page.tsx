@@ -11,7 +11,7 @@ import {
   formatPublicationDate,
   getPublications,
 } from "@/cms/content/publications";
-import { getSiteDetails } from "@/cms/content/settings";
+import { EmptyState } from "@/components/ui/empty-state";
 import { categories } from "@/lib/publications";
 
 export const metadata: Metadata = {
@@ -31,17 +31,30 @@ export const metadata: Metadata = {
  * Our Impact page both link to, and the filter reads it on arrival.
  *
  * Every entry shows what the brief asks for — cover, title, category, date,
- * file size, download. A shelf with nothing published on it lists what belongs
- * there instead, which is real information — a visitor learns the Safeguarding
- * Policy exists and can ask for it — rather than a spinner. That is still most
- * of them: the titles are in the CMS as drafts, waiting for FXB to attach the
- * documents.
+ * file size, download.
+ *
+ * A CATEGORY WITH NOTHING PUBLISHED IS NOT ON THE PAGE. It used to render a
+ * panel headed "COMING TO THIS PAGE", listing what the original brief said
+ * belonged in that category and inviting the reader to email for a copy. Three
+ * of the four shelves were showing it, and those lists were never an inventory
+ * — "Safeguarding Policy", "Endline evaluations" and the rest came out of a
+ * brief, so the site was asking the public to write in for documents nobody
+ * had said existed.
+ *
+ * It is the same mistake the article pages made with their "being migrated"
+ * panel, and it has the same answer: a page shows what FXB has. An empty shelf
+ * is not one waiting to be filled, it is one that is not there — and its
+ * filter chip goes with it, so the filter only ever offers something to see.
  */
 export default async function PublicationsPage() {
-  const [publications, details] = await Promise.all([
-    getPublications(),
-    getSiteDetails(),
-  ]);
+  const publications = await getPublications();
+
+  const shelves = categories
+    .map((category) => ({
+      category,
+      items: publications.filter((item) => item.category === category.id),
+    }))
+    .filter(({ items }) => items.length > 0);
 
   return (
     <>
@@ -57,35 +70,45 @@ export default async function PublicationsPage() {
 
       <section className="bg-white pt-14 pb-24 lg:pt-16 lg:pb-32">
         <Container>
-          <PublicationTabs
-            tabs={categories.map(({ id, label, anchor }) => ({
-              id,
-              label,
-              anchor,
-            }))}
-            shelves={Object.fromEntries(
-              categories.map((category) => {
-                const items = publications.filter(
-                  (item) => item.category === category.id,
-                );
+          {shelves.length === 0 ? (
+            // Nothing published in any category. The filter would be a row of
+            // no chips above a page of nothing, so the page says so instead.
+            <EmptyState
+              title="Nothing published yet"
+              body="Reports, policy documents and factsheets will appear here as they are published."
+              actions={[
+                {
+                  label: "Read our news",
+                  href: "/news-insights/news",
+                  primary: true,
+                },
+              ]}
+            />
+          ) : (
+            <PublicationTabs
+              tabs={shelves.map(({ category }) => ({
+                id: category.id,
+                label: category.label,
+                anchor: category.anchor,
+              }))}
+              shelves={Object.fromEntries(
+                shelves.map(({ category, items }) => {
+                  return [
+                    category.id,
+                    <div
+                      key={category.id}
+                      id={category.anchor}
+                      className="scroll-mt-36"
+                    >
+                      <Reveal className="flex flex-col gap-3">
+                        <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
+                          {category.label}
+                        </h2>
+                        <p className="max-w-[58ch] text-base leading-relaxed text-gray">
+                          {category.description}
+                        </p>
+                      </Reveal>
 
-                return [
-                  category.id,
-                  <div
-                    key={category.id}
-                    id={category.anchor}
-                    className="scroll-mt-36"
-                  >
-                    <Reveal className="flex flex-col gap-3">
-                      <h2 className="text-2xl font-bold tracking-[-0.02em] text-blue lg:text-[28px]">
-                        {category.label}
-                      </h2>
-                      <p className="max-w-[58ch] text-base leading-relaxed text-gray">
-                        {category.description}
-                      </p>
-                    </Reveal>
-
-                    {items.length > 0 ? (
                       <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {items.map((item, index) => (
                           <Reveal
@@ -171,42 +194,12 @@ export default async function PublicationsPage() {
                           </Reveal>
                         ))}
                       </ul>
-                    ) : (
-                      <Reveal
-                        delay={110}
-                        className="wedge mt-8 flex flex-col gap-5 bg-blue-08 p-8"
-                      >
-                        <p className="text-sm font-semibold tracking-[0.16em] text-gray-80">
-                          COMING TO THIS PAGE
-                        </p>
-                        <ul className="flex flex-wrap gap-2.5">
-                          {category.examples.map((example) => (
-                            <li
-                              key={example}
-                              className="rounded-full bg-white px-4 py-2 text-sm font-medium text-blue"
-                            >
-                              {example}
-                            </li>
-                          ))}
-                        </ul>
-                        <p className="max-w-[58ch] text-[15px] leading-relaxed text-gray">
-                          These are being prepared for publication. To request a
-                          copy in the meantime, email{" "}
-                          <a
-                            href={`mailto:${details.email}`}
-                            className="font-medium text-blue underline underline-offset-4 hover:text-green"
-                          >
-                            {details.email}
-                          </a>
-                          .
-                        </p>
-                      </Reveal>
-                    )}
-                  </div>,
-                ];
-              }),
-            )}
-          />
+                    </div>,
+                  ];
+                }),
+              )}
+            />
+          )}
         </Container>
       </section>
     </>
