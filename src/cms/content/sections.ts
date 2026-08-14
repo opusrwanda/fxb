@@ -199,6 +199,117 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     eyebrow: "MEDIA GALLERY",
     heading: "The work, as photographed",
   },
+
+  /* ── Who We Are ─────────────────────────────────────────────────────────── */
+
+  "who-we-are:story": {
+    page: "Who We Are",
+    label: "Our Story band",
+    eyebrow: "OUR STORY",
+    heading: "Four decades, one promise",
+  },
+  "who-we-are:leadership": {
+    page: "Who We Are",
+    label: "Leadership band",
+    eyebrow: "LEADERSHIP",
+    heading: "Board of Directors",
+  },
+  "who-we-are:where-we-work": {
+    page: "Who We Are",
+    label: "Where We Work band",
+    eyebrow: "WHERE WE WORK",
+  },
+
+  /* ── What We Do ─────────────────────────────────────────────────────────── */
+
+  "what-we-do:approach": {
+    page: "What We Do",
+    label: "Our Approach band",
+    eyebrow: "OUR APPROACH",
+    heading: "Empowering communities through integrated development",
+  },
+  "what-we-do:challenge": {
+    page: "What We Do",
+    label: "The Challenge band",
+    eyebrow: "THE CHALLENGE",
+    heading: "The challenge of child poverty",
+  },
+  "what-we-do:model-intro": {
+    page: "What We Do",
+    label: "FXBVillage Model band",
+    eyebrow: "THE FXBVILLAGE MODEL",
+    heading: "A holistic route out of poverty",
+  },
+  "what-we-do:journey": {
+    page: "What We Do",
+    label: "Transformation Journey band",
+    eyebrow: "TRANSFORMATION JOURNEY",
+    heading: "36 months to change a life, sustainably",
+  },
+  "what-we-do:principles": {
+    page: "What We Do",
+    label: "Guiding Principles band",
+    eyebrow: "GUIDING PRINCIPLES",
+    heading: "Built on three principles",
+  },
+  "what-we-do:pillars": {
+    page: "What We Do",
+    label: "The Pillars band",
+    eyebrow: "THE PILLARS",
+    heading: "Five pillars, delivered together",
+  },
+  "what-we-do:why-it-works": {
+    page: "What We Do",
+    label: "Why It Works band",
+    eyebrow: "WHY IT WORKS",
+    heading: "Integrated, and people-centred",
+  },
+  "what-we-do:areas": {
+    page: "What We Do",
+    label: "Areas of Intervention band",
+    eyebrow: "AREAS OF INTERVENTION",
+    heading: "Four areas, one household",
+  },
+  "what-we-do:projects-delivered": {
+    page: "What We Do",
+    label: "FXBVillage Projects band",
+    eyebrow: "FXBVILLAGE PROJECTS",
+  },
+
+  /* ── Our Impact ─────────────────────────────────────────────────────────── */
+
+  "our-impact:reach": {
+    page: "Our Impact",
+    label: "Results at a Glance band",
+    eyebrow: "RESULTS AT A GLANCE",
+    heading: "Our reach since 2012",
+  },
+
+  /* ── Bands that appear on several pages ─────────────────────────────────── */
+
+  "band:impact-stories": {
+    page: "Shared bands",
+    label: "Impact Stories carousel",
+    heading: "Behind every programme, a person",
+  },
+  "band:latest-news": {
+    page: "Shared bands",
+    label: "Latest News band",
+    eyebrow: "NEWS & INSIGHTS",
+    heading: "Latest from FXB Rwanda",
+  },
+  "band:partners": {
+    page: "Shared bands",
+    label: "Partners band",
+    eyebrow: "PARTNERS",
+    heading: "None of this was done alone",
+  },
+  "band:newsletter": {
+    page: "Shared bands",
+    label: "Newsletter signup band",
+    eyebrow: "NEWSLETTER",
+    heading: "Keep up with the work",
+  },
 };
 
 /**

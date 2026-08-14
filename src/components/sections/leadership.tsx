@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
+import { SectionBand } from "@/components/layout/section-band";
+import { getSection } from "@/cms/content/sections";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 import { getBoard } from "@/cms/content/people";
@@ -25,20 +27,21 @@ import { getSiteDetails } from "@/cms/content/settings";
  * that says Emmanuel KAYITANA is noise, not information.
  */
 export async function Leadership() {
+  const copy = await getSection("who-we-are:leadership");
   const [board, details] = await Promise.all([getBoard(), getSiteDetails()]);
 
   return (
-    <section id="leadership" className="scroll-mt-32 bg-white py-24 lg:py-32">
+    <SectionBand section={copy} id="leadership" className="scroll-mt-32 bg-white py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">
             <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
             <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-              LEADERSHIP
+              {copy.eyebrow}
             </span>
           </div>
           <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-            Board of Directors
+            {copy.heading}
           </h2>
         </Reveal>
 
@@ -101,6 +104,6 @@ export async function Leadership() {
           </Reveal>
         )}
       </Container>
-    </section>
+    </SectionBand>
   );
 }

@@ -29,7 +29,17 @@ type State =
   | { status: "idle" | "sending" }
   | { status: "ok" | "error"; message: string };
 
-export function NewsletterSignup() {
+export function NewsletterSignup({
+  copy,
+}: {
+  /**
+   * The section's words, read by the page.
+   *
+   * This is a client component, so it cannot await them itself. The server
+   * page that renders it does, and the defaults stay in the registry.
+   */
+  copy?: { eyebrow?: string; heading?: string; body?: string };
+}) {
   const [state, setState] = useState<State>({ status: "idle" });
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -76,12 +86,12 @@ export function NewsletterSignup() {
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                NEWSLETTER
+                {copy?.eyebrow ?? "NEWSLETTER"}
               </span>
             </div>
 
             <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-              Keep up with the work
+              {copy?.heading ?? "Keep up with the work"}
             </h2>
 
             <p className="mt-6 max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">

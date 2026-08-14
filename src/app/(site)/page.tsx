@@ -21,6 +21,7 @@ import { WhoWeAre } from "@/components/sections/who-we-are";
  */
 export default async function Home() {
   const copy = await getSection("header:/");
+  const storiesCopy = await getSection("band:impact-stories");
   const stories = await getStories();
 
   return (
@@ -44,7 +45,7 @@ export default async function Home() {
       <WhoWeAre />
       <WhatWeDo />
       <ImpactCounters />
-      <ImpactStories stories={stories} />
+      <ImpactStories stories={stories} heading={storiesCopy.heading} />
       <Partners />
       <LatestNews />
       {/* No signup section here. The footer below carries the real form on

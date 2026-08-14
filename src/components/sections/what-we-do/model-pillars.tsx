@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
+import { SectionBand } from "@/components/layout/section-band";
+import { getSection } from "@/cms/content/sections";
 import { Reveal } from "@/components/ui/reveal";
 import { pillars } from "@/lib/fxbvillage";
 import { getPhotos } from "@/cms/content/photos";
@@ -70,20 +72,21 @@ const PILLAR_PHOTOS = [
 ];
 
 export async function ModelPillars() {
+  const copy = await getSection("what-we-do:pillars");
   const photos = await getPhotos(PILLAR_PHOTOS);
 
   return (
-    <section id="pillars" className="scroll-mt-36 bg-blue py-24 lg:py-32">
+    <SectionBand section={copy} id="pillars" className="scroll-mt-36 bg-blue py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">
             <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
             <span className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
-              THE PILLARS
+              {copy.eyebrow}
             </span>
           </div>
           <h2 className="max-w-[24ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
-            Five pillars, delivered together
+            {copy.heading}
           </h2>
           <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
             The model integrates a set of mutually reinforcing pillars that work
@@ -196,6 +199,6 @@ export async function ModelPillars() {
           );
         })}
       </ol>
-    </section>
+    </SectionBand>
   );
 }

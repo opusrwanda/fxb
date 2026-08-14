@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSection } from "@/cms/content/sections";
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { Container } from "@/components/layout/container";
@@ -38,6 +39,7 @@ export const metadata: Metadata = {
  */
 export default async function NewslettersPage() {
   const newsletters = await getPublicationsIn("newsletter");
+  const newsletterCopy = await getSection("band:newsletter");
 
   return (
     <>
@@ -121,7 +123,7 @@ export default async function NewslettersPage() {
         )}
       </section>
 
-      <NewsletterSignup />
+      <NewsletterSignup copy={newsletterCopy} />
     </>
   );
 }

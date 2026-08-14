@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSection } from "@/cms/content/sections";
 import {
   getCurrentProgrammes,
   getPhasedOutProgrammes,
@@ -39,6 +40,7 @@ export default async function WhoWeArePage() {
   // Fetched together rather than inside each section: the vision and the map
   // are two bands of one page, and awaiting them one after the other would make
   // the second query wait on the first for no reason.
+  const storyCopy = await getSection("who-we-are:story");
   const [details, programmes] = await Promise.all([
     getSiteDetails(),
     getCurrentProgrammes(),
@@ -56,7 +58,7 @@ export default async function WhoWeArePage() {
         ]}
       />
 
-      <OurStory milestones={milestones} />
+      <OurStory milestones={milestones} copy={storyCopy} />
       <VisionMission details={details} />
       <WhereWeWork programmes={programmes} completed={completed} />
       <Leadership />

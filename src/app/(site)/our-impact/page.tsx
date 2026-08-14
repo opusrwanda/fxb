@@ -29,6 +29,7 @@ export const metadata: Metadata = {
  */
 export default async function OurImpactPage() {
   const copy = await getSection("header:/our-impact");
+  const storiesCopy = await getSection("band:impact-stories");
   const banner = await getPageHeaderImage("/our-impact");
   const stories = await getStories();
 
@@ -87,7 +88,7 @@ export default async function OurImpactPage() {
       </section>
 
       <Reach />
-      <ImpactStories stories={stories} />
+      <ImpactStories stories={stories} heading={storiesCopy.heading} />
 
       {/* Tinted, not solid blue. The stories carousel above is blue and the
           footer below is blue, so a third blue band in between made an

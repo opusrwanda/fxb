@@ -42,7 +42,20 @@ import type { Story } from "@/cms/content/stories";
  * more, it is off entirely on touch and under reduced motion, and it does not
  * engage at all on a viewport wide enough to show every story at once.
  */
-export function ImpactStories({ stories }: { stories: Story[] }) {
+export function ImpactStories({
+  stories,
+  heading,
+}: {
+  stories: Story[];
+  /**
+   * Passed in rather than fetched here.
+   *
+   * This is a client component — it measures the track with refs to drive the
+   * horizontal scroll — so it cannot await the section copy itself. The pages
+   * that render it are server components and read it for it.
+   */
+  heading?: string;
+}) {
   const trackRef = useRef<HTMLUListElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   /**
@@ -221,7 +234,7 @@ export function ImpactStories({ stories }: { stories: Story[] }) {
         <Container>
           <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
             <h2 className="max-w-[16ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
-              Behind every programme, a person
+              {heading ?? "Behind every programme, a person"}
             </h2>
             <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:pt-2 lg:text-lg">
               Programmes are counted in households reached. What they change is

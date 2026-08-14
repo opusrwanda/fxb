@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { BrandIcon, type IconId } from "@/components/brand/icon";
 import { Container } from "@/components/layout/container";
+import { SectionBand } from "@/components/layout/section-band";
+import { getSection } from "@/cms/content/sections";
 import { Reveal } from "@/components/ui/reveal";
 import { areas } from "@/lib/areas";
 import { photo } from "@/lib/photos";
@@ -17,20 +19,21 @@ import { photo } from "@/lib/photos";
  * each card shows what FXB has actually written: the focus areas listed under
  * the same four headings in the Our Impact section. See `areas.ts`.
  */
-export function AreasOfIntervention() {
+export async function AreasOfIntervention() {
+  const copy = await getSection("what-we-do:areas");
   return (
-    <section id="areas" className="scroll-mt-36 bg-green-10 py-24 lg:py-32">
+    <SectionBand section={copy} id="areas" className="scroll-mt-36 bg-green-10 py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                AREAS OF INTERVENTION
+                {copy.eyebrow}
               </span>
             </div>
             <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-              Four areas, one household
+              {copy.heading}
             </h2>
           </div>
           <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
@@ -99,6 +102,6 @@ export function AreasOfIntervention() {
           ))}
         </ul>
       </Container>
-    </section>
+    </SectionBand>
   );
 }

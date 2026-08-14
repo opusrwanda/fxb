@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
+import { SectionBand } from "@/components/layout/section-band";
+import { getSection } from "@/cms/content/sections";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 import { sdgs } from "@/lib/sdg";
@@ -22,20 +24,21 @@ import { sdgs } from "@/lib/sdg";
  * The set has gaps — 1, 2, 3, 4, 5, 6, 8, 13, 16, 17 — and the gaps matter:
  * this is the list FXB claims, not a run from one to seventeen.
  */
-export function WhyItWorks() {
+export async function WhyItWorks() {
+  const copy = await getSection("what-we-do:why-it-works");
   return (
-    <section id="why-it-works" className="scroll-mt-36 bg-white py-24 lg:py-32">
+    <SectionBand section={copy} id="why-it-works" className="scroll-mt-36 bg-white py-24 lg:py-32">
       <Container>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
           <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                WHY IT WORKS
+                {copy.eyebrow}
               </span>
             </div>
             <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-              Integrated, and people-centred
+              {copy.heading}
             </h2>
           </Reveal>
 
@@ -107,6 +110,6 @@ export function WhyItWorks() {
           </div>
         </Reveal>
       </Container>
-    </section>
+    </SectionBand>
   );
 }

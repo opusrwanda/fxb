@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
+import { SectionBand } from "@/components/layout/section-band";
+import { getSection } from "@/cms/content/sections";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 import { formatDate, isoDate } from "@/cms/content/date";
@@ -24,6 +26,7 @@ import { getNews } from "@/cms/content/news";
  * column past the height of the photograph next to it.
  */
 export async function LatestNews() {
+  const copy = await getSection("band:latest-news");
   const [lead, ...rest] = await getNews(4);
 
   // Nothing published. The home page drops the band rather than heading an
@@ -32,18 +35,18 @@ export async function LatestNews() {
   if (!lead) return null;
 
   return (
-    <section id="news" className="bg-white py-24 lg:py-32">
+    <SectionBand section={copy} id="news" className="bg-white py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                NEWS &amp; INSIGHTS
+                {copy.eyebrow}
               </span>
             </div>
             <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-              Latest from FXB Rwanda
+              {copy.heading}
             </h2>
           </div>
 
@@ -166,6 +169,6 @@ export async function LatestNews() {
           </ul>
         </div>
       </Container>
-    </section>
+    </SectionBand>
   );
 }

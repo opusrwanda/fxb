@@ -39,7 +39,19 @@ import type { Milestone } from "@/cms/content/milestones";
  */
 
 
-export function OurStory({ milestones }: { milestones: Milestone[] }) {
+export function OurStory({
+  milestones,
+  copy,
+}: {
+  milestones: Milestone[];
+  /**
+   * The section's words, read by the page.
+   *
+   * This is a client component — the timeline measures itself — so it cannot
+   * await them here. The server page that renders it does.
+   */
+  copy?: { eyebrow?: string; heading?: string; body?: string };
+}) {
   const track = useRef<HTMLOListElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -100,11 +112,11 @@ export function OurStory({ milestones }: { milestones: Milestone[] }) {
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                OUR STORY
+                {copy?.eyebrow ?? "OUR STORY"}
               </span>
             </div>
             <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-              Four decades, one promise
+              {copy?.heading ?? "Four decades, one promise"}
             </h2>
           </div>
 

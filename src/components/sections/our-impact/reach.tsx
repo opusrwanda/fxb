@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
+import { SectionBand } from "@/components/layout/section-band";
+import { getSection } from "@/cms/content/sections";
 import { Counter } from "@/components/ui/counter";
 import { Reveal } from "@/components/ui/reveal";
 import { getReach } from "@/cms/content/impact";
@@ -23,21 +25,22 @@ import { getReach } from "@/cms/content/impact";
  * from is a weaker claim, not a stronger one.
  */
 export async function Reach() {
+  const copy = await getSection("our-impact:reach");
   const reach = await getReach();
 
   return (
-    <section id="results" className="scroll-mt-36 bg-white py-32 lg:py-48">
+    <SectionBand section={copy} id="results" className="scroll-mt-36 bg-white py-32 lg:py-48">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                RESULTS AT A GLANCE
+                {copy.eyebrow}
               </span>
             </div>
             <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-              Our reach since 2012
+              {copy.heading}
             </h2>
           </div>
           <p className="max-w-[44ch] text-base leading-relaxed text-gray lg:text-[17px]">
@@ -124,6 +127,6 @@ export async function Reach() {
           </Reveal>
         )}
       </Container>
-    </section>
+    </SectionBand>
   );
 }

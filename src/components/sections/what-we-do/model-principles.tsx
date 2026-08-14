@@ -1,4 +1,6 @@
 import { Container } from "@/components/layout/container";
+import { SectionBand } from "@/components/layout/section-band";
+import { getSection } from "@/cms/content/sections";
 import { Accordion } from "@/components/ui/accordion";
 import { Reveal } from "@/components/ui/reveal";
 import { principles } from "@/lib/fxbvillage";
@@ -10,20 +12,21 @@ import { principles } from "@/lib/fxbvillage";
  * as props — so the only JavaScript this section ships is the open/close, not
  * the copy.
  */
-export function ModelPrinciples() {
+export async function ModelPrinciples() {
+  const copy = await getSection("what-we-do:principles");
   return (
-    <section id="principles" className="scroll-mt-36 bg-green-10 py-24 lg:py-32">
+    <SectionBand section={copy} id="principles" className="scroll-mt-36 bg-green-10 py-24 lg:py-32">
       <Container>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-10">
           <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                GUIDING PRINCIPLES
+                {copy.eyebrow}
               </span>
             </div>
             <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-              Built on three principles
+              {copy.heading}
             </h2>
             <p className="mt-6 max-w-[40ch] text-base leading-relaxed text-gray">
               At FXB Rwanda, we believe that every family has the potential to
@@ -47,6 +50,6 @@ export function ModelPrinciples() {
           </Reveal>
         </div>
       </Container>
-    </section>
+    </SectionBand>
   );
 }

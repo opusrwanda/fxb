@@ -36,7 +36,17 @@ import { journey } from "@/lib/fxbvillage";
 /** Milliseconds between one phase starting and the next. */
 const STEP = 170;
 
-export function TransformationJourney() {
+export function TransformationJourney({
+  copy,
+}: {
+  /**
+   * The section's words, read by the page.
+   *
+   * This is a client component, so it cannot await them itself. The server
+   * page that renders it does, and the defaults stay in the registry.
+   */
+  copy?: { eyebrow?: string; heading?: string; body?: string };
+}) {
   const ref = useRef<HTMLOListElement>(null);
   const [shown, setShown] = useState(false);
 
@@ -73,11 +83,11 @@ export function TransformationJourney() {
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
-                TRANSFORMATION JOURNEY
+                {copy?.eyebrow ?? "TRANSFORMATION JOURNEY"}
               </span>
             </div>
             <h2 className="max-w-[22ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
-              36 months to change a life, sustainably
+              {copy?.heading ?? "36 months to change a life, sustainably"}
             </h2>
           </div>
           <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:text-[17px]">

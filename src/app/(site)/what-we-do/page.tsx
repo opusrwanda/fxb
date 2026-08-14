@@ -49,6 +49,7 @@ export default async function WhatWeDoPage() {
   ]);
   const banner = await getPageHeaderImage("/what-we-do");
   const programmes = await getCurrentProgrammes();
+  const journeyCopy = await getSection("what-we-do:journey");
   // Derived, not written down. The hero makes a claim about how much of this
   // organisation's work the page covers, and a hand-typed "6 programmes across
   // 13 districts" would be wrong the first time a project ends — the same two
@@ -104,7 +105,7 @@ export default async function WhatWeDoPage() {
         </PhotoBand>
       )}
 
-      <TransformationJourney />
+      <TransformationJourney copy={journeyCopy} />
       <ModelPrinciples />
 
       {photos["fxbvillage-tlf-11.jpg"] && (

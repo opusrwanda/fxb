@@ -7,6 +7,8 @@ import {
   Wheat,
 } from "lucide-react";
 import { Container } from "@/components/layout/container";
+import { SectionBand } from "@/components/layout/section-band";
+import { getSection } from "@/cms/content/sections";
 import { Reveal } from "@/components/ui/reveal";
 
 /**
@@ -28,9 +30,10 @@ const challenges = [
   { icon: UserMinus, label: "Social isolation & widowhood" },
 ];
 
-export function ModelIntro() {
+export async function ModelIntro() {
+  const copy = await getSection("what-we-do:model-intro");
   return (
-    <section
+    <SectionBand section={copy}
       id="fxbvillage-model"
       className="scroll-mt-36 bg-white py-24 lg:py-32"
     >
@@ -39,11 +42,11 @@ export function ModelIntro() {
           <div className="flex items-center gap-4">
             <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
             <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-              THE FXBVILLAGE MODEL
+              {copy.eyebrow}
             </span>
           </div>
           <h2 className="max-w-[20ch] text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-            A holistic route out of poverty
+            {copy.heading}
           </h2>
         </Reveal>
 
@@ -85,6 +88,6 @@ export function ModelIntro() {
           </p>
         </Reveal>
       </Container>
-    </section>
+    </SectionBand>
   );
 }

@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
+import { SectionBand } from "@/components/layout/section-band";
+import { getSection } from "@/cms/content/sections";
 import { PartnerCarousel } from "@/components/sections/partner-carousel";
 import { Reveal } from "@/components/ui/reveal";
 import { type Partner, getOrderedPartners } from "@/cms/content/people";
@@ -42,6 +44,7 @@ const MIN_PASS = 3900;
 const SPEED = 35;
 
 export async function Partners() {
+  const copy = await getSection("band:partners");
   const logos = await getOrderedPartners();
 
   // Every logo could be deleted from the library at once, and a marquee with
@@ -55,18 +58,18 @@ export async function Partners() {
   const duration = Math.round((pass.length * STRIDE) / SPEED);
 
   return (
-    <section id="partners" className="bg-blue-08 py-16 lg:py-20">
+    <SectionBand section={copy} id="partners" className="bg-blue-08 py-16 lg:py-20">
       <Container>
         <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
               <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
               <span className="text-[24px] font-semibold tracking-[0.14em] text-gray-80">
-                PARTNERS
+                {copy.eyebrow}
               </span>
             </div>
             <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
-              None of this was done alone
+              {copy.heading}
             </h2>
           </div>
           <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-lg lg:font-light">
@@ -105,7 +108,7 @@ export async function Partners() {
           </ul>
         </PartnerCarousel>
       </Reveal>
-    </section>
+    </SectionBand>
   );
 }
 
