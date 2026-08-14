@@ -40,8 +40,23 @@ import { Toolbar } from "./toolbar";
  * exercise.
  */
 
+/**
+ * The editor's typography, which is `Prose`'s.
+ *
+ * Every value here is the one the website renders with, and that is the whole
+ * job of this object — the claim in the comment above is only true if these
+ * two stay in step.
+ *
+ * THE 62ch MEASURE IS THE IMPORTANT ONE. It was missing, so the editor set
+ * paragraphs across the full width of its box while the site holds them to 62
+ * characters. The words were identical and the lines broke in different
+ * places, which is invisible on ragged-right text and glaring the moment
+ * something is justified: the panel showed even columns and the website showed
+ * the same paragraph with different gaps in it. The type size had the same
+ * problem — 16px here against 17px on a large screen there.
+ */
 const theme = {
-  paragraph: "mb-4 text-base leading-relaxed text-gray",
+  paragraph: "mb-6 max-w-[62ch] text-base leading-relaxed text-gray lg:text-[17px]",
   heading: {
     h2: "mt-6 mb-3 text-2xl font-bold tracking-[-0.02em] text-blue",
     h3: "mt-4 mb-2 text-xl font-bold tracking-[-0.01em] text-blue",
@@ -51,11 +66,11 @@ const theme = {
   // left, the size and the light weight already say "this is a quotation", and
   // they say it without touching the words. Matches `Prose`.
   quote:
-    "my-4 border-l-2 border-blue pl-6 text-lg leading-relaxed text-gray",
+    "my-6 border-l-2 border-blue pl-6 text-[26px] leading-[1.45] font-extralight tracking-[-0.01em] text-gray",
   list: {
-    ul: "mb-4 list-disc pl-6",
-    ol: "mb-4 list-decimal pl-6",
-    listitem: "mt-2 text-base leading-relaxed text-gray",
+    ul: "mb-6 max-w-[62ch] list-disc pl-6",
+    ol: "mb-6 max-w-[62ch] list-decimal pl-6",
+    listitem: "mt-2 text-base leading-relaxed text-gray lg:text-[17px]",
   },
   link: "font-semibold text-blue underline underline-offset-4",
   text: {

@@ -46,6 +46,47 @@ function renderText(node: RichTextNode, key: number): JSX.Element | string {
   return <span key={key}>{element}</span>;
 }
 
+/**
+ * How a block sits in the measure.
+ *
+ * On an element node Lexical's `format` is a string naming the alignment — a
+ * different thing entirely from `format` on a text node, which is the bitmask
+ * above. Same property, two meanings, and reading one as the other is silent:
+ * `"justify"` as a number is `NaN`, every bitwise test fails, and the text
+ * renders unstyled rather than wrong. Which is exactly what happened here.
+ *
+ * THIS IS THE BUG FXB REPORTED. The editor is Lexical, and Lexical applies an
+ * element's alignment to its own DOM without being asked. This renderer never
+ * read the property at all, so a justified paragraph was justified in the
+ * staff panel and ragged-right on the website — the same article, two shapes,
+ * with no control anywhere to say which was meant.
+ *
+ * `start` and `end` are Lexical's writing-direction-aware alignments. The
+ * toolbar does not offer them, but a document pasted from elsewhere can carry
+ * them, and on a left-to-right site they mean left and right.
+ */
+function alignment(node: RichTextNode): string | undefined {
+  switch (node.format) {
+    case "center":
+      return "text-center";
+    case "right":
+    case "end":
+      return "text-right";
+    case "justify":
+      // `hyphens-auto` travels with it, and is not decoration. Justifying a
+      // narrow column of English without hyphenation is what produces the
+      // rivers of white space that make justified text look broken.
+      return "text-justify hyphens-auto";
+    case "left":
+    case "start":
+      return "text-left";
+    default:
+      // Unset, or a value from an editor newer than this renderer. Either way
+      // the paragraph keeps the flow's own alignment rather than guessing.
+      return undefined;
+  }
+}
+
 function children(nodes: RichTextNode[] | undefined): React.ReactNode {
   if (!nodes?.length) return null;
   return nodes.map((node, index) => renderNode(node, index));
@@ -63,17 +104,29 @@ function renderNode(node: RichTextNode, key: number): React.ReactNode {
       // Lexical emits an empty paragraph for a blank line. Rendering it would
       // put a stray gap in the flow, so it is dropped.
       if (!node.children?.length) return null;
-      return <p key={key}>{children(node.children)}</p>;
+      return (
+        <p key={key} className={alignment(node)}>
+          {children(node.children)}
+        </p>
+      );
     }
 
     case "heading": {
       const tag = (node.tag as string) ?? "h2";
       const Heading = tag as keyof JSX.IntrinsicElements;
-      return <Heading key={key}>{children(node.children)}</Heading>;
+      return (
+        <Heading key={key} className={alignment(node)}>
+          {children(node.children)}
+        </Heading>
+      );
     }
 
     case "quote":
-      return <blockquote key={key}>{children(node.children)}</blockquote>;
+      return (
+        <blockquote key={key} className={alignment(node)}>
+          {children(node.children)}
+        </blockquote>
+      );
 
     case "list": {
       const List = node.listType === "number" ? "ol" : "ul";
@@ -81,7 +134,11 @@ function renderNode(node: RichTextNode, key: number): React.ReactNode {
     }
 
     case "listitem":
-      return <li key={key}>{children(node.children)}</li>;
+      return (
+        <li key={key} className={alignment(node)}>
+          {children(node.children)}
+        </li>
+      );
 
     case "horizontalrule":
       return <hr key={key} />;

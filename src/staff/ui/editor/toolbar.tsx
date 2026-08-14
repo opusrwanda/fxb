@@ -16,9 +16,11 @@ import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
   $createParagraphNode,
   $getSelection,
+  $isElementNode,
   $isRangeSelection,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
+  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
@@ -27,6 +29,10 @@ import {
 } from "lexical";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
   Bold,
   Image as ImageIcon,
   Italic,
@@ -66,6 +72,20 @@ import { $createImageNode, $createVideoNode, type VideoProvider } from "./nodes"
 
 type Block = "paragraph" | "h2" | "h3" | "quote" | "bullet" | "number";
 
+/**
+ * The four ways a block of text can sit in the measure.
+ *
+ * Lexical's own vocabulary, so these strings go into the stored JSON as they
+ * are and the site renderer reads them back without translating. It also
+ * supports `start` and `end`, which are the writing-direction-aware versions
+ * of left and right; they are deliberately not offered — this site is English
+ * and French, both left-to-right, and two extra buttons that do the same thing
+ * as two existing ones is a choice nobody can make correctly.
+ */
+export type Alignment = "left" | "center" | "right" | "justify";
+
+const ALIGNMENTS: Alignment[] = ["left", "center", "right", "justify"];
+
 export function Toolbar() {
   const [editor] = useLexicalComposerContext();
   const [bold, setBold] = useState(false);
@@ -73,6 +93,7 @@ export function Toolbar() {
   const [underline, setUnderline] = useState(false);
   const [link, setLink] = useState(false);
   const [block, setBlock] = useState<Block>("paragraph");
+  const [align, setAlign] = useState<Alignment>("left");
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [picking, setPicking] = useState(false);
@@ -92,6 +113,17 @@ export function Toolbar() {
     );
 
     const top = node.getKey() === "root" ? node : node.getTopLevelElementOrThrow();
+
+    /**
+     * Lexical calls it a format; it is the alignment.
+     *
+     * An element's format is a string here, not the bitmask that `format` means
+     * on a text node — the same property name for two unrelated things, which
+     * is worth saying out loud because reading one as the other is silent and
+     * wrong. Unset means left, which is what the browser does anyway.
+     */
+    const current = $isElementNode(top) ? top.getFormatType() : "";
+    setAlign(ALIGNMENTS.includes(current as Alignment) ? (current as Alignment) : "left");
 
     if ($isListNode(top)) {
       setBlock((top as ListNode).getListType() === "number" ? "number" : "bullet");
@@ -137,6 +169,19 @@ export function Toolbar() {
       ),
     [editor, sync],
   );
+
+  /**
+   * Align the selected blocks, or set them back to left if already aligned that
+   * way.
+   *
+   * The second half matters: without it there is no way back to the default
+   * except pressing "Align left", which stores `left` on the node — a value
+   * that means the same as storing nothing and is one more thing in the JSON
+   * to be wrong later. Pressing the lit button clears it instead.
+   */
+  const setAlignment = (target: Alignment) => {
+    editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, align === target ? "left" : target);
+  };
 
   /** Turn the selected blocks into `target`, or back to paragraphs if already it. */
   const setBlockType = (target: Block) => {
@@ -252,6 +297,47 @@ export function Toolbar() {
       </Button>
       <Button label="Quote" active={block === "quote"} onClick={() => setBlockType("quote")}>
         <Quote className="size-4" aria-hidden="true" />
+      </Button>
+
+      <Divider />
+
+      {/*
+        Alignment, which the editor could always do and never offered.
+
+        Lexical applies an element's alignment itself, so a paragraph that
+        arrived justified — pasted out of Word, most likely — displayed
+        justified in the panel while the website ignored it entirely and set it
+        ragged-right. The same article, two shapes, and no control anywhere to
+        settle which was meant. The renderer now reads the same property; these
+        are how it gets set on purpose rather than by accident.
+      */}
+      <Button
+        label="Align left"
+        active={align === "left"}
+        onClick={() => setAlignment("left")}
+      >
+        <AlignLeft className="size-4" aria-hidden="true" />
+      </Button>
+      <Button
+        label="Centre"
+        active={align === "center"}
+        onClick={() => setAlignment("center")}
+      >
+        <AlignCenter className="size-4" aria-hidden="true" />
+      </Button>
+      <Button
+        label="Align right"
+        active={align === "right"}
+        onClick={() => setAlignment("right")}
+      >
+        <AlignRight className="size-4" aria-hidden="true" />
+      </Button>
+      <Button
+        label="Justify"
+        active={align === "justify"}
+        onClick={() => setAlignment("justify")}
+      >
+        <AlignJustify className="size-4" aria-hidden="true" />
       </Button>
 
       <Divider />

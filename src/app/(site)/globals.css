@@ -687,3 +687,19 @@
     max-width: 100%;
   }
 }
+
+/* ── Justified text in the staff editor ────────────────────────────────────
+
+  The website renders a justified paragraph with `text-justify hyphens-auto`,
+  as a pair — justifying a narrow column of English without hyphenation is
+  what opens the rivers of white space that make justified text look broken.
+
+  The editor cannot use that class, because Lexical applies an element's
+  alignment itself, as an inline style, before any class of ours could. So the
+  hyphenation is attached to the result instead. Without this the panel would
+  justify without hyphens and the website with them — the same mismatch that
+  prompted all of this, one layer down.
+*/
+[data-editor-content] [style*="justify"] {
+  hyphens: auto;
+}
