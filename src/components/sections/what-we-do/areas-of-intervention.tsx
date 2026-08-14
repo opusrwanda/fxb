@@ -73,79 +73,90 @@ export async function AreasOfIntervention() {
         </Reveal>
 
         <ul className="mt-14 grid gap-8 lg:grid-cols-2 lg:gap-10">
-          {cards.map((area, index) => (
-            <Reveal as="li" key={area.id} delay={60 + Math.min(index, 3) * 60}>
-              {/* The anchor sits on the article rather than the Reveal
-                  wrapper, which takes no id — and it is what the home page's
-                  four pillars jump to, so it needs the header offset. */}
-              <article id={area.id} className="flex h-full scroll-mt-32 flex-col">
-                {/* Absent rather than empty on a card added in the panel,
-                    which has no photograph of its own. `next/image` throws on
-                    a blank `src`, and a card without a picture reads perfectly
-                    well as one. */}
-                {area.photo && (
-                <div className="wedge relative aspect-16/10 overflow-hidden">
-                  <Image
-                    src={photo(area.photo).url}
-                    alt={area.alt}
-                    fill
-                    sizes="(min-width: 1024px) 46vw, 90vw"
-                    className="object-cover"
-                  />
-                </div>
-                )}
+          {cards.map((area, index) => {
+            // Alternating grounds, so four cards read as two pairs rather than
+            // as one long block of colour. The order follows the list, so
+            // reordering the cards in the panel reorders the colours with them
+            // and no card can end up beside another of its own colour.
+            const green = index % 2 === 1;
 
-                {/* The guide draws one icon per area of intervention, keyed by
-                    the same ids `areas.ts` uses, so the pairing is the data's
-                    rather than a lookup table's. It sits on the heading line
-                    because that is the line it illustrates — floated above the
-                    photograph it would have read as a badge on the picture. */}
-                <div className="mt-7 flex items-center gap-4 text-blue">
-                  {/* A real container with real padding. The icon used to sit
-                      bare on the card and looked like it had a tinted box
-                      behind it whose artwork ran to the edges — that box was an
-                      extraction artefact, not a container, and is gone. This is
-                      the container it looked like it wanted: tinted, round,
-                      with the drawing inset evenly on every side.
+            return (
+              <Reveal as="li" key={area.id} delay={60 + Math.min(index, 3) * 60}>
+                {/* `group` is what the photograph's reveal keys off. The card
+                    is deliberately not a link and takes no pointer cursor: the
+                    areas are explained here and nowhere else, so there is
+                    nothing to click through to and a card that looked
+                    clickable would be a promise the page cannot keep. */}
+                <article
+                  id={area.id}
+                  className={`group wedge flex h-full scroll-mt-32 flex-col gap-6 p-8 text-white lg:p-10 ${
+                    green ? "bg-[var(--color-green-deep)]" : "bg-blue"
+                  }`}
+                >
+                  <div className="flex items-center gap-5">
+                    {/* White on the colour rather than blue on a tint — the
+                        ring is now a hole in the card rather than a badge on
+                        it, which is what a solid ground wants. */}
+                    <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-white/12">
+                      {area.icon && (
+                        <BrandIcon id={area.icon} className="size-12 text-white" />
+                      )}
+                    </span>
+                    <h3 className="text-[26px] leading-tight font-bold tracking-[-0.02em] lg:text-[30px]">
+                      {area.label}
+                    </h3>
+                  </div>
 
-                      80px holding a 48px drawing, up from 56 holding 32. These
-                      are the site's own icons and the one place they are drawn
-                      at any size — at 32px the distinguishing detail in them,
-                      which is what tells a reader that this card is about
-                      health rather than education, was too small to read. The
-                      proportion is kept so the ring still looks like a
-                      container rather than a border. */}
-                  <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-blue-08">
-                    {area.icon && (
-                      <BrandIcon id={area.icon} className="size-12" />
-                    )}
-                  </span>
-                  <h3 className="text-[28px] font-bold tracking-[-0.02em] text-blue lg:text-[32px]">
-                    {area.label}
-                  </h3>
-                </div>
-                <p className="mt-2 text-base text-gray lg:text-[17px]">
-                  {area.blurb}
-                </p>
+                  {area.blurb && (
+                    <p className="text-base leading-relaxed text-white-94 lg:text-[17px]">
+                      {area.blurb}
+                    </p>
+                  )}
 
-                {area.focus.length > 0 && (
-                  <ul className="mt-6 flex flex-col gap-3 border-t border-gray-15 pt-6">
-                    {area.focus.map((item) => (
-                      <li key={item} className="flex gap-3.5">
-                        <span
-                          className="mt-2 size-1.5 shrink-0 rounded-full bg-green"
-                          aria-hidden="true"
-                        />
-                        <span className="text-[15px] leading-snug text-gray">
-                          {item}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </article>
-            </Reveal>
-          ))}
+                  {area.focus.length > 0 && (
+                    <ul className="flex flex-col gap-3 border-t border-white-12 pt-6">
+                      {area.focus.map((item) => (
+                        <li key={item} className="flex gap-3.5">
+                          <span
+                            className="mt-2 size-1.5 shrink-0 rounded-full bg-white/60"
+                            aria-hidden="true"
+                          />
+                          <span className="text-[15px] leading-snug text-white-94">
+                            {item}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {/* The photograph, in a panel of its own at the foot of the
+                      card and blank until the pointer arrives.
+
+                      `mt-auto` pins it to the bottom however much or little the
+                      activities list above it runs to, so a row of cards ends
+                      level. The panel keeps its height whether or not the
+                      picture is showing, so nothing reflows on hover — a card
+                      that grew under the pointer would push its neighbour.
+
+                      No tint behind it. A faintly lit rectangle sitting empty
+                      on three cards while the fourth holds a photograph reads
+                      as three pictures that failed to load; plain ground reads
+                      as space the card was given. */}
+                  {area.photo && (
+                    <div className="relative mt-auto aspect-16/9 overflow-hidden rounded-[14px]">
+                      <Image
+                        src={photo(area.photo).url}
+                        alt={area.alt}
+                        fill
+                        sizes="(min-width: 1024px) 42vw, 84vw"
+                        className="area-photo object-cover"
+                      />
+                    </div>
+                  )}
+                </article>
+              </Reveal>
+            );
+          })}
         </ul>
       </Container>
     </SectionBand>
