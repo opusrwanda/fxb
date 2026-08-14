@@ -19,17 +19,19 @@ import { Prose } from "@/components/layout/prose";
  * already on — five of the six were dead ends, and the only route to any detail
  * was a listing page that held the same name and districts again.
  *
- * What it can show today is thin, and deliberately looks it: the brief's Where
- * We Work table gives project names and the districts they run in and nothing
- * else. So the page renders what exists — the photograph, the districts, the
- * programme's own system where it has one — and then says plainly that the
- * description is being prepared, rather than padding itself out with paragraphs
- * written on FXB's behalf.
+ * ONE ORDER, EVERY PROGRAMME: summary, objectives, the account of it, results,
+ * what it delivers, with the facts held in a rail beside them. A reader who has
+ * read one programme page knows where to look on the next. Each block is absent
+ * when its field is empty, so a programme too early to have results shows no
+ * Results heading rather than an empty promise — and a programme with nothing
+ * written at all still says so plainly rather than padding itself out with
+ * paragraphs written on FXB's behalf.
  *
- * The moment `summary` and `body` are filled in on the programme in `/staff`,
- * the empty state disappears and the copy takes its place. No code changes.
- *
- * Not a hero route: it opens on white with the header already solid.
+ * It opens the way an article opens — trail, kicker, name, its own photograph —
+ * rather than in the hero room, which gave every programme the same page banner
+ * and then put the programme's own picture directly beneath it. See
+ * `ArticleOpening`. That means it opens on white, so the route is in
+ * `WHITE_GROUND` and the header is solid from scroll 0.
  */
 export async function generateStaticParams() {
   const programmes = await getProgrammes();
@@ -264,68 +266,88 @@ export default async function ProgrammePage({
             )}
           </Reveal>
 
-          <Reveal delay={140} className="lg:col-span-4 lg:col-start-9">
-            {/* The facts rail. Every row is optional and simply absent when
-                  the data has nothing for it, so a programme with a funder but
-                  no period does not render an empty label. */}
-            <dl className="flex flex-col">
-              {project.runs && (
-                <div className="flex flex-col gap-1 border-t border-gray-15 py-5">
-                  <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                    RUNS
-                  </dt>
-                  <dd className="text-base font-medium text-blue">
-                    {project.runs}
-                  </dd>
-                </div>
-              )}
-              {project.funder && (
-                <div className="flex flex-col gap-1 border-t border-gray-15 py-5">
-                  <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                    FUNDED BY
-                  </dt>
-                  <dd className="text-base font-medium text-blue">
-                    {project.funder}
-                  </dd>
-                </div>
-              )}
-              <div className="flex flex-col gap-1 border-t border-b border-gray-15 py-5">
-                <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                  DISTRICTS
-                </dt>
-                <dd className="mt-2 flex flex-col gap-2.5">
-                  {project.districts.map((district) => (
-                    <span
-                      key={district}
-                      className="flex items-center gap-2.5 text-base font-medium text-blue"
-                    >
-                      <MapPin className="size-4 shrink-0" aria-hidden="true" />
-                      {district}
-                    </span>
-                  ))}
-                </dd>
-              </div>
-            </dl>
+          {/* The facts rail, held in place while the account of the programme
+              scrolls past it.
 
-            {project.href && (
-              <a
-                href={project.href}
-                {...(external
-                  ? { target: "_blank", rel: "noreferrer noopener" }
-                  : {})}
-                className="group mt-8 inline-flex items-center gap-2 text-base font-semibold text-blue"
-              >
-                Visit the programme system
-                <ArrowUpRight
-                  className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  aria-hidden="true"
-                />
-                {external && (
-                  <span className="sr-only">(opens in a new tab)</span>
+              These are the things a reader refers back to rather than reads
+              once — which districts, over what period, funded by whom — and
+              they were at the top of a column that scrolled away, so checking
+              the funder halfway down the results meant scrolling back up and
+              then finding your place again.
+
+              `self-start` is what makes the sticky work: a grid item stretches
+              to the row height by default, so this box would already be as
+              tall as the article and have nowhere to stick to. And the sticky
+              lives on a plain wrapper rather than on `Reveal`, because
+              `Reveal` animates with a transform and an element being moved is
+              a poor thing to also be pinning. */}
+          <div className="lg:sticky lg:top-28 lg:col-span-4 lg:col-start-9 lg:self-start">
+            <Reveal delay={140}>
+              {/* Every row is optional and simply absent when the data has
+                nothing for it, so a programme with a funder but no period does
+                not render an empty label. */}
+              <dl className="flex flex-col">
+                {project.runs && (
+                  <div className="flex flex-col gap-1 border-t border-gray-15 py-5">
+                    <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                      RUNS
+                    </dt>
+                    <dd className="text-base font-medium text-blue">
+                      {project.runs}
+                    </dd>
+                  </div>
                 )}
-              </a>
-            )}
-          </Reveal>
+                {project.funder && (
+                  <div className="flex flex-col gap-1 border-t border-gray-15 py-5">
+                    <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                      FUNDED BY
+                    </dt>
+                    <dd className="text-base font-medium text-blue">
+                      {project.funder}
+                    </dd>
+                  </div>
+                )}
+                <div className="flex flex-col gap-1 border-t border-b border-gray-15 py-5">
+                  <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                    DISTRICTS
+                  </dt>
+                  <dd className="mt-2 flex flex-col gap-2.5">
+                    {project.districts.map((district) => (
+                      <span
+                        key={district}
+                        className="flex items-center gap-2.5 text-base font-medium text-blue"
+                      >
+                        <MapPin
+                          className="size-4 shrink-0"
+                          aria-hidden="true"
+                        />
+                        {district}
+                      </span>
+                    ))}
+                  </dd>
+                </div>
+              </dl>
+
+              {project.href && (
+                <a
+                  href={project.href}
+                  {...(external
+                    ? { target: "_blank", rel: "noreferrer noopener" }
+                    : {})}
+                  className="group mt-8 inline-flex items-center gap-2 text-base font-semibold text-blue"
+                >
+                  Visit the programme system
+                  <ArrowUpRight
+                    className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    aria-hidden="true"
+                  />
+                  {external && (
+                    <span className="sr-only">(opens in a new tab)</span>
+                  )}
+                </a>
+              )}
+            </Reveal>
+          </div>
         </div>
 
         <Reveal
