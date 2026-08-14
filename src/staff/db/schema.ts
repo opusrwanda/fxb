@@ -519,6 +519,26 @@ export const applications = pgTable("applications", {
  * code that reads it: `header:/contact`, `home:what-we-do`. An id would mean
  * the panel and the components agreeing on a number nobody can see.
  */
+/**
+ * One repeated block inside a section.
+ *
+ * The four Areas of Intervention cards, the model's pillars, the steps of the
+ * transformation journey — lists that were written into their components, so
+ * rewording a pillar meant a developer and a deploy, which is the same problem
+ * the headings had.
+ *
+ * One shape for all of them rather than a table per list. They are all a title,
+ * a paragraph and sometimes an icon, and a schema per list would be six
+ * migrations to say the same thing six times — and six forms in the panel for
+ * somebody to learn instead of one.
+ */
+export type SectionItem = {
+  title: string;
+  body?: string;
+  /** An id from the site's own icon set, where the list is illustrated. */
+  icon?: string;
+};
+
 export const sections = pgTable("sections", {
   key: varchar("key", { length: 160 }).primaryKey(),
   /** The small tracked-capitals line above the heading. */
@@ -526,6 +546,23 @@ export const sections = pgTable("sections", {
   heading: text("heading"),
   /** The paragraph under it, where the section has one. */
   body: text("body"),
+  /**
+   * A photograph behind the section. Null for the section as it ships.
+   *
+   * Optional on every section, including the ones that are plain white today —
+   * so a background can be added where there was none, and a section with the
+   * field empty looks exactly as it always has.
+   */
+  imageId: integer("image_id").references(() => media.id, { onDelete: "set null" }),
+  /**
+   * The repeated blocks, or null where nobody has touched them.
+   *
+   * NULL AND EMPTY ARE DIFFERENT, deliberately. Null means "not overridden",
+   * so the list the code ships is used; an empty array means somebody deleted
+   * every item and meant it. Collapsing the two would make "remove the last
+   * card" indistinguishable from "put the cards back".
+   */
+  items: jsonb("items").$type<SectionItem[]>(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

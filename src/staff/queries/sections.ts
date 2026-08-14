@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { db, sections } from "../db";
 import { SECTIONS } from "@/cms/content/sections";
+import type { SectionItem } from "../db/schema";
 import { bust } from "@/cms/revalidate";
 
 /**
@@ -16,6 +17,16 @@ export type SectionInput = {
   eyebrow: string;
   heading: string;
   body: string;
+  /** A row in `media`, or null for the section's own picture. */
+  imageId: number | null;
+  /**
+   * The blocks, or null where the section has no list to edit.
+   *
+   * Null and empty differ: null leaves the shipped list alone, an empty array
+   * is somebody having removed every block deliberately. Only a section that
+   * declares `items` in the registry can send either.
+   */
+  items: SectionItem[] | null;
 };
 
 export async function saveSection(
@@ -29,13 +40,30 @@ export async function saveSection(
 
   const value = (raw: string) => raw.trim() || null;
 
+  /**
+   * An item list identical to the one the code ships is not an override.
+   *
+   * Otherwise opening a section and pressing Save would write the defaults
+   * into the database, and from then on "put it back" would restore a copy of
+   * whatever the defaults happened to be that day rather than what the code
+   * says today.
+   */
+  const shipped = SECTIONS[key].items;
+  const items =
+    input.items === null || JSON.stringify(input.items) === JSON.stringify(shipped ?? null)
+      ? null
+      : input.items;
+
   const row = {
     eyebrow: value(input.eyebrow),
     heading: value(input.heading),
     body: value(input.body),
+    imageId: input.imageId,
+    items,
   };
 
-  const empty = !row.eyebrow && !row.heading && !row.body;
+  const empty =
+    !row.eyebrow && !row.heading && !row.body && row.imageId === null && row.items === null;
 
   if (empty) {
     // Nothing overridden any more. Deleting is what makes the default the

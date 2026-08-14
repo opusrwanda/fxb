@@ -3,7 +3,11 @@ import { RotateCcw } from "lucide-react";
 
 import { getSectionsForPanel } from "@/cms/content/sections";
 import { requireAdmin } from "@/staff/auth/guard";
+import { getMediaOptions } from "@/staff/queries/document";
 import { resetSection, saveSection } from "@/staff/queries/sections";
+import { MediaPicker } from "@/staff/ui/media-picker";
+import iconSet from "@/lib/icons.json";
+import type { SectionItem } from "@/staff/db/schema";
 
 export const metadata = { title: "Section text" };
 
@@ -40,7 +44,14 @@ export default async function SectionsPage({
   // to be able to do and not a reasonable thing to do by accident.
   await requireAdmin("sections");
 
-  const all = await getSectionsForPanel();
+  const [all, mediaOptions] = await Promise.all([
+    getSectionsForPanel(),
+    getMediaOptions(),
+  ]);
+
+  const images = mediaOptions.filter((option) =>
+    option.mimeType.startsWith("image/"),
+  );
 
   const pages = [...new Set(all.map((section) => section.page))];
 
@@ -50,10 +61,35 @@ export default async function SectionsPage({
     await requireAdmin("sections");
 
     const key = String(formData.get("key") ?? "");
+    const imageId = String(formData.get("imageId") ?? "").trim();
+
+    /**
+     * The blocks, read back out of the numbered fields.
+     *
+     * `itemCount` says how many rows the form drew — the shipped list plus one
+     * spare, the same arrangement the impact figures use, so adding a card
+     * does not need a button that adds one. A row whose title is blank is
+     * dropped, which is how one gets deleted.
+     *
+     * Absent entirely on a section with no list, and null then means "leave
+     * the shipped list alone" rather than "empty it".
+     */
+    const itemCount = Number(formData.get("itemCount") ?? -1);
+    const items =
+      itemCount < 0
+        ? null
+        : Array.from({ length: itemCount }, (_, index) => ({
+            title: String(formData.get(`item-${index}-title`) ?? "").trim(),
+            body: String(formData.get(`item-${index}-body`) ?? "").trim() || undefined,
+            icon: String(formData.get(`item-${index}-icon`) ?? "").trim() || undefined,
+          })).filter((item) => item.title !== "");
+
     await saveSection(key, {
       eyebrow: String(formData.get("eyebrow") ?? ""),
       heading: String(formData.get("heading") ?? ""),
       body: String(formData.get("body") ?? ""),
+      imageId: imageId === "" ? null : Number(imageId),
+      items,
     });
     redirect("/staff/sections?saved=1");
   }
@@ -120,7 +156,9 @@ export default async function SectionsPage({
                     </h3>
                     {(section.edited.eyebrow ||
                       section.edited.heading ||
-                      section.edited.body) && (
+                      section.edited.body ||
+                      section.edited.imageId ||
+                      section.edited.items) && (
                       <span className="rounded-full bg-blue-08 px-3 py-1 text-xs font-semibold text-blue">
                         Edited
                       </span>
@@ -150,7 +188,40 @@ export default async function SectionsPage({
                       fallback={section.defaults.body}
                       multiline
                     />
+
+                    {/* Offered on every section, including the ones that are
+                        plain white today. Leaving it empty is what keeps a
+                        section looking exactly as it does now, so this can be
+                        added where there was never a photograph without
+                        anything changing until somebody chooses one. */}
+                    <div className="flex flex-col gap-2">
+                      <label
+                        htmlFor={`${section.key}-image`}
+                        className="text-sm font-semibold text-blue"
+                      >
+                        Background photograph
+                      </label>
+                      <p className="text-[13px] leading-relaxed text-gray-80">
+                        Optional. Leave it empty and the section keeps the
+                        background it has now.
+                      </p>
+                      <MediaPicker
+                        id={`${section.key}-image`}
+                        name="imageId"
+                        value={section.edited.imageId ?? null}
+                        kind="image"
+                        options={images}
+                      />
+                    </div>
                   </div>
+
+                  {section.itemsShipped && (
+                    <SectionItems
+                      sectionKey={section.key}
+                      shipped={section.itemsShipped}
+                      edited={section.edited.items}
+                    />
+                  )}
 
                   <div className="mt-5 flex flex-wrap items-center gap-5">
                     <button
@@ -227,6 +298,117 @@ function Field({
           Empty leaves this out.
         </p>
       )}
+    </div>
+  );
+}
+
+
+/**
+ * The repeated blocks inside a section.
+ *
+ * The four Areas cards, the model's pillars, the steps of the journey. One
+ * form for all of them, because they are all a title, a paragraph and
+ * sometimes an icon — six shapes would be six forms to learn for no
+ * difference the person filling them in can see.
+ *
+ * ONE SPARE ROW AT THE END, so adding a block does not need a button that adds
+ * one; the same arrangement the impact figures use. Clearing a row's title is
+ * how one is removed — `save` drops every row that has no title, which makes
+ * "delete this card" the same gesture as "leave the spare one blank".
+ */
+function SectionItems({
+  sectionKey,
+  shipped,
+  edited,
+}: {
+  sectionKey: string;
+  shipped: SectionItem[];
+  edited?: SectionItem[];
+}) {
+  const current = edited ?? shipped;
+  const rows = [...current, { title: "", body: "", icon: "" }];
+
+  return (
+    <div className="mt-8 border-t border-gray-15 pt-6">
+      <h4 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+        BLOCKS IN THIS SECTION
+      </h4>
+      <p className="mt-2 max-w-[62ch] text-[13px] leading-relaxed text-gray-80">
+        The cards this section shows, in order. Clear a title to remove that
+        block; the empty row at the end is there to add one.
+      </p>
+
+      <input type="hidden" name="itemCount" value={rows.length} />
+
+      <div className="mt-5 flex flex-col gap-4">
+        {rows.map((item, index) => (
+          <fieldset
+            key={index}
+            className="flex flex-col gap-4 rounded-card border border-gray-15 p-5"
+          >
+            <legend className="px-2 text-[13px] font-semibold text-blue">
+              {item.title || `Block ${index + 1}`}
+            </legend>
+
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor={`${sectionKey}-item-${index}-title`}
+                className="text-sm font-semibold text-blue"
+              >
+                Title
+              </label>
+              <input
+                id={`${sectionKey}-item-${index}-title`}
+                name={`item-${index}-title`}
+                defaultValue={item.title}
+                className={input}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor={`${sectionKey}-item-${index}-body`}
+                className="text-sm font-semibold text-blue"
+              >
+                Text
+              </label>
+              <textarea
+                id={`${sectionKey}-item-${index}-body`}
+                name={`item-${index}-body`}
+                rows={2}
+                defaultValue={item.body ?? ""}
+                className={input}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor={`${sectionKey}-item-${index}-icon`}
+                className="text-sm font-semibold text-blue"
+              >
+                Icon
+              </label>
+              <p className="text-[13px] leading-relaxed text-gray-80">
+                Only some sections draw one. Leave it as “None” where the
+                block has no icon.
+              </p>
+              <select
+                id={`${sectionKey}-item-${index}-icon`}
+                name={`item-${index}-icon`}
+                defaultValue={item.icon ?? ""}
+                className={input}
+              >
+                <option value="">None</option>
+                {(iconSet as { id: string }[]).map((icon) => (
+                  <option key={icon.id} value={icon.id}>
+                    {icon.id}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </fieldset>
+        ))}
+      </div>
     </div>
   );
 }

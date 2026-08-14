@@ -1,5 +1,11 @@
-import { db, sections } from "@/staff/db";
+import { eq } from "drizzle-orm";
+
+import { db, media, sections } from "@/staff/db";
+import type { SectionItem } from "@/staff/db/schema";
 import { cached } from "./cache";
+import { image, type Img } from "./image";
+
+export type { SectionItem };
 
 /**
  * Section copy the team can reword.
@@ -33,11 +39,32 @@ export type SectionCopy = {
   body?: string;
 };
 
+/** A section as the site renders it: its words, its background, its blocks. */
+export type Section = SectionCopy & {
+  /** A photograph behind it, where one has been chosen. */
+  image: Img | null;
+  /** The repeated blocks — the cards, the pillars, the steps. */
+  items: SectionItem[];
+};
+
 export type SectionDefinition = SectionCopy & {
   /** Which page it appears on, for grouping in the panel. */
   page: string;
   /** What to call it there. */
   label: string;
+  /**
+   * The blocks this section ships with.
+   *
+   * Present only on the sections that have a repeated list. Its absence is
+   * what tells the panel not to offer an item editor — a section with no list
+   * should not grow an empty "add a card" form nobody can use.
+   */
+  items?: SectionItem[];
+  /**
+   * What the section illustrates itself with out of the box, as a path under
+   * `/img` or a CDN URL. Choosing a picture in the panel replaces it.
+   */
+  image?: string;
 };
 
 /**
@@ -184,18 +211,14 @@ export const SECTIONS: Record<string, SectionDefinition> = {
 const getOverrides = cached(
   "sections",
   "sections",
-  async (): Promise<Record<string, SectionCopy>> => {
+  async (): Promise<Record<string, Override>> => {
     const rows = await db
-      .select({
-        key: sections.key,
-        eyebrow: sections.eyebrow,
-        heading: sections.heading,
-        body: sections.body,
-      })
-      .from(sections);
+      .select({ section: sections, photo: media })
+      .from(sections)
+      .leftJoin(media, eq(sections.imageId, media.id));
 
-    const map: Record<string, SectionCopy> = {};
-    for (const row of rows) {
+    const map: Record<string, Override> = {};
+    for (const { section: row, photo } of rows) {
       map[row.key] = {
         // Empty is treated as unset. A field cleared in the panel means "go
         // back to the default", which is what somebody clearing it expects —
@@ -203,11 +226,24 @@ const getOverrides = cached(
         eyebrow: row.eyebrow?.trim() || undefined,
         heading: row.heading?.trim() || undefined,
         body: row.body?.trim() || undefined,
+        imageId: row.imageId,
+        image: image(photo),
+        // Null and empty differ here — see the column's own note. Null falls
+        // through to the list the code ships; an empty array is somebody
+        // having removed every block on purpose.
+        items: row.items ?? undefined,
       };
     }
     return map;
   },
 );
+
+type Override = SectionCopy & {
+  /** The chosen row, so the panel can preselect it in the picker. */
+  imageId: number | null;
+  image: Img | null;
+  items?: SectionItem[];
+};
 
 /**
  * One section's copy: the default, with anything edited on top.
@@ -219,7 +255,7 @@ const getOverrides = cached(
 export async function getSection(
   key: string,
   fallback: SectionCopy = {},
-): Promise<SectionCopy> {
+): Promise<Section> {
   const registered = SECTIONS[key] ?? {};
   const edited = (await getOverrides())[key] ?? {};
 
@@ -227,6 +263,20 @@ export async function getSection(
     eyebrow: edited.eyebrow ?? registered.eyebrow ?? fallback.eyebrow,
     heading: edited.heading ?? registered.heading ?? fallback.heading,
     body: edited.body ?? registered.body ?? fallback.body,
+    /**
+     * The chosen photograph, or the one the section ships with.
+     *
+     * A default `image` on the registry entry is a path in the repo rather
+     * than a library row, so it has no description of its own — the section
+     * drawing it knows what it is showing and supplies the alt text. A picture
+     * chosen in the panel brings its own, which is why that one wins.
+     */
+    image:
+      edited.image ??
+      (registered.image
+        ? { url: registered.image, alt: "", width: 1600, height: 900 }
+        : null),
+    items: edited.items ?? registered.items ?? [],
   };
 }
 
@@ -243,6 +293,14 @@ export async function getSectionsForPanel() {
       heading: definition.heading,
       body: definition.body,
     },
+    /**
+     * Whether this section has a list to edit at all.
+     *
+     * The panel offers the item editor only where the code renders one — a
+     * section with no cards should not grow an empty "add a card" form that
+     * writes rows nothing reads.
+     */
+    itemsShipped: definition.items ?? null,
     edited: edited[key] ?? {},
   }));
 }
