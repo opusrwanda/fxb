@@ -82,14 +82,13 @@ export async function AreasOfIntervention() {
 
             return (
               <Reveal as="li" key={area.id} delay={60 + Math.min(index, 3) * 60}>
-                {/* `group` is what the photograph's reveal keys off. The card
-                    is deliberately not a link and takes no pointer cursor: the
+                {/* Deliberately not a link, and takes no pointer cursor: the
                     areas are explained here and nowhere else, so there is
                     nothing to click through to and a card that looked
                     clickable would be a promise the page cannot keep. */}
                 <article
                   id={area.id}
-                  className={`group wedge flex h-full scroll-mt-32 flex-col gap-6 p-8 text-white lg:p-10 ${
+                  className={`wedge flex h-full scroll-mt-32 flex-col gap-6 p-8 text-white lg:p-10 ${
                     green ? "bg-[var(--color-green-deep)]" : "bg-blue"
                   }`}
                 >
@@ -130,7 +129,13 @@ export async function AreasOfIntervention() {
                   )}
 
                   {/* The photograph, in a panel of its own at the foot of the
-                      card and blank until the pointer arrives.
+                      card.
+
+                      3:2, which is the shape every one of these photographs
+                      already is — 2400×1600. The panel was 16:9 and cropped a
+                      quarter of the height away, which on the Health card took
+                      the bottom off the child drinking and made a perfectly
+                      good picture look damaged.
 
                       `mt-auto` pins it to the bottom however much or little the
                       activities list above it runs to, so a row of cards ends
@@ -143,13 +148,13 @@ export async function AreasOfIntervention() {
                       as three pictures that failed to load; plain ground reads
                       as space the card was given. */}
                   {area.photo && (
-                    <div className="relative mt-auto aspect-16/9 overflow-hidden rounded-[14px]">
+                    <div className="relative mt-auto aspect-3/2 overflow-hidden rounded-[14px]">
                       <Image
                         src={photo(area.photo).url}
                         alt={area.alt}
                         fill
                         sizes="(min-width: 1024px) 42vw, 84vw"
-                        className="area-photo object-cover"
+                        className="object-cover"
                       />
                     </div>
                   )}
