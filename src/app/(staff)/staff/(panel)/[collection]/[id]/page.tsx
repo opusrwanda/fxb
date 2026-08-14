@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink, Pencil } from "lucide-react";
 
 import { findCollection } from "@/staff/collections";
 import { requireAccess, requireUser } from "@/staff/auth/guard";
@@ -32,25 +32,33 @@ export async function generateMetadata({
 }
 
 /**
- * Editing one document.
+ * Reading and editing one document.
  *
- * The same route creates and edits: `/staff/news/new` and `/staff/news/12` are
- * the same form, because they are the same job and a separate "create" screen
- * is how the two drift apart.
+ * The same route creates, shows and edits: `/staff/news/new`, `/staff/news/12`
+ * and `/staff/news/12?edit=1` are one form, because they are one job and a
+ * separate screen for each is how three screens drift apart.
+ *
+ * OPENING A DOCUMENT DOES NOT OPEN IT FOR EDITING. Clicking a row used to land
+ * you in a live form on a published article, so checking a date or a headline
+ * meant putting a cursor in it with Save sitting alongside. Now the fields are
+ * inert until Edit is pressed — the same greyed-out form somebody without
+ * permission sees, reached by a different route. There is no Save button on
+ * the reading view and no Delete, so nothing on it can change anything.
  *
  * Body on the left with the width, everything that describes the document in a
  * rail on the right. The form posts to a server action, so it saves without
- * JavaScript.
+ * JavaScript — and the mode is a query parameter for the same reason, so that
+ * getting into the form does not depend on any either.
  */
 export default async function EditPage({
   params,
   searchParams,
 }: {
   params: Promise<{ collection: string; id: string }>;
-  searchParams: Promise<{ error?: string; saved?: string }>;
+  searchParams: Promise<{ error?: string; saved?: string; edit?: string }>;
 }) {
   const { collection, id } = await params;
-  const { error, saved } = await searchParams;
+  const { error, saved, edit } = await searchParams;
 
   const entry = findCollection(collection);
   if (!entry || !isCollection(entry.key)) notFound();
@@ -91,7 +99,35 @@ export default async function EditPage({
    */
   const authorId = (document?.authorId as number | null | undefined) ?? null;
   const writable = creating || canEditDocument(user, entry.key, authorId);
-  const deletable = !creating && canDeleteDocument(user, entry.key, authorId);
+
+  /**
+   * Opening a document shows it. Changing it is a second, deliberate step.
+   *
+   * This page used to open every document straight into a live form, so
+   * looking something up — what did that headline say, is this one published —
+   * put the cursor in the text of a published article with a Save button
+   * beside it. Nothing warns you when you nudge a field and move on; the way
+   * you find out is the website.
+   *
+   * So the form is inert until somebody presses Edit, and the mode is in the
+   * URL rather than in component state: a half-finished edit that survives a
+   * refresh is worth more than the tidiness of keeping it in memory, and it
+   * means an error can send you back to the form you were filling in rather
+   * than to a view of what you were trying to change.
+   *
+   * Creating is exempt. There is nothing to read on a blank document, and a
+   * "New news item" page that opened read-only would be asking somebody to
+   * press Edit before they can start.
+   */
+  const editing = writable && (creating || edit === "1");
+
+  // Delete lives behind Edit, so the reading view cannot destroy anything.
+  const deletable =
+    editing && !creating && canDeleteDocument(user, entry.key, authorId);
+
+  /** The same document, in the other mode. */
+  const viewHref = `/staff/${entry.slug}/${id}`;
+  const editHref = `${viewHref}?edit=1`;
 
   /** The value a control should start with, converted for display. */
   const valueOf = (name: string, type: string): unknown => {
@@ -134,11 +170,16 @@ export default async function EditPage({
     const result = await saveDocument(key, numericId, formData, actor);
 
     if (!result.ok) {
+      // Back into the form, not to the view. Whatever was wrong needs fixing
+      // in the fields, and a read-only page is no use to somebody mid-edit.
       redirect(
-        `/staff/${slugSegment}/${id}?error=${encodeURIComponent(result.error)}`,
+        `/staff/${slugSegment}/${id}?edit=1&error=${encodeURIComponent(result.error)}`,
       );
     }
 
+    // Out of the form on success. The edit is finished, and leaving the page
+    // editable afterwards is how a document ends up with a stray keystroke in
+    // it — the state this whole two-step exists to prevent.
     redirect(`/staff/${slugSegment}/${result.id}?saved=1`);
   }
 
@@ -184,9 +225,25 @@ export default async function EditPage({
         {entry.label}
       </Link>
 
-      <h1 className="mt-5 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[38px] lg:leading-[1.1]">
-        {title}
-      </h1>
+      <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+        <h1 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[38px] lg:leading-[1.1]">
+          {title}
+        </h1>
+
+        {/* The one control on the reading view, and the only way into the
+            form. A link rather than a button: it changes which page you are
+            on, it should middle-click into a new tab, and it needs no
+            JavaScript to work. */}
+        {!editing && writable && (
+          <Link
+            href={editHref}
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
+          >
+            <Pencil className="size-4" aria-hidden="true" />
+            Edit this {entry.singular}
+          </Link>
+        )}
+      </div>
 
       {saved && (
         <p
@@ -207,8 +264,12 @@ export default async function EditPage({
         </p>
       )}
 
-      {/* Said once, plainly, above the form — rather than leaving somebody to
-          work out from greyed-out boxes why nothing they type stays. */}
+      {/* Two ways to arrive at a greyed-out form, and they want different
+          sentences. One is "this is not yours to change", which is about the
+          role and is the end of the matter. The other is "you have not asked
+          to change it yet", which is about the mode and has a button next to
+          it — so that one says nothing at all, because the button already
+          does, and a notice repeating every visible control is noise. */}
       {!writable && (
         <p className="mt-6 rounded-card border border-gray-15 bg-blue-08 px-5 py-4 text-[15px] leading-relaxed text-gray">
           <strong className="font-semibold text-blue">
@@ -225,9 +286,9 @@ export default async function EditPage({
             which the browser does not know to disable. That one is told
             separately. */}
         <fieldset
-          disabled={!writable}
+          disabled={!editing}
           className="contents"
-          aria-label={writable ? undefined : "Read only"}
+          aria-label={editing ? undefined : "Read only"}
         >
           <div className="flex flex-col gap-7 lg:col-span-8">
             {main.map((field) => (
@@ -237,7 +298,7 @@ export default async function EditPage({
                 value={valueOf(field.name, field.type)}
                 mediaOptions={mediaOptions}
                 parentOptions={parentOptions}
-                readOnly={!writable}
+                readOnly={!editing}
               />
             ))}
           </div>
@@ -251,18 +312,36 @@ export default async function EditPage({
                   value={valueOf(field.name, field.type)}
                   mediaOptions={mediaOptions}
                   parentOptions={parentOptions}
-                  readOnly={!writable}
+                  readOnly={!editing}
                 />
               ))}
             </div>
 
-            {writable && (
-              <button
-                type="submit"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
-              >
-                {creating ? `Create ${entry.singular}` : "Save changes"}
-              </button>
+            {editing && (
+              <div className="flex flex-col gap-3">
+                <button
+                  type="submit"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
+                >
+                  {creating ? `Create ${entry.singular}` : "Save changes"}
+                </button>
+
+                {/* Leaving the form without saving needs to be a thing you can
+                    press. The alternative is the browser's Back button, which
+                    on a page that has been submitted once already is a
+                    coin-toss about which version you land on. Nothing is
+                    stored until Save, so this discards by simply not saving —
+                    which is why it is a quiet link and not a button competing
+                    with the one that keeps your work. */}
+                {!creating && (
+                  <Link
+                    href={viewHref}
+                    className="text-center text-sm font-medium text-gray-80 underline underline-offset-4 transition-colors duration-300 hover:text-blue"
+                  >
+                    Cancel and go back to reading
+                  </Link>
+                )}
+              </div>
             )}
 
             {href && (
