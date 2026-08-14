@@ -219,8 +219,8 @@ export const socials = [
  * hundred-character headlines at 88px.
  *
  * A shape rather than a list, so it cannot fall out of step the way the
- * original did: the two article routes are the exception, and the listings
- * above them are not — `/news-insights/news` still opens with the room, only
+ * original did: the article routes are the exception, and the listings above
+ * them are not — `/news-insights/news` still opens with the room, only
  * `/news-insights/news/<slug>` does not.
  *
  * Getting this wrong is not subtle. `false` on a hero page paints a solid bar
@@ -228,9 +228,19 @@ export const socials = [
  * on white, invisible until the reader scrolls. `SiteHeader` also pins
  * defensively when it finds no sentinels, so the two have to agree twice
  * before anything is lost.
+ *
+ * THESE ARE ROUTES, AND THEY HAVE TO MOVE WHEN ROUTES MOVE. Stories went from
+ * News & Insights to Our Impact and this was missed, so every story opened
+ * with a transparent bar over a white page and its headline running under the
+ * navigation. It survived a search for the old path because a regex escapes
+ * its slashes — `news-insights\/stories` does not contain the string
+ * "news-insights/stories", so grepping for the path found every other
+ * reference and not this one. Anything moving a route should come here and
+ * look, rather than trusting a search to bring it up.
  */
 const WHITE_GROUND = [
-  /^\/news-insights\/(news|stories)\/[^/]+$/,
+  /^\/news-insights\/news\/[^/]+$/,
+  /^\/our-impact\/stories\/[^/]+$/,
   // A vacancy page opens the same way an article does, and for the same
   // reason: a job description is a document somebody reads, not a place on
   // the site. The listing above it still opens with the room.
