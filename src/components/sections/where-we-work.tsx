@@ -526,11 +526,28 @@ export function WhereWeWork({
           <Reveal delay={290} className="flex flex-col gap-8">
             {/* The readout. Announced politely so tabbing is as informative as
                 pointing. It answers whichever question was asked last — what
-                runs in this district, or where does this project run. */}
+                runs in this district, or where does this project run.
+
+                IT RESERVES ITS TALLEST HEIGHT, and that is the whole point of
+                these three numbers. The panel swaps content on hover, and the
+                states are not the same height: a project whose name wraps to
+                two lines is 40px taller than one that does not, and a district
+                running three projects is taller again. At `min-h-36` the panel
+                grew and shrank as the pointer crossed the list, which moved
+                the project rows underneath it — so the row you were reaching
+                for slid out from under the cursor, and moving to it changed
+                the panel again. The page appeared to shake.
+
+                Measured rather than guessed, across every project and every
+                district: 210 at 390px, 184 at 900, 197 at 1440. The phone
+                needs the most because the same words wrap furthest. Each value
+                is the measured tallest with a little headroom, so the panel is
+                the same height whatever it is saying and nothing below it
+                moves. */}
             <div
               role="status"
               aria-live="polite"
-              className="wedge min-h-36 bg-blue-08 p-7"
+              className="wedge min-h-56 bg-blue-08 p-7 sm:min-h-48 lg:min-h-52"
             >
               {previewProject ? (
                 <>
