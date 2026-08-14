@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut, UserRound } from "lucide-react";
+import { ChartNoAxesColumn, LayoutDashboard, LogOut, UserRound } from "lucide-react";
 
 import { collections, globals, GROUPS, mailing, registers } from "../collections";
 import { canSee } from "../auth/permissions";
@@ -52,6 +52,18 @@ export function StaffNav({ user }: { user: StaffUser }) {
           icon={LayoutDashboard}
           active={isActive("/staff")}
         />
+
+        {/* Alongside the dashboard rather than inside a group, because it is
+            not a thing to edit — it is the other way of looking at everything
+            below it. Filed under Settings it would read as a preference. */}
+        {canSee(user, "analytics") && (
+          <NavLink
+            href="/staff/analytics"
+            label="Analytics"
+            icon={ChartNoAxesColumn}
+            active={isActive("/staff/analytics")}
+          />
+        )}
 
         {GROUPS.map((group) => {
           // The href comes from what the entry *is*, not from the heading it

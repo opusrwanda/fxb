@@ -1,7 +1,9 @@
 import { createReadStream, statSync } from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+
+import { record } from "@/staff/analytics/record";
 
 /**
  * Serve an uploaded file.
@@ -36,7 +38,7 @@ const CONTENT_TYPES: Record<string, string> = {
 };
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ filename: string }> },
 ) {
   const { filename: raw } = await params;
@@ -58,9 +60,35 @@ export async function GET(
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const type =
-    CONTENT_TYPES[path.extname(filename).toLowerCase()] ??
-    "application/octet-stream";
+  const extension = path.extname(filename).toLowerCase();
+  const type = CONTENT_TYPES[extension] ?? "application/octet-stream";
+
+  /**
+   * A downloaded document is counted here and nowhere else.
+   *
+   * The site's page counter is a script in the browser, and a PDF never runs
+   * one — it opens in the viewer, or lands in a downloads folder, and as far as
+   * the website is concerned nothing happened. Yet "how many people took the
+   * annual report" is one of the few numbers FXB reports upwards, so the count
+   * has to be taken at the only place that sees it: here, as the bytes go out.
+   *
+   * Documents only. Photographs go through this route too — every image on the
+   * site is a request to it — and counting those would bury the reports under
+   * fifty logos and say nothing about anybody's reading.
+   *
+   * `after` so the file starts sending immediately and the row is written
+   * behind it. A download should never wait on a count.
+   */
+  if (extension === ".pdf") {
+    after(() =>
+      record({
+        path: `/media/${filename}`,
+        kind: "download",
+        referrer: request.headers.get("referer"),
+        headers: request.headers,
+      }),
+    );
+  }
 
   const stream = Readable.toWeb(
     createReadStream(file),

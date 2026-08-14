@@ -53,6 +53,7 @@ export type Area =
   | "mailing"
   | "campaigns"
   | "library"
+  | "analytics"
   | "settings";
 
 /** No sight of it, read it, or change it. */
@@ -96,6 +97,8 @@ const AREAS: Record<string, Area> = {
 
   media: "library",
 
+  analytics: "analytics",
+
   pageHeaders: "settings",
   sections: "settings",
   users: "settings",
@@ -128,6 +131,18 @@ const EDITOR: Record<Area, Access> = {
    */
   mailing: "read",
   campaigns: "none",
+  /**
+   * Not withheld because the figures are secret.
+   *
+   * They are the website's own traffic and there is nothing embarrassing in
+   * them. But a page of numbers with no context is the easiest thing in this
+   * panel to misread — a story that did well in a week when a campaign was
+   * running is not a story that did well — and FXB's table says view-only for
+   * an editor's own content, which this page does not separate out. Until it
+   * does, the honest answer is that the person who can interpret the figures is
+   * the person who can open them. An admin can always pass on what they say.
+   */
+  analytics: "none",
   settings: "none",
 };
 

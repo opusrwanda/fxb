@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createHeadingNode, $createQuoteNode, $isHeadingNode } from "@lexical/rich-text";
+import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
 import {
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
@@ -39,6 +40,7 @@ import {
   Link2,
   List,
   ListOrdered,
+  Minus,
   Quote,
   Redo2,
   Underline,
@@ -350,6 +352,20 @@ export function Toolbar() {
       </Button>
       <Button label="Add a video" onClick={() => setAddingVideo(true)}>
         <Video className="size-4" aria-hidden="true" />
+      </Button>
+      {/*
+        A dividing line, which the website has always drawn and the panel had
+        no way to make. Migrated articles contain them — that is how this was
+        found — so the editor could read one but nobody could add one, which is
+        the sort of gap that has somebody typing a row of dashes instead.
+      */}
+      <Button
+        label="Dividing line"
+        onClick={() =>
+          editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)
+        }
+      >
+        <Minus className="size-4" aria-hidden="true" />
       </Button>
 
       <Divider />

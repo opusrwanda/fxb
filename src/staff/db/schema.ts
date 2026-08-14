@@ -2,6 +2,7 @@ import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import {
   boolean,
   date,
+  index,
   integer,
   jsonb,
   pgTable,
@@ -831,4 +832,94 @@ export const campaignSends = pgTable("campaign_sends", {
   status: varchar("status", { length: 20 }).notNull(),
   error: text("error"),
   sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/* ── What the website is asked for ────────────────────────────────────────── */
+
+/**
+ * One row per page opened, and per file downloaded.
+ *
+ * FXB's own analytics rather than Google's, for two reasons that are not
+ * ideology. The first is that Google Analytics is a cookie, which means a
+ * consent banner, which means a proportion of visitors say no and the figures
+ * quietly stop describing everybody. The second is that the question this table
+ * answers — which story was read, which report was downloaded — is about FXB's
+ * own documents, and joining a page path to a publication is something we can
+ * do here and cannot do inside somebody else's product.
+ *
+ * NOTHING HERE IDENTIFIES A PERSON. No cookie is set, no IP address is stored,
+ * and there is no field a name could be recovered from. `visitor` is a hash of
+ * the address and the browser with a secret that is thrown away and replaced
+ * every night — see `analyticsSalts` — so it can tell two people apart today
+ * and cannot connect either of them to yesterday. That is the whole privacy
+ * design, and it is why this needs no banner.
+ *
+ * ON SIZE: a row is roughly 120 bytes. At FXB's traffic — a few thousand views
+ * a month — that is under a megabyte a year, so there is no rollup table and no
+ * retention policy. If the site ever takes ten thousand views a day, aggregate
+ * the old days into a summary and delete the rows; nothing outside
+ * `queries/analytics.ts` reads this table.
+ */
+export const pageViews = pgTable(
+  "page_views",
+  {
+    id: serial("id").primaryKey(),
+    /** The path only. Query strings are dropped before this is written. */
+    path: varchar("path", { length: 512 }).notNull(),
+    /**
+     * `view` for a page, `download` for a file off /media.
+     *
+     * One table rather than two because every question is asked of both at
+     * once — the range, the day, the trend — and two tables would mean every
+     * query in the panel written twice and unioned.
+     */
+    kind: varchar("kind", { length: 16 }).notNull().default("view"),
+    /**
+     * Where they came from, as a bare hostname: `facebook.com`, `google.com`.
+     *
+     * The host and not the full URL. A referring URL can carry a search query
+     * or a session token in its path, and none of that is any of our business;
+     * the host is the entire answer to "where did they arrive from".
+     */
+    referrerHost: varchar("referrer_host", { length: 255 }),
+    /** mobile | tablet | desktop, from the user agent and nothing else. */
+    device: varchar("device", { length: 16 }).notNull(),
+    /** The daily hash. See `analyticsSalts`. */
+    visitor: varchar("visitor", { length: 32 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    // Every query in the panel starts "in the last N days", so this is the one
+    // index that matters. Without it a range scan reads the whole table.
+    index("page_views_created_at_idx").on(table.createdAt),
+    // Top pages, and the "was this already counted" check on the way in.
+    index("page_views_path_idx").on(table.path, table.createdAt),
+  ],
+);
+
+/**
+ * The secret that makes a visitor countable and not identifiable.
+ *
+ * A visitor hash has to be stable for a day, so two pages opened by one person
+ * are one visitor, and it has to be impossible to reverse, or it is an IP
+ * address with extra steps. Hashing the address alone fails the second test
+ * completely: there are only four billion IPv4 addresses and a laptop can hash
+ * all of them in an afternoon, so an unsalted hash is a reversible one.
+ *
+ * So the day's hash is taken with a random secret, and the secret is deleted a
+ * few days later. Once it is gone the rows it produced cannot be tied back to
+ * anybody by us, by a future employee, or by whoever ends up with a copy of the
+ * database — not because we promise not to, but because the number that would
+ * be needed no longer exists.
+ *
+ * Keyed by the Kigali day, not the UTC one. Rwanda is UTC+2, so a UTC rotation
+ * would change the secret at two in the morning and split one evening's
+ * visitors in half.
+ */
+export const analyticsSalts = pgTable("analytics_salts", {
+  /** The Kigali calendar day, as `YYYY-MM-DD`. */
+  day: date("day").primaryKey(),
+  /** 16 random bytes, hex. Never leaves the server. */
+  salt: text("salt").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

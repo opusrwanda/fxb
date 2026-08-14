@@ -113,6 +113,13 @@
       "when": 1786717012029,
       "tag": "0015_flippant_swordsman",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1786722506854,
+      "tag": "0016_overrated_gunslinger",
+      "breakpoints": true
     }
   ]
 }

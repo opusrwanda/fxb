@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -9,6 +9,8 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
+import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
@@ -81,6 +83,62 @@ const theme = {
   },
 };
 
+/**
+ * Every node type this editor can read, including the ones Lexical registers
+ * for itself. Kept next to the `nodes` list above, which is what makes it true.
+ */
+const KNOWN = new Set([
+  "root",
+  "text",
+  "linebreak",
+  "tab",
+  "paragraph",
+  "heading",
+  "quote",
+  "list",
+  "listitem",
+  "link",
+  "autolink",
+  "image",
+  "video",
+  "horizontalrule",
+]);
+
+/**
+ * Anything in this document the editor would drop on the floor.
+ *
+ * Read before Lexical is handed the document, because Lexical's own answer to a
+ * type it does not know is to log to the console and stop reading — and the
+ * console is not somewhere a communications officer in Kigali is looking. This
+ * is the check that turns a silent truncation into a sentence on the screen.
+ *
+ * A document that will not parse as JSON at all counts as unreadable too. That
+ * should not be possible, and if it happens the last thing anybody wants is for
+ * this form to replace it with an empty one.
+ */
+function unreadableParts(json: string): string[] {
+  if (!json) return [];
+
+  try {
+    const found = new Set<string>();
+
+    const walk = (node: { type?: string; children?: unknown[] }) => {
+      if (node?.type && !KNOWN.has(node.type)) found.add(node.type);
+      for (const child of (node?.children ?? []) as { type?: string }[]) {
+        walk(child);
+      }
+    };
+
+    const root = (JSON.parse(json) as { root?: { type?: string } }).root;
+    if (!root) return ["empty"];
+    walk(root);
+
+    return [...found];
+  } catch {
+    return ["unreadable"];
+  }
+}
+
 export function RichTextEditor({
   name,
   initialJson,
@@ -106,13 +164,46 @@ export function RichTextEditor({
 }) {
   const [value, setValue] = useState(initialJson);
 
+  /**
+   * Whether this document contains something the editor cannot read.
+   *
+   * Computed once from the stored JSON, before Lexical touches it. When it does
+   * find something, the text is shown but locked and the form keeps posting the
+   * stored version — the writing survives, the other fields on the page still
+   * save, and somebody is told why rather than discovering later that half an
+   * article has gone.
+   */
+  const missing = useMemo(() => unreadableParts(initialJson), [initialJson]);
+  const locked = missing.length > 0;
+
   return (
     <div className="overflow-hidden rounded-card border border-gray-15 bg-white focus-within:border-blue">
+      {locked && (
+        <p
+          role="status"
+          className="border-b border-gray-15 bg-blue-08 px-5 py-4 text-[15px] leading-relaxed text-gray"
+        >
+          <strong className="font-semibold text-blue">
+            This text cannot be edited here.
+          </strong>{" "}
+          It contains something this editor does not know how to handle
+          {missing[0] === "unreadable" || missing[0] === "empty"
+            ? ""
+            : ` (${missing.join(", ")})`}
+          , and editing it would risk losing part of what is written. The words
+          are safe and the website still shows them in full — everything else on
+          this page can still be changed and saved. Tell whoever maintains the
+          site, and this becomes a small fix.
+        </p>
+      )}
+
       <LexicalComposer
         initialConfig={{
           namespace: "fxb",
           theme,
-          editable: !readOnly,
+          // Locked as well as read-only: an editor somebody can type into but
+          // which will not save what they typed is worse than one that says so.
+          editable: !readOnly && !locked,
           // ImageNode and VideoNode are ours — see `nodes.tsx`. A node type
           // that is not registered here throws when a stored document
           // containing it is loaded, so this list and `lexical/render.tsx`
@@ -126,6 +217,25 @@ export function RichTextEditor({
             AutoLinkNode,
             ImageNode,
             VideoNode,
+            /**
+             * The one that was missing, and what it cost.
+             *
+             * `render.tsx` has always drawn a `horizontalrule`, and Payload's
+             * editor could insert one, so migrated articles contain them. This
+             * editor could not, and an unregistered type does not fail loudly:
+             * Lexical logs `parseEditorState: type "horizontalrule" not found`
+             * to the console and stops reading the document there. Everything
+             * past the rule was missing from the panel — and because the form
+             * posts whatever the editor holds, saving the article would then
+             * have written the truncated version back over the real one.
+             *
+             * The rule is what the story pages use between an account and the
+             * note that follows it, so this was live content. Anything else the
+             * renderer knows about belongs in this list too — the guard below
+             * now refuses to save rather than let the next omission delete
+             * somebody's paragraphs.
+             */
+            HorizontalRuleNode,
           ],
           // A stored document is handed to Lexical as its starting state. An
           // empty string means a new document, and Lexical starts blank.
@@ -137,7 +247,7 @@ export function RichTextEditor({
           },
         }}
       >
-        {!readOnly && <Toolbar />}
+        {!readOnly && !locked && <Toolbar />}
 
         <RichTextPlugin
           contentEditable={
@@ -160,6 +270,9 @@ export function RichTextEditor({
         <HistoryPlugin />
         <ListPlugin />
         <LinkPlugin />
+        {/* Makes the toolbar's dividing line insertable. Registering the node
+            is what lets an existing one be *read*; this is what adds one. */}
+        <HorizontalRulePlugin />
 
         <OnChangePlugin
           ignoreSelectionChange
@@ -169,8 +282,10 @@ export function RichTextEditor({
         />
       </LexicalComposer>
 
-      {/* What the form actually posts. */}
-      <input type="hidden" name={name} value={value} />
+      {/* What the form actually posts — the stored text, untouched, when the
+          editor could not read all of it. This is the line that makes the
+          warning above true. */}
+      <input type="hidden" name={name} value={locked ? initialJson : value} />
     </div>
   );
 }

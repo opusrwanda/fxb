@@ -6,6 +6,7 @@ import { getSiteDetails } from "@/cms/content/settings";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { PromoBanner } from "@/components/layout/promo-banner";
+import { PageViewBeacon } from "@/components/layout/page-view-beacon";
 import { getPromoBanner } from "@/cms/content/banner";
 
 /**
@@ -101,6 +102,11 @@ export default async function RootLayout({
           {children}
         </main>
         <SiteFooter details={details} />
+
+        {/* Renders nothing. Reports which page was opened, with no cookie and
+            no address kept — see `page-view-beacon.tsx`. Last in the body so
+            it cannot delay anything a reader is waiting for. */}
+        <PageViewBeacon />
       </body>
     </html>
   );
