@@ -65,14 +65,19 @@ export default async function NewslettersPage() {
                     rel="noreferrer noopener"
                     className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-500 hover:border-blue"
                   >
+                    {/* Landscape, though the cover is portrait — the same
+                        shape and the same reasoning as the publications shelf,
+                        which see. Four issues arrive every year and none ever
+                        leaves, so this is the shelf that grows fastest and has
+                        most to gain from a card half the height. */}
                     {issue.cover && (
-                      <span className="relative block aspect-3/4 overflow-hidden bg-blue-08">
+                      <span className="relative block aspect-4/3 overflow-hidden bg-blue-08">
                         <Image
                           src={issue.cover.url}
                           alt=""
                           fill
                           sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                          className="motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
+                          className="motion-transform object-cover object-top transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
                         />
                       </span>
                     )}

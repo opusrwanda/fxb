@@ -141,15 +141,32 @@ export default async function PublicationsPage() {
                                   Safeguarding Policy would be decoration
                                   pretending to be a cover. Because the filter
                                   shows one category at a time, each shelf is
-                                  internally consistent either way. */}
+                                  internally consistent either way.
+
+                                  LANDSCAPE, THOUGH THE COVERS ARE PORTRAIT.
+                                  The box was 3:4, the shape of the document
+                                  itself, which made every card about 500px
+                                  tall — fine for the three reports on the
+                                  shelf today and a very long scroll once a
+                                  shelf holds twenty. At 4:3 the same card is
+                                  a little over half that.
+
+                                  `object-top` is what makes the crop safe. A
+                                  report cover carries its title and its
+                                  branding in the upper half and white space
+                                  or a footer in the lower, so cropping from
+                                  the top keeps the part that identifies the
+                                  document and discards the part that does
+                                  not. Centred — the default — would shave off
+                                  the title. */}
                               {item.cover ? (
-                                <span className="relative block aspect-3/4 overflow-hidden bg-blue-08">
+                                <span className="relative block aspect-4/3 overflow-hidden bg-blue-08">
                                   <Image
                                     src={item.cover.url}
                                     alt=""
                                     fill
                                     sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                                    className="motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
+                                    className="motion-transform object-cover object-top transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
                                   />
                                 </span>
                               ) : (
