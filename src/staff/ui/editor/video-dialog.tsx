@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
 
-import { readVideoUrl, type VideoProvider } from "./nodes";
+import { readVideoUrl, VIDEO_LABELS, type VideoProvider } from "./nodes";
 
 /**
  * Adding a video, in the panel's own furniture.
@@ -19,12 +19,6 @@ import { readVideoUrl, type VideoProvider } from "./nodes";
  * address, what should it be called, and — answered continuously rather than
  * at the end — is that address one we can actually play.
  */
-
-const LABELS: Record<VideoProvider, string> = {
-  youtube: "YouTube",
-  vimeo: "Vimeo",
-  file: "Video file",
-};
 
 export function VideoDialog({
   onAdd,
@@ -110,8 +104,10 @@ export function VideoDialog({
               Address
             </label>
             <p id="video-url-help" className="text-[13px] leading-relaxed text-gray-80">
-              A YouTube or Vimeo link, or a direct link to an .mp4 or .webm
-              file. Copy it from the browser’s address bar.
+              A link from YouTube, Vimeo, Instagram, Facebook, TikTok or
+              LinkedIn, or a direct link to an .mp4 or .webm file. Copy it from
+              the browser’s address bar, or from the post’s own Share or Copy
+              link.
             </p>
             <input
               ref={urlRef}
@@ -127,7 +123,7 @@ export function VideoDialog({
               }}
               aria-describedby="video-url-help"
               aria-invalid={tried && !video}
-              placeholder="https://www.youtube.com/watch?v=…"
+              placeholder="https://www.instagram.com/reel/…"
               className={`w-full rounded-card border bg-white px-4 py-3 text-[15px] text-gray outline-none ${
                 tried && !video ? "border-blue" : "border-gray-15 focus:border-blue"
               }`}
@@ -141,15 +137,21 @@ export function VideoDialog({
               <p className="text-[13px] text-gray">
                 Recognised as{" "}
                 <strong className="font-semibold text-blue">
-                  {LABELS[video.provider]}
+                  {VIDEO_LABELS[video.provider]}
                 </strong>
                 {video.provider !== "file" && ` — ${video.videoId}`}.
               </p>
             )}
             {typed && !video && (
+              /* Names what is accepted rather than only what was refused. The
+                 message this replaced listed two of the seven and left
+                 somebody with an Instagram link to conclude the panel could
+                 not take one — which, until now, it could not. */
               <p role="alert" className="text-[13px] leading-relaxed text-blue">
-                That address was not recognised. It needs to be a YouTube or
-                Vimeo link, or end in .mp4 or .webm.
+                That address was not recognised. It needs to be a link to a
+                YouTube, Vimeo, Instagram, Facebook, TikTok or LinkedIn post,
+                or a file ending in .mp4 or .webm. A private post will not
+                work — the address has to be one anybody can open.
               </p>
             )}
           </div>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { JSX } from "react";
 
 import type { RichText, RichTextNode } from "../db/schema";
+import { videoEmbed } from "./video";
 
 /**
  * Lexical's stored JSON, rendered as React.
@@ -219,11 +220,20 @@ function renderNode(node: RichTextNode, key: number): React.ReactNode {
     /**
      * A video, by provider.
      *
-     * The embeds are the privacy-preserving hosts — `youtube-nocookie.com` and
-     * Vimeo's `dnt=1` — because an article on this site should not be setting
-     * advertising cookies on a reader who came to read about a school. Both
-     * are lazy-loaded: an embed is a whole second browser, and an article with
-     * three of them would otherwise load three of them before the words.
+     * Which address each provider embeds at, and what shape its frame is, is
+     * `lexical/video.ts` — the same file the panel reads a pasted link with,
+     * so the two cannot disagree about what is supported.
+     *
+     * Every embed is lazy-loaded. An embed is a whole second browser, and an
+     * article with three of them would otherwise load three of them before the
+     * words.
+     *
+     * They are not sandboxed, deliberately rather than by omission. A `sandbox`
+     * tight enough to be worth having breaks these players in ways that differ
+     * per provider, and a half-open one is a comment claiming a protection
+     * that is not there. What limits them is the `allow` list and the fact
+     * that nothing on this site is authenticated for a reader — there is no
+     * session for a frame to reach.
      *
      * A `file` is served with controls and no autoplay. Video that starts by
      * itself in the middle of an article is a thing done to a reader, not for
@@ -241,15 +251,15 @@ function renderNode(node: RichTextNode, key: number): React.ReactNode {
         );
       }
 
-      const embed =
-        provider === "vimeo"
-          ? `https://player.vimeo.com/video/${encodeURIComponent(videoId)}?dnt=1`
-          : `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}`;
+      const frame = videoEmbed(provider, videoId);
+      // A provider this renderer does not know, or an id that no longer looks
+      // like one. Nothing is better than an empty box with a border.
+      if (!frame) return null;
 
       return (
-        <div key={key} className="aspect-video w-full">
+        <div key={key} className={`${frame.aspect} w-full ${frame.width ?? ""}`}>
           <iframe
-            src={embed}
+            src={frame.src}
             title={title}
             loading="lazy"
             allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

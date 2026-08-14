@@ -4,6 +4,7 @@ import { DecoratorNode, type LexicalNode, type NodeKey, type SerializedLexicalNo
 import type { JSX } from "react";
 
 import { EditorImage } from "./image-component";
+import { VIDEO_LABELS, type VideoProvider } from "@/staff/lexical/video";
 
 /**
  * Pictures and video inside an article.
@@ -273,15 +274,16 @@ export function $isImageNode(node: LexicalNode | null | undefined): node is Imag
 /* ── Video ────────────────────────────────────────────────────────────────── */
 
 /**
- * Where the video comes from.
+ * Where the video comes from, and how a pasted address is read.
  *
- * `youtube` and `vimeo` are embeds and store only the id; `file` is something
- * in the media library and stores its URL. Keeping the provider explicit means
- * the renderer never has to guess from the shape of a URL, and an embed that
- * stores an id rather than a full URL cannot be turned into a link to
- * something else by an edit to the JSON.
+ * Both live in `lexical/video.ts` now, because the site renderer needs exactly
+ * the same answers and a provider added to one half and not the other is
+ * either an address the panel rejects for no reason or a stored node that
+ * renders as an empty box. Re-exported here so the editor's own files keep
+ * importing from the module they always did.
  */
-export type VideoProvider = "youtube" | "vimeo" | "file";
+export { readVideoUrl, VIDEO_LABELS } from "@/staff/lexical/video";
+export type { VideoProvider } from "@/staff/lexical/video";
 
 export type SerializedVideoNode = Spread<
   { provider: VideoProvider; videoId: string; title: string },
@@ -350,12 +352,7 @@ export class VideoNode extends DecoratorNode<JSX.Element> {
    * the one who needs it to play.
    */
   decorate(): JSX.Element {
-    const label =
-      this.__provider === "file"
-        ? "Video file"
-        : this.__provider === "vimeo"
-          ? "Vimeo"
-          : "YouTube";
+    const label = VIDEO_LABELS[this.__provider] ?? "Video";
 
     return (
       <div className="flex items-center gap-4 rounded-card border border-gray-15 bg-blue-08 px-5 py-4">
@@ -390,34 +387,4 @@ export function $createVideoNode(
 
 export function $isVideoNode(node: LexicalNode | null | undefined): node is VideoNode {
   return node instanceof VideoNode;
-}
-
-/**
- * Read a pasted address and work out what it points at.
- *
- * Handles what people actually paste: a watch URL, a `youtu.be` short link, an
- * embed URL, a Vimeo page, and a direct link to a video file. Anything else
- * returns null and the toolbar says so, rather than inserting a block that
- * renders as an empty frame on the live site.
- */
-export function readVideoUrl(
-  raw: string,
-): { provider: VideoProvider; videoId: string } | null {
-  const url = raw.trim();
-  if (!url) return null;
-
-  const youtube = url.match(
-    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/,
-  );
-  if (youtube) return { provider: "youtube", videoId: youtube[1] };
-
-  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vimeo) return { provider: "vimeo", videoId: vimeo[1] };
-
-  // A file, either in the library or anywhere else that serves one.
-  if (/^(https?:\/\/|\/)[^\s]+\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(url)) {
-    return { provider: "file", videoId: url };
-  }
-
-  return null;
 }
