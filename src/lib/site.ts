@@ -241,6 +241,11 @@ export const socials = [
 const WHITE_GROUND = [
   /^\/news-insights\/news\/[^/]+$/,
   /^\/our-impact\/stories\/[^/]+$/,
+  // A programme page opens the way an article does — trail, kicker, name, then
+  // its own photograph. It used to carry the hero room, which gave every
+  // programme the same page banner and then put the programme's own picture
+  // directly beneath it: two large images, one of them about nothing.
+  /^\/what-we-do\/programmes\/[^/]+$/,
   // A vacancy page opens the same way an article does, and for the same
   // reason: a job description is a document somebody reads, not a place on
   // the site. The listing above it still opens with the room.

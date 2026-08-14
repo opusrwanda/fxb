@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, MapPin } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { PageHeader } from "@/components/layout/page-header";
+import { ArticleOpening } from "@/components/layout/article-opening";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
@@ -104,258 +103,252 @@ export default async function ProgrammePage({
     components.length > 0;
 
   return (
-    <>
-      <PageHeader
-        breadcrumbs={[
-          { label: "What We Do", href: "/what-we-do" },
-          {
-            label: project.current ? "Current Projects" : "Phased-out Projects",
-            href: project.current
-              ? "/what-we-do/current-projects"
-              : "/what-we-do/phased-out-projects",
-          },
-        ]}
-        eyebrow={project.current ? "CURRENT PROGRAMME" : "PHASED-OUT PROGRAMME"}
-        title={project.name}
-        intro={`Running in ${project.districts.length} ${
-          project.districts.length === 1 ? "district" : "districts"
-        }: ${project.districts.join(", ")}.`}
-      />
+    <section
+      // Top padding clears the pinned bar and then opens the page, the same
+      // way an article does. Nothing sits behind the header here, so this is
+      // clearance rather than the hero's overlap.
+      className="bg-white pt-[calc(4rem+3.5rem)] pb-24 lg:pt-[calc(4.5rem+5rem)] lg:pb-32"
+    >
+      <Container className="flex flex-col gap-12 lg:gap-16">
+        <div>
+          <ArticleOpening
+            breadcrumbs={[
+              { label: "What We Do", href: "/what-we-do" },
+              {
+                label: project.current
+                  ? "Current Projects"
+                  : "Phased-out Projects",
+                href: project.current
+                  ? "/what-we-do/current-projects"
+                  : "/what-we-do/phased-out-projects",
+              },
+            ]}
+            eyebrow={
+              project.current ? "CURRENT PROGRAMME" : "PHASED-OUT PROGRAMME"
+            }
+            title={project.name}
+            meta={`Running in ${project.districts.length} ${
+              project.districts.length === 1 ? "district" : "districts"
+            }: ${project.districts.join(", ")}.`}
+            image={project.image}
+            // The opening runs the full container here, not the article's
+            // 52rem column — the grid below it does too.
+            sizes="(min-width: 1280px) 1200px, 92vw"
+          />
+        </div>
 
-      <section className="bg-white pb-24 lg:pb-32">
-        <Container className="flex flex-col gap-12 lg:gap-16">
-          {project.image && (
-            <Reveal>
-              <div className="wedge relative aspect-16/9 overflow-hidden bg-blue-08">
-                <Image
-                  src={project.image.url}
-                  alt={project.image.alt}
-                  fill
-                  priority
-                  sizes="(min-width: 1024px) 75vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-            </Reveal>
-          )}
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-16">
+          <Reveal className="lg:col-span-7">
+            {written ? (
+              /**
+               * One order, every programme.
+               *
+               * Summary, then what it set out to do, then the account of it,
+               * then what it achieved, then what it delivers. A reader who
+               * has read one programme page knows where to look on the next,
+               * and two can be compared without hunting for the same fact
+               * under a different heading — which is what happens when the
+               * whole thing is one rich-text field and each programme
+               * invents its own structure.
+               *
+               * Every block below disappears when it is empty. A programme
+               * too early to have results shows no Results heading rather
+               * than an empty one, and nothing here is a placeholder waiting
+               * to be filled — an empty heading is a promise the page cannot
+               * keep.
+               */
+              <div className="flex flex-col gap-10">
+                {project.summary && (
+                  <p className="text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
+                    {project.summary}
+                  </p>
+                )}
 
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-16">
-            <Reveal className="lg:col-span-7">
-              {written ? (
-                /**
-                 * One order, every programme.
-                 *
-                 * Summary, then what it set out to do, then the account of it,
-                 * then what it achieved, then what it delivers. A reader who
-                 * has read one programme page knows where to look on the next,
-                 * and two can be compared without hunting for the same fact
-                 * under a different heading — which is what happens when the
-                 * whole thing is one rich-text field and each programme
-                 * invents its own structure.
-                 *
-                 * Every block below disappears when it is empty. A programme
-                 * too early to have results shows no Results heading rather
-                 * than an empty one, and nothing here is a placeholder waiting
-                 * to be filled — an empty heading is a promise the page cannot
-                 * keep.
-                 */
-                <div className="flex flex-col gap-10">
-                  {project.summary && (
-                    <p className="text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
-                      {project.summary}
-                    </p>
-                  )}
+                {objectives.length > 0 && (
+                  <div>
+                    <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                      OBJECTIVES
+                    </h2>
+                    <ul className="mt-5 flex flex-col gap-3">
+                      {objectives.map((item) => (
+                        <li
+                          key={item}
+                          className="flex gap-3 text-base leading-relaxed text-gray lg:text-[17px]"
+                        >
+                          <span
+                            className="mt-2.5 size-1.5 shrink-0 rounded-full bg-green"
+                            aria-hidden="true"
+                          />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-                  {objectives.length > 0 && (
-                    <div>
-                      <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                        OBJECTIVES
-                      </h2>
-                      <ul className="mt-5 flex flex-col gap-3">
-                        {objectives.map((item) => (
-                          <li
-                            key={item}
-                            className="flex gap-3 text-base leading-relaxed text-gray lg:text-[17px]"
-                          >
-                            <span
-                              className="mt-2.5 size-1.5 shrink-0 rounded-full bg-green"
-                              aria-hidden="true"
-                            />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {!isEmpty(project.body) && (
-                    <div>
-                      {/* The heading appears only where something else is on
+                {!isEmpty(project.body) && (
+                  <div>
+                    {/* The heading appears only where something else is on
                           the page to distinguish it from. On a programme with
                           nothing but a description, "ABOUT THIS PROGRAMME"
                           over the only block on the page is a label on a box
                           with one thing in it. */}
-                      {(objectives.length > 0 ||
-                        results.length > 0) && (
-                        <h2 className="mb-5 text-xs font-semibold tracking-[0.14em] text-gray-80">
-                          ABOUT THIS PROGRAMME
-                        </h2>
-                      )}
-                      <Prose data={project.body} />
-                    </div>
-                  )}
-
-                  {results.length > 0 && (
-                    <div className="wedge bg-green-10 p-8">
-                      <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                        RESULTS
+                    {(objectives.length > 0 || results.length > 0) && (
+                      <h2 className="mb-5 text-xs font-semibold tracking-[0.14em] text-gray-80">
+                        ABOUT THIS PROGRAMME
                       </h2>
-                      <ul className="mt-5 flex flex-col gap-4">
-                        {results.map((item) => (
-                          <li
-                            key={item}
-                            className="flex gap-3 text-base leading-relaxed text-blue lg:text-[17px]"
-                          >
-                            <span
-                              className="mt-2.5 size-1.5 shrink-0 rounded-full bg-green"
-                              aria-hidden="true"
-                            />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                    )}
+                    <Prose data={project.body} />
+                  </div>
+                )}
 
-                  {components.length > 0 && (
-                    <div>
-                      <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                        WHAT IT DELIVERS
-                      </h2>
-                      <ul className="mt-6 grid gap-x-10 sm:grid-cols-2">
-                        {components.map((item) => (
-                          <li
-                            key={item}
-                            className="border-t border-gray-15 py-4 text-base font-medium text-blue"
-                          >
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                // The honest version, for a programme with no copy yet. Same
-                // panel Careers and Publications use, so "being prepared" reads
-                // the same way everywhere rather than as a broken page.
-                <EmptyState
-                  title="A fuller description is on its way"
-                  body={`We are preparing a full account of ${project.name} — what it does, who it reaches, who funds it and over what period. In the meantime the districts it runs in are listed here, and the team can tell you more directly.`}
-                  actions={[
-                    {
-                      label: "Ask about this programme",
-                      href: `mailto:${details.email}?subject=${encodeURIComponent(project.name)}`,
-                      primary: true,
-                    },
-                    {
-                      label: "Where we work",
-                      href: "/who-we-are#where-we-work",
-                    },
-                  ]}
-                />
-              )}
-            </Reveal>
+                {results.length > 0 && (
+                  <div className="wedge bg-green-10 p-8">
+                    <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                      RESULTS
+                    </h2>
+                    <ul className="mt-5 flex flex-col gap-4">
+                      {results.map((item) => (
+                        <li
+                          key={item}
+                          className="flex gap-3 text-base leading-relaxed text-blue lg:text-[17px]"
+                        >
+                          <span
+                            className="mt-2.5 size-1.5 shrink-0 rounded-full bg-green"
+                            aria-hidden="true"
+                          />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-            <Reveal delay={140} className="lg:col-span-4 lg:col-start-9">
-              {/* The facts rail. Every row is optional and simply absent when
+                {components.length > 0 && (
+                  <div>
+                    <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                      WHAT IT DELIVERS
+                    </h2>
+                    <ul className="mt-6 grid gap-x-10 sm:grid-cols-2">
+                      {components.map((item) => (
+                        <li
+                          key={item}
+                          className="border-t border-gray-15 py-4 text-base font-medium text-blue"
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // The honest version, for a programme with no copy yet. Same
+              // panel Careers and Publications use, so "being prepared" reads
+              // the same way everywhere rather than as a broken page.
+              <EmptyState
+                title="A fuller description is on its way"
+                body={`We are preparing a full account of ${project.name} — what it does, who it reaches, who funds it and over what period. In the meantime the districts it runs in are listed here, and the team can tell you more directly.`}
+                actions={[
+                  {
+                    label: "Ask about this programme",
+                    href: `mailto:${details.email}?subject=${encodeURIComponent(project.name)}`,
+                    primary: true,
+                  },
+                  {
+                    label: "Where we work",
+                    href: "/who-we-are#where-we-work",
+                  },
+                ]}
+              />
+            )}
+          </Reveal>
+
+          <Reveal delay={140} className="lg:col-span-4 lg:col-start-9">
+            {/* The facts rail. Every row is optional and simply absent when
                   the data has nothing for it, so a programme with a funder but
                   no period does not render an empty label. */}
-              <dl className="flex flex-col">
-                {project.runs && (
-                  <div className="flex flex-col gap-1 border-t border-gray-15 py-5">
-                    <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                      RUNS
-                    </dt>
-                    <dd className="text-base font-medium text-blue">
-                      {project.runs}
-                    </dd>
-                  </div>
-                )}
-                {project.funder && (
-                  <div className="flex flex-col gap-1 border-t border-gray-15 py-5">
-                    <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                      FUNDED BY
-                    </dt>
-                    <dd className="text-base font-medium text-blue">
-                      {project.funder}
-                    </dd>
-                  </div>
-                )}
-                <div className="flex flex-col gap-1 border-t border-b border-gray-15 py-5">
+            <dl className="flex flex-col">
+              {project.runs && (
+                <div className="flex flex-col gap-1 border-t border-gray-15 py-5">
                   <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                    DISTRICTS
+                    RUNS
                   </dt>
-                  <dd className="mt-2 flex flex-col gap-2.5">
-                    {project.districts.map((district) => (
-                      <span
-                        key={district}
-                        className="flex items-center gap-2.5 text-base font-medium text-blue"
-                      >
-                        <MapPin
-                          className="size-4 shrink-0"
-                          aria-hidden="true"
-                        />
-                        {district}
-                      </span>
-                    ))}
+                  <dd className="text-base font-medium text-blue">
+                    {project.runs}
                   </dd>
                 </div>
-              </dl>
-
-              {project.href && (
-                <a
-                  href={project.href}
-                  {...(external
-                    ? { target: "_blank", rel: "noreferrer noopener" }
-                    : {})}
-                  className="group mt-8 inline-flex items-center gap-2 text-base font-semibold text-blue"
-                >
-                  Visit the programme system
-                  <ArrowUpRight
-                    className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                    aria-hidden="true"
-                  />
-                  {external && (
-                    <span className="sr-only">(opens in a new tab)</span>
-                  )}
-                </a>
               )}
-            </Reveal>
-          </div>
+              {project.funder && (
+                <div className="flex flex-col gap-1 border-t border-gray-15 py-5">
+                  <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                    FUNDED BY
+                  </dt>
+                  <dd className="text-base font-medium text-blue">
+                    {project.funder}
+                  </dd>
+                </div>
+              )}
+              <div className="flex flex-col gap-1 border-t border-b border-gray-15 py-5">
+                <dt className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                  DISTRICTS
+                </dt>
+                <dd className="mt-2 flex flex-col gap-2.5">
+                  {project.districts.map((district) => (
+                    <span
+                      key={district}
+                      className="flex items-center gap-2.5 text-base font-medium text-blue"
+                    >
+                      <MapPin className="size-4 shrink-0" aria-hidden="true" />
+                      {district}
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            </dl>
 
-          <Reveal
-            delay={290}
-            className="flex flex-wrap gap-4 border-t border-gray-15 pt-12"
-          >
-            <Pill
-              href={
-                project.current
-                  ? "/what-we-do/current-projects"
-                  : "/what-we-do/phased-out-projects"
-              }
-              variant="outline"
-              size="lg"
-            >
-              All programmes
-            </Pill>
-            <Pill href="/get-involved/partners#become-a-partner" size="lg">
-              Partner with us
-            </Pill>
+            {project.href && (
+              <a
+                href={project.href}
+                {...(external
+                  ? { target: "_blank", rel: "noreferrer noopener" }
+                  : {})}
+                className="group mt-8 inline-flex items-center gap-2 text-base font-semibold text-blue"
+              >
+                Visit the programme system
+                <ArrowUpRight
+                  className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  aria-hidden="true"
+                />
+                {external && (
+                  <span className="sr-only">(opens in a new tab)</span>
+                )}
+              </a>
+            )}
           </Reveal>
-        </Container>
-      </section>
-    </>
+        </div>
+
+        <Reveal
+          delay={290}
+          className="flex flex-wrap gap-4 border-t border-gray-15 pt-12"
+        >
+          <Pill
+            href={
+              project.current
+                ? "/what-we-do/current-projects"
+                : "/what-we-do/phased-out-projects"
+            }
+            variant="outline"
+            size="lg"
+          >
+            All programmes
+          </Pill>
+          <Pill href="/get-involved/partners#become-a-partner" size="lg">
+            Partner with us
+          </Pill>
+        </Reveal>
+      </Container>
+    </section>
   );
 }
 
