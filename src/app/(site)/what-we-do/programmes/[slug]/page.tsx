@@ -72,6 +72,23 @@ export default async function ProgrammePage({
   const external = project.href?.startsWith("http");
 
   /**
+   * Read defensively, because a cached programme may predate these fields.
+   *
+   * `getProgramme` defaults each of them, and that is not enough: the reader is
+   * wrapped in `unstable_cache`, whose entries live in `.next/cache` and
+   * survive a build. So the first deploy after a field is added replays
+   * objects serialised by the previous one — the mapper never runs, and
+   * `project.objectives` arrives `undefined` rather than `[]`. It took the
+   * production build down with "Cannot read properties of undefined" on a page
+   * that had built cleanly here, because the local `.next` had been cleared.
+   *
+   * Deleting `.next/cache` on deploy fixes the instance; this fixes the class.
+   */
+  const objectives = project.objectives ?? [];
+  const results = project.results ?? [];
+  const components = project.components ?? [];
+
+  /**
    * Is there anything to read?
    *
    * Any one of the four written blocks counts. It used to test the summary and
@@ -82,9 +99,9 @@ export default async function ProgrammePage({
   const written =
     Boolean(project.summary) ||
     !isEmpty(project.body) ||
-    project.objectives.length > 0 ||
-    project.results.length > 0 ||
-    project.components.length > 0;
+    objectives.length > 0 ||
+    results.length > 0 ||
+    components.length > 0;
 
   return (
     <>
@@ -149,13 +166,13 @@ export default async function ProgrammePage({
                     </p>
                   )}
 
-                  {project.objectives.length > 0 && (
+                  {objectives.length > 0 && (
                     <div>
                       <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                         OBJECTIVES
                       </h2>
                       <ul className="mt-5 flex flex-col gap-3">
-                        {project.objectives.map((item) => (
+                        {objectives.map((item) => (
                           <li
                             key={item}
                             className="flex gap-3 text-base leading-relaxed text-gray lg:text-[17px]"
@@ -178,8 +195,8 @@ export default async function ProgrammePage({
                           nothing but a description, "ABOUT THIS PROGRAMME"
                           over the only block on the page is a label on a box
                           with one thing in it. */}
-                      {(project.objectives.length > 0 ||
-                        project.results.length > 0) && (
+                      {(objectives.length > 0 ||
+                        results.length > 0) && (
                         <h2 className="mb-5 text-xs font-semibold tracking-[0.14em] text-gray-80">
                           ABOUT THIS PROGRAMME
                         </h2>
@@ -188,13 +205,13 @@ export default async function ProgrammePage({
                     </div>
                   )}
 
-                  {project.results.length > 0 && (
+                  {results.length > 0 && (
                     <div className="wedge bg-green-10 p-8">
                       <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                         RESULTS
                       </h2>
                       <ul className="mt-5 flex flex-col gap-4">
-                        {project.results.map((item) => (
+                        {results.map((item) => (
                           <li
                             key={item}
                             className="flex gap-3 text-base leading-relaxed text-blue lg:text-[17px]"
@@ -210,13 +227,13 @@ export default async function ProgrammePage({
                     </div>
                   )}
 
-                  {project.components.length > 0 && (
+                  {components.length > 0 && (
                     <div>
                       <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                         WHAT IT DELIVERS
                       </h2>
                       <ul className="mt-6 grid gap-x-10 sm:grid-cols-2">
-                        {project.components.map((item) => (
+                        {components.map((item) => (
                           <li
                             key={item}
                             className="border-t border-gray-15 py-4 text-base font-medium text-blue"
