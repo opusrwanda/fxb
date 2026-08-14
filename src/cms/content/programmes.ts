@@ -25,7 +25,11 @@ export type Programme = {
   /** False once a programme has phased out; it then stops colouring the map. */
   current: boolean;
   summary?: string;
+  /** What it set out to do, one aim per entry. Empty where none is written. */
+  objectives: string[];
   body: RichText | null;
+  /** What it achieved, one per entry. Empty where it is too early to say. */
+  results: string[];
   /** Implementation period as written, e.g. "August 2022 – August 2025". */
   runs?: string;
   funder?: string;
@@ -50,6 +54,8 @@ const toProgramme = ({ programme: p, photo }: Row): Programme => ({
   parentId: p.parentId,
   id: p.id,
   summary: p.summary ?? undefined,
+  objectives: p.objectives ?? [],
+  results: p.results ?? [],
   body: p.body,
   runs: p.runs ?? undefined,
   funder: p.funder ?? undefined,

@@ -71,12 +71,32 @@ export default async function ProgrammePage({
 
   const external = project.href?.startsWith("http");
 
+  /**
+   * Is there anything to read?
+   *
+   * Any one of the four written blocks counts. It used to test the summary and
+   * the body alone, so a programme whose objectives and results had been filled
+   * in but whose long description had not would have shown the "being prepared"
+   * panel with the objectives sitting nowhere.
+   */
+  const written =
+    Boolean(project.summary) ||
+    !isEmpty(project.body) ||
+    project.objectives.length > 0 ||
+    project.results.length > 0 ||
+    project.components.length > 0;
+
   return (
     <>
       <PageHeader
         breadcrumbs={[
           { label: "What We Do", href: "/what-we-do" },
-          { label: "Programmes", href: "/what-we-do#programmes" },
+          {
+            label: project.current ? "Current Projects" : "Phased-out Projects",
+            href: project.current
+              ? "/what-we-do/current-projects"
+              : "/what-we-do/phased-out-projects",
+          },
         ]}
         eyebrow={project.current ? "CURRENT PROGRAMME" : "PHASED-OUT PROGRAMME"}
         title={project.name}
@@ -104,17 +124,94 @@ export default async function ProgrammePage({
 
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-16">
             <Reveal className="lg:col-span-7">
-              {project.summary || !isEmpty(project.body) ? (
-                <div className="flex flex-col gap-6">
+              {written ? (
+                /**
+                 * One order, every programme.
+                 *
+                 * Summary, then what it set out to do, then the account of it,
+                 * then what it achieved, then what it delivers. A reader who
+                 * has read one programme page knows where to look on the next,
+                 * and two can be compared without hunting for the same fact
+                 * under a different heading — which is what happens when the
+                 * whole thing is one rich-text field and each programme
+                 * invents its own structure.
+                 *
+                 * Every block below disappears when it is empty. A programme
+                 * too early to have results shows no Results heading rather
+                 * than an empty one, and nothing here is a placeholder waiting
+                 * to be filled — an empty heading is a promise the page cannot
+                 * keep.
+                 */
+                <div className="flex flex-col gap-10">
                   {project.summary && (
                     <p className="text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
                       {project.summary}
                     </p>
                   )}
-                  <Prose data={project.body} />
+
+                  {project.objectives.length > 0 && (
+                    <div>
+                      <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                        OBJECTIVES
+                      </h2>
+                      <ul className="mt-5 flex flex-col gap-3">
+                        {project.objectives.map((item) => (
+                          <li
+                            key={item}
+                            className="flex gap-3 text-base leading-relaxed text-gray lg:text-[17px]"
+                          >
+                            <span
+                              className="mt-2.5 size-1.5 shrink-0 rounded-full bg-green"
+                              aria-hidden="true"
+                            />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {!isEmpty(project.body) && (
+                    <div>
+                      {/* The heading appears only where something else is on
+                          the page to distinguish it from. On a programme with
+                          nothing but a description, "ABOUT THIS PROGRAMME"
+                          over the only block on the page is a label on a box
+                          with one thing in it. */}
+                      {(project.objectives.length > 0 ||
+                        project.results.length > 0) && (
+                        <h2 className="mb-5 text-xs font-semibold tracking-[0.14em] text-gray-80">
+                          ABOUT THIS PROGRAMME
+                        </h2>
+                      )}
+                      <Prose data={project.body} />
+                    </div>
+                  )}
+
+                  {project.results.length > 0 && (
+                    <div className="wedge bg-green-10 p-8">
+                      <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                        RESULTS
+                      </h2>
+                      <ul className="mt-5 flex flex-col gap-4">
+                        {project.results.map((item) => (
+                          <li
+                            key={item}
+                            className="flex gap-3 text-base leading-relaxed text-blue lg:text-[17px]"
+                          >
+                            <span
+                              className="mt-2.5 size-1.5 shrink-0 rounded-full bg-green"
+                              aria-hidden="true"
+                            />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                   {project.components.length > 0 && (
-                    <div className="mt-6">
+                    <div>
                       <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                         WHAT IT DELIVERS
                       </h2>
@@ -224,7 +321,15 @@ export default async function ProgrammePage({
             delay={290}
             className="flex flex-wrap gap-4 border-t border-gray-15 pt-12"
           >
-            <Pill href="/what-we-do#programmes" variant="outline" size="lg">
+            <Pill
+              href={
+                project.current
+                  ? "/what-we-do/current-projects"
+                  : "/what-we-do/phased-out-projects"
+              }
+              variant="outline"
+              size="lg"
+            >
               All programmes
             </Pill>
             <Pill href="/get-involved/partners#become-a-partner" size="lg">

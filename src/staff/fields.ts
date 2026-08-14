@@ -204,7 +204,32 @@ export const fields: Record<string, Field[]> = {
       rows: 2,
       help: "One sentence. Opens the programme's page.",
     },
-    { name: "body", label: "Description", type: "richtext" },
+    /**
+     * The three fields below are in the order the page prints them, and that
+     * ordering is the point: every programme page reads objectives, then the
+     * description, then results, so two programmes can be compared without
+     * hunting for the same information under different headings.
+     */
+    {
+      name: "objectives",
+      label: "Objectives",
+      type: "list",
+      rows: 4,
+      help: "What this programme set out to do — one aim per line. Shown as a list above the description.",
+    },
+    {
+      name: "body",
+      label: "About this programme",
+      type: "richtext",
+      help: "The long description: the context it works in, how it is delivered, who it is with.",
+    },
+    {
+      name: "results",
+      label: "Results",
+      type: "list",
+      rows: 4,
+      help: "What it has achieved — one per line, with the figure in it where there is one. E.g. “312 households graduated from extreme poverty”. Leave empty for a programme too early to have results; the heading is then not shown.",
+    },
     {
       name: "districts",
       label: "Districts",

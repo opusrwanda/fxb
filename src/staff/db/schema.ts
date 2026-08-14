@@ -306,7 +306,26 @@ export const programmes = pgTable("programmes", {
   districts: jsonb("districts").$type<string[]>().notNull().default([]),
   photoId: integer("photo_id").references(() => media.id, { onDelete: "set null" }),
   summary: text("summary"),
+  /**
+   * What the programme set out to do, one aim per entry.
+   *
+   * Separate from `body` rather than a heading inside it, because every
+   * programme page is supposed to read the same way — objectives, then the
+   * description, then results. Left to rich text, one programme would have
+   * "Objectives", the next "Our goals", the third a paragraph beginning "The
+   * project aims to", and a reader comparing two of them would have to find
+   * the same information in three different shapes.
+   */
+  objectives: jsonb("objectives").$type<string[]>().notNull().default([]),
   body: jsonb("body").$type<RichText>(),
+  /**
+   * What it achieved, one result per entry.
+   *
+   * Written as claims with numbers in them where FXB has the numbers — "312
+   * households graduated" rather than "households graduated". The site prints
+   * them as written and invents nothing.
+   */
+  results: jsonb("results").$type<string[]>().notNull().default([]),
   /** What the programme delivers, in its own words. */
   components: jsonb("components").$type<string[]>().notNull().default([]),
   runs: text("runs"),

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { WhatWeDoNav } from "@/components/layout/what-we-do-nav";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 import { getReach } from "@/cms/content/impact";
@@ -43,7 +44,9 @@ export default async function PhasedOutProjectsPage() {
         intro="A project ending is the point of the model. Families exit when they no longer need us — with income, savings, school fees paid and health cover in place."
       />
 
-      <section className="bg-white pb-24 lg:pb-32">
+      <WhatWeDoNav />
+
+      <section className="bg-white pt-14 pb-24 lg:pt-16 lg:pb-32">
         <Container>
           {phasedOut.length > 0 ? (
             <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">

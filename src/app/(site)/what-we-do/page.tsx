@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getSection } from "@/cms/content/sections";
 import { Hero } from "@/components/sections/hero";
+import { WhatWeDoNav } from "@/components/layout/what-we-do-nav";
 import { PhotoBand } from "@/components/sections/photo-band";
 import { getPhotos } from "@/cms/content/photos";
 import { getPageHeaderImage } from "@/cms/content/page-headers";
@@ -9,7 +10,6 @@ import { AreasOfIntervention } from "@/components/sections/what-we-do/areas-of-i
 import { ModelIntro } from "@/components/sections/what-we-do/model-intro";
 import { ModelPillars } from "@/components/sections/what-we-do/model-pillars";
 import { ModelPrinciples } from "@/components/sections/what-we-do/model-principles";
-import { Programmes } from "@/components/sections/what-we-do/programmes";
 import { ProjectsDelivered } from "@/components/sections/what-we-do/projects-delivered";
 import { TransformationJourney } from "@/components/sections/what-we-do/transformation-journey";
 import { WhyItWorks } from "@/components/sections/what-we-do/why-it-works";
@@ -81,6 +81,8 @@ export default async function WhatWeDoPage() {
         ]}
       />
 
+      <WhatWeDoNav />
+
       <Approach image={photos["fxbvillage-tlf-04.jpg"]} />
 
       {/* The page opens with five sections of unbroken argument — the approach,
@@ -113,7 +115,6 @@ export default async function WhatWeDoPage() {
       <ModelPillars />
       <WhyItWorks />
       <ProjectsDelivered />
-      <Programmes />
       <AreasOfIntervention />
     </>
   );
