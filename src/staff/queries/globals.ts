@@ -94,6 +94,24 @@ export async function saveSiteSettings(form: FormData) {
         return { label: label.trim(), url: rest.join("|").trim() };
       })
       .filter((system) => system.label && system.url),
+    /**
+     * Name | Location | link, with the link optional.
+     *
+     * Split on the first two bars rather than on all of them, because a Google
+     * Maps address is entirely capable of containing one. An office with a
+     * name and no location is not written down: the location is the whole
+     * point of the entry.
+     */
+    subOffices: lines(form, "subOffices")
+      .map((line) => {
+        const [name, location, ...rest] = line.split("|");
+        return {
+          name: (name ?? "").trim(),
+          location: (location ?? "").trim(),
+          mapUrl: rest.join("|").trim() || undefined,
+        };
+      })
+      .filter((office) => office.name && office.location),
   };
 
   await put("site-details", data);

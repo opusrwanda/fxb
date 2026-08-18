@@ -657,6 +657,18 @@ export type SiteSettingsData = {
   values?: string[];
   socials: { platform: string; url: string }[];
   externalSystems: { label: string; url: string }[];
+  /**
+   * The offices that are not the head office.
+   *
+   * Optional for the same reason `values` is: a row saved before the field
+   * existed carries no key, and that is not the same as somebody having said
+   * there are none.
+   *
+   * `mapUrl` is optional per office. A field office that has no pin worth
+   * linking to is still an office, and a link that goes to the middle of a
+   * district is worse than no link at all.
+   */
+  subOffices?: { name: string; location: string; mapUrl?: string }[];
 };
 
 /**

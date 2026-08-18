@@ -34,6 +34,50 @@ export const metadata: Metadata = {
  * because a QR code is the one image on a site whose destination nobody can
  * read by looking at it.
  */
+/**
+ * One office in the list, linked where there is somewhere to link to.
+ *
+ * The two branches are the same markup because the difference is not the
+ * reader's business: an office whose pin nobody has added yet should not look
+ * like a lesser office, it should look like an office you cannot tap.
+ */
+function SubOffice({
+  office,
+}: {
+  office: SiteDetails["subOffices"][number];
+}) {
+  const body = (
+    <>
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-blue-08">
+        <MapPin className="size-5 text-blue" aria-hidden="true" />
+      </span>
+      <span>
+        <span className="block text-base leading-snug font-medium text-blue">
+          {office.name}
+        </span>
+        <span className="block text-[15px] leading-snug text-gray">
+          {office.location}
+        </span>
+      </span>
+    </>
+  );
+
+  if (!office.mapUrl) {
+    return <div className="flex items-start gap-4">{body}</div>;
+  }
+
+  return (
+    <a
+      href={office.mapUrl}
+      target="_blank"
+      rel="noreferrer noopener"
+      className="group flex items-start gap-4 transition-colors duration-300 hover:[&_span]:text-blue"
+    >
+      {body}
+    </a>
+  );
+}
+
 function buildFaqs(details: SiteDetails) {
   return [
   {
@@ -263,6 +307,40 @@ export default async function ContactPage() {
                   </div>
                 </div>
               </div>
+
+              {/* The other offices.
+
+                  Under the head office's details rather than beside them: the
+                  address at the top of this column is where FXB Rwanda is, and
+                  a list of five field offices sitting level with it would make
+                  the reader work out which one to write to. These are where
+                  else the organisation is, which is a different question and
+                  belongs after the first one has been answered.
+
+                  Nothing renders when there are none. An empty heading reading
+                  "Other offices" tells a visitor that offices exist and that
+                  the site has lost them. */}
+              {details.subOffices.length > 0 && (
+                <div className="border-t border-gray-15 pt-8">
+                  <h2 className="text-xs font-semibold tracking-[0.14em] text-gray">
+                    OTHER OFFICES
+                  </h2>
+                  <ul className="mt-5 flex flex-col gap-5">
+                    {details.subOffices.map((office) => (
+                      <li key={`${office.name}-${office.location}`}>
+                        {/* The link is on the office, not on a "map" word
+                            beside it. Somebody looking for the Musambira
+                            office reaches for the words "Musambira office" —
+                            a separate link labelled "directions" asks them to
+                            aim at something smaller for no reason. An office
+                            with no map link is the same block without the
+                            anchor, so the two read alike in a list. */}
+                        <SubOffice office={office} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </Reveal>
 
             {/* Send us a message */}

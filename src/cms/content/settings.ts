@@ -31,6 +31,8 @@ export type SiteDetails = typeof brand & {
   values: string[];
   socials: { label: string; href: string; icon: string }[];
   externalSystems: { label: string; href: string }[];
+  /** Offices other than the head office, in the order they were entered. */
+  subOffices: { name: string; location: string; mapUrl?: string }[];
 };
 
 /**
@@ -82,6 +84,7 @@ export const getSiteDetails = cached(
         label: system.label,
         href: system.url,
       })),
+      subOffices: data.subOffices ?? [],
     };
   },
 );

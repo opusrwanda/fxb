@@ -392,6 +392,19 @@ export default async function GlobalPage({
                 value={site?.mapEmbedUrl}
                 help='From Google Maps: Share > Embed a map > copy the src="..." address only.'
               />
+              <Field
+                label="Other offices"
+                name="subOffices"
+                rows={5}
+                value={(site?.subOffices ?? [])
+                  .map((office) =>
+                    [office.name, office.location, office.mapUrl]
+                      .filter(Boolean)
+                      .join(" | ")
+                  )
+                  .join("\n")}
+                help="One per line, as: Office name | Where it is | https://map-link — the map link is optional, and an office without one is listed without being clickable. Shown on Contact under the head office's details."
+              />
             </div>
 
             <div className="flex flex-col gap-6">
