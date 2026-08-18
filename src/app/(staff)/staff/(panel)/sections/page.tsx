@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { RotateCcw } from "lucide-react";
+import { ChevronRight, RotateCcw } from "lucide-react";
 
 import { getSectionsForPanel } from "@/cms/content/sections";
 import { requireAdmin } from "@/staff/auth/guard";
@@ -26,6 +26,16 @@ const input =
  * Grouped by the page they appear on rather than listed flat, because that is
  * how somebody arrives here: they have just looked at a page and want to change
  * something they saw on it.
+ *
+ * And folded shut, for the same reason. There are ten pages and forty-odd
+ * bands between them, which unfolded is several thousand pixels of form to
+ * scroll past to reach the one line somebody came to fix. Closed, the page is
+ * a list of the site's pages — which is the question being asked — and opening
+ * one is a click. Saving reopens the page that was being edited and returns to
+ * the form itself, so the fold never costs anybody their place.
+ *
+ * `<details>`, so it works without JavaScript, survives a slow panel, and the
+ * browser's own find-in-page can still reach inside a closed one.
  *
  * Each field shows the default underneath it, and leaving a field empty means
  * "use that". So there is no separate reset for a single field — clearing it is
@@ -54,6 +64,14 @@ export default async function SectionsPage({
   );
 
   const pages = [...new Set(all.map((section) => section.page))];
+
+  /**
+   * The page to leave open: the one holding the section just saved or put
+   * back, and none on a first visit.
+   */
+  const openPage = all.find(
+    (section) => section.key === (saved ?? reset),
+  )?.page;
 
   async function save(formData: FormData) {
     "use server";
@@ -92,15 +110,20 @@ export default async function SectionsPage({
       imageId: imageId === "" ? null : Number(imageId),
       items,
     });
-    redirect("/staff/sections?saved=1");
+    // The key, not a 1. It is what reopens the page this section is on and
+    // scrolls back to the form somebody was just typing in — a panel that
+    // collapses everything on save has thrown the reader back to the top of a
+    // list of ten pages to find their place again.
+    redirect(`/staff/sections?saved=${encodeURIComponent(key)}#${key}`);
   }
 
   async function reverse(formData: FormData) {
     "use server";
 
     await requireAdmin("sections");
-    await resetSection(String(formData.get("key") ?? ""));
-    redirect("/staff/sections?reset=1");
+    const key = String(formData.get("key") ?? "");
+    await resetSection(key);
+    redirect(`/staff/sections?reset=${encodeURIComponent(key)}#${key}`);
   }
 
   return (
@@ -134,20 +157,43 @@ export default async function SectionsPage({
         </p>
       )}
 
-      {pages.map((page) => (
-        <section key={page} className="mt-12">
-          <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
-            {page}
-          </h2>
+      {pages.map((page) => {
+        const onPage = all.filter((section) => section.page === page);
+        const edited = onPage.filter(isEdited).length;
 
-          <div className="mt-5 flex flex-col gap-5">
-            {all
-              .filter((section) => section.page === page)
+        return (
+        <details
+          key={page}
+          // Open the page somebody has just saved on, closed otherwise.
+          open={page === openPage}
+          className="group mt-5 rounded-card border border-gray-15 first-of-type:mt-10"
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition-colors duration-300 hover:bg-blue-08 [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center gap-3">
+              <ChevronRight
+                className="size-4 shrink-0 text-gray-80 transition-transform duration-300 group-open:rotate-90"
+                aria-hidden="true"
+              />
+              <span className="text-xl font-bold tracking-[-0.02em] text-blue">
+                {page}
+              </span>
+            </span>
+            {/* What is inside, so the fold does not hide whether anything on
+                this page has been changed. */}
+            <span className="shrink-0 text-[13px] text-gray-80">
+              {onPage.length} {onPage.length === 1 ? "band" : "bands"}
+              {edited > 0 && ` · ${edited} edited`}
+            </span>
+          </summary>
+
+          <div className="flex flex-col gap-5 border-t border-gray-15 p-6">
+            {onPage
               .map((section) => (
                 <form
                   key={section.key}
+                  id={section.key}
                   action={save}
-                  className="rounded-card border border-gray-15 p-6"
+                  className="scroll-mt-8 rounded-card border border-gray-15 p-6"
                 >
                   <input type="hidden" name="key" value={section.key} />
 
@@ -155,11 +201,7 @@ export default async function SectionsPage({
                     <h3 className="text-[15px] font-semibold text-blue">
                       {section.label}
                     </h3>
-                    {(section.edited.eyebrow ||
-                      section.edited.heading ||
-                      section.edited.body ||
-                      section.edited.imageId ||
-                      section.edited.items) && (
+                    {isEdited(section) && (
                       <span className="rounded-full bg-blue-08 px-3 py-1 text-xs font-semibold text-blue">
                         Edited
                       </span>
@@ -247,8 +289,9 @@ export default async function SectionsPage({
                 </form>
               ))}
           </div>
-        </section>
-      ))}
+        </details>
+        );
+      })}
 
       {/* The reset forms, out of the way. A form cannot be nested inside
           another, so they live here and are reached by `form=` above. */}
@@ -463,4 +506,24 @@ function readPoints(raw: string): { title: string; body?: string }[] | undefined
   // Undefined rather than an empty array, so a block with no points does not
   // carry an empty list around in the JSON.
   return points.length > 0 ? points : undefined;
+}
+
+/**
+ * Has anybody changed this band?
+ *
+ * Any one of the five overrides counts. The panel says so twice — as a badge
+ * on the band and as a count on the closed page — and asking the question in
+ * one place is what keeps the two answers the same.
+ */
+function isEdited(section: {
+  edited: {
+    eyebrow?: string | null;
+    heading?: string | null;
+    body?: string | null;
+    imageId?: number | null;
+    items?: SectionItem[] | null;
+  };
+}): boolean {
+  const { eyebrow, heading, body, imageId, items } = section.edited;
+  return Boolean(eyebrow || heading || body || imageId || items);
 }
