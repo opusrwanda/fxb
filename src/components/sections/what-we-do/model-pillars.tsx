@@ -7,6 +7,7 @@ import { PILLAR_ICONS } from "@/lib/fxbvillage-icons";
 import { pillars } from "@/lib/fxbvillage";
 import { getPhotos } from "@/cms/content/photos";
 import { BrandIcon, type IconId } from "@/components/brand/icon";
+import { PillarStack } from "./pillar-stack";
 
 /**
  * The pillars of the FXBVillage model, as a stack.
@@ -24,11 +25,17 @@ import { BrandIcon, type IconId } from "@/components/brand/icon";
  * only ever illustrate the model in general and never the pillar being read.
  * Each panel carries its own now.
  *
- * No JavaScript in it. `position: sticky` on each item with an offset that
- * grows by index is the whole mechanism, which means it works before hydration
- * and cannot desynchronise from the scroll — and the 14px step leaves the top
- * edge of every panel underneath visible, so the stack reads as a stack rather
- * than as one panel being replaced.
+ * `position: sticky` on each item with an offset that grows by index is the
+ * whole mechanism — nothing listens to the scroll, so nothing can desynchronise
+ * from it, and the 14px step leaves the top edge of every panel underneath
+ * visible so the stack reads as a stack rather than as one panel being
+ * replaced.
+ *
+ * The one thing sticky cannot decide for itself is whether a panel fits between
+ * the header and the fold, which is the difference between the stack working on
+ * a 27-inch monitor and the same page merely scrolling on a laptop. `PillarStack`
+ * measures that and pins the stack a little higher, or stands the panels down
+ * into ordinary blocks when even that will not do.
  *
  * A blue room, so the page keeps alternating: the principles above it and the
  * SDGs below are both on white, and three white rooms in a row would run the
@@ -116,27 +123,27 @@ export async function ModelPillars() {
       {/* `pb` on the list, not on the last panel: the stack needs somewhere to
           scroll to after the final pillar has stuck, or the last one is still
           moving when the section ends and never gets a moment of its own. */}
-      <ol className="mt-14 lg:mt-20">
+      <PillarStack className="pillar-stack mt-14 lg:mt-20">
         {cards.map((pillar, index) => {
           const image = pillar.photo ? photos[pillar.photo] : undefined;
 
           return (
             <li
               key={pillar.key}
-              // Only where a panel fits on the screen.
-              //
-              // A sticky element taller than the viewport pins its top and
-              // leaves everything past the fold permanently out of reach —
-              // the tallest of these is 1,321px, and a phone is 844. So the
-              // stack engages from lg and only above 900px of viewport
-              // height; anywhere else the panels are ordinary blocks and the
-              // reader simply scrolls through them, which is the same content
-              // without the effect rather than a broken version of it.
-              className="lg:[@media(min-height:900px)]:sticky"
-              // Each panel stops 14px lower than the one before it, so the
-              // edges of the ones already read stay visible above the current
-              // one. 88px clears the pinned header.
-              style={{ top: `${88 + index * 14}px` }}
+              // Where the panel rests once it has stuck: 14px lower than the
+              // one before it, so the edges of the ones already read stay
+              // visible above the current one, and 88px down to clear the
+              // fixed header. Whether it sticks at that offset, at a higher
+              // one, or not at all is settled in `pillar-stack.tsx` and in
+              // the `.pillar-stack` rules in globals.css — a sticky panel
+              // taller than the room under the header would hang its bottom
+              // below the fold, and the next panel would then slide over the
+              // part nobody has read.
+              style={
+                {
+                  "--pillar-base": `${88 + index * 14}px`,
+                } as React.CSSProperties
+              }
             >
               <Container>
                 {/* The room's own blue, not a white card.
@@ -146,10 +153,10 @@ export async function ModelPillars() {
                     the section's own hairline along the top, so the stack reads
                     as the page folding over itself rather than as five cards
                     that arrived from somewhere else. */}
-                <article className="border-t border-white-12 bg-blue pt-10 pb-14 lg:pt-12 lg:pb-16">
-                  <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
-                    <div className="flex flex-col gap-7">
-                      <div className="flex flex-col gap-4">
+                <article className="border-t border-white-12 bg-blue pt-10 pb-14 lg:pt-12 lg:pb-16 stack-tight:pt-8 stack-tight:pb-8">
+                  <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-16 stack-tight:grid-cols-[1.7fr_1fr] stack-tight:gap-10">
+                    <div className="flex flex-col gap-7 stack-tight:gap-4">
+                      <div className="flex flex-col gap-4 stack-tight:gap-3">
                         {/* The icon and the number on one line: the drawing
                             says what the pillar is about, the number says where
                             it sits in the five. */}
@@ -161,18 +168,21 @@ export async function ModelPillars() {
                               // in a container, so there is nothing around it
                               // to keep it in proportion to — it simply has to
                               // be large enough to read as the drawing it is.
-                              className="size-16 text-white"
+                              className="size-16 text-white stack-tight:size-12"
                             />
                           )}
                           <p className="text-sm font-semibold tracking-[0.14em] text-white-94">
                             {String(index + 1).padStart(2, "0")}
                           </p>
                         </div>
-                        <h3 className="max-w-[20ch] text-2xl font-bold tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[1.12]">
+                        <h3
+                          data-pillar-title
+                          className="max-w-[20ch] text-2xl font-bold tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[1.12] stack-tight:text-[26px] stack-tight:leading-[1.14]"
+                        >
                           {pillar.title}
                         </h3>
                         {pillar.lead && (
-                          <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
+                          <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px] stack-tight:text-[15px] stack-tight:leading-[1.55]">
                             {pillar.lead}
                           </p>
                         )}
@@ -182,7 +192,7 @@ export async function ModelPillars() {
                         <p className="text-xs font-semibold tracking-[0.14em] text-white-94">
                           KEY INTERVENTIONS
                         </p>
-                        <dl className="mt-5 flex flex-col gap-5">
+                        <dl className="mt-5 flex flex-col gap-5 stack-tight:mt-3 stack-tight:grid stack-tight:grid-cols-2 stack-tight:gap-x-10 stack-tight:gap-y-4">
                           {pillar.interventions.map((intervention) => (
                             <div
                               key={intervention.name}
@@ -191,7 +201,7 @@ export async function ModelPillars() {
                               <dt className="text-base font-semibold text-white">
                                 {intervention.name}
                               </dt>
-                              <dd className="mt-1.5 max-w-[58ch] text-[15px] leading-relaxed text-white-94">
+                              <dd className="mt-1.5 max-w-[58ch] text-[15px] leading-relaxed text-white-94 stack-tight:mt-1 stack-tight:text-[14px] stack-tight:leading-[1.5]">
                                 {intervention.body}
                               </dd>
                             </div>
@@ -204,7 +214,7 @@ export async function ModelPillars() {
                         a screen reader and a phone both get the pillar before
                         the photograph of it. */}
                     {image && (
-                      <div className="wedge relative order-first aspect-4/3 overflow-hidden lg:order-none lg:aspect-4/5 lg:self-start">
+                      <div className="wedge relative order-first aspect-4/3 overflow-hidden lg:order-none lg:aspect-4/5 lg:self-start stack-tight:aspect-square">
                         <Image
                           src={image.url}
                           alt={image.alt}
@@ -220,7 +230,7 @@ export async function ModelPillars() {
             </li>
           );
         })}
-      </ol>
+      </PillarStack>
     </SectionBand>
   );
 }

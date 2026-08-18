@@ -123,6 +123,64 @@
   --duration-hero: 1200ms;
 }
 
+/*
+  ── The pillar stack ────────────────────────────────────────────────────────
+
+  A short screen is not a small screen.
+
+  The pillars of the FXBVillage model stack: each panel pins under the header
+  while the next scrolls up over it. Whether that can happen at all depends on
+  the height of the window, not its width — a 1366×768 laptop is wide enough
+  for the two-column panel and 200px short of the room the panel needs, which
+  is why the section stacked on one machine and simply scrolled on the next.
+
+  Two things follow from that, and they are the two rules below.
+
+  The first is `stack-tight`: on any screen wide enough for the stack but
+  under 900px tall, the panel gives up its padding, the size of its icon and
+  the loosest of its leading; the interventions go into two columns, and the
+  text column takes the width that frees up from the photograph. Nothing is
+  removed and nothing is made unreadable — it is the same panel using the room
+  the screen actually has, which is horizontal. It is worth about 280px, and
+  280px is the difference between a laptop stacking and a laptop not.
+
+  The second is the offset itself. The panels rest at `--pillar-base`, stepped
+  14px apart so the edges of the ones already read stay visible; when the room
+  is still a little short of what the tallest panel needs, `--pillar-shift`
+  moves the whole stack up by the shortfall rather than dropping the effect.
+  `PillarStack` measures and sets it — see the component for why this cannot
+  be expressed in CSS alone. `data-stack` is its verdict, and overrides the
+  height query below, which is only the guess made before it has run.
+*/
+@custom-variant stack-tight {
+  @media (min-width: 1024px) and (max-height: 899px) {
+    @slot;
+  }
+}
+
+.pillar-stack > li {
+  top: calc(var(--pillar-base) - var(--pillar-shift, 0px));
+}
+
+/* The guess, for the moment before hydration and for no JavaScript at all:
+   the tallest panel is 814px unshifted, so 900 is where it certainly fits. */
+@media (min-width: 1024px) and (min-height: 900px) {
+  .pillar-stack > li {
+    position: sticky;
+  }
+}
+
+/* The measurement, once it has been taken. */
+@media (min-width: 1024px) {
+  .pillar-stack[data-stack="on"] > li {
+    position: sticky;
+  }
+}
+
+.pillar-stack[data-stack="off"] > li {
+  position: static;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
