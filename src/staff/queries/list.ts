@@ -230,14 +230,22 @@ const listings: Record<string, () => Promise<Listing>> = {
   },
 
   async partners() {
-    const rows = await db.select().from(partners).orderBy(asc(partners.name));
+    // The wall's own order, so the list reads the way the page does — sorting
+    // this table by name while the page sorts by rank would mean checking a
+    // change by leaving the panel.
+    const rows = await db
+      .select()
+      .from(partners)
+      .orderBy(asc(partners.category), asc(partners.order), asc(partners.name));
+
     return {
-      columns: ["Name", "Category", "Website"],
+      columns: ["Name", "Category", "Order", "Website"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
           { kind: "title", value: row.name },
           { kind: "pill", value: PARTNER_CATEGORIES[row.category] ?? row.category },
+          { kind: "muted", value: String(row.order) },
           { kind: "muted", value: row.url ?? "—" },
         ],
       })),

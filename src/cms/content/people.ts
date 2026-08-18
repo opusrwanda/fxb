@@ -57,7 +57,11 @@ export const getPartners = cached("partners", "partners", async (): Promise<Part
     .select({ partner: partners, logo: media })
     .from(partners)
     .leftJoin(media, eq(partners.logoId, media.id))
-    .orderBy(asc(partners.name));
+    // Rank first, then name. Every partner starts at 0, so a wall nobody has
+    // arranged is still alphabetical — and one that has been arranged stays
+    // alphabetical underneath, which is what keeps the logos somebody has not
+    // ranked from shuffling every time one of them is renamed.
+    .orderBy(asc(partners.order), asc(partners.name));
 
   return rows.map(({ partner, logo }) => ({
     name: partner.name,
@@ -74,9 +78,11 @@ export async function getPartnersIn(category: PartnerCategory): Promise<Partner[
 /**
  * Every partner in presentation order.
  *
- * The query sorts alphabetically, which puts a corporate sponsor next to a
- * government ministry for no reason anyone reading the page would recognise.
- * This walks the categories above instead, alphabetical within each.
+ * The query sorts by rank and then name, which on its own would put a
+ * corporate sponsor next to a government ministry for no reason anyone
+ * reading the page would recognise. This walks the categories above instead,
+ * so the wall runs development partners, government, donors, corporate — each
+ * in the order set in the panel.
  */
 export async function getOrderedPartners(): Promise<Partner[]> {
   const all = await getPartners();

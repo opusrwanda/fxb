@@ -525,6 +525,14 @@ export const fields: Record<string, Field[]> = {
       ],
     },
     { name: "url", label: "Website", type: "url", sidebar: true, help: "Their website, if it should link out." },
+    {
+      name: "order",
+      label: "Order",
+      type: "number",
+      sidebar: true,
+      required: true,
+      help: "Lowest first, within the category. Leave every partner on 0 and the wall stays alphabetical; give one a lower number to bring it to the front.",
+    },
   ],
 
   opportunities: [

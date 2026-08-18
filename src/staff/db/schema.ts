@@ -412,6 +412,16 @@ export const partners = pgTable("partners", {
   category: varchar("category", { length: 40 }).notNull(),
   logoId: integer("logo_id").references(() => media.id, { onDelete: "set null" }),
   url: text("url"),
+  /**
+   * Where the logo sits on the wall, within its category.
+   *
+   * The wall was alphabetical, which is a defensible order and the wrong one:
+   * a partner wall is a statement about a relationship, and the organisation
+   * FXB works most closely with should not be behind one whose name begins
+   * with an A. Every partner starts at 0, so an untouched wall stays
+   * alphabetical and setting one number moves one logo.
+   */
+  order: integer("order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

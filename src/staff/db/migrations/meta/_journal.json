@@ -127,6 +127,13 @@
       "when": 1787061902523,
       "tag": "0017_boring_abomination",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1787063827856,
+      "tag": "0018_odd_archangel",
+      "breakpoints": true
     }
   ]
 }
