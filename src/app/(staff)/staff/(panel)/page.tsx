@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import { ArrowUpRight } from "lucide-react";
 
 import {
+  areas,
   board,
   db,
   media,
@@ -33,6 +34,7 @@ export const metadata = { title: "Dashboard" };
 
 const TABLES = {
   news,
+  areas,
   stories,
   programmes,
   publications,

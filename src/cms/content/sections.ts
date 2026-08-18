@@ -4,7 +4,6 @@ import { db, media, sections } from "@/staff/db";
 import type { SectionItem } from "@/staff/db/schema";
 import { cached } from "./cache";
 import { image, type Img } from "./image";
-import { areas } from "@/lib/areas";
 import { SECTORS } from "@/lib/sectors";
 import { journey, pillars, principles } from "@/lib/fxbvillage";
 import { PILLAR_ICONS } from "@/lib/fxbvillage-icons";
@@ -284,17 +283,17 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     eyebrow: "WHY IT WORKS",
     heading: "Integrated, and people-centred",
   },
+  /**
+   * The band's words only. The cards under it are their own collection —
+   * Areas of intervention in the panel — because they carry a photograph, an
+   * icon, an anchor and a category, none of which a section block has. Two
+   * editors for the same four cards would be the worse answer.
+   */
   "what-we-do:areas": {
     page: "What We Do",
     label: "Areas of Intervention band",
     eyebrow: "AREAS OF INTERVENTION",
     heading: "Four areas, one household",
-    items: areas.map((area) => ({
-      title: area.label,
-      body: area.blurb,
-      icon: area.id,
-      points: area.focus.map((focus) => ({ title: focus })),
-    })),
   },
   "what-we-do:projects-delivered": {
     page: "What We Do",

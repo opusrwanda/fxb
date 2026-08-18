@@ -76,6 +76,7 @@ const AREAS: Record<string, Area> = {
   milestones: "timeline",
 
   programmes: "programmes",
+  areas: "programmes",
   opportunities: "programmes",
 
   board: "people",

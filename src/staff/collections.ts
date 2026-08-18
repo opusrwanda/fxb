@@ -6,6 +6,7 @@ import {
   FileText,
   Image as ImageIcon,
   Inbox,
+  Layers,
   Mail,
   Map,
   Megaphone,
@@ -36,6 +37,7 @@ export type CollectionKey =
   | "news"
   | "stories"
   | "programmes"
+  | "areas"
   | "publications"
   | "pageHeaders"
   | "milestones"
@@ -102,6 +104,16 @@ export const collections: Entry[] = [
     singular: "programme",
     description: "What FXB Rwanda runs, where, and for how long.",
     icon: Map,
+    group: "Programmes",
+  },
+  {
+    key: "areas",
+    slug: "areas-of-intervention",
+    label: "Areas of intervention",
+    singular: "area",
+    description:
+      "The areas FXB Rwanda works in — the cards on What We Do and the pillars on the home page. Core areas lead; the others follow them.",
+    icon: Layers,
     group: "Programmes",
   },
   {

@@ -367,6 +367,44 @@ export const board = pgTable("board", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * An area of intervention.
+ *
+ * The four cards on What We Do and the four photographic pillars on the home
+ * page are the same four things, which is why they are one table rather than
+ * two lists that drift. They were a hand-written array in `src/lib/areas.ts`,
+ * so adding a fifth area — or correcting a focus line — meant a developer and
+ * a deploy.
+ *
+ * `category` splits them into the core areas and everything else. The core
+ * ones are what the model is; the others are work FXB also does and which
+ * belongs on the page without claiming equal billing. Only the core areas are
+ * shown on the home page, so the split is a real distinction rather than a
+ * label — see `getCoreAreas`.
+ *
+ * `slug` is the anchor. The home page's cards link to `/what-we-do#health`,
+ * so it is derived from the name once, on create, and never moved again —
+ * renaming an area must not break a link that is already out there.
+ */
+export const areas = pgTable("areas", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  /** The anchor on What We Do. Derived from the name, then left alone. */
+  slug: varchar("slug", { length: 200 }).notNull().unique(),
+  /** The single line under the name. */
+  blurb: text("blurb"),
+  /** core | other */
+  category: varchar("category", { length: 20 }).notNull().default("core"),
+  /** The bulleted focus areas on the card. */
+  focus: jsonb("focus").$type<string[]>().notNull().default([]),
+  /** An id from the brand icon set, or null where the card carries none. */
+  icon: varchar("icon", { length: 80 }),
+  imageId: integer("image_id").references(() => media.id, { onDelete: "set null" }),
+  order: integer("order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const partners = pgTable("partners", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),

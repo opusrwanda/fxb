@@ -1,4 +1,5 @@
 import { districts } from "@/lib/districts";
+import iconSet from "@/lib/icons.json";
 import { STATUS_LABELS, statusesFor } from "./auth/permissions";
 import type { Role, Status } from "./db/schema";
 
@@ -113,6 +114,18 @@ const STATUS: Field = { name: "status", label: "Status", type: "select", sidebar
  * create and never touches it again — see the note there on why editing a
  * title must not move the page.
  */
+
+/**
+ * The brand icon set, as something to choose from.
+ *
+ * A list rather than a text box, for the same reason the page banner's route
+ * is: `BrandIcon` throws on an id it does not know, so a typo here would not
+ * be a missing drawing — it would be the page failing to render.
+ */
+const iconOptions: Option[] = (iconSet as { id: string }[]).map((icon) => ({
+  value: icon.id,
+  label: icon.id.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase()),
+}));
 
 const districtOptions: Option[] = districts
   .map((d) => ({ label: `${d.name} (${d.province})`, value: d.name }))
@@ -322,6 +335,64 @@ export const fields: Record<string, Field[]> = {
     },
     { name: "date", label: "Date", type: "date", sidebar: true, required: true },
     STATUS,
+  ],
+
+  areas: [
+    {
+      name: "title",
+      label: "Name",
+      type: "text",
+      required: true,
+      help: 'What the area is called — e.g. "Health". It heads the card here and the photographic pillar on the home page.',
+    },
+    {
+      name: "blurb",
+      label: "One line",
+      type: "textarea",
+      rows: 2,
+      help: "The sentence under the name, in about a dozen words — what the area covers. Shown on the card and under the pillar on the home page.",
+    },
+    {
+      name: "focus",
+      label: "Focus areas",
+      type: "list",
+      rows: 5,
+      help: "One per line, in FXB's own words. They become the bulleted list on the card. An area with none renders shorter rather than with something invented for it.",
+    },
+    {
+      name: "imageId",
+      label: "Photograph",
+      type: "upload",
+      accept: "image",
+      help: "Landscape. It sits at the foot of the card and behind the pillar on the home page, so choose one that reads at both sizes. Without one the card simply ends after its list.",
+    },
+    {
+      name: "icon",
+      label: "Icon",
+      type: "select",
+      help: "From the Brand Guiding Tool's set, shown in the ring beside the name. Leave empty for no icon.",
+      options: iconOptions,
+    },
+    {
+      name: "category",
+      label: "Category",
+      type: "select",
+      sidebar: true,
+      required: true,
+      help: "Core areas are the model itself — they lead the section and they are the only ones on the home page. Other areas appear underneath them on What We Do.",
+      options: [
+        { label: "Core area", value: "core" },
+        { label: "Other area", value: "other" },
+      ],
+    },
+    {
+      name: "order",
+      label: "Order",
+      type: "number",
+      sidebar: true,
+      required: true,
+      help: "Lowest first, within its own category.",
+    },
   ],
 
   milestones: [

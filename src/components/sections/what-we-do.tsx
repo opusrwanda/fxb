@@ -4,8 +4,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
-import { areas } from "@/lib/areas";
-import { photo } from "@/lib/photos";
+import { getCoreAreas } from "@/cms/content/areas";
 
 /**
  * What We Do — the blue room.
@@ -20,17 +19,20 @@ import { photo } from "@/lib/photos";
  *
  * Photography is the supplied FXB library, served from the Bunny pull zone.
  *
- * The four areas live in `areas.ts` because the Areas of Intervention section
- * on What We Do names and illustrates the same four; holding them in one place
- * is what stops the two pages drifting apart.
+ * The areas come from the same place the Areas of Intervention section on What
+ * We Do reads — they are the same areas, and holding them in one place is what
+ * stops the two pages drifting apart. They are managed in the panel under
+ * Areas of intervention.
  *
- * NOTE: Herbal Medicine has no dedicated photograph in the supplied set — the
- * seedling nursery stands in for it, and it remains the one area with no
- * written content anywhere in the brief either.
+ * CORE ONLY. The other areas are on What We Do and not here: this room is the
+ * model, and four to six cards is what the grid was drawn for. An area with no
+ * photograph is not shown at all rather than as an empty black rectangle — a
+ * pillar is a picture, and there is no version of this card without one.
  */
 
 export async function WhatWeDo() {
   const copy = await getSection("home:what-we-do");
+  const areas = (await getCoreAreas()).filter((area) => area.image);
 
   return (
     <section id="what-we-do" className="bg-blue py-24 lg:py-32">
@@ -54,14 +56,14 @@ export async function WhatWeDo() {
 
         <ul className="mt-14 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {areas.map((area, index) => (
-            <Reveal as="li" key={area.href} delay={60 + Math.min(index, 3) * 60}>
+            <Reveal as="li" key={area.slug} delay={60 + Math.min(index, 3) * 60}>
               <Link
                 href={area.href}
                 className="wedge group relative flex aspect-4/5 flex-col justify-end overflow-hidden"
               >
                 <Image
-                  src={photo(area.photo).url}
-                  alt={area.alt}
+                  src={area.image!.url}
+                  alt={area.image!.alt}
                   fill
                   sizes="(min-width: 1280px) 22vw, (min-width: 640px) 45vw, 90vw"
                   className="motion-transform object-cover object-[50%_38%] transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"

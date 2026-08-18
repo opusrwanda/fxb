@@ -4,6 +4,7 @@ import path from "node:path";
 import { asc, eq, isNull } from "drizzle-orm";
 
 import {
+  areas,
   board,
   db,
   media,
@@ -39,6 +40,7 @@ import { bust } from "@/cms/revalidate";
 
 const TABLES = {
   news,
+  areas,
   stories,
   programmes,
   publications,
@@ -501,6 +503,7 @@ export async function saveDocument(
 
 /** The collections whose table has a slug column. */
 const SLUGGED = new Set<Key>([
+  "areas",
   "news",
   "stories",
   "programmes",

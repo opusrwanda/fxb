@@ -1,6 +1,7 @@
 import { asc, desc, eq, sql } from "drizzle-orm";
 
 import {
+  areas,
   board,
   db,
   media,
@@ -173,6 +174,41 @@ const listings: Record<string, () => Promise<Listing>> = {
           { kind: "pill", value: PUBLICATION_CATEGORIES[row.category] ?? row.category },
           { kind: "date", value: row.date },
           { kind: "status", value: row.status },
+        ],
+      })),
+    };
+  },
+
+  async areas() {
+    const rows = await db
+      .select({
+        id: areas.id,
+        title: areas.title,
+        category: areas.category,
+        focus: areas.focus,
+        order: areas.order,
+      })
+      .from(areas)
+      .orderBy(asc(areas.category), asc(areas.order));
+
+    return {
+      columns: ["Name", "Category", "Focus areas", "Order"],
+      rows: rows.map((row) => ({
+        id: row.id,
+        cells: [
+          { kind: "title" as const, value: row.title },
+          {
+            kind: "pill" as const,
+            value: row.category === "core" ? "Core" : "Other",
+          },
+          {
+            kind: "muted" as const,
+            value:
+              row.focus.length === 0
+                ? "—"
+                : `${row.focus.length} listed`,
+          },
+          { kind: "muted" as const, value: String(row.order) },
         ],
       })),
     };
