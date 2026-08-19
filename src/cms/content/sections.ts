@@ -34,6 +34,16 @@ export type { SectionItem };
  *   here rather than lost the moment somebody typed over it.
  *
  * Adding a section is an entry here and a `getSection` call in the component.
+ *
+ * THE ORDER OF THIS OBJECT IS THE ORDER OF THE PANEL, so it is the order of the
+ * page. Somebody arrives at Page sections having just looked at What We Do and
+ * wanting to change the line over the photograph between The Challenge and the
+ * FXBVillage Model — and they look for it between The Challenge and the
+ * FXBVillage Model. It used to be grouped by kind instead: every page header,
+ * then every band, then every photograph band, so a band's neighbours in the
+ * panel were nothing like its neighbours on the page and the one somebody came
+ * for was at the bottom of a fold of sixteen. Each group below now reads top to
+ * bottom exactly as its page does.
  */
 
 export type SectionCopy = {
@@ -152,7 +162,8 @@ export function bannerPath(key: string): string | null {
 }
 
 export const SECTIONS: Record<string, SectionDefinition> = {
-  /* ── Home ───────────────────────────────────────────────────────────────── */
+
+  /* ── Home — the rooms, top to bottom ───────────────────────────────── */
 
   "header:/": {
     page: "Home",
@@ -161,6 +172,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     heading: "Creating a world fit for children.",
     body: "FXB Rwanda empowers vulnerable children, families and communities through integrated interventions in education, health, nutrition, economic empowerment, child protection, HIV prevention, WASH and climate resilience.",
   },
+
   "home:who-we-are": {
     page: "Home",
     label: "Who We Are",
@@ -171,6 +183,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
 
 FXB International came to Rwanda in 1995 to walk with vulnerable children, widows and families on the road back to self-reliance. The FXBVillage model followed in 2000, and in 2012 we became a registered Rwandan NGO in our own right. Today we work across all four provinces and the City of Kigali — a local organisation carrying a global name, and the legacy of François-Xavier Bagnoud, into its fourth decade.`,
   },
+
   "home:what-we-do": {
     page: "Home",
     label: "What We Do",
@@ -178,6 +191,7 @@ FXB International came to Rwanda in 1995 to walk with vulnerable children, widow
     heading: "Four areas of intervention",
     body: "Delivered together through the FXBVillage model, because families never face one problem at a time.",
   },
+
   "home:our-impact": {
     page: "Home",
     label: "Our Impact",
@@ -185,7 +199,7 @@ FXB International came to Rwanda in 1995 to walk with vulnerable children, widow
     heading: "Measured in lives, not activities",
   },
 
-  /* ── Section landings ───────────────────────────────────────────────────── */
+  /* ── Who We Are ────────────────────────────────────────────────────── */
 
   "header:/who-we-are": {
     page: "Who We Are",
@@ -194,6 +208,39 @@ FXB International came to Rwanda in 1995 to walk with vulnerable children, widow
     heading: "A local NGO, rooted here since 1995.",
     body: "FXB Rwanda is a registered Rwandan NGO and a member of FXB Global, carrying the legacy of François-Xavier Bagnoud into its fourth decade — across all four provinces and the City of Kigali.",
   },
+
+  "who-we-are:story": {
+    page: "Who We Are",
+    label: "Our Story band",
+    eyebrow: "OUR STORY",
+    heading: "Four decades, one promise",
+    body: "From a life lost on a rescue mission in Mali to a Rwandan NGO working in every province — the through line has never changed.",
+  },
+
+  "who-we-are:vision": {
+    page: "Who We Are",
+    label: "Vision, Mission & Values band",
+    eyebrow: "VISION, MISSION & VALUES",
+  },
+
+  "who-we-are:where-we-work": {
+    page: "Who We Are",
+    label: "Where We Work band",
+    eyebrow: "WHERE WE WORK",
+    body: "Across all four provinces and the City of Kigali. Point at a district to see what runs there, or at a project to see where it runs.",
+    // "14 districts, 9 projects" — read off the programmes, not typed.
+    computed: ["heading"],
+  },
+
+  "who-we-are:leadership": {
+    page: "Who We Are",
+    label: "Leadership band",
+    eyebrow: "LEADERSHIP",
+    heading: "Board of Directors",
+  },
+
+  /* ── What We Do ────────────────────────────────────────────────────── */
+
   "header:/what-we-do": {
     page: "What We Do",
     label: "Page header",
@@ -202,88 +249,140 @@ FXB International came to Rwanda in 1995 to walk with vulnerable children, widow
     // programmes, so it is right the day a project ends.
     computed: ["body"],
   },
-  "header:/our-impact": {
-    page: "Our Impact",
-    label: "Page header",
-    heading: "Creating lasting change through resilient communities.",
-    body: "For more than three decades, FXB Rwanda has worked alongside vulnerable children, families and communities to address the root causes of poverty and vulnerability.",
+
+  "what-we-do:approach": {
+    page: "What We Do",
+    label: "Our Approach band",
+    eyebrow: "OUR APPROACH",
+    heading: "Empowering communities through integrated development",
+    body: "At FXB Rwanda, we believe that lasting change happens when families and communities are equipped with the knowledge, skills, and opportunities they need to thrive.",
   },
-  "header:/our-impact/stories": {
-    page: "Our Impact",
-    label: "Impact Stories header",
-    eyebrow: "IMPACT STORIES",
-    heading: "People, not projects",
-    body: "Behind every programme is a story of hope, resilience and transformation. Discover how the lives of children, families and communities are changing through the support of FXB Rwanda and its partners.",
+
+  "what-we-do:sectors": {
+    page: "What We Do",
+    label: "Sectors list (under Our Approach)",
+    offers: [],
+    items: SECTORS.map((sector) => ({ title: sector })),
   },
-  "header:/get-involved": {
-    page: "Get Involved",
-    label: "Page header",
-    heading: "Together, we can create lasting change.",
-    body: "Sustainable development requires collaboration. Meaningful and lasting impact is achieved when communities, governments, donors, institutions, businesses and development organisations work together toward a shared vision.",
+
+  "what-we-do:challenge": {
+    page: "What We Do",
+    label: "The Challenge band",
+    eyebrow: "THE CHALLENGE",
+    heading: "The challenge of child poverty",
+    prose: true,
+    body: `Among the most disadvantaged groups in society, children are particularly vulnerable to the many consequences of poverty that affect families and communities. Income insecurity, hunger, poor health, marginalisation, illiteracy, and the lack of sanitation and adequate housing are both causes and consequences of poverty, pulling families into a downward spiral of deprivation.
+
+Poverty experienced by children, even for short periods, can leave lasting marks throughout their lives. In the most severe situations, some do not survive. Those who do may suffer from early childhood onward, from malnutrition, insecurity, and multiple forms of deprivation, with lasting effects on their health and cognitive development. These consequences compromise their potential in adulthood and weaken the well-being of future generations.`,
   },
-  "header:/contact": {
-    page: "Contact",
-    label: "Page header",
-    eyebrow: "CONTACT",
-    heading: "Let's connect",
-    body: "Whether you have a question, would like to partner with us, make a donation, explore career opportunities, or simply learn more about our work, we would be delighted to hear from you.",
+
+  "photo:/what-we-do/challenge": {
+    page: "What We Do",
+    label: "Photograph band — after The Challenge",
+    offers: ["heading"],
+    heading: "Poverty arrives in every part of a life at once.",
   },
-  "header:/get-involved/careers": {
-    page: "Get Involved",
-    label: "Careers header",
-    eyebrow: "CAREERS",
-    // Both depend on whether anything is open — "Join our team" when there is,
-    // "Build a career with purpose" when there is not.
-    computed: ["heading", "body"],
+
+  "what-we-do:model-intro": {
+    page: "What We Do",
+    label: "FXBVillage Model band",
+    eyebrow: "THE FXBVILLAGE MODEL",
+    heading: "A holistic route out of poverty",
+    // Three columns rather than a lead and its follow-on: this band sets its
+    // paragraphs side by side, so all three carry the same weight.
+    prose: true,
+    body: `The FXBVillage model is a holistic and integrated approach designed to enable families to sustainably move out of poverty, by giving parents the means to protect and raise their children. Economic empowerment is its central driver of change.
+
+However, economic support alone is not enough to ensure a lasting exit from poverty. The model therefore combines economic empowerment with access to basic services and the realisation of fundamental rights, while placing the improvement of children's and adults' quality of life at the heart of its action.
+
+By acting simultaneously on economic, social, and human dimensions, the FXBVillage model fosters lasting family transformation, improves children's wellbeing, and helps break the intergenerational cycle of poverty.`,
   },
-  "header:/get-involved/donate": {
-    page: "Get Involved",
-    label: "Donate header",
-    eyebrow: "DONATE",
-    heading: "Your gift changes lives",
-    body: "Every child deserves the opportunity to grow up healthy, safe, educated and full of hope. By donating to FXB Rwanda, you become part of a lasting solution.",
+
+  "photo:/what-we-do/journey": {
+    page: "What We Do",
+    label: "Photograph band — before the Journey",
+    offers: ["heading"],
+    heading: "Three years, and a household that no longer needs us.",
   },
-  "header:/get-involved/partners": {
-    page: "Get Involved",
-    label: "Partner With Us header",
-    eyebrow: "PARTNER WITH US",
-    heading: "Together, we can create lasting change",
-    body: "At FXB Rwanda, we believe that meaningful and lasting impact is achieved when communities, governments, donors, institutions, businesses and development organisations work together toward a shared vision.",
+
+  "what-we-do:journey": {
+    page: "What We Do",
+    label: "Transformation Journey band",
+    eyebrow: "TRANSFORMATION JOURNEY",
+    heading: "36 months to change a life, sustainably",
+    body: "A complete 36-month journey toward dignity, access to fundamental rights, and lasting change for children and families.",
+    // The step number is the position in the list, so it is not a field
+    // somebody can get out of step with the order.
+    items: journey.map((phase) => ({ title: phase.period, body: phase.body })),
   },
-  "header:/get-involved/procurement": {
-    page: "Get Involved",
-    label: "Procurement header",
-    eyebrow: "PROCUREMENT",
-    heading: "Procurement opportunities",
-    body: "FXB Rwanda is committed to transparent, fair and competitive procurement. All opportunities are published here in line with our procurement policies.",
+
+  "what-we-do:principles": {
+    page: "What We Do",
+    label: "Guiding Principles band",
+    eyebrow: "GUIDING PRINCIPLES",
+    heading: "Built on three principles",
+    body: "At FXB Rwanda, we believe that every family has the potential to overcome poverty when provided with the right opportunities, knowledge, and support.",
+    items: principles.map((principle) => ({
+      title: principle.title,
+      body: principle.body,
+    })),
   },
-  "header:/news-insights/news": {
-    page: "News & Insights",
-    label: "Latest News header",
-    eyebrow: "LATEST NEWS",
-    heading: "News from FXB Rwanda",
-    body: "Keep up with the latest developments: announcements, programme updates, partnership news, project launches, achievements and other organisational milestones.",
+
+  "photo:/what-we-do/pillars": {
+    page: "What We Do",
+    label: "Photograph band — before the Pillars",
+    offers: ["heading"],
+    heading: "A business of one's own is what the last year is for.",
   },
-  "header:/news-insights/publications": {
-    page: "News & Insights",
-    label: "Publications header",
-    eyebrow: "PUBLICATIONS",
-    heading: "Reports, research and policy",
-    body: "Access reports, research, policy documents, brochures and other publications that showcase our work, impact and learning.",
+
+  "what-we-do:pillars": {
+    page: "What We Do",
+    label: "The Pillars band",
+    eyebrow: "THE PILLARS",
+    heading: "Five pillars, delivered together",
+    body: "The model integrates a set of mutually reinforcing pillars that work together to improve the overall well-being of families.",
+    items: pillars.map((pillar) => ({
+      title: pillar.title,
+      body: pillar.lead,
+      icon: PILLAR_ICONS[pillar.id],
+      points: pillar.interventions.map((intervention) => ({
+        title: intervention.name,
+        body: intervention.body,
+      })),
+    })),
   },
-  "header:/news-insights/newsletters": {
-    page: "News & Insights",
-    label: "Newsletters header",
-    eyebrow: "NEWSLETTERS",
-    heading: "Four times a year",
-    body: "Our quarterly newsletter gathers the districts, the programmes and the people in one place.",
+
+  "what-we-do:why-it-works": {
+    page: "What We Do",
+    label: "Why It Works band",
+    eyebrow: "WHY IT WORKS",
+    heading: "Integrated, and people-centred",
+    prose: true,
+    body: `The strength of the FXBVillage Model lies in its integrated and people-centred approach.
+
+Instead of addressing one challenge in isolation, the model recognises that lasting change requires coordinated action across multiple sectors. By empowering families with knowledge, resources, and opportunities, the model creates a foundation for long-term resilience and sustainable development.
+
+This holistic approach not only improves immediate living conditions but also enables communities to continue progressing long after project interventions have ended.`,
   },
-  "header:/news-insights/media-gallery": {
-    page: "News & Insights",
-    label: "Media Gallery header",
-    eyebrow: "MEDIA GALLERY",
-    heading: "The work, as photographed",
-    // "163 photographs from our programmes across Rwanda."
+
+  "what-we-do:projects-delivered": {
+    page: "What We Do",
+    label: "FXBVillage Projects band",
+    eyebrow: "FXBVILLAGE PROJECTS",
+    body: "As of now, 54 FXBVillage projects have been implemented, leaving thousands of families resilient from poverty.",
+  },
+
+  /**
+   * The band's words only. The cards under it are their own collection —
+   * Areas of intervention in the panel — because they carry a photograph, an
+   * icon, an anchor and a category, none of which a section block has. Two
+   * editors for the same four cards would be the worse answer.
+   */
+  "what-we-do:areas": {
+    page: "What We Do",
+    label: "Areas of Intervention band",
+    eyebrow: "AREAS OF INTERVENTION",
+    heading: "Four areas, one household",
     computed: ["body"],
   },
 
@@ -303,6 +402,7 @@ FXB International came to Rwanda in 1995 to walk with vulnerable children, widow
     heading: "What we are running today",
     computed: ["body"],
   },
+
   "header:/what-we-do/phased-out-projects": {
     page: "What We Do",
     label: "Phased-out Projects header",
@@ -311,147 +411,74 @@ FXB International came to Rwanda in 1995 to walk with vulnerable children, widow
     body: "A project ending is the point of the model. Families exit when they no longer need us — with income, savings, school fees paid and health cover in place.",
   },
 
-  /* ── Who We Are ─────────────────────────────────────────────────────────── */
+  /* ── Our Impact ────────────────────────────────────────────────────── */
 
-  "who-we-are:story": {
-    page: "Who We Are",
-    label: "Our Story band",
-    eyebrow: "OUR STORY",
-    heading: "Four decades, one promise",
-    body: "From a life lost on a rescue mission in Mali to a Rwandan NGO working in every province — the through line has never changed.",
-  },
-  "who-we-are:leadership": {
-    page: "Who We Are",
-    label: "Leadership band",
-    eyebrow: "LEADERSHIP",
-    heading: "Board of Directors",
-  },
-  "who-we-are:where-we-work": {
-    page: "Who We Are",
-    label: "Where We Work band",
-    eyebrow: "WHERE WE WORK",
-    body: "Across all four provinces and the City of Kigali. Point at a district to see what runs there, or at a project to see where it runs.",
-    // "14 districts, 9 projects" — read off the programmes, not typed.
-    computed: ["heading"],
+  "header:/our-impact": {
+    page: "Our Impact",
+    label: "Page header",
+    heading: "Creating lasting change through resilient communities.",
+    body: "For more than three decades, FXB Rwanda has worked alongside vulnerable children, families and communities to address the root causes of poverty and vulnerability.",
   },
 
-  /* ── What We Do ─────────────────────────────────────────────────────────── */
+  "our-impact:reach": {
+    page: "Our Impact",
+    label: "Results at a Glance band",
+    eyebrow: "RESULTS AT A GLANCE",
+    heading: "Our reach since 2012",
+    body: "Reach is counted per area, so a household supported in two of them is counted in both. The total is reported separately.",
+  },
 
-  "what-we-do:approach": {
-    page: "What We Do",
-    label: "Our Approach band",
-    eyebrow: "OUR APPROACH",
-    heading: "Empowering communities through integrated development",
-    body: "At FXB Rwanda, we believe that lasting change happens when families and communities are equipped with the knowledge, skills, and opportunities they need to thrive.",
+  "header:/our-impact/stories": {
+    page: "Our Impact",
+    label: "Impact Stories header",
+    eyebrow: "IMPACT STORIES",
+    heading: "People, not projects",
+    body: "Behind every programme is a story of hope, resilience and transformation. Discover how the lives of children, families and communities are changing through the support of FXB Rwanda and its partners.",
   },
-  "what-we-do:challenge": {
-    page: "What We Do",
-    label: "The Challenge band",
-    eyebrow: "THE CHALLENGE",
-    heading: "The challenge of child poverty",
-    prose: true,
-    body: `Among the most disadvantaged groups in society, children are particularly vulnerable to the many consequences of poverty that affect families and communities. Income insecurity, hunger, poor health, marginalisation, illiteracy, and the lack of sanitation and adequate housing are both causes and consequences of poverty, pulling families into a downward spiral of deprivation.
 
-Poverty experienced by children, even for short periods, can leave lasting marks throughout their lives. In the most severe situations, some do not survive. Those who do may suffer from early childhood onward, from malnutrition, insecurity, and multiple forms of deprivation, with lasting effects on their health and cognitive development. These consequences compromise their potential in adulthood and weaken the well-being of future generations.`,
-  },
-  "what-we-do:model-intro": {
-    page: "What We Do",
-    label: "FXBVillage Model band",
-    eyebrow: "THE FXBVILLAGE MODEL",
-    heading: "A holistic route out of poverty",
-    // Three columns rather than a lead and its follow-on: this band sets its
-    // paragraphs side by side, so all three carry the same weight.
-    prose: true,
-    body: `The FXBVillage model is a holistic and integrated approach designed to enable families to sustainably move out of poverty, by giving parents the means to protect and raise their children. Economic empowerment is its central driver of change.
+  /* ── News & Insights ───────────────────────────────────────────────── */
 
-However, economic support alone is not enough to ensure a lasting exit from poverty. The model therefore combines economic empowerment with access to basic services and the realisation of fundamental rights, while placing the improvement of children's and adults' quality of life at the heart of its action.
+  "header:/news-insights/news": {
+    page: "News & Insights",
+    label: "Latest News header",
+    eyebrow: "LATEST NEWS",
+    heading: "News from FXB Rwanda",
+    body: "Keep up with the latest developments: announcements, programme updates, partnership news, project launches, achievements and other organisational milestones.",
+  },
 
-By acting simultaneously on economic, social, and human dimensions, the FXBVillage model fosters lasting family transformation, improves children's wellbeing, and helps break the intergenerational cycle of poverty.`,
+  "header:/news-insights/publications": {
+    page: "News & Insights",
+    label: "Publications header",
+    eyebrow: "PUBLICATIONS",
+    heading: "Reports, research and policy",
+    body: "Access reports, research, policy documents, brochures and other publications that showcase our work, impact and learning.",
   },
-  "what-we-do:journey": {
-    page: "What We Do",
-    label: "Transformation Journey band",
-    eyebrow: "TRANSFORMATION JOURNEY",
-    heading: "36 months to change a life, sustainably",
-    body: "A complete 36-month journey toward dignity, access to fundamental rights, and lasting change for children and families.",
-    // The step number is the position in the list, so it is not a field
-    // somebody can get out of step with the order.
-    items: journey.map((phase) => ({ title: phase.period, body: phase.body })),
-  },
-  "what-we-do:principles": {
-    page: "What We Do",
-    label: "Guiding Principles band",
-    eyebrow: "GUIDING PRINCIPLES",
-    heading: "Built on three principles",
-    body: "At FXB Rwanda, we believe that every family has the potential to overcome poverty when provided with the right opportunities, knowledge, and support.",
-    items: principles.map((principle) => ({
-      title: principle.title,
-      body: principle.body,
-    })),
-  },
-  "what-we-do:pillars": {
-    page: "What We Do",
-    label: "The Pillars band",
-    eyebrow: "THE PILLARS",
-    heading: "Five pillars, delivered together",
-    body: "The model integrates a set of mutually reinforcing pillars that work together to improve the overall well-being of families.",
-    items: pillars.map((pillar) => ({
-      title: pillar.title,
-      body: pillar.lead,
-      icon: PILLAR_ICONS[pillar.id],
-      points: pillar.interventions.map((intervention) => ({
-        title: intervention.name,
-        body: intervention.body,
-      })),
-    })),
-  },
-  "what-we-do:why-it-works": {
-    page: "What We Do",
-    label: "Why It Works band",
-    eyebrow: "WHY IT WORKS",
-    heading: "Integrated, and people-centred",
-    prose: true,
-    body: `The strength of the FXBVillage Model lies in its integrated and people-centred approach.
 
-Instead of addressing one challenge in isolation, the model recognises that lasting change requires coordinated action across multiple sectors. By empowering families with knowledge, resources, and opportunities, the model creates a foundation for long-term resilience and sustainable development.
-
-This holistic approach not only improves immediate living conditions but also enables communities to continue progressing long after project interventions have ended.`,
+  "header:/news-insights/newsletters": {
+    page: "News & Insights",
+    label: "Newsletters header",
+    eyebrow: "NEWSLETTERS",
+    heading: "Four times a year",
+    body: "Our quarterly newsletter gathers the districts, the programmes and the people in one place.",
   },
-  /**
-   * The band's words only. The cards under it are their own collection —
-   * Areas of intervention in the panel — because they carry a photograph, an
-   * icon, an anchor and a category, none of which a section block has. Two
-   * editors for the same four cards would be the worse answer.
-   */
-  "what-we-do:areas": {
-    page: "What We Do",
-    label: "Areas of Intervention band",
-    eyebrow: "AREAS OF INTERVENTION",
-    heading: "Four areas, one household",
+
+  "header:/news-insights/media-gallery": {
+    page: "News & Insights",
+    label: "Media Gallery header",
+    eyebrow: "MEDIA GALLERY",
+    heading: "The work, as photographed",
+    // "163 photographs from our programmes across Rwanda."
     computed: ["body"],
   },
-  "what-we-do:projects-delivered": {
-    page: "What We Do",
-    label: "FXBVillage Projects band",
-    eyebrow: "FXBVILLAGE PROJECTS",
-    body: "As of now, 54 FXBVillage projects have been implemented, leaving thousands of families resilient from poverty.",
-  },
-  "what-we-do:sectors": {
-    page: "What We Do",
-    label: "Sectors list (under Our Approach)",
-    offers: [],
-    items: SECTORS.map((sector) => ({ title: sector })),
-  },
 
-  /* ── Who We Are, continued ──────────────────────────────────────────────── */
+  /* ── Get Involved ──────────────────────────────────────────────────── */
 
-  "who-we-are:vision": {
-    page: "Who We Are",
-    label: "Vision, Mission & Values band",
-    eyebrow: "VISION, MISSION & VALUES",
+  "header:/get-involved": {
+    page: "Get Involved",
+    label: "Page header",
+    heading: "Together, we can create lasting change.",
+    body: "Sustainable development requires collaboration. Meaningful and lasting impact is achieved when communities, governments, donors, institutions, businesses and development organisations work together toward a shared vision.",
   },
-
-  /* ── Get Involved ───────────────────────────────────────────────────────── */
 
   "get-involved:ways-in": {
     page: "Get Involved",
@@ -463,17 +490,85 @@ This holistic approach not only improves immediate living conditions but also en
 Through strong partnerships, we combine resources, expertise, innovation and local knowledge to create solutions that strengthen resilience and promote sustainable development. Together, we can build stronger communities and create a world fit for children.`,
   },
 
-  /* ── Our Impact ─────────────────────────────────────────────────────────── */
-
-  "our-impact:reach": {
-    page: "Our Impact",
-    label: "Results at a Glance band",
-    eyebrow: "RESULTS AT A GLANCE",
-    heading: "Our reach since 2012",
-    body: "Reach is counted per area, so a household supported in two of them is counted in both. The total is reported separately.",
+  "photo:/get-involved": {
+    page: "Get Involved",
+    label: "Photograph band",
+    offers: ["heading"],
+    heading: "There is more than one way to be part of this.",
   },
 
-  /* ── Bands that appear on several pages ─────────────────────────────────── */
+  "header:/get-involved/partners": {
+    page: "Get Involved",
+    label: "Partner With Us header",
+    eyebrow: "PARTNER WITH US",
+    heading: "Together, we can create lasting change",
+    body: "At FXB Rwanda, we believe that meaningful and lasting impact is achieved when communities, governments, donors, institutions, businesses and development organisations work together toward a shared vision.",
+  },
+
+  "photo:/get-involved/partners": {
+    page: "Get Involved",
+    label: "Partner With Us photograph band",
+    offers: ["heading"],
+    heading: "Every project on this page is delivered with somebody.",
+  },
+
+  "header:/get-involved/careers": {
+    page: "Get Involved",
+    label: "Careers header",
+    eyebrow: "CAREERS",
+    // Both depend on whether anything is open — "Join our team" when there is,
+    // "Build a career with purpose" when there is not.
+    computed: ["heading", "body"],
+  },
+
+  "photo:/get-involved/careers": {
+    page: "Get Involved",
+    label: "Careers photograph band",
+    offers: ["heading"],
+    heading: "The work is done by people who live where it happens.",
+  },
+
+  "header:/get-involved/procurement": {
+    page: "Get Involved",
+    label: "Procurement header",
+    eyebrow: "PROCUREMENT",
+    heading: "Procurement opportunities",
+    body: "FXB Rwanda is committed to transparent, fair and competitive procurement. All opportunities are published here in line with our procurement policies.",
+  },
+
+  "photo:/get-involved/procurement": {
+    page: "Get Involved",
+    label: "Procurement photograph band",
+    offers: ["heading"],
+    heading: "What we buy is bought to be used in a district.",
+  },
+
+  "header:/get-involved/donate": {
+    page: "Get Involved",
+    label: "Donate header",
+    eyebrow: "DONATE",
+    heading: "Your gift changes lives",
+    body: "Every child deserves the opportunity to grow up healthy, safe, educated and full of hope. By donating to FXB Rwanda, you become part of a lasting solution.",
+  },
+
+  "photo:/get-involved/donate": {
+    page: "Get Involved",
+    label: "Donate photograph band",
+    offers: ["heading"],
+    heading: "Three years of support, and a household that no longer needs it.",
+  },
+
+  /* ── Contact ───────────────────────────────────────────────────────── */
+
+  "header:/contact": {
+    page: "Contact",
+    label: "Page header",
+    eyebrow: "CONTACT",
+    heading: "Let's connect",
+    body: "Whether you have a question, would like to partner with us, make a donation, explore career opportunities, or simply learn more about our work, we would be delighted to hear from you.",
+  },
+
+  /* ── Shared bands — used on more than one page ─────────────────────── */
 
   "band:impact-stories": {
     page: "Shared bands",
@@ -481,79 +576,20 @@ Through strong partnerships, we combine resources, expertise, innovation and loc
     heading: "Behind every programme, a person",
     body: "Programmes are counted in households reached. What they change is only ever visible one household at a time.",
   },
+
   "band:latest-news": {
     page: "Shared bands",
     label: "Latest News band",
     eyebrow: "NEWS & INSIGHTS",
     heading: "Latest from FXB Rwanda",
   },
+
   "band:partners": {
     page: "Shared bands",
     label: "Partners band",
     eyebrow: "PARTNERS",
     heading: "None of this was done alone",
     body: "Government institutions, donors and fellow organisations who fund the work, shape it, and deliver it alongside us.",
-  },
-  /* ── Photograph bands ───────────────────────────────────────────────────
-   *
-   * The full-bleed pictures with one line over them, spaced through the pages
-   * that are otherwise unbroken argument. Both the line and the photograph were
-   * written into the page files, so a band nobody could see the point of any
-   * more needed a developer to reword — which is the whole reason this registry
-   * exists.
-   *
-   * `heading` only. There is no eyebrow and no paragraph on one of these: it is
-   * a breath between sections, not a section, and the line is short by
-   * construction. The picture is the section image picker, and the shipped
-   * photograph stands until somebody chooses another.
-   */
-  "photo:/what-we-do/challenge": {
-    page: "What We Do",
-    label: "Photograph band — after The Challenge",
-    offers: ["heading"],
-    heading: "Poverty arrives in every part of a life at once.",
-  },
-  "photo:/what-we-do/journey": {
-    page: "What We Do",
-    label: "Photograph band — before the Journey",
-    offers: ["heading"],
-    heading: "Three years, and a household that no longer needs us.",
-  },
-  "photo:/what-we-do/pillars": {
-    page: "What We Do",
-    label: "Photograph band — before the Pillars",
-    offers: ["heading"],
-    heading: "A business of one's own is what the last year is for.",
-  },
-  "photo:/get-involved": {
-    page: "Get Involved",
-    label: "Photograph band",
-    offers: ["heading"],
-    heading: "There is more than one way to be part of this.",
-  },
-  "photo:/get-involved/careers": {
-    page: "Get Involved",
-    label: "Careers photograph band",
-    offers: ["heading"],
-    heading: "The work is done by people who live where it happens.",
-  },
-  "photo:/get-involved/procurement": {
-    page: "Get Involved",
-    label: "Procurement photograph band",
-    offers: ["heading"],
-    heading: "What we buy is bought to be used in a district.",
-  },
-  "photo:/get-involved/donate": {
-    page: "Get Involved",
-    label: "Donate photograph band",
-    offers: ["heading"],
-    heading: "Three years of support, and a household that no longer needs it.",
-  },
-  "photo:/get-involved/partners": {
-    page: "Get Involved",
-    label: "Partner With Us photograph band",
-    offers: ["heading"],
-    heading: "Every project on this page is delivered with somebody.",
   },
 
   "band:newsletter": {
