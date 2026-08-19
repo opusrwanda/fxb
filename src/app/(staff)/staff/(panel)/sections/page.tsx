@@ -50,6 +50,13 @@ const input =
  * page header is one thing. So the banner sits in the header section's own
  * form, keyed by the same route, and the separate screen is gone.
  *
+ * The site-wide default is not offered here. It is one photograph, set once and
+ * standing behind every page that has not been given its own — which is a
+ * decision, not a setting somebody comes back to. Putting it at the top of this
+ * page put the one control nobody should touch above the twelve they came for.
+ * The per-page pickers below are the whole of what is changed day to day; the
+ * `*` row is edited in the database on the rare occasion it changes.
+ *
  * Each field shows the default underneath it, and leaving a field empty means
  * "use that". So there is no separate reset for a single field — clearing it is
  * the reset — and Reset on the section is the same gesture for all three at
@@ -185,23 +192,6 @@ export default async function SectionsPage({
     redirect(`/staff/sections?reset=${encodeURIComponent(key)}#${key}`);
   }
 
-  /**
-   * The banner every page falls back to.
-   *
-   * Not a section — there is no page called "every other page" and no copy to
-   * go with it — so it is its own small form above the list rather than a
-   * thirteenth fold. Clearing both pickers and saving is how it is removed;
-   * there is no separate button, because the row existing is the whole
-   * override.
-   */
-  async function saveDefault(formData: FormData) {
-    "use server";
-
-    await requireAdmin("sections");
-    await savePageBanner("*", readBanner(formData));
-    redirect("/staff/sections?saved=*#default-banner");
-  }
-
   return (
     <div className="mx-auto max-w-4xl">
       <header className="flex flex-col gap-3">
@@ -233,37 +223,6 @@ export default async function SectionsPage({
         </p>
       )}
 
-      <form
-        id="default-banner"
-        action={saveDefault}
-        className="mt-10 scroll-mt-8 rounded-card border border-gray-15 p-6"
-      >
-        <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
-          Default banner
-        </h2>
-        <p className="mt-2 max-w-[62ch] text-[13px] leading-relaxed text-gray-80">
-          The photograph behind the title of every page that has not been given
-          one of its own below. Set this once and the whole site has a banner;
-          override only the pages that deserve their own.
-        </p>
-
-        <div className="mt-5 flex flex-col gap-5">
-          <BannerFields
-            idPrefix="default"
-            banner={banners["*"] ?? null}
-            images={images}
-            videos={videos}
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="mt-5 inline-flex h-11 items-center rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
-        >
-          Save
-        </button>
-      </form>
-
       {pages.map((page) => {
         const onPage = all.filter((section) => section.page === page);
         const edited = onPage.filter(isEdited).length;
@@ -273,7 +232,7 @@ export default async function SectionsPage({
           key={page}
           // Open the page somebody has just saved on, closed otherwise.
           open={page === openPage}
-          className="group mt-5 rounded-card border border-gray-15"
+          className="group mt-5 rounded-card border border-gray-15 first-of-type:mt-10"
         >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition-colors duration-300 hover:bg-blue-08 [&::-webkit-details-marker]:hidden">
             <span className="flex items-center gap-3">
