@@ -38,7 +38,26 @@ export async function saveSection(
   // would be a row nothing reads and a way to grow the table from outside.
   if (!SECTIONS[key]) return { ok: false, error: "No such section." };
 
-  const value = (raw: string) => raw.trim() || null;
+  const shipped = SECTIONS[key];
+
+  /**
+   * What to store for one field: nothing, unless it differs from the default.
+   *
+   * The panel now fills each box with what the page actually says rather than
+   * leaving it blank until somebody types — which is the only way to edit a
+   * sentence you can see, but it also means every Save posts the defaults back.
+   * Storing them would turn "put it back" into "restore whatever the code said
+   * the day somebody pressed Save", and the badge would say every band on the
+   * site had been edited. So an unchanged field is not an override, the same
+   * rule the item list below has always followed.
+   *
+   * Empty stays empty-means-default, so clearing a box is still how a field is
+   * put back on its own.
+   */
+  const value = (raw: string, original?: string) => {
+    const text = raw.trim();
+    return text === "" || text === original ? null : text;
+  };
 
   /**
    * An item list identical to the one the code ships is not an override.
@@ -48,16 +67,16 @@ export async function saveSection(
    * whatever the defaults happened to be that day rather than what the code
    * says today.
    */
-  const shipped = SECTIONS[key].items;
   const items =
-    input.items === null || JSON.stringify(input.items) === JSON.stringify(shipped ?? null)
+    input.items === null ||
+    JSON.stringify(input.items) === JSON.stringify(shipped.items ?? null)
       ? null
       : input.items;
 
   const row = {
-    eyebrow: value(input.eyebrow),
-    heading: value(input.heading),
-    body: value(input.body),
+    eyebrow: value(input.eyebrow, shipped.eyebrow),
+    heading: value(input.heading, shipped.heading),
+    body: value(input.body, shipped.body),
     imageId: input.imageId,
     items,
   };

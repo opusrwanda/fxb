@@ -59,10 +59,21 @@ const input =
  * The per-page pickers below are the whole of what is changed day to day; the
  * `*` row is edited in the database on the rare occasion it changes.
  *
- * Each field shows the default underneath it, and leaving a field empty means
- * "use that". So there is no separate reset for a single field — clearing it is
- * the reset — and Reset on the section is the same gesture for all three at
- * once. See `cms/content/sections.ts` for why the defaults live in code.
+ * EACH BOX HOLDS WHAT THE PAGE SAYS NOW, default or edit alike. It held only
+ * the edit for a while — blank on every field nobody had typed in, with the
+ * real wording printed underneath as "Empty uses: …" — which meant editing a
+ * sentence began by copying it out of the help text, and a panel of empty boxes
+ * over a site full of words reads as a panel that has lost them.
+ *
+ * What follows from that is one rule in `saveSection`: a field matching what
+ * the code ships is not an override and is not stored. Otherwise every Save
+ * would write the defaults into the database, "put it back" would restore
+ * whatever the code happened to say that day, and every band on the site would
+ * carry an Edited badge.
+ *
+ * So there is still no separate reset for a single field — clearing it is the
+ * reset — and Reset on the section is the same gesture for all of them at once.
+ * See `cms/content/sections.ts` for why the defaults live in code.
  */
 export default async function SectionsPage({
   searchParams,
@@ -208,8 +219,8 @@ export default async function SectionsPage({
         </h1>
         <p className="max-w-[58ch] text-base leading-relaxed text-gray">
           The headings, short introductions and banner photographs on the
-          site&rsquo;s pages. Leave a field empty to use the wording the site
-          ships with — it is shown under each one.
+          site&rsquo;s pages. Each box holds what the page says now — change it
+          and save. Clearing a box puts the original wording back.
         </p>
       </header>
 
@@ -304,22 +315,25 @@ export default async function SectionsPage({
                       id={`${section.key}-eyebrow`}
                       name="eyebrow"
                       label="Small line above"
-                      value={section.edited.eyebrow ?? ""}
-                      fallback={section.defaults.eyebrow}
+                      value={section.edited.eyebrow ?? section.defaults.eyebrow ?? ""}
+                      original={section.defaults.eyebrow}
+                      computed={section.computed.includes("eyebrow")}
                     />
                     <Field
                       id={`${section.key}-heading`}
                       name="heading"
                       label="Heading"
-                      value={section.edited.heading ?? ""}
-                      fallback={section.defaults.heading}
+                      value={section.edited.heading ?? section.defaults.heading ?? ""}
+                      original={section.defaults.heading}
+                      computed={section.computed.includes("heading")}
                     />
                     <Field
                       id={`${section.key}-body`}
                       name="body"
                       label="Introduction"
-                      value={section.edited.body ?? ""}
-                      fallback={section.defaults.body}
+                      value={section.edited.body ?? section.defaults.body ?? ""}
+                      original={section.defaults.body}
+                      computed={section.computed.includes("body")}
                       multiline
                     />
 
@@ -503,21 +517,42 @@ function readBanner(formData: FormData): {
   return { imageId: id("bannerImageId"), videoId: id("bannerVideoId") };
 }
 
+/**
+ * One line of a band's copy, holding what the page says now.
+ *
+ * It used to hold only the override — blank on every field nobody had typed
+ * in, with the real wording printed underneath as "Empty uses: …". So editing
+ * a sentence meant reading it out of the help text and typing it back in, and
+ * a panel full of empty boxes over a site full of words looks like a panel
+ * that has lost them.
+ *
+ * The box holds the words. Underneath it says only what is worth saying: what
+ * this used to be, where somebody has changed it, and why it is blank on the
+ * handful of fields the page counts for itself. Clearing it puts the original
+ * back — `saveSection` stores nothing for a field that matches what the code
+ * ships, so an untouched Save changes nothing.
+ */
 function Field({
   id,
   name,
   label,
   value,
-  fallback,
+  original,
+  computed,
   multiline,
 }: {
   id: string;
   name: string;
   label: string;
   value: string;
-  fallback?: string;
+  /** The wording the site ships with, where there is one. */
+  original?: string;
+  /** The page writes this one itself, so there is nothing to ship. */
+  computed?: boolean;
   multiline?: boolean;
 }) {
+  const changed = original !== undefined && value !== original;
+
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-sm font-semibold text-blue">
@@ -530,17 +565,24 @@ function Field({
         <input id={id} name={name} type="text" defaultValue={value} className={input} />
       )}
 
-      {/* What it says if this is left empty. Quoted, so a default that is
-          itself a sentence does not read as instructions. */}
-      {fallback ? (
+      {/* Quoted, so an original that is itself a sentence does not read as
+          instructions. */}
+      {changed ? (
         <p className="text-[13px] leading-relaxed text-gray-80">
-          Empty uses: <span className="text-gray">“{fallback}”</span>
+          Originally: <span className="text-gray">“{original}”</span> — clear
+          the box to put it back.
         </p>
-      ) : (
+      ) : computed ? (
+        <p className="text-[13px] leading-relaxed text-gray-80">
+          Empty because the page writes this one itself and it changes — a
+          count, or whether there is anything to list. Type something here to
+          fix it in place instead.
+        </p>
+      ) : original === undefined ? (
         <p className="text-[13px] leading-relaxed text-gray-80">
           Empty leaves this out.
         </p>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -710,11 +752,13 @@ function readPoints(raw: string): { title: string; body?: string }[] | undefined
 /**
  * Has anybody changed this band?
  *
- * Any one of the overrides counts, the banner included. The panel says so twice — as a badge
+ * Any one of the overrides counts, the banner included — but only where it
+ * actually differs from what the code ships. The panel says so twice — as a badge
  * on the band and as a count on the closed page — and asking the question in
  * one place is what keeps the two answers the same.
  */
 function isEdited(section: {
+  defaults: { eyebrow?: string; heading?: string; body?: string };
   edited: {
     eyebrow?: string | null;
     heading?: string | null;
@@ -725,6 +769,17 @@ function isEdited(section: {
   /** The banner row, on a page header. Having one at all is the override. */
   banner?: { imageId: number | null; videoId: number | null } | null;
 }): boolean {
+  // A stored value that matches the default is not an edit. `saveSection` no
+  // longer writes one, but rows from before it stopped are still in the table
+  // and a badge that says "Edited" over the shipped wording is a lie.
+  const differs = (edit: string | null | undefined, original?: string) =>
+    Boolean(edit) && edit !== original;
+
   const { eyebrow, heading, body, imageId, items } = section.edited;
-  return Boolean(eyebrow || heading || body || imageId || items || section.banner);
+  return (
+    differs(eyebrow, section.defaults.eyebrow) ||
+    differs(heading, section.defaults.heading) ||
+    differs(body, section.defaults.body) ||
+    Boolean(imageId || items || section.banner)
+  );
 }

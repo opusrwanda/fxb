@@ -68,6 +68,18 @@ export type SectionDefinition = SectionCopy & {
    * `/img` or a CDN URL. Choosing a picture in the panel replaces it.
    */
   image?: string;
+  /**
+   * The fields the page writes for itself, so the panel can say why they are
+   * blank rather than showing an empty box next to text a reader can plainly
+   * see on the site.
+   *
+   * "22 projects across 14 districts" is counted out of the programmes table on
+   * every request, and the Careers heading depends on whether anything is open.
+   * There is no default to show for either — but there is a reason, and a
+   * reason is what stops somebody concluding the panel has lost their words.
+   * Typing here still wins, for anybody who would rather have a fixed sentence.
+   */
+  computed?: ("eyebrow" | "heading" | "body")[];
 };
 
 /**
@@ -173,6 +185,9 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     page: "Get Involved",
     label: "Careers header",
     eyebrow: "CAREERS",
+    // Both depend on whether anything is open — "Join our team" when there is,
+    // "Build a career with purpose" when there is not.
+    computed: ["heading", "body"],
   },
   "header:/get-involved/donate": {
     page: "Get Involved",
@@ -221,23 +236,25 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Media Gallery header",
     eyebrow: "MEDIA GALLERY",
     heading: "The work, as photographed",
+    // "163 photographs from our programmes across Rwanda."
+    computed: ["body"],
   },
 
   /**
    * The two project listings.
    *
-   * Registered without a `body`, because theirs is counted rather than written
-   * — "22 projects across 14 districts" is read off the programmes table on
-   * every request, and a default here would freeze that sentence at whatever
-   * the numbers were the day it was typed. The registry has no entry, so
-   * `getSection` falls through to what the page passes; typing one in the panel
-   * still wins, for anybody who would rather have a fixed sentence.
+   * Current Projects is registered without a `body` and marked `computed`:
+   * theirs is counted rather than written — "22 projects across 14 districts"
+   * is read off the programmes table on every request — and a default here
+   * would freeze that sentence at whatever the numbers were the day it was
+   * typed.
    */
   "header:/what-we-do/current-projects": {
     page: "What We Do",
     label: "Current Projects header",
     eyebrow: "CURRENT PROJECTS",
     heading: "What we are running today",
+    computed: ["body"],
   },
   "header:/what-we-do/phased-out-projects": {
     page: "What We Do",
@@ -502,6 +519,8 @@ export async function getSectionsForPanel() {
      * writes rows nothing reads.
      */
     itemsShipped: definition.items ?? null,
+    /** Which fields have no default to show because the page counts them. */
+    computed: definition.computed ?? [],
     edited: edited[key] ?? {},
   }));
 }
