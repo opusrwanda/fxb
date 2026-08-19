@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { FileText, Loader2, Search, Upload, X } from "lucide-react";
 
+import { DropVeil, useFileDrop } from "./file-drop";
+
 /** Never changes, so the store never notifies. */
 const noop = () => () => {};
 
@@ -107,6 +109,14 @@ export function MediaPicker({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  /** What this picker takes, for the file input and for a drop alike. */
+  const accept =
+    kind === "image"
+      ? "image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml"
+      : kind === "video"
+        ? "video/mp4,video/webm"
+        : "application/pdf";
+
   const close = useCallback(() => {
     setOpen(false);
     setQuery("");
@@ -158,6 +168,21 @@ export function MediaPicker({
       if (fileRef.current) fileRef.current.value = "";
     }
   }, []);
+
+  const { dragging, handlers: dropHandlers } = useFileDrop({
+    accept,
+    onFile: (file) => void upload(file),
+    onReject: (file) =>
+      setUploadError(
+        `${file.name} is not the sort of file this picker takes. ${
+          kind === "image"
+            ? "Photographs only."
+            : kind === "video"
+              ? "MP4 or WebM only."
+              : "PDFs only."
+        }`,
+      ),
+  });
 
   // Escape closes, and the page behind does not scroll while it is open.
   useEffect(() => {
@@ -294,8 +319,20 @@ export function MediaPicker({
                   ? "Choose a video"
                   : "Choose a document"
             }
-            className="flex max-h-[92vh] w-full max-w-5xl flex-col rounded-t-card bg-white sm:rounded-card"
+            {...dropHandlers}
+            className="relative flex max-h-[92vh] w-full max-w-5xl flex-col rounded-t-card bg-white sm:rounded-card"
           >
+            {dragging && (
+              <DropVeil
+                label={
+                  kind === "image"
+                    ? "Drop the photograph to upload it"
+                    : kind === "video"
+                      ? "Drop the video to upload it"
+                      : "Drop the document to upload it"
+                }
+              />
+            )}
             <div className="flex items-center gap-4 border-b border-gray-15 p-5">
               <label className="relative flex flex-1 items-center">
                 <Search
@@ -320,13 +357,7 @@ export function MediaPicker({
                 ref={fileRef}
                 type="file"
                 className="sr-only"
-                accept={
-                  kind === "image"
-                    ? "image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml"
-                    : kind === "video"
-                      ? "video/mp4,video/webm"
-                      : "application/pdf"
-                }
+                accept={accept}
                 onChange={(event) => {
                   const file = event.target.files?.[0];
                   if (file) void upload(file);
@@ -370,7 +401,7 @@ export function MediaPicker({
                 <p className="py-16 text-center text-[15px] text-gray">
                   {needle
                     ? `Nothing matches “${query}”.`
-                    : "The library is empty. Upload the first file."}
+                    : "The library is empty. Drop a file here, or press Upload."}
                 </p>
               ) : kind === "image" ? (
                 <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

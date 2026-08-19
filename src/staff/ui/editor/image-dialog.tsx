@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, Search, Upload, X } from "lucide-react";
 
+import { DropVeil, useFileDrop } from "../file-drop";
+
 import type { PickerOption } from "@/staff/ui/media-picker";
+
+/** What may be inserted into an article, by the button and by a drop. */
+const PICTURES =
+  "image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml";
 
 /**
  * Choosing a picture to put in an article.
@@ -96,6 +102,12 @@ export function ImageDialog({
     [onChoose],
   );
 
+  const { dragging, handlers: dropHandlers } = useFileDrop({
+    accept: PICTURES,
+    onFile: (file) => void upload(file),
+    onReject: (file) => setError(`${file.name} is not a picture.`),
+  });
+
   const needle = query.trim().toLowerCase();
   // Only pictures. A PDF has no pixels and would insert as a broken frame.
   const pictures = (options ?? []).filter((option) =>
@@ -120,8 +132,10 @@ export function ImageDialog({
         role="dialog"
         aria-modal="true"
         aria-label="Add a picture"
-        className="flex max-h-[92vh] w-full max-w-5xl flex-col rounded-t-card bg-white sm:rounded-card"
+        {...dropHandlers}
+        className="relative flex max-h-[92vh] w-full max-w-5xl flex-col rounded-t-card bg-white sm:rounded-card"
       >
+        {dragging && <DropVeil label="Drop the picture to upload it" />}
         <div className="flex items-center gap-4 border-b border-gray-15 p-5">
           <label className="relative flex flex-1 items-center">
             <Search className="pointer-events-none absolute left-4 size-4 text-gray-80" aria-hidden="true" />
@@ -140,7 +154,7 @@ export function ImageDialog({
             ref={fileRef}
             type="file"
             className="sr-only"
-            accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml"
+            accept={PICTURES}
             onChange={(event) => {
               const file = event.target.files?.[0];
               if (file) void upload(file);

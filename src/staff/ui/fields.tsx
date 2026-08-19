@@ -1,5 +1,6 @@
 import type { Field } from "../fields";
 import { RichTextEditor } from "./editor";
+import { FileDrop } from "./file-drop";
 import { MediaPicker } from "./media-picker";
 
 /**
@@ -275,11 +276,12 @@ function Control({
       }
 
       return (
-        <input
-          {...shared}
-          type="file"
+        <FileDrop
+          id={shared.id}
+          name={shared.name}
+          required={shared.required}
+          describedBy={shared["aria-describedby"]}
           accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml,application/pdf"
-          className="w-full rounded-card border border-gray-15 bg-white p-3 text-[15px] text-gray file:mr-4 file:rounded-full file:border-0 file:bg-blue file:px-5 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-90"
         />
       );
     }
