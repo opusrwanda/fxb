@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import { db, sections } from "../db";
+import { db, pageHeaders, sections } from "../db";
 import { SECTIONS } from "@/cms/content/sections";
 import type { SectionItem } from "../db/schema";
 import { bust } from "@/cms/revalidate";
@@ -88,4 +88,60 @@ export async function saveSection(
 export async function resetSection(key: string): Promise<void> {
   await db.delete(sections).where(eq(sections.key, key));
   bust("sections");
+}
+
+/**
+ * The banner photograph behind a page's header.
+ *
+ * Its own table, because the row is keyed by route and read by every page on
+ * the site — but its own screen no longer, because a banner is not a thing
+ * somebody sets out to edit. They set out to edit a page's opening block, and
+ * the picture behind it is part of that block. So the writing lives beside the
+ * section writing and the panel shows them together; see `bannerPath` in
+ * `cms/content/sections.ts` for what joins a section to a route.
+ */
+export type BannerInput = {
+  /** A row in `media`, or null for no photograph. */
+  imageId: number | null;
+  /** Footage over the photograph, or null. Ignored by the site without a still. */
+  videoId: number | null;
+};
+
+/** Every banner that has been set, by route. */
+export async function getPageBanners(): Promise<Record<string, BannerInput>> {
+  const rows = await db
+    .select({
+      path: pageHeaders.path,
+      imageId: pageHeaders.imageId,
+      videoId: pageHeaders.videoId,
+    })
+    .from(pageHeaders);
+
+  return Object.fromEntries(
+    rows.map((row) => [row.path, { imageId: row.imageId, videoId: row.videoId }]),
+  );
+}
+
+/**
+ * Writing one route's banner.
+ *
+ * Clearing both pickers deletes the row rather than storing two nulls, for the
+ * same reason a section with nothing overridden is deleted: an empty row reads
+ * as "this page has its own banner" in a table where having a row is the whole
+ * override, and it would keep the page off the site-wide default forever.
+ */
+export async function savePageBanner(path: string, input: BannerInput): Promise<void> {
+  if (input.imageId === null && input.videoId === null) {
+    await db.delete(pageHeaders).where(eq(pageHeaders.path, path));
+  } else {
+    await db
+      .insert(pageHeaders)
+      .values({ path, ...input, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: pageHeaders.path,
+        set: { ...input, updatedAt: new Date() },
+      });
+  }
+
+  bust("pageHeaders");
 }

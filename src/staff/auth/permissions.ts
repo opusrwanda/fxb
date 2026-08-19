@@ -100,7 +100,6 @@ const AREAS: Record<string, Area> = {
 
   analytics: "analytics",
 
-  pageHeaders: "settings",
   sections: "settings",
   users: "settings",
   "site-settings": "settings",

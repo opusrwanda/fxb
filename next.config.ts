@@ -21,6 +21,24 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      /**
+       * Page banners stopped being a screen of their own.
+       *
+       * The photograph behind a page's title is part of that page's header, so
+       * it is set in the header's own form under Page sections rather than on a
+       * separate list of routes. Anybody with the old address bookmarked lands
+       * where the banners now are.
+       */
+      {
+        source: "/staff/page-banners",
+        destination: "/staff/sections",
+        permanent: false,
+      },
+      {
+        source: "/staff/page-banners/:id",
+        destination: "/staff/sections",
+        permanent: false,
+      },
       {
         // The section landing showed a three-item teaser under a tab bar whose
         // lit tab said "Latest News" — so arriving at News & Insights gave you

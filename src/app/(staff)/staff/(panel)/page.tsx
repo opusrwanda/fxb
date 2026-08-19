@@ -10,7 +10,6 @@ import {
   news,
   milestones,
   opportunities,
-  pageHeaders,
   partners,
   programmes,
   publications,
@@ -41,7 +40,6 @@ const TABLES = {
   board,
   partners,
   opportunities,
-  pageHeaders,
   milestones,
   media,
 } as const;
@@ -286,7 +284,7 @@ function deniedLabel(key: string): string {
   return (
     {
       users: "Staff accounts",
-      sections: "Section text",
+      sections: "Page sections",
       campaigns: "Email campaigns",
       subscribers: "Subscribers",
       messages: "Messages",

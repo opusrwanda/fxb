@@ -1,15 +1,20 @@
 import { redirect } from "next/navigation";
 import { ChevronRight, RotateCcw } from "lucide-react";
 
-import { getSectionsForPanel } from "@/cms/content/sections";
+import { bannerPath, getSectionsForPanel } from "@/cms/content/sections";
 import { requireAdmin } from "@/staff/auth/guard";
 import { getMediaOptions } from "@/staff/queries/document";
-import { resetSection, saveSection } from "@/staff/queries/sections";
-import { MediaPicker } from "@/staff/ui/media-picker";
+import {
+  getPageBanners,
+  resetSection,
+  savePageBanner,
+  saveSection,
+} from "@/staff/queries/sections";
+import { MediaPicker, type PickerOption } from "@/staff/ui/media-picker";
 import iconSet from "@/lib/icons.json";
 import type { SectionItem } from "@/staff/db/schema";
 
-export const metadata = { title: "Section text" };
+export const metadata = { title: "Page sections" };
 
 const input =
   "w-full rounded-card border border-gray-15 bg-white px-4 py-3 text-[15px] text-gray transition-colors duration-300 outline-none focus:border-blue";
@@ -37,6 +42,14 @@ const input =
  * `<details>`, so it works without JavaScript, survives a slow panel, and the
  * browser's own find-in-page can still reach inside a closed one.
  *
+ * THE BANNER PHOTOGRAPHS ARE HERE TOO.
+ *
+ * They had a screen of their own — Page banners, a list of routes — which meant
+ * that changing what a page opens with was two screens: the words on this one,
+ * the picture behind them on that one, joined by nothing a reader could see. A
+ * page header is one thing. So the banner sits in the header section's own
+ * form, keyed by the same route, and the separate screen is gone.
+ *
  * Each field shows the default underneath it, and leaving a field empty means
  * "use that". So there is no separate reset for a single field — clearing it is
  * the reset — and Reset on the section is the same gesture for all three at
@@ -54,14 +67,44 @@ export default async function SectionsPage({
   // to be able to do and not a reasonable thing to do by accident.
   await requireAdmin("sections");
 
-  const [all, mediaOptions] = await Promise.all([
+  const [sections, mediaOptions, banners] = await Promise.all([
     getSectionsForPanel(),
     getMediaOptions(),
+    getPageBanners(),
   ]);
 
   const images = mediaOptions.filter((option) =>
     option.mimeType.startsWith("image/"),
   );
+  const videos = mediaOptions.filter((option) =>
+    option.mimeType.startsWith("video/"),
+  );
+
+  /**
+   * Each section with the banner it owns, where it owns one.
+   *
+   * `bannerPath` is what says so — a page header is keyed by its route and so
+   * is its photograph, which is the whole of the join. Everything below reads
+   * this rather than the two lists, so a section and its picture cannot come
+   * apart.
+   */
+  const all = sections.map((section) => {
+    const path = bannerPath(section.key);
+    return {
+      ...section,
+      /**
+       * A page's opening block, as opposed to a band further down it.
+       *
+       * Its picture is the banner and nothing renders the band background, so
+       * a header is offered the banner pickers instead of that one — two
+       * photograph fields where only one of them shows up on the site is how
+       * somebody sets the wrong one and concludes the panel is broken.
+       */
+      isHeader: section.key.startsWith("header:"),
+      path,
+      banner: (path && banners[path]) || null,
+    };
+  });
 
   const pages = [...new Set(all.map((section) => section.page))];
 
@@ -110,6 +153,16 @@ export default async function SectionsPage({
       imageId: imageId === "" ? null : Number(imageId),
       items,
     });
+
+    /**
+     * And the banner, where this section is a page header.
+     *
+     * Derived from the key rather than read from a hidden field: the key is
+     * already checked against the registry by `saveSection`, so the route
+     * cannot be anything the site does not render. A posted path could be.
+     */
+    const path = bannerPath(key);
+    if (path) await savePageBanner(path, readBanner(formData));
     // The key, not a 1. It is what reopens the page this section is on and
     // scrolls back to the form somebody was just typing in — a panel that
     // collapses everything on save has thrown the reader back to the top of a
@@ -123,7 +176,30 @@ export default async function SectionsPage({
     await requireAdmin("sections");
     const key = String(formData.get("key") ?? "");
     await resetSection(key);
+
+    // The photograph is part of what "put it back" means here. Two nulls is a
+    // delete, which drops the page back onto the site-wide default.
+    const path = bannerPath(key);
+    if (path) await savePageBanner(path, { imageId: null, videoId: null });
+
     redirect(`/staff/sections?reset=${encodeURIComponent(key)}#${key}`);
+  }
+
+  /**
+   * The banner every page falls back to.
+   *
+   * Not a section — there is no page called "every other page" and no copy to
+   * go with it — so it is its own small form above the list rather than a
+   * thirteenth fold. Clearing both pickers and saving is how it is removed;
+   * there is no separate button, because the row existing is the whole
+   * override.
+   */
+  async function saveDefault(formData: FormData) {
+    "use server";
+
+    await requireAdmin("sections");
+    await savePageBanner("*", readBanner(formData));
+    redirect("/staff/sections?saved=*#default-banner");
   }
 
   return (
@@ -136,12 +212,12 @@ export default async function SectionsPage({
           </span>
         </div>
         <h1 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[38px] lg:leading-[1.1]">
-          Section text
+          Page sections
         </h1>
         <p className="max-w-[58ch] text-base leading-relaxed text-gray">
-          The headings and short introductions on the site&rsquo;s pages. Leave
-          a field empty to use the wording the site ships with — it is shown
-          under each one.
+          The headings, short introductions and banner photographs on the
+          site&rsquo;s pages. Leave a field empty to use the wording the site
+          ships with — it is shown under each one.
         </p>
       </header>
 
@@ -157,6 +233,37 @@ export default async function SectionsPage({
         </p>
       )}
 
+      <form
+        id="default-banner"
+        action={saveDefault}
+        className="mt-10 scroll-mt-8 rounded-card border border-gray-15 p-6"
+      >
+        <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
+          Default banner
+        </h2>
+        <p className="mt-2 max-w-[62ch] text-[13px] leading-relaxed text-gray-80">
+          The photograph behind the title of every page that has not been given
+          one of its own below. Set this once and the whole site has a banner;
+          override only the pages that deserve their own.
+        </p>
+
+        <div className="mt-5 flex flex-col gap-5">
+          <BannerFields
+            idPrefix="default"
+            banner={banners["*"] ?? null}
+            images={images}
+            videos={videos}
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="mt-5 inline-flex h-11 items-center rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
+        >
+          Save
+        </button>
+      </form>
+
       {pages.map((page) => {
         const onPage = all.filter((section) => section.page === page);
         const edited = onPage.filter(isEdited).length;
@@ -166,7 +273,7 @@ export default async function SectionsPage({
           key={page}
           // Open the page somebody has just saved on, closed otherwise.
           open={page === openPage}
-          className="group mt-5 rounded-card border border-gray-15 first-of-type:mt-10"
+          className="group mt-5 rounded-card border border-gray-15"
         >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition-colors duration-300 hover:bg-blue-08 [&::-webkit-details-marker]:hidden">
             <span className="flex items-center gap-3">
@@ -232,30 +339,44 @@ export default async function SectionsPage({
                       multiline
                     />
 
-                    {/* Offered on every section, including the ones that are
+                    {/* Offered on every band, including the ones that are
                         plain white today. Leaving it empty is what keeps a
                         section looking exactly as it does now, so this can be
                         added where there was never a photograph without
                         anything changing until somebody chooses one. */}
-                    <div className="flex flex-col gap-2">
-                      <label
-                        htmlFor={`${section.key}-image`}
-                        className="text-sm font-semibold text-blue"
-                      >
-                        Background photograph
-                      </label>
-                      <p className="text-[13px] leading-relaxed text-gray-80">
-                        Optional. Leave it empty and the section keeps the
-                        background it has now.
-                      </p>
-                      <MediaPicker
-                        id={`${section.key}-image`}
-                        name="imageId"
-                        value={section.edited.imageId ?? null}
-                        kind="image"
-                        options={images}
+                    {!section.isHeader && (
+                      <div className="flex flex-col gap-2">
+                        <label
+                          htmlFor={`${section.key}-image`}
+                          className="text-sm font-semibold text-blue"
+                        >
+                          Background photograph
+                        </label>
+                        <p className="text-[13px] leading-relaxed text-gray-80">
+                          Optional. Leave it empty and the section keeps the
+                          background it has now.
+                        </p>
+                        <MediaPicker
+                          id={`${section.key}-image`}
+                          name="imageId"
+                          value={section.edited.imageId ?? null}
+                          kind="image"
+                          options={images}
+                        />
+                      </div>
+                    )}
+
+                    {/* Only on a page header, and only where the route has a
+                        banner to set — the home page's hero carries the site's
+                        footage instead, so it gets no pickers. */}
+                    {section.path && (
+                      <BannerFields
+                        idPrefix={section.key}
+                        banner={section.banner}
+                        images={images}
+                        videos={videos}
                       />
-                    </div>
+                    )}
                   </div>
 
                   {section.itemsShipped && (
@@ -302,6 +423,86 @@ export default async function SectionsPage({
       ))}
     </div>
   );
+}
+
+/**
+ * The banner behind a page's title: the photograph, and the footage over it.
+ *
+ * The same two controls whether it is one page's own banner or the site-wide
+ * default, because they are the same choice — which is the point of them
+ * living here rather than on a screen of their own.
+ */
+function BannerFields({
+  idPrefix,
+  banner,
+  images,
+  videos,
+}: {
+  idPrefix: string;
+  banner: { imageId: number | null; videoId: number | null } | null;
+  images: PickerOption[];
+  videos: PickerOption[];
+}) {
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor={`${idPrefix}-banner-image`}
+          className="text-sm font-semibold text-blue"
+        >
+          Banner photograph
+        </label>
+        <p className="text-[13px] leading-relaxed text-gray-80">
+          Landscape, and busy at the edges rather than the middle — the title
+          sits over the left of it. A dark scrim is laid over the whole picture
+          so white type stays legible, so a bright photograph is fine.
+        </p>
+        <MediaPicker
+          id={`${idPrefix}-banner-image`}
+          name="bannerImageId"
+          value={banner?.imageId ?? null}
+          kind="image"
+          options={images}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor={`${idPrefix}-banner-video`}
+          className="text-sm font-semibold text-blue"
+        >
+          Banner video
+        </label>
+        <p className="text-[13px] leading-relaxed text-gray-80">
+          Optional. An MP4 or WebM loop, silent, up to 60MB — a short one at
+          1080p is about 10MB. The photograph above stays and becomes the still
+          behind it: it is what paints first, and what somebody on a slow
+          connection or with reduced motion set sees instead of the footage. A
+          video with no photograph is not used.
+        </p>
+        <MediaPicker
+          id={`${idPrefix}-banner-video`}
+          name="bannerVideoId"
+          value={banner?.videoId ?? null}
+          kind="video"
+          options={videos}
+        />
+      </div>
+    </>
+  );
+}
+
+/** The two pickers, read back off the form. */
+function readBanner(formData: FormData): {
+  imageId: number | null;
+  videoId: number | null;
+} {
+  const id = (name: string) => {
+    const raw = String(formData.get(name) ?? "").trim();
+    return raw === "" ? null : Number(raw);
+  };
+
+  return { imageId: id("bannerImageId"), videoId: id("bannerVideoId") };
 }
 
 function Field({
@@ -511,7 +712,7 @@ function readPoints(raw: string): { title: string; body?: string }[] | undefined
 /**
  * Has anybody changed this band?
  *
- * Any one of the five overrides counts. The panel says so twice — as a badge
+ * Any one of the overrides counts, the banner included. The panel says so twice — as a badge
  * on the band and as a count on the closed page — and asking the question in
  * one place is what keeps the two answers the same.
  */
@@ -523,7 +724,9 @@ function isEdited(section: {
     imageId?: number | null;
     items?: SectionItem[] | null;
   };
+  /** The banner row, on a page header. Having one at all is the override. */
+  banner?: { imageId: number | null; videoId: number | null } | null;
 }): boolean {
   const { eyebrow, heading, body, imageId, items } = section.edited;
-  return Boolean(eyebrow || heading || body || imageId || items);
+  return Boolean(eyebrow || heading || body || imageId || items || section.banner);
 }

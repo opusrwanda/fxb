@@ -6,7 +6,6 @@ import {
   db,
   media,
   milestones,
-  pageHeaders,
   news,
   opportunities,
   partners,
@@ -86,30 +85,6 @@ const listings: Record<string, () => Promise<Listing>> = {
           { kind: "title" as const, value: row.year },
           { kind: "muted" as const, value: row.body.slice(0, 70) + (row.body.length > 70 ? "…" : "") },
           { kind: "muted" as const, value: row.filename ?? "Year panel" },
-        ],
-      })),
-    };
-  },
-
-  async pageHeaders() {
-    const rows = await db
-      .select({ id: pageHeaders.id, path: pageHeaders.path, filename: media.filename })
-      .from(pageHeaders)
-      .leftJoin(media, eq(pageHeaders.imageId, media.id))
-      .orderBy(pageHeaders.path);
-    return {
-      columns: ["Page", "Photograph"],
-      rows: rows.map((row) => ({
-        id: row.id,
-        cells: [
-          {
-            kind: "title" as const,
-            value: row.path === "*" ? "Default — every other page" : row.path,
-          },
-          {
-            kind: "muted" as const,
-            value: row.filename ?? "No image set",
-          },
         ],
       })),
     };

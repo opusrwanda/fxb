@@ -435,52 +435,6 @@ export const fields: Record<string, Field[]> = {
     },
   ],
 
-  pageHeaders: [
-    {
-      name: "path",
-      label: "Page",
-      type: "select",
-      required: true,
-      help: "Every page uses the default unless it has its own banner here.",
-      // A list rather than a text box. The value is matched against the URL at
-      // render time, so a typo would not error — it would simply never appear,
-      // which is the worst kind of broken to debug from the outside.
-      options: [
-        { label: "Default — every page without its own", value: "*" },
-        { label: "Who We Are", value: "/who-we-are" },
-        { label: "What We Do", value: "/what-we-do" },
-        { label: "Our Impact", value: "/our-impact" },
-        { label: "Get Involved", value: "/get-involved" },
-        { label: "Contact", value: "/contact" },
-        { label: "Partner With Us", value: "/get-involved/partners" },
-        { label: "Careers", value: "/get-involved/careers" },
-        { label: "Procurement", value: "/get-involved/procurement" },
-        { label: "Donate", value: "/get-involved/donate" },
-        { label: "Latest News", value: "/news-insights/news" },
-        { label: "Impact Stories", value: "/our-impact/stories" },
-        { label: "Publications", value: "/news-insights/publications" },
-        { label: "Newsletters", value: "/news-insights/newsletters" },
-        { label: "Current Projects", value: "/what-we-do/current-projects" },
-        { label: "Phased-out Projects", value: "/what-we-do/phased-out-projects" },
-        { label: "Media Gallery", value: "/news-insights/media-gallery" },
-      ],
-    },
-    {
-      name: "imageId",
-      label: "Background photograph",
-      type: "upload",
-      accept: "image",
-      help: "Landscape, and busy at the edges rather than the middle — the title sits over the left of it. A dark scrim is laid over the whole picture so white type stays legible, so a bright photograph is fine.",
-    },
-    {
-      name: "videoId",
-      label: "Background video",
-      type: "upload",
-      accept: "video",
-      help: "Optional. An MP4 or WebM loop, silent, up to 60MB — a short one at 1080p is about 10MB. The photograph above stays and becomes the still behind it: it is what paints first, and what somebody on a slow connection or with reduced motion set sees instead of the footage. A video with no photograph is not used.",
-    },
-  ],
-
   board: [
     { name: "name", label: "Name", type: "text", required: true, help: 'As it should appear, including any honorific — e.g. "Fr. Pierre Celestin NGOBOKA (PhD)".' },
     { name: "role", label: "Role", type: "text", required: true, help: "e.g. Chairperson." },

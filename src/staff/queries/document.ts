@@ -11,7 +11,6 @@ import {
   milestones,
   news,
   opportunities,
-  pageHeaders,
   partners,
   programmes,
   publications,
@@ -47,7 +46,6 @@ const TABLES = {
   board,
   partners,
   opportunities,
-  pageHeaders,
   milestones,
   media,
 } as const;

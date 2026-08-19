@@ -39,7 +39,6 @@ export type CollectionKey =
   | "programmes"
   | "areas"
   | "publications"
-  | "pageHeaders"
   | "milestones"
   | "board"
   | "partners"
@@ -144,16 +143,6 @@ export const collections: Entry[] = [
     group: "People",
   },
   {
-    key: "pageHeaders",
-    slug: "page-banners",
-    label: "Page banners",
-    singular: "page banner",
-    description:
-      "The photograph behind a page's title. Set the default once; override a page only if it deserves its own.",
-    icon: ImageIcon,
-    group: "Settings",
-  },
-  {
     key: "media",
     slug: "media",
     label: "Media",
@@ -253,9 +242,10 @@ export const registers: Entry[] = [
   {
     key: "sections",
     slug: "sections",
-    label: "Section text",
+    label: "Page sections",
     singular: "section",
-    description: "The headings and introductions on the site's pages.",
+    description:
+      "The headings, introductions and banner photographs on the site's pages.",
     icon: Type,
     group: "Settings",
   },

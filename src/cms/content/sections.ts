@@ -78,6 +78,25 @@ export type SectionDefinition = SectionCopy & {
  */
 export const headerKey = (path: string) => `header:${path}`;
 
+/**
+ * The route whose banner photograph a header section owns, or null.
+ *
+ * The banners live in `page_headers` keyed by route, and every page header on
+ * the site is a section keyed by the same route — so the two are one row of the
+ * panel rather than two pages that have to be kept in step. That is what let
+ * the separate Page banners screen go: a banner is part of the page header, and
+ * the page header is edited here.
+ *
+ * The home page is the exception. Its hero carries the site's own footage
+ * rather than a page banner, so there is nothing to choose for it — and
+ * offering a picker that changes nothing is worse than offering none.
+ */
+export function bannerPath(key: string): string | null {
+  if (!key.startsWith("header:")) return null;
+  const path = key.slice("header:".length);
+  return path === "/" ? null : path;
+}
+
 export const SECTIONS: Record<string, SectionDefinition> = {
   /* ── Home ───────────────────────────────────────────────────────────────── */
 
@@ -201,6 +220,30 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Media Gallery header",
     eyebrow: "MEDIA GALLERY",
     heading: "The work, as photographed",
+  },
+
+  /**
+   * The two project listings.
+   *
+   * Registered without a `body`, because theirs is counted rather than written
+   * — "22 projects across 14 districts" is read off the programmes table on
+   * every request, and a default here would freeze that sentence at whatever
+   * the numbers were the day it was typed. The registry has no entry, so
+   * `getSection` falls through to what the page passes; typing one in the panel
+   * still wins, for anybody who would rather have a fixed sentence.
+   */
+  "header:/what-we-do/current-projects": {
+    page: "What We Do",
+    label: "Current Projects header",
+    eyebrow: "CURRENT PROJECTS",
+    heading: "What we are running today",
+  },
+  "header:/what-we-do/phased-out-projects": {
+    page: "What We Do",
+    label: "Phased-out Projects header",
+    eyebrow: "PHASED-OUT PROJECTS",
+    heading: "Work that has run its course",
+    body: "A project ending is the point of the model. Families exit when they no longer need us — with income, savings, school fees paid and health cover in place.",
   },
 
   /* ── Who We Are ─────────────────────────────────────────────────────────── */
