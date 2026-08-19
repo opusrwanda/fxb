@@ -391,7 +391,19 @@ export const areas = pgTable("areas", {
   title: text("title").notNull(),
   /** The anchor on What We Do. Derived from the name, then left alone. */
   slug: varchar("slug", { length: 200 }).notNull().unique(),
-  /** The single line under the name, on the card and the home page pillar. */
+  /**
+   * RETIRED, and kept rather than dropped.
+   *
+   * The one-line caption and the bulleted focus list were what an area had
+   * before it had a page: a card with a sentence and five bullets on it, and
+   * a hover caption under the home page pillar. With an Opening and a page of
+   * its own, the card says the name and the opening and nothing else, and the
+   * bullets belong inside the writing where they can be explained.
+   *
+   * Nothing reads either column. They stay declared so the words already in
+   * them are not thrown away by a generated DROP COLUMN — the text is somebody
+   * else's to reuse in the page content, not this migration's to delete.
+   */
   blurb: text("blurb"),
   /**
    * The paragraph the area's own page opens on.
@@ -405,7 +417,7 @@ export const areas = pgTable("areas", {
   body: jsonb("body").$type<RichText>(),
   /** core | other */
   category: varchar("category", { length: 20 }).notNull().default("core"),
-  /** The bulleted focus areas on the card. */
+  /** Retired with `blurb` above, and kept for the same reason. */
   focus: jsonb("focus").$type<string[]>().notNull().default([]),
   /** An id from the brand icon set, or null where the card carries none. */
   icon: varchar("icon", { length: 80 }),

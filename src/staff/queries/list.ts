@@ -160,14 +160,13 @@ const listings: Record<string, () => Promise<Listing>> = {
         id: areas.id,
         title: areas.title,
         category: areas.category,
-        focus: areas.focus,
         order: areas.order,
       })
       .from(areas)
       .orderBy(asc(areas.category), asc(areas.order));
 
     return {
-      columns: ["Name", "Category", "Focus areas", "Order"],
+      columns: ["Name", "Category", "Order"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
@@ -175,13 +174,6 @@ const listings: Record<string, () => Promise<Listing>> = {
           {
             kind: "pill" as const,
             value: row.category === "core" ? "Core" : "Other",
-          },
-          {
-            kind: "muted" as const,
-            value:
-              row.focus.length === 0
-                ? "—"
-                : `${row.focus.length} listed`,
           },
           { kind: "muted" as const, value: String(row.order) },
         ],

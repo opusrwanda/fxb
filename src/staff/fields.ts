@@ -346,31 +346,17 @@ export const fields: Record<string, Field[]> = {
       help: 'What the area is called — e.g. "Health". It heads the card here and the photographic pillar on the home page.',
     },
     {
-      name: "blurb",
-      label: "One line",
-      type: "textarea",
-      rows: 2,
-      help: "The sentence under the name, in about a dozen words — what the area covers. Shown on the card and under the pillar on the home page.",
-    },
-    {
       name: "intro",
       label: "Opening",
       type: "textarea",
       rows: 3,
-      help: "The paragraph the area's own page opens on, under the title. A sentence or two — longer than the line above, which has a card to fit on. Without one the page opens straight into the content below.",
+      help: "The sentence or two under the name — on the card in the Areas of Intervention band, and again at the top of the area's own page. Everything longer belongs in the content below.",
     },
     {
       name: "body",
       label: "Page content",
       type: "richtext",
       help: "The full account of this area — what it covers, how FXB works on it, what it has changed. This is the area's own page; an area with nothing written here says so plainly rather than showing an empty one.",
-    },
-    {
-      name: "focus",
-      label: "Focus areas",
-      type: "list",
-      rows: 5,
-      help: "One per line, in FXB's own words. They become the bulleted list on the card. An area with none renders shorter rather than with something invented for it.",
     },
     {
       name: "imageId",

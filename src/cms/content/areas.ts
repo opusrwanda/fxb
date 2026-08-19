@@ -36,7 +36,6 @@ export type InterventionArea = {
   /** The anchor on What We Do, and what the home page's cards link to. */
   slug: string;
   label: string;
-  blurb: string;
   /**
    * The area's own page.
    *
@@ -45,11 +44,10 @@ export type InterventionArea = {
    * said the same dozen words the pillar had. Every area has a page now.
    */
   href: string;
-  /** The paragraph the page opens on, where one has been written. */
+  /** The sentence or two under the name, on the card and on the page. */
   intro?: string;
   /** The account of the area. Null where nobody has written one yet. */
   body: RichText | null;
-  focus: string[];
   /**
    * The drawing to paint in the ring, from wherever it came.
    *
@@ -86,11 +84,9 @@ export const getAreas = cached(
     return rows.map(({ area, chosen, icon }) => ({
       slug: area.slug,
       label: area.title,
-      blurb: area.blurb ?? "",
       href: `/what-we-do/areas/${area.slug}`,
       intro: area.intro ?? undefined,
       body: area.body,
-      focus: area.focus,
       // An uploaded file wins. Otherwise the set — and not cast blindly, since
       // an icon can be withdrawn from it after somebody has chosen it, and an
       // area whose icon no longer exists renders without one.

@@ -6,7 +6,6 @@ import { isEmpty } from "@/cms/content/richtext";
 import { getSiteDetails } from "@/cms/content/settings";
 import { ArticleOpening } from "@/components/layout/article-opening";
 import { Container } from "@/components/layout/container";
-import { MaskIcon } from "@/components/brand/icon";
 import { Prose } from "@/components/layout/prose";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Reveal } from "@/components/ui/reveal";
@@ -21,10 +20,14 @@ import { Reveal } from "@/components/ui/reveal";
  * that said the same sentence the pillar had just said.
  *
  * So each area gets what a programme already had: a title, an opening, its
- * photograph and an account of the work, with the focus list beside it in a
- * rail rather than buried inside the prose. Every one of those is absent when
- * its field is empty, and an area nobody has written up yet says so plainly
- * rather than padding itself out on FXB's behalf.
+ * photograph and an account of the work. Every one of those is absent when its
+ * field is empty, and an area nobody has written up yet says so plainly rather
+ * than padding itself out on FXB's behalf.
+ *
+ * One column, no rail. There was one, holding the bulleted focus areas — the
+ * list that used to be printed on the card. It is gone with the field: what an
+ * area covers is a thing to explain in the writing, where it can be explained,
+ * rather than five fragments in a box beside it.
  *
  * It opens the way an article opens — trail, kicker, name, its own photograph —
  * which is why the route is in `WHITE_GROUND` and the header is solid from
@@ -48,9 +51,7 @@ export async function generateMetadata({
   return {
     title: area.label,
     description:
-      area.intro ??
-      area.blurb ??
-      `${area.label} — one of FXB Rwanda's areas of intervention.`,
+      area.intro ?? `${area.label} — one of FXB Rwanda's areas of intervention.`,
   };
 }
 
@@ -79,7 +80,6 @@ export default async function AreaPage({
             ]}
             eyebrow="AREA OF INTERVENTION"
             title={area.label}
-            meta={area.blurb || undefined}
             image={area.image}
             // The opening runs the full container here, as the programme pages
             // do, rather than the article's 52rem column.
@@ -87,82 +87,35 @@ export default async function AreaPage({
           />
         </div>
 
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-16">
-          <Reveal className="lg:col-span-7">
-            {written ? (
-              <div className="flex flex-col gap-10">
-                {area.intro && (
-                  <p className="text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
-                    {area.intro}
-                  </p>
-                )}
+        <Reveal className="max-w-[68ch]">
+          {written ? (
+            <div className="flex flex-col gap-10">
+              {area.intro && (
+                <p className="text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
+                  {area.intro}
+                </p>
+              )}
 
-                {!isEmpty(area.body) && <Prose data={area.body} />}
-              </div>
-            ) : (
-              // The honest version, and the same panel Careers, Publications
-              // and the programme pages use — so "being prepared" reads the
-              // same way everywhere rather than as a broken page.
-              <EmptyState
-                title="A fuller account is on its way"
-                body={`We are preparing a full description of our work on ${area.label.toLowerCase()} — what it covers, how it is delivered and what it has changed. In the meantime what it focuses on is listed here, and the team can tell you more directly.`}
-                actions={[
-                  {
-                    label: "Ask about this area",
-                    href: `mailto:${details.email}?subject=${encodeURIComponent(area.label)}`,
-                    primary: true,
-                  },
-                  { label: "All areas", href: "/what-we-do#areas" },
-                ]}
-              />
-            )}
-          </Reveal>
-
-          {/* What the area focuses on, held beside the account of it rather
-              than inside it.
-
-              This is the list a reader refers back to — the interventions that
-              make up the area — and it is the one thing every area has, written
-              or not. `self-start` is what lets it stick: a grid item stretches
-              to the row height by default, so it would already be as tall as
-              the column beside it and have nowhere to travel. */}
-          {area.focus.length > 0 && (
-            <div className="lg:sticky lg:top-28 lg:col-span-4 lg:col-start-9 lg:self-start">
-              <Reveal delay={140}>
-                <div className="wedge bg-blue-08 p-8">
-                  <div className="flex items-center gap-4">
-                    {area.icon && (
-                      <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-blue/10">
-                        <MaskIcon
-                          src={area.icon.src}
-                          className="size-8 text-blue"
-                        />
-                      </span>
-                    )}
-                    <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
-                      WHAT IT COVERS
-                    </h2>
-                  </div>
-
-                  <ul className="mt-6 flex flex-col gap-4">
-                    {area.focus.map((item) => (
-                      <li
-                        key={item}
-                        className="flex gap-3 text-base leading-relaxed text-blue"
-                      >
-                        <span
-                          className="mt-2.5 size-1.5 shrink-0 rounded-full bg-green"
-                          aria-hidden="true"
-                        />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
+              {!isEmpty(area.body) && <Prose data={area.body} />}
             </div>
+          ) : (
+            // The honest version, and the same panel Careers, Publications and
+            // the programme pages use — so "being prepared" reads the same way
+            // everywhere rather than as a broken page.
+            <EmptyState
+              title="A fuller account is on its way"
+              body={`We are preparing a full description of our work on ${area.label.toLowerCase()} — what it covers, how it is delivered and what it has changed. In the meantime the team can tell you more directly.`}
+              actions={[
+                {
+                  label: "Ask about this area",
+                  href: `mailto:${details.email}?subject=${encodeURIComponent(area.label)}`,
+                  primary: true,
+                },
+                { label: "All areas", href: "/what-we-do#areas" },
+              ]}
+            />
           )}
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

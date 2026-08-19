@@ -85,19 +85,14 @@ export async function WhatWeDo() {
                   <ArrowUpRight className="size-4 text-white" aria-hidden="true" />
                 </span>
 
+                {/* The name, and the photograph under it. The caption that
+                    unfolded on hover is gone with the one-line field it read
+                    — an area says what it is on its own page now, and a
+                    sentence that only appears under a pointer was never going
+                    to be where somebody read it. */}
                 <span className="relative flex flex-col gap-3 p-7">
                   <span className="text-xl leading-[1.2] font-semibold tracking-[-0.02em] text-white lg:text-[22px]">
                     {area.label}
-                  </span>
-
-                  {/* Held at zero height until hover, so the resting card is
-                      just photograph and title. */}
-                  <span className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-700 ease-(--ease-standard) group-hover:grid-rows-[1fr]">
-                    <span className="overflow-hidden">
-                      <span className="block pt-1 text-sm leading-snug text-white-94">
-                        {area.blurb}
-                      </span>
-                    </span>
                   </span>
                 </span>
               </Link>

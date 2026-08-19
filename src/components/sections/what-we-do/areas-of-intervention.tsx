@@ -178,26 +178,17 @@ function AreaCards({
                 </h4>
               </div>
 
-              {area.blurb && (
-                <p className="text-base leading-relaxed text-white-94 lg:text-[17px]">
-                  {area.blurb}
-                </p>
-              )}
+              {/* The opening, and nothing else in words.
 
-              {area.focus.length > 0 && (
-                <ul className="flex flex-col gap-3 border-t border-white-12 pt-6">
-                  {area.focus.map((item) => (
-                    <li key={item} className="flex gap-3.5">
-                      <span
-                        className="mt-2 size-1.5 shrink-0 rounded-full bg-white/60"
-                        aria-hidden="true"
-                      />
-                      <span className="text-[15px] leading-snug text-white-94">
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                  The card used to carry the one-line caption and then five
+                  bullets under a rule — an area's whole content, printed on a
+                  tile, which is what made the cards uneven and left nothing to
+                  click through for. The area has a page now, so the card does
+                  what a card does: says what this is and shows the picture. */}
+              {area.intro && (
+                <p className="text-base leading-relaxed text-white-94 lg:text-[17px]">
+                  {area.intro}
+                </p>
               )}
 
               {/* The photograph, in a panel of its own at the foot of the card.
