@@ -29,6 +29,42 @@ export type IconId = (typeof icons)[number]["id"];
 
 const byId = new Map(icons.map((icon) => [icon.id, icon]));
 
+/**
+ * The drawing, painted in the colour it inherits.
+ *
+ * Split out of `BrandIcon` so an icon uploaded in the panel gets exactly the
+ * treatment a shipped one does. An area's icon sits white inside a translucent
+ * ring on a solid colour card, and rendering an upload as a plain `<img>` would
+ * put whatever colour the file happens to be into that ring — a black icon on
+ * a blue card, or an invisible white one on white. Masking takes the shape and
+ * leaves the colour to the card, so what somebody uploads cannot be the wrong
+ * colour for where it lands.
+ *
+ * Which is also the one rule for the file: a PNG or SVG with a transparent
+ * background. Its own colours are discarded.
+ */
+export function MaskIcon({
+  src,
+  className = "size-12",
+  label,
+}: {
+  src: string;
+  className?: string;
+  label?: string;
+}) {
+  const mask = `url(${src}) center / contain no-repeat`;
+
+  return (
+    <span
+      role={label ? "img" : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+      className={`block shrink-0 bg-current ${className}`}
+      style={{ mask, WebkitMask: mask }}
+    />
+  );
+}
+
 export function BrandIcon({
   id,
   className = "size-12",
@@ -46,15 +82,5 @@ export function BrandIcon({
   // failing the build over, not a silently empty box on a live page.
   if (!icon) throw new Error(`Unknown brand icon: ${id}`);
 
-  const mask = `url(${icon.src}) center / contain no-repeat`;
-
-  return (
-    <span
-      role={label ? "img" : undefined}
-      aria-label={label}
-      aria-hidden={label ? undefined : true}
-      className={`block shrink-0 bg-current ${className}`}
-      style={{ mask, WebkitMask: mask }}
-    />
-  );
+  return <MaskIcon src={icon.src} className={className} label={label} />;
 }

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { BrandIcon } from "@/components/brand/icon";
+import { MaskIcon } from "@/components/brand/icon";
 import { Container } from "@/components/layout/container";
 import { SectionBand } from "@/components/layout/section-band";
 import { getSection } from "@/cms/content/sections";
@@ -156,7 +156,7 @@ function AreaCards({
                     a solid ground wants. */}
                 {area.icon && (
                   <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-white/12">
-                    <BrandIcon id={area.icon} className="size-12 text-white" />
+                    <MaskIcon src={area.icon.src} className="size-12 text-white" />
                   </span>
                 )}
                 <h4 className="text-[26px] leading-tight font-bold tracking-[-0.02em] lg:text-[30px]">

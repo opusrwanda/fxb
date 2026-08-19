@@ -367,10 +367,17 @@ export const fields: Record<string, Field[]> = {
       help: "Landscape. It sits at the foot of the card and behind the pillar on the home page, so choose one that reads at both sizes. Without one the card simply ends after its list.",
     },
     {
+      name: "iconId",
+      label: "Icon file",
+      type: "upload",
+      accept: "image",
+      help: "A PNG or SVG on a transparent background, for an area the brand set has no drawing for. Only the shape is used — it is painted white inside the ring on the card, so the colours in the file do not matter. Uploading one overrides the choice below.",
+    },
+    {
       name: "icon",
-      label: "Icon",
+      label: "Icon from the brand set",
       type: "select",
-      help: "From the Brand Guiding Tool's set, shown in the ring beside the name. Leave empty for no icon.",
+      help: "From the Brand Guiding Tool's set, shown in the ring beside the name. Leave empty for no icon, or upload one above where the set has nothing that fits.",
       options: iconOptions,
     },
     {

@@ -399,6 +399,15 @@ export const areas = pgTable("areas", {
   focus: jsonb("focus").$type<string[]>().notNull().default([]),
   /** An id from the brand icon set, or null where the card carries none. */
   icon: varchar("icon", { length: 80 }),
+  /**
+   * An icon uploaded in the panel, which wins over the set above.
+   *
+   * The brand set is fixed at build time and an area added in the panel may
+   * simply not have a drawing in it — so the choice was a list that could not
+   * grow. Both columns stand: the set is still the quickest right answer for
+   * the areas it covers, and a file is the answer for the ones it does not.
+   */
+  iconId: integer("icon_id").references(() => media.id, { onDelete: "set null" }),
   imageId: integer("image_id").references(() => media.id, { onDelete: "set null" }),
   order: integer("order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

@@ -1,7 +1,8 @@
 import { asc, eq } from "drizzle-orm";
 
+import { alias } from "drizzle-orm/pg-core";
+
 import { areas, db, media } from "@/staff/db";
-import type { IconId } from "@/components/brand/icon";
 import iconSet from "@/lib/icons.json";
 import { areas as seeded } from "@/lib/areas";
 import { photo } from "@/lib/photos";
@@ -37,8 +38,15 @@ export type InterventionArea = {
   blurb: string;
   href: string;
   focus: string[];
-  /** Null where the area has no icon, or where its icon has been withdrawn. */
-  icon: IconId | null;
+  /**
+   * The drawing to paint in the ring, from wherever it came.
+   *
+   * A url rather than an id from the set, because an area may now carry an
+   * uploaded file instead — and the card should not have to know which. Null
+   * where the area has no icon, or where the one it had has been withdrawn
+   * from the set.
+   */
+  icon: { src: string } | null;
   image: Img | null;
   category: AreaCategory;
 };
@@ -49,26 +57,30 @@ export type InterventionArea = {
  * The category is sorted on rather than filtered here so both readers below
  * get the same sequence and neither has to know how the other orders things.
  */
+/** The icon file joins `media` a second time, so it needs a name of its own. */
+const iconFile = alias(media, "area_icon");
+
 export const getAreas = cached(
   "areas",
   "areas",
   async (): Promise<InterventionArea[]> => {
     const rows = await db
-      .select({ area: areas, chosen: media })
+      .select({ area: areas, chosen: media, icon: iconFile })
       .from(areas)
       .leftJoin(media, eq(areas.imageId, media.id))
+      .leftJoin(iconFile, eq(areas.iconId, iconFile.id))
       .orderBy(asc(areas.category), asc(areas.order), asc(areas.id));
 
-    return rows.map(({ area, chosen }) => ({
+    return rows.map(({ area, chosen, icon }) => ({
       slug: area.slug,
       label: area.title,
       blurb: area.blurb ?? "",
       href: `/what-we-do#${area.slug}`,
       focus: area.focus,
-      // Not cast blindly: `BrandIcon` throws on an id it does not know, and an
-      // icon can be withdrawn from the set after somebody has chosen it. An
+      // An uploaded file wins. Otherwise the set — and not cast blindly, since
+      // an icon can be withdrawn from it after somebody has chosen it, and an
       // area whose icon no longer exists renders without one.
-      icon: isIconId(area.icon) ? area.icon : null,
+      icon: icon?.url ? { src: icon.url } : shipped(area.icon),
       image: image(chosen) ?? illustration(area.slug),
       category: area.category === "other" ? "other" : "core",
     }));
@@ -84,10 +96,13 @@ export async function getAreasIn(
 /** Everything the home page shows. The other areas are on What We Do only. */
 export const getCoreAreas = () => getAreasIn("core");
 
-const ICON_IDS = new Set((iconSet as { id: string }[]).map((icon) => icon.id));
+const SHIPPED = new Map(
+  (iconSet as { id: string; src: string }[]).map((icon) => [icon.id, icon.src]),
+);
 
-function isIconId(id: string | null): id is IconId {
-  return !!id && ICON_IDS.has(id);
+function shipped(id: string | null): { src: string } | null {
+  const src = id ? SHIPPED.get(id) : undefined;
+  return src ? { src } : null;
 }
 
 /**
