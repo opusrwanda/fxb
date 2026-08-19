@@ -167,11 +167,10 @@ export default async function DonatePage() {
           </Reveal>
         </Container>
       </section>
-      {photos["fxbvillage-mageragere-02.jpg"] && (
-        <PhotoBand image={photos["fxbvillage-mageragere-02.jpg"]}>
-          Three years of support, and a household that no longer needs it.
-        </PhotoBand>
-      )}
+      <PhotoBand
+        sectionKey="photo:/get-involved/donate"
+        image={photos["fxbvillage-mageragere-02.jpg"]}
+      />
 
     </>
   );

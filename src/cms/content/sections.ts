@@ -81,14 +81,18 @@ export type SectionDefinition = SectionCopy & {
    */
   computed?: ("eyebrow" | "heading" | "body")[];
   /**
-   * A list and nothing else — no eyebrow, no heading, no sentence under it.
+   * Which of the three copy fields this band actually draws.
    *
-   * The sectors run as a bare row inside Our Approach, under that section's
-   * heading rather than one of their own. Without this the panel would offer
-   * three copy fields and a photograph for a band that renders none of them,
-   * which is the same lie as a picker that changes nothing.
+   * All three by default. Named where a band draws fewer, because a field the
+   * panel offers and the site ignores is the same lie as a picker that changes
+   * nothing — somebody types a heading, saves, and the page does not move.
+   *
+   * An empty list means the band has no copy of its own at all: the sectors run
+   * as a bare row inside Our Approach, under that section's heading. A
+   * photograph band names only `heading`, which is its one line over the
+   * picture.
    */
-  itemsOnly?: true;
+  offers?: ("eyebrow" | "heading" | "body")[];
   /**
    * The introduction is more than one paragraph.
    *
@@ -435,7 +439,7 @@ This holistic approach not only improves immediate living conditions but also en
   "what-we-do:sectors": {
     page: "What We Do",
     label: "Sectors list (under Our Approach)",
-    itemsOnly: true,
+    offers: [],
     items: SECTORS.map((sector) => ({ title: sector })),
   },
 
@@ -490,6 +494,68 @@ Through strong partnerships, we combine resources, expertise, innovation and loc
     heading: "None of this was done alone",
     body: "Government institutions, donors and fellow organisations who fund the work, shape it, and deliver it alongside us.",
   },
+  /* ── Photograph bands ───────────────────────────────────────────────────
+   *
+   * The full-bleed pictures with one line over them, spaced through the pages
+   * that are otherwise unbroken argument. Both the line and the photograph were
+   * written into the page files, so a band nobody could see the point of any
+   * more needed a developer to reword — which is the whole reason this registry
+   * exists.
+   *
+   * `heading` only. There is no eyebrow and no paragraph on one of these: it is
+   * a breath between sections, not a section, and the line is short by
+   * construction. The picture is the section image picker, and the shipped
+   * photograph stands until somebody chooses another.
+   */
+  "photo:/what-we-do/challenge": {
+    page: "What We Do",
+    label: "Photograph band — after The Challenge",
+    offers: ["heading"],
+    heading: "Poverty arrives in every part of a life at once.",
+  },
+  "photo:/what-we-do/journey": {
+    page: "What We Do",
+    label: "Photograph band — before the Journey",
+    offers: ["heading"],
+    heading: "Three years, and a household that no longer needs us.",
+  },
+  "photo:/what-we-do/pillars": {
+    page: "What We Do",
+    label: "Photograph band — before the Pillars",
+    offers: ["heading"],
+    heading: "A business of one's own is what the last year is for.",
+  },
+  "photo:/get-involved": {
+    page: "Get Involved",
+    label: "Photograph band",
+    offers: ["heading"],
+    heading: "There is more than one way to be part of this.",
+  },
+  "photo:/get-involved/careers": {
+    page: "Get Involved",
+    label: "Careers photograph band",
+    offers: ["heading"],
+    heading: "The work is done by people who live where it happens.",
+  },
+  "photo:/get-involved/procurement": {
+    page: "Get Involved",
+    label: "Procurement photograph band",
+    offers: ["heading"],
+    heading: "What we buy is bought to be used in a district.",
+  },
+  "photo:/get-involved/donate": {
+    page: "Get Involved",
+    label: "Donate photograph band",
+    offers: ["heading"],
+    heading: "Three years of support, and a household that no longer needs it.",
+  },
+  "photo:/get-involved/partners": {
+    page: "Get Involved",
+    label: "Partner With Us photograph band",
+    offers: ["heading"],
+    heading: "Every project on this page is delivered with somebody.",
+  },
+
   "band:newsletter": {
     page: "Shared bands",
     label: "Newsletter signup band",
@@ -601,8 +667,8 @@ export async function getSectionsForPanel() {
     itemsShipped: definition.items ?? null,
     /** Which fields have no default to show because the page counts them. */
     computed: definition.computed ?? [],
-    /** Whether this band has any copy of its own to edit at all. */
-    itemsOnly: definition.itemsOnly ?? false,
+    /** Which copy fields this band draws, so the panel offers only those. */
+    offers: definition.offers ?? ["eyebrow", "heading", "body"],
     /** Whether its introduction runs to more than one paragraph. */
     prose: definition.prose ?? false,
     edited: edited[key] ?? {},

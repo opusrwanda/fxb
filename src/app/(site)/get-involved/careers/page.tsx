@@ -144,11 +144,10 @@ export default async function CareersPage() {
         )}
       </section>
 
-      {photos["fostering-02.jpg"] && (
-        <PhotoBand image={photos["fostering-02.jpg"]}>
-          The work is done by people who live where it happens.
-        </PhotoBand>
-      )}
+      <PhotoBand
+        sectionKey="photo:/get-involved/careers"
+        image={photos["fostering-02.jpg"]}
+      />
     </>
   );
 }

@@ -399,11 +399,10 @@ export default async function PartnersPage() {
       </section>
 
       {/* Corporate */}
-      {photos["sugira-muryango-04.jpg"] && (
-        <PhotoBand image={photos["sugira-muryango-04.jpg"]}>
-          Every project on this page is delivered with somebody.
-        </PhotoBand>
-      )}
+      <PhotoBand
+        sectionKey="photo:/get-involved/partners"
+        image={photos["sugira-muryango-04.jpg"]}
+      />
 
       <section id="corporate" className="scroll-mt-36 bg-blue py-24 lg:py-32">
         <Container>

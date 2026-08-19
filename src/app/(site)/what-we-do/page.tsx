@@ -99,28 +99,25 @@ export default async function WhatWeDoPage() {
           photograph on it used to sit below them. These three are spaced
           through that run rather than grouped, so no stretch of it goes more
           than about a thousand pixels without the work appearing in it. */}
-      {photos["fostering-03.jpg"] && (
-        <PhotoBand image={photos["fostering-03.jpg"]}>
-          Poverty arrives in every part of a life at once.
-        </PhotoBand>
-      )}
+      <PhotoBand
+        sectionKey="photo:/what-we-do/challenge"
+        image={photos["fostering-03.jpg"]}
+      />
 
       <ModelIntro />
 
-      {photos["fxbvillage-musambira-05.jpg"] && (
-        <PhotoBand image={photos["fxbvillage-musambira-05.jpg"]}>
-          Three years, and a household that no longer needs us.
-        </PhotoBand>
-      )}
+      <PhotoBand
+        sectionKey="photo:/what-we-do/journey"
+        image={photos["fxbvillage-musambira-05.jpg"]}
+      />
 
       <TransformationJourney copy={journeyCopy} items={journeyCopy.items} />
       <ModelPrinciples />
 
-      {photos["fxbvillage-tlf-11.jpg"] && (
-        <PhotoBand image={photos["fxbvillage-tlf-11.jpg"]}>
-          A business of one&apos;s own is what the last year is for.
-        </PhotoBand>
-      )}
+      <PhotoBand
+        sectionKey="photo:/what-we-do/pillars"
+        image={photos["fxbvillage-tlf-11.jpg"]}
+      />
       <ModelPillars />
       <WhyItWorks />
       <ProjectsDelivered />

@@ -104,11 +104,10 @@ export default async function ProcurementPage() {
           />
         )}
       </section>
-      {photos["fxbvillage-tlf-07.jpg"] && (
-        <PhotoBand image={photos["fxbvillage-tlf-07.jpg"]}>
-          What we buy is bought to be used in a district.
-        </PhotoBand>
-      )}
+      <PhotoBand
+        sectionKey="photo:/get-involved/procurement"
+        image={photos["fxbvillage-tlf-07.jpg"]}
+      />
 
     </>
   );

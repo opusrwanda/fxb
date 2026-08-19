@@ -127,11 +127,10 @@ export default async function GetInvolvedPage() {
       </section>
 
       <Partners />
-      {photos["fostering-03.jpg"] && (
-        <PhotoBand image={photos["fostering-03.jpg"]}>
-          There is more than one way to be part of this.
-        </PhotoBand>
-      )}
+      <PhotoBand
+        sectionKey="photo:/get-involved"
+        image={photos["fostering-03.jpg"]}
+      />
 
     </>
   );

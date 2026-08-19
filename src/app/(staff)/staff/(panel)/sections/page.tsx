@@ -310,40 +310,60 @@ export default async function SectionsPage({
                 <form action={save} className="border-t border-gray-15 p-6">
                   <input type="hidden" name="key" value={section.key} />
 
-                  {/* A band that is a list and nothing else has no words of
-                      its own — the sectors run under Our Approach's heading.
-                      Offering three copy fields and a photograph for a band
-                      that renders none of them is the same lie as a picker
-                      that changes nothing. */}
+                  {/* Only the fields the band actually draws. A photograph
+                      band has one line over a picture and no eyebrow or
+                      paragraph anywhere; the sectors run under Our Approach's
+                      heading and have no copy at all. Offering a field the
+                      page ignores is the same lie as a picker that changes
+                      nothing — somebody types, saves, and nothing moves.
+
+                      Hidden rather than absent, so what is on the form still
+                      posts what the section already holds. A field dropped
+                      from the form posts nothing, and `saveSection` would read
+                      that as somebody having cleared it. */}
                   <div
-                    className={`flex-col gap-5 ${section.itemsOnly ? "hidden" : "flex"}`}
+                    className={`flex-col gap-5 ${
+                      section.offers.length === 0 ? "hidden" : "flex"
+                    }`}
                   >
-                    <Field
-                      id={`${section.key}-eyebrow`}
-                      name="eyebrow"
-                      label="Small line above"
-                      value={section.edited.eyebrow ?? section.defaults.eyebrow ?? ""}
-                      original={section.defaults.eyebrow}
-                      computed={section.computed.includes("eyebrow")}
-                    />
-                    <Field
-                      id={`${section.key}-heading`}
-                      name="heading"
-                      label="Heading"
-                      value={section.edited.heading ?? section.defaults.heading ?? ""}
-                      original={section.defaults.heading}
-                      computed={section.computed.includes("heading")}
-                    />
-                    <Field
-                      id={`${section.key}-body`}
-                      name="body"
-                      label="Introduction"
-                      value={section.edited.body ?? section.defaults.body ?? ""}
-                      original={section.defaults.body}
-                      computed={section.computed.includes("body")}
-                      multiline
-                      prose={section.prose}
-                    />
+                    <div className={section.offers.includes("eyebrow") ? "" : "hidden"}>
+                      <Field
+                        id={`${section.key}-eyebrow`}
+                        name="eyebrow"
+                        label="Small line above"
+                        value={section.edited.eyebrow ?? section.defaults.eyebrow ?? ""}
+                        original={section.defaults.eyebrow}
+                        computed={section.computed.includes("eyebrow")}
+                      />
+                    </div>
+                    <div className={section.offers.includes("heading") ? "" : "hidden"}>
+                      <Field
+                        id={`${section.key}-heading`}
+                        name="heading"
+                        // A photograph band's heading is the one line over the
+                        // picture, and calling that "Heading" beside a picker
+                        // labelled "Background photograph" reads as a title
+                        // above the band rather than type on it.
+                        label={
+                          section.offers.length === 1 ? "Line over the photograph" : "Heading"
+                        }
+                        value={section.edited.heading ?? section.defaults.heading ?? ""}
+                        original={section.defaults.heading}
+                        computed={section.computed.includes("heading")}
+                      />
+                    </div>
+                    <div className={section.offers.includes("body") ? "" : "hidden"}>
+                      <Field
+                        id={`${section.key}-body`}
+                        name="body"
+                        label="Introduction"
+                        value={section.edited.body ?? section.defaults.body ?? ""}
+                        original={section.defaults.body}
+                        computed={section.computed.includes("body")}
+                        multiline
+                        prose={section.prose}
+                      />
+                    </div>
 
                     {/* Offered on every band, including the ones that are
                         plain white today. Leaving it empty is what keeps a
