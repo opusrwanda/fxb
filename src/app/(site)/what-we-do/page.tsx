@@ -64,6 +64,7 @@ export default async function WhatWeDoPage() {
       <Hero
         image={banner.image}
         video={banner.video}
+        eyebrow={copy.eyebrow}
         headline={copy.heading ?? ""}
         // The old body read "The FXBVillage model works on income, health,
         // education…", which handed the whole page to one project. FXBVillage
@@ -73,7 +74,13 @@ export default async function WhatWeDoPage() {
         // across multiple sectors", not "the FXBVillage model is the work".
         // The scope comes first now and the model is named as chief among the
         // programmes rather than as the sum of them.
-        body={`So we never treat one at a time. Across ${districtCount} districts, our ${programmes.length} programmes work on income, health, education, nutrition, child protection, WASH and climate resilience together — the FXBVillage model chief among them.`}
+        // Counted, so it is right the day a project ends. An introduction
+        // typed in Page sections replaces it, for anybody who would rather
+        // have a fixed sentence than a live one.
+        body={
+          copy.body ??
+          `So we never treat one at a time. Across ${districtCount} districts, our ${programmes.length} programmes work on income, health, education, nutrition, child protection, WASH and climate resilience together — the FXBVillage model chief among them.`
+        }
         ctas={[
           { label: "The FXBVillage Model", href: "#fxbvillage-model", primary: true },
           // Was "Our Impact". A hero that has just claimed six programmes

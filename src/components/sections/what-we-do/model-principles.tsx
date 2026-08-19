@@ -28,11 +28,11 @@ export async function ModelPrinciples() {
             <h2 className="mt-6 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               {copy.heading}
             </h2>
-            <p className="mt-6 max-w-[40ch] text-base leading-relaxed text-gray">
-              At FXB Rwanda, we believe that every family has the potential to
-              overcome poverty when provided with the right opportunities,
-              knowledge, and support.
-            </p>
+            {copy.body && (
+              <p className="mt-6 max-w-[40ch] text-base leading-relaxed text-gray">
+                {copy.body}
+              </p>
+            )}
           </Reveal>
 
           <Reveal delay={140} className="lg:col-span-7 lg:col-start-6">

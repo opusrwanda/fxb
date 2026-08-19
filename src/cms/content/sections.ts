@@ -80,6 +80,15 @@ export type SectionDefinition = SectionCopy & {
    * Typing here still wins, for anybody who would rather have a fixed sentence.
    */
   computed?: ("eyebrow" | "heading" | "body")[];
+  /**
+   * A list and nothing else — no eyebrow, no heading, no sentence under it.
+   *
+   * The sectors run as a bare row inside Our Approach, under that section's
+   * heading rather than one of their own. Without this the panel would offer
+   * three copy fields and a photograph for a band that renders none of them,
+   * which is the same lie as a picker that changes nothing.
+   */
+  itemsOnly?: true;
 };
 
 /**
@@ -154,6 +163,9 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     page: "What We Do",
     label: "Page header",
     heading: "Families never face one problem at a time.",
+    // "Across 13 districts, our 6 programmes work on…" — counted off the
+    // programmes, so it is right the day a project ends.
+    computed: ["body"],
   },
   "header:/our-impact": {
     page: "Our Impact",
@@ -271,6 +283,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Our Story band",
     eyebrow: "OUR STORY",
     heading: "Four decades, one promise",
+    body: "From a life lost on a rescue mission in Mali to a Rwandan NGO working in every province — the through line has never changed.",
   },
   "who-we-are:leadership": {
     page: "Who We Are",
@@ -282,6 +295,9 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     page: "Who We Are",
     label: "Where We Work band",
     eyebrow: "WHERE WE WORK",
+    body: "Across all four provinces and the City of Kigali. Point at a district to see what runs there, or at a project to see where it runs.",
+    // "14 districts, 9 projects" — read off the programmes, not typed.
+    computed: ["heading"],
   },
 
   /* ── What We Do ─────────────────────────────────────────────────────────── */
@@ -291,12 +307,14 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Our Approach band",
     eyebrow: "OUR APPROACH",
     heading: "Empowering communities through integrated development",
+    body: "At FXB Rwanda, we believe that lasting change happens when families and communities are equipped with the knowledge, skills, and opportunities they need to thrive.",
   },
   "what-we-do:challenge": {
     page: "What We Do",
     label: "The Challenge band",
     eyebrow: "THE CHALLENGE",
     heading: "The challenge of child poverty",
+    body: "Among the most disadvantaged groups in society, children are particularly vulnerable to the many consequences of poverty that affect families and communities. Income insecurity, hunger, poor health, marginalisation, illiteracy, and the lack of sanitation and adequate housing are both causes and consequences of poverty, pulling families into a downward spiral of deprivation.",
   },
   "what-we-do:model-intro": {
     page: "What We Do",
@@ -309,6 +327,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Transformation Journey band",
     eyebrow: "TRANSFORMATION JOURNEY",
     heading: "36 months to change a life, sustainably",
+    body: "A complete 36-month journey toward dignity, access to fundamental rights, and lasting change for children and families.",
     // The step number is the position in the list, so it is not a field
     // somebody can get out of step with the order.
     items: journey.map((phase) => ({ title: phase.period, body: phase.body })),
@@ -318,6 +337,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Guiding Principles band",
     eyebrow: "GUIDING PRINCIPLES",
     heading: "Built on three principles",
+    body: "At FXB Rwanda, we believe that every family has the potential to overcome poverty when provided with the right opportunities, knowledge, and support.",
     items: principles.map((principle) => ({
       title: principle.title,
       body: principle.body,
@@ -328,6 +348,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "The Pillars band",
     eyebrow: "THE PILLARS",
     heading: "Five pillars, delivered together",
+    body: "The model integrates a set of mutually reinforcing pillars that work together to improve the overall well-being of families.",
     items: pillars.map((pillar) => ({
       title: pillar.title,
       body: pillar.lead,
@@ -343,6 +364,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Why It Works band",
     eyebrow: "WHY IT WORKS",
     heading: "Integrated, and people-centred",
+    body: "The strength of the FXBVillage Model lies in its integrated and people-centred approach.",
   },
   /**
    * The band's words only. The cards under it are their own collection —
@@ -355,15 +377,18 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Areas of Intervention band",
     eyebrow: "AREAS OF INTERVENTION",
     heading: "Four areas, one household",
+    computed: ["body"],
   },
   "what-we-do:projects-delivered": {
     page: "What We Do",
     label: "FXBVillage Projects band",
     eyebrow: "FXBVILLAGE PROJECTS",
+    body: "As of now, 54 FXBVillage projects have been implemented, leaving thousands of families resilient from poverty.",
   },
   "what-we-do:sectors": {
     page: "What We Do",
     label: "Sectors list (under Our Approach)",
+    itemsOnly: true,
     items: SECTORS.map((sector) => ({ title: sector })),
   },
 
@@ -381,6 +406,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     page: "Get Involved",
     label: "Four ways in band",
     heading: "Four ways in",
+    body: "For more than three decades, FXB Rwanda has partnered with local and international stakeholders to design and implement evidence-based programmes that improve the lives of vulnerable children, families and communities across Rwanda.",
   },
 
   /* ── Our Impact ─────────────────────────────────────────────────────────── */
@@ -390,6 +416,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Results at a Glance band",
     eyebrow: "RESULTS AT A GLANCE",
     heading: "Our reach since 2012",
+    body: "Reach is counted per area, so a household supported in two of them is counted in both. The total is reported separately.",
   },
 
   /* ── Bands that appear on several pages ─────────────────────────────────── */
@@ -398,6 +425,7 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     page: "Shared bands",
     label: "Impact Stories carousel",
     heading: "Behind every programme, a person",
+    body: "Programmes are counted in households reached. What they change is only ever visible one household at a time.",
   },
   "band:latest-news": {
     page: "Shared bands",
@@ -410,12 +438,14 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Partners band",
     eyebrow: "PARTNERS",
     heading: "None of this was done alone",
+    body: "Government institutions, donors and fellow organisations who fund the work, shape it, and deliver it alongside us.",
   },
   "band:newsletter": {
     page: "Shared bands",
     label: "Newsletter signup band",
     eyebrow: "NEWSLETTER",
     heading: "Keep up with the work",
+    body: "Our quarterly newsletter gathers the districts, the programmes and the people in one place — stories from the field, project updates and the occasional annual report. Four times a year, no more.",
   },
 };
 
@@ -521,6 +551,8 @@ export async function getSectionsForPanel() {
     itemsShipped: definition.items ?? null,
     /** Which fields have no default to show because the page counts them. */
     computed: definition.computed ?? [],
+    /** Whether this band has any copy of its own to edit at all. */
+    itemsOnly: definition.itemsOnly ?? false,
     edited: edited[key] ?? {},
   }));
 }

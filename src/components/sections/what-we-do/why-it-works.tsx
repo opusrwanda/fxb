@@ -43,10 +43,11 @@ export async function WhyItWorks() {
           </Reveal>
 
           <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
-            <p className="max-w-[38ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
-              The strength of the FXBVillage Model lies in its integrated and
-              people-centred approach.
-            </p>
+            {copy.body && (
+              <p className="max-w-[38ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
+                {copy.body}
+              </p>
+            )}
 
             <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
               Instead of addressing one challenge in isolation, the model

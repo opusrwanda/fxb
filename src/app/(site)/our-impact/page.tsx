@@ -38,6 +38,7 @@ export default async function OurImpactPage() {
       <Hero
         image={banner.image}
         video={banner.video}
+        eyebrow={copy.eyebrow}
         headline={copy.heading ?? ""}
         body={copy.body}
         ctas={[
@@ -89,7 +90,12 @@ export default async function OurImpactPage() {
       </section>
 
       <Reach />
-      <ImpactStories stories={stories} heading={storiesCopy.heading} />
+      <ImpactStories
+        stories={stories}
+        eyebrow={storiesCopy.eyebrow}
+        heading={storiesCopy.heading}
+        body={storiesCopy.body}
+      />
 
       {/* Tinted, not solid blue. The stories carousel above is blue and the
           footer below is blue, so a third blue band in between made an

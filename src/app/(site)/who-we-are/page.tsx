@@ -40,6 +40,9 @@ export default async function WhoWeArePage() {
   // Fetched together rather than inside each section: the vision and the map
   // are two bands of one page, and awaiting them one after the other would make
   // the second query wait on the first for no reason.
+  // Its own header included. It was the one section landing whose hero held
+  // its words as literals, so the Page sections form for it edited nothing.
+  const headerCopy = await getSection("header:/who-we-are");
   const storyCopy = await getSection("who-we-are:story");
   const mapCopy = await getSection("who-we-are:where-we-work");
   const [details, programmes] = await Promise.all([
@@ -52,8 +55,9 @@ export default async function WhoWeArePage() {
       <Hero
         image={banner.image}
         video={banner.video}
-        headline="A local NGO, rooted here since 1995."
-        body="FXB Rwanda is a registered Rwandan NGO and a member of FXB Global, carrying the legacy of François-Xavier Bagnoud into its fourth decade — across all four provinces and the City of Kigali."
+        eyebrow={headerCopy.eyebrow}
+        headline={headerCopy.heading ?? ""}
+        body={headerCopy.body}
         ctas={[
           { label: "Explore Our Work", href: "/what-we-do", primary: true },
           { label: "Our Impact", href: "/our-impact" },

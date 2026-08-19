@@ -44,7 +44,9 @@ import type { Story } from "@/cms/content/stories";
  */
 export function ImpactStories({
   stories,
+  eyebrow,
   heading,
+  body,
 }: {
   stories: Story[];
   /**
@@ -54,7 +56,11 @@ export function ImpactStories({
    * horizontal scroll — so it cannot await the section copy itself. The pages
    * that render it are server components and read it for it.
    */
+  /** The tracked line above the heading. Nothing by default. */
+  eyebrow?: string;
   heading?: string;
+  /** The sentence beside it, from the same section. */
+  body?: string;
 }) {
   const trackRef = useRef<HTMLUListElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
@@ -233,13 +239,24 @@ export function ImpactStories({
       >
         <Container>
           <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-            <h2 className="max-w-[16ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
-              {heading ?? "Behind every programme, a person"}
-            </h2>
-            <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:pt-2 lg:text-lg">
-              Programmes are counted in households reached. What they change is
-              only ever visible one household at a time.
-            </p>
+            <div className="flex flex-col gap-5">
+              {eyebrow && (
+                <div className="flex items-center gap-4">
+                  <span className="h-0.5 w-6 bg-green" aria-hidden="true" />
+                  <span className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
+                    {eyebrow}
+                  </span>
+                </div>
+              )}
+              <h2 className="max-w-[16ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
+                {heading ?? "Behind every programme, a person"}
+              </h2>
+            </div>
+            {body && (
+              <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:pt-2 lg:text-lg">
+                {body}
+              </p>
+            )}
           </Reveal>
         </Container>
 

@@ -70,11 +70,11 @@ export async function Approach({ image }: { image?: Img | null }) {
             </Reveal>
 
             <Reveal delay={140} className="lg:col-span-5 lg:col-start-8">
-              <p className="text-xl leading-[1.45] font-medium text-blue lg:text-[23px]">
-                At FXB Rwanda, we believe that lasting change happens when
-                families and communities are equipped with the knowledge,
-                skills, and opportunities they need to thrive.
-              </p>
+              {approach.body && (
+                <p className="text-xl leading-[1.45] font-medium text-blue lg:text-[23px]">
+                  {approach.body}
+                </p>
+              )}
             </Reveal>
           </div>
 
@@ -167,14 +167,11 @@ export async function Approach({ image }: { image?: Img | null }) {
             </Reveal>
 
             <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
-              <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
-                Among the most disadvantaged groups in society, children are
-                particularly vulnerable to the many consequences of poverty that
-                affect families and communities. Income insecurity, hunger, poor
-                health, marginalisation, illiteracy, and the lack of sanitation
-                and adequate housing are both causes and consequences of
-                poverty, pulling families into a downward spiral of deprivation.
-              </p>
+              {challenge.body && (
+                <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
+                  {challenge.body}
+                </p>
+              )}
 
               <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
                 Poverty experienced by children, even for short periods, can

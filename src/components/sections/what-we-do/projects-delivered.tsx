@@ -68,13 +68,23 @@ export async function ProjectsDelivered() {
                 projects implemented
               </span>
             </div>
+
+            {/* Nothing by default — the figure is the heading here. Guarded so
+                a heading typed in the panel has somewhere to land instead of
+                being a field that does nothing. */}
+            {copy.heading && (
+              <h2 className="max-w-[24ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
+                {copy.heading}
+              </h2>
+            )}
           </Reveal>
 
           <Reveal delay={180} className="flex flex-col items-start gap-7">
-            <p className="max-w-[42ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
-              As of now, 54 FXBVillage projects have been implemented, leaving
-              thousands of families resilient from poverty.
-            </p>
+            {copy.body && (
+              <p className="max-w-[42ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
+                {copy.body}
+              </p>
+            )}
             <div className="flex flex-wrap gap-4">
               <Pill
                 href="/what-we-do/current-projects"

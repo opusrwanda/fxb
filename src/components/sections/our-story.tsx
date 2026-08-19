@@ -121,10 +121,11 @@ export function OurStory({
           </div>
 
           <div className="flex flex-col gap-6 lg:items-end">
-            <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-lg lg:font-light">
-              From a life lost on a rescue mission in Mali to a Rwandan NGO
-              working in every province — the through line has never changed.
-            </p>
+            {copy?.body && (
+              <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-lg lg:font-light">
+                {copy.body}
+              </p>
+            )}
 
             {/* Both ends are reachable, so the arrows disable rather than wrap.
                 This is a finite history, not a loop: a "next" that returned to

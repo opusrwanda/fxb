@@ -58,7 +58,12 @@ export default async function Home() {
       <WhoWeAre />
       <WhatWeDo />
       <ImpactCounters />
-      <ImpactStories stories={stories} heading={storiesCopy.heading} />
+      <ImpactStories
+        stories={stories}
+        eyebrow={storiesCopy.eyebrow}
+        heading={storiesCopy.heading}
+        body={storiesCopy.body}
+      />
       <Partners />
       <LatestNews />
       {/* No signup section here. The footer below carries the real form on

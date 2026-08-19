@@ -72,10 +72,11 @@ export async function Partners() {
               {copy.heading}
             </h2>
           </div>
-          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-lg lg:font-light">
-            Government institutions, donors and fellow organisations who fund
-            the work, shape it, and deliver it alongside us.
-          </p>
+          {copy.body && (
+            <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-lg lg:font-light">
+              {copy.body}
+            </p>
+          )}
         </Reveal>
       </Container>
 

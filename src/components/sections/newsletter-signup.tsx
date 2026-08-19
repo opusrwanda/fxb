@@ -94,11 +94,11 @@ export function NewsletterSignup({
               {copy?.heading ?? "Keep up with the work"}
             </h2>
 
-            <p className="mt-6 max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
-              Our quarterly newsletter gathers the districts, the programmes and
-              the people in one place — stories from the field, project updates
-              and the occasional annual report. Four times a year, no more.
-            </p>
+            {copy?.body && (
+              <p className="mt-6 max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
+                {copy.body}
+              </p>
+            )}
           </Reveal>
 
           {/* White card carrying the wedge. The tint is pale enough that fields

@@ -131,11 +131,23 @@ export async function VisionMission({ details }: { details: SiteDetails }) {
     // old padding left a field of empty blue under the values.
     <section id="vision" className="scroll-mt-32 bg-blue py-24 lg:py-32">
       <Container>
-        <Reveal className="flex items-center gap-4">
-          <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
-          <span className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
-            {copy.eyebrow}
-          </span>
+        <Reveal className="flex flex-col gap-5">
+          <div className="flex items-center gap-4">
+            <span className="h-0.5 w-6 bg-white-70" aria-hidden="true" />
+            <span className="text-[24px] font-semibold tracking-[0.14em] text-white-94">
+              {copy.eyebrow}
+            </span>
+          </div>
+          {copy.heading && (
+            <h2 className="text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
+              {copy.heading}
+            </h2>
+          )}
+          {copy.body && (
+            <p className="max-w-[62ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
+              {copy.body}
+            </p>
+          )}
         </Reveal>
 
         {/* Vision and mission as two panels rather than two columns of bare

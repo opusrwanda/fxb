@@ -104,10 +104,11 @@ export function TransformationJourney({
               {copy?.heading ?? "36 months to change a life, sustainably"}
             </h2>
           </div>
-          <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
-            A complete 36-month journey toward dignity, access to fundamental
-            rights, and lasting change for children and families.
-          </p>
+          {copy?.body && (
+            <p className="max-w-[46ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
+              {copy.body}
+            </p>
+          )}
         </div>
 
         <ol

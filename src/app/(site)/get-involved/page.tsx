@@ -50,6 +50,7 @@ export default async function GetInvolvedPage() {
       <Hero
         image={banner.image}
         video={banner.video}
+        eyebrow={copy.eyebrow}
         headline={copy.heading ?? ""}
         body={copy.body}
         ctas={[
@@ -78,12 +79,11 @@ export default async function GetInvolvedPage() {
             </Reveal>
 
             <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
-              <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
-                For more than three decades, FXB Rwanda has partnered with local
-                and international stakeholders to design and implement
-                evidence-based programmes that improve the lives of vulnerable
-                children, families and communities across Rwanda.
-              </p>
+              {waysCopy.body && (
+                <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
+                  {waysCopy.body}
+                </p>
+              )}
               <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
                 Through strong partnerships, we combine resources, expertise,
                 innovation and local knowledge to create solutions that

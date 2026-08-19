@@ -48,6 +48,11 @@ export async function ModelIntro() {
           <h2 className="max-w-[20ch] text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
             {copy.heading}
           </h2>
+          {copy.body && (
+            <p className="max-w-[62ch] text-base leading-relaxed text-gray lg:text-[17px]">
+              {copy.body}
+            </p>
+          )}
         </Reveal>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-3 lg:gap-10">

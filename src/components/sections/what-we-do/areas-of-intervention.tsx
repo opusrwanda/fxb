@@ -53,11 +53,17 @@ export async function AreasOfIntervention() {
           {/* The count is counted, not typed. The areas are managed in the
               panel now, so a sentence that said "four" would be wrong the
               first time somebody added a fifth — and nobody adding one would
-              think to come and look for the word. */}
+              think to come and look for the word. An introduction typed in the
+              panel replaces it, for anybody who would rather fix the wording. */}
           <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
-            The model is delivered through {spell(core.length)} core
-            {core.length === 1 ? " area" : " areas"} of intervention. A family
-            rarely needs only one of them, which is why we never run them apart.
+            {copy.body || (
+              <>
+                The model is delivered through {spell(core.length)} core
+                {core.length === 1 ? " area" : " areas"} of intervention. A
+                family rarely needs only one of them, which is why we never run
+                them apart.
+              </>
+            )}
           </p>
         </Reveal>
 

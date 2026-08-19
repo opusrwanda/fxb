@@ -113,10 +113,11 @@ export async function ModelPillars() {
           <h2 className="max-w-[24ch] text-3xl font-bold tracking-[-0.03em] text-white lg:text-[42px] lg:leading-[1.08]">
             {copy.heading}
           </h2>
-          <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
-            The model integrates a set of mutually reinforcing pillars that work
-            together to improve the overall well-being of families.
-          </p>
+          {copy.body && (
+            <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
+              {copy.body}
+            </p>
+          )}
         </Reveal>
       </Container>
 

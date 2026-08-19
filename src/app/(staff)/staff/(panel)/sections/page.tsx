@@ -310,7 +310,14 @@ export default async function SectionsPage({
                 <form action={save} className="border-t border-gray-15 p-6">
                   <input type="hidden" name="key" value={section.key} />
 
-                  <div className="flex flex-col gap-5">
+                  {/* A band that is a list and nothing else has no words of
+                      its own — the sectors run under Our Approach's heading.
+                      Offering three copy fields and a photograph for a band
+                      that renders none of them is the same lie as a picker
+                      that changes nothing. */}
+                  <div
+                    className={`flex-col gap-5 ${section.itemsOnly ? "hidden" : "flex"}`}
+                  >
                     <Field
                       id={`${section.key}-eyebrow`}
                       name="eyebrow"

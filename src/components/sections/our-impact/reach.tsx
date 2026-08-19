@@ -43,10 +43,11 @@ export async function Reach() {
               {copy.heading}
             </h2>
           </div>
-          <p className="max-w-[44ch] text-base leading-relaxed text-gray lg:text-[17px]">
-            Reach is counted per area, so a household supported in two of them
-            is counted in both. The total is reported separately.
-          </p>
+          {copy.body && (
+            <p className="max-w-[44ch] text-base leading-relaxed text-gray lg:text-[17px]">
+              {copy.body}
+            </p>
+          )}
         </Reveal>
 
         <ul className="mt-14 grid gap-6 sm:grid-cols-2">

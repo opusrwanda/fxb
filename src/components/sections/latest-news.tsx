@@ -48,6 +48,11 @@ export async function LatestNews() {
             <h2 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
               {copy.heading}
             </h2>
+            {copy.body && (
+              <p className="max-w-[62ch] text-base leading-relaxed text-gray lg:text-[17px]">
+                {copy.body}
+              </p>
+            )}
           </div>
 
           <Link

@@ -211,7 +211,7 @@ export function WhereWeWork({
    * cannot await them. The heading here is computed from the live counts and
    * stays that way; only the line above it is editable.
    */
-  copy?: { eyebrow?: string };
+  copy?: { eyebrow?: string; body?: string };
 }) {
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [active, setActive] = useState<string | null>(null);
@@ -327,10 +327,11 @@ export function WhereWeWork({
               {visible.length === 1 ? "project" : "projects"}
             </h2>
           </div>
-          <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
-            Across all four provinces and the City of Kigali. Point at a district
-            to see what runs there, or at a project to see where it runs.
-          </p>
+          {copy?.body && (
+            <p className="max-w-[46ch] text-base leading-relaxed text-gray lg:text-[17px]">
+              {copy.body}
+            </p>
+          )}
         </Reveal>
 
         {/* `items-start`, so the map column is only as tall as the map. A grid
