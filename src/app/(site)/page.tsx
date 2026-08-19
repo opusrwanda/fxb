@@ -1,4 +1,5 @@
 import { getStories } from "@/cms/content/stories";
+import { getOwnBanner } from "@/cms/content/page-headers";
 import { getSection } from "@/cms/content/sections";
 import { Hero } from "@/components/sections/hero";
 import { ImpactStories } from "@/components/sections/impact-stories";
@@ -24,10 +25,22 @@ export default async function Home() {
   const storiesCopy = await getSection("band:impact-stories");
   const stories = await getStories();
 
+  /**
+   * The hero's own plate, where the team has chosen one.
+   *
+   * Empty until somebody does, and empty is the shipped footage — so the home
+   * page opens exactly as it always has until a photograph is picked in
+   * /staff/sections. Its own banner rather than `getPageBanner`, which would
+   * fall through to the site-wide default; see `getOwnBanner`.
+   */
+  const hero = await getOwnBanner("/");
+
   return (
     <>
       <Hero
         withVideo
+        image={hero.image}
+        video={hero.video}
         // Not "FXB RWANDA" — the lockup two inches above it already says that,
         // and an eyebrow that repeats the logo spends a line to add nothing.
         // This one answers the question a first-time visitor actually arrives

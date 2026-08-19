@@ -87,14 +87,15 @@ export const headerKey = (path: string) => `header:${path}`;
  * the separate Page banners screen go: a banner is part of the page header, and
  * the page header is edited here.
  *
- * The home page is the exception. Its hero carries the site's own footage
- * rather than a page banner, so there is nothing to choose for it — and
- * offering a picker that changes nothing is worse than offering none.
+ * Home included. Its hero was the one opening block on the site nobody could
+ * change the picture of — the footage is on the CDN and the poster is a file in
+ * the repo, so replacing it meant an upload and a deploy. A row for `/` is what
+ * lets the team put their own plate behind it; leaving it empty is what keeps
+ * the shipped footage, which is why the home page looks the same until somebody
+ * chooses something.
  */
 export function bannerPath(key: string): string | null {
-  if (!key.startsWith("header:")) return null;
-  const path = key.slice("header:".length);
-  return path === "/" ? null : path;
+  return key.startsWith("header:") ? key.slice("header:".length) : null;
 }
 
 export const SECTIONS: Record<string, SectionDefinition> = {

@@ -350,15 +350,19 @@ export default async function SectionsPage({
                       </div>
                     )}
 
-                    {/* Only on a page header, and only where the route has a
-                        banner to set — the home page's hero carries the site's
-                        footage instead, so it gets no pickers. */}
+                    {/* Only on a page header — a band further down a page
+                        has no banner, it has the background picker above. */}
                     {section.path && (
                       <BannerFields
                         idPrefix={section.key}
                         banner={section.banner}
                         images={images}
                         videos={videos}
+                        note={
+                          section.path === "/"
+                            ? "Leave both empty and the home page keeps the footage it ships with — the film on the CDN, cut in two sizes so a phone is not sent the large one. Choosing a photograph here replaces it: the page then opens on that picture, and on whatever video is chosen beneath it."
+                            : undefined
+                        }
                       />
                     )}
                   </div>
@@ -422,14 +426,23 @@ function BannerFields({
   banner,
   images,
   videos,
+  note,
 }: {
   idPrefix: string;
   banner: { imageId: number | null; videoId: number | null } | null;
   images: PickerOption[];
   videos: PickerOption[];
+  /** What leaving both empty means, where it means more than "no picture". */
+  note?: string;
 }) {
   return (
     <>
+      {note && (
+        <p className="rounded-card border border-gray-15 bg-blue-08 px-5 py-4 text-[13px] leading-relaxed text-gray">
+          {note}
+        </p>
+      )}
+
       <div className="flex flex-col gap-2">
         <label
           htmlFor={`${idPrefix}-banner-image`}

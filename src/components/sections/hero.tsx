@@ -48,16 +48,17 @@ export function Hero({
   ctas?: Cta[];
   withVideo?: boolean;
   /**
-   * A photograph to stand behind the room, for the section landings that have
-   * no footage. Home is the only page with video; Who We Are, What We Do, Our
-   * Impact and Get Involved were plain blue rectangles until this.
+   * A photograph to stand behind the room. Who We Are, What We Do, Our Impact
+   * and Get Involved were plain blue rectangles until this, and on home it is
+   * what replaces the footage the site ships with.
    *
-   * Set in /staff → Page banners, the same place the page headers get theirs.
-   * Null and the room stays blue, exactly as it was.
+   * Set in /staff → Page sections, in the page header's own form. Null and the
+   * room stays blue, exactly as it was — except on home, which falls back to
+   * the footage it ships with.
    */
   image?: Img | null;
   /**
-   * Footage behind the room, uploaded through Page banners.
+   * Footage behind the room, uploaded through Page sections.
    *
    * Only ever alongside `image`, which stays as the poster — `getPageBanner`
    * drops a video that has no still, because the still is what paints first
@@ -73,14 +74,30 @@ export function Hero({
    */
   breadcrumbs?: Crumb[];
 }) {
-  // Footage wins where there is any: the poster is a frame of it, so a still
-  // behind the video would never be seen.
-  const backdrop = !withVideo && image && !video ? image : null;
-
-  // An uploaded banner video plays over its own still, the same arrangement the
-  // home page's CDN footage uses — one plate, poster underneath, video fading
-  // in over it once the browser is idle and the connection allows.
-  const banner = !withVideo && video && image ? { video, image } : null;
+  /**
+   * What stands behind the room: a poster, and footage over it where there is
+   * any.
+   *
+   * One plate rather than three near-identical branches. A still, an uploaded
+   * banner video and the home page's CDN footage were each rendering their own
+   * copy of the same drift div and the same three scrim layers, which is how
+   * the three drifted apart — the banner-video case had already lost the extra
+   * height a picture earns.
+   *
+   * THE POSTER IS ALWAYS THE PICTURE. It paints first, carries the LCP, and is
+   * what a visitor on Save-Data, reduced motion or a slow connection is left
+   * with, so footage without one is not shown at all.
+   *
+   * Home is the only page that ships with a plate of its own. Choosing a
+   * photograph there replaces it — and the video with it, since the shipped
+   * footage is that poster moving and pairing somebody else's picture with it
+   * would be a hero whose still and motion are two different places.
+   */
+  const plate = image
+    ? { poster: image.url, video, shipped: false }
+    : withVideo
+      ? { poster: heroVideo.poster, video: null, shipped: true }
+      : null;
   return (
     // Exactly one viewport tall. Top padding clears the full rest-state header
     // — banner + utility strip + the 128px bar — and the content is sized to
@@ -101,98 +118,58 @@ export function Hero({
         // 200px of empty blue under the buttons and pushed the actual content
         // below the fold to buy nothing. A photograph earns some of it back,
         // but not all — these pages still open onto their content.
-        withVideo ? "min-h-svh" : backdrop ? "min-h-[76svh]" : "min-h-[68svh]"
+        withVideo ? "min-h-svh" : plate ? "min-h-[76svh]" : "min-h-[68svh]"
       }`}
     >
       <HeroSentinels />
 
-      {backdrop && (
-        <>
-          {/* The same still treatment the footage gets, drift included, so a
-              section landing and the home page read as the same room. */}
-          <div className="hero-drift absolute inset-0 -z-20">
-            <Image
-              src={backdrop.url}
-              // Decorative: the h1 sitting over it says what the page is, and
-              // a description of the photograph read first would only delay it.
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-          </div>
-          <div className="hero-scrim absolute inset-0 -z-10" aria-hidden="true" />
-          <div
-            className="hero-scrim-edges absolute inset-0 -z-10"
-            aria-hidden="true"
-          />
-          <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
-        </>
-      )}
-
-      {banner && (
-        <>
-          <div className="hero-drift absolute inset-0 -z-20">
-            <Image
-              src={banner.image.url}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-            <BackgroundVideo
-              src={banner.video}
-              className="absolute inset-0 size-full object-cover"
-            />
-          </div>
-
-          {/* The same scrims the home page's footage gets. A moving picture
-              behind white type needs them more than a still does, not less. */}
-          <div className="hero-scrim absolute inset-0 -z-10" aria-hidden="true" />
-          <div
-            className="hero-scrim-edges absolute inset-0 -z-10"
-            aria-hidden="true"
-          />
-          <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
-        </>
-      )}
-
-      {withVideo && (
+      {plate && (
         <>
           {/* Poster and video drift together as one plate, so the video
               inheriting the move mid-fade cannot cause a jump. */}
           <div className="hero-drift absolute inset-0 -z-20">
-            {/* The poster is what actually paints and carries the LCP. Next
-                serves it as AVIF/WebP at the right size for the viewport. */}
+            {/* What actually paints and carries the LCP. Next serves it as
+                AVIF/WebP at the right size for the viewport. Decorative: the
+                h1 sitting over it says what the page is, and a description of
+                the photograph read first would only delay it. */}
             <Image
-              src={heroVideo.poster}
+              src={plate.poster}
               alt=""
               fill
               priority
               sizes="100vw"
               className="object-cover"
             />
-            <BackgroundVideo
-              large={heroVideo.large}
-              small={heroVideo.small}
-              className="absolute inset-0 size-full object-cover"
-            />
+
+            {/* The shipped footage comes in two renditions — 1080p above
+                1024px, 480p below — because it is on the CDN and was cut for
+                the job. An uploaded one is a single file for every device;
+                `BackgroundVideo`'s guards are what keep that off the people
+                who can least afford it either way. */}
+            {plate.shipped ? (
+              <BackgroundVideo
+                large={heroVideo.large}
+                small={heroVideo.small}
+                className="absolute inset-0 size-full object-cover"
+              />
+            ) : plate.video ? (
+              <BackgroundVideo
+                src={plate.video}
+                className="absolute inset-0 size-full object-cover"
+              />
+            ) : null}
           </div>
 
           {/* Neutral black rather than brand blue — a scrim reads as absence of
-              light, not as a fifth colour in a four-value palette. Only over
-              footage: a hero with no video stays a plain blue room. */}
+              light, not as a fifth colour in a four-value palette. Over a still
+              as much as over footage: a photograph behind white type needs it
+              no less than a moving one. */}
           <div className="hero-scrim absolute inset-0 -z-10" aria-hidden="true" />
           <div
             className="hero-scrim-edges absolute inset-0 -z-10"
             aria-hidden="true"
           />
-          <div
-            className="grain absolute inset-0 -z-10"
-            aria-hidden="true"
-          />
+          <div className="grain absolute inset-0 -z-10" aria-hidden="true" />
         </>
       )}
 

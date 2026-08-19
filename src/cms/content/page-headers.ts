@@ -65,6 +65,19 @@ export async function getPageBanner(path?: string): Promise<PageBanner> {
 }
 
 /**
+ * One route's own banner, with nothing behind it.
+ *
+ * The site-wide default is deliberately not consulted. Home asks for this
+ * rather than `getPageBanner` because it already ships with a plate — the CDN
+ * footage and its poster — and falling through to the default would swap the
+ * one page with video for a still the moment somebody set a default for the
+ * pages that have none. An empty answer here means "keep what the code ships".
+ */
+export async function getOwnBanner(path: string): Promise<PageBanner> {
+  return (await all())[path] ?? { image: null, video: null };
+}
+
+/**
  * Just the photograph.
  *
  * Kept because most callers only ever wanted the still — the article openings,
