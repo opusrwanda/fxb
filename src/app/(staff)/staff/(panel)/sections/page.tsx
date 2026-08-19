@@ -342,6 +342,7 @@ export default async function SectionsPage({
                       original={section.defaults.body}
                       computed={section.computed.includes("body")}
                       multiline
+                      prose={section.prose}
                     />
 
                     {/* Offered on every band, including the ones that are
@@ -547,6 +548,7 @@ function Field({
   original,
   computed,
   multiline,
+  prose,
 }: {
   id: string;
   name: string;
@@ -557,6 +559,8 @@ function Field({
   /** The page writes this one itself, so there is nothing to ship. */
   computed?: boolean;
   multiline?: boolean;
+  /** This band sets more than one paragraph, split on blank lines. */
+  prose?: boolean;
 }) {
   const changed = original !== undefined && value !== original;
 
@@ -566,8 +570,23 @@ function Field({
         {label}
       </label>
 
+      {/* Said above the box rather than under it: it is a rule about how to
+          type, and a rule about typing is no use once you have typed. */}
+      {prose && (
+        <p className="text-[13px] leading-relaxed text-gray-80">
+          More than one paragraph. Leave a blank line between them, and the
+          band lays them out the way it always has.
+        </p>
+      )}
+
       {multiline ? (
-        <textarea id={id} name={name} rows={3} defaultValue={value} className={input} />
+        <textarea
+          id={id}
+          name={name}
+          rows={prose ? 9 : 3}
+          defaultValue={value}
+          className={input}
+        />
       ) : (
         <input id={id} name={name} type="text" defaultValue={value} className={input} />
       )}

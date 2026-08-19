@@ -89,7 +89,35 @@ export type SectionDefinition = SectionCopy & {
    * which is the same lie as a picker that changes nothing.
    */
   itemsOnly?: true;
+  /**
+   * The introduction is more than one paragraph.
+   *
+   * Several bands open with a lead sentence and carry on for another paragraph
+   * or two, and those follow-on paragraphs were literals in the component —
+   * so the Introduction field reached the first sentence of a block of text and
+   * none of the rest of it, which is worse than not offering the field at all.
+   *
+   * One field still, split on blank lines. A second and third column in the
+   * table would be a schema change for the handful of bands that need them, and
+   * a panel where some sections have three text boxes and most have one; a
+   * blank line is a convention somebody can see in the box itself.
+   */
+  prose?: true;
 };
+
+/**
+ * An introduction, as the paragraphs it is made of.
+ *
+ * Blank lines separate them — one newline is a wrap, two is a new paragraph,
+ * which is how every text box on the internet behaves. Empty in, empty out, so
+ * a band with nothing written renders nothing rather than one empty `<p>`.
+ */
+export function paragraphs(body?: string): string[] {
+  return (body ?? "")
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+}
 
 /**
  * Page headers are keyed by their route.
@@ -134,7 +162,10 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Who We Are",
     eyebrow: "WHO WE ARE",
     heading: "Rooted here since 1995",
-    body: "A Rwandan NGO that began in the aftermath of the 1994 Genocide against the Tutsi, and never left.",
+    prose: true,
+    body: `A Rwandan NGO that began in the aftermath of the 1994 Genocide against the Tutsi, and never left.
+
+FXB International came to Rwanda in 1995 to walk with vulnerable children, widows and families on the road back to self-reliance. The FXBVillage model followed in 2000, and in 2012 we became a registered Rwandan NGO in our own right. Today we work across all four provinces and the City of Kigali — a local organisation carrying a global name, and the legacy of François-Xavier Bagnoud, into its fourth decade.`,
   },
   "home:what-we-do": {
     page: "Home",
@@ -314,13 +345,24 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "The Challenge band",
     eyebrow: "THE CHALLENGE",
     heading: "The challenge of child poverty",
-    body: "Among the most disadvantaged groups in society, children are particularly vulnerable to the many consequences of poverty that affect families and communities. Income insecurity, hunger, poor health, marginalisation, illiteracy, and the lack of sanitation and adequate housing are both causes and consequences of poverty, pulling families into a downward spiral of deprivation.",
+    prose: true,
+    body: `Among the most disadvantaged groups in society, children are particularly vulnerable to the many consequences of poverty that affect families and communities. Income insecurity, hunger, poor health, marginalisation, illiteracy, and the lack of sanitation and adequate housing are both causes and consequences of poverty, pulling families into a downward spiral of deprivation.
+
+Poverty experienced by children, even for short periods, can leave lasting marks throughout their lives. In the most severe situations, some do not survive. Those who do may suffer from early childhood onward, from malnutrition, insecurity, and multiple forms of deprivation, with lasting effects on their health and cognitive development. These consequences compromise their potential in adulthood and weaken the well-being of future generations.`,
   },
   "what-we-do:model-intro": {
     page: "What We Do",
     label: "FXBVillage Model band",
     eyebrow: "THE FXBVILLAGE MODEL",
     heading: "A holistic route out of poverty",
+    // Three columns rather than a lead and its follow-on: this band sets its
+    // paragraphs side by side, so all three carry the same weight.
+    prose: true,
+    body: `The FXBVillage model is a holistic and integrated approach designed to enable families to sustainably move out of poverty, by giving parents the means to protect and raise their children. Economic empowerment is its central driver of change.
+
+However, economic support alone is not enough to ensure a lasting exit from poverty. The model therefore combines economic empowerment with access to basic services and the realisation of fundamental rights, while placing the improvement of children's and adults' quality of life at the heart of its action.
+
+By acting simultaneously on economic, social, and human dimensions, the FXBVillage model fosters lasting family transformation, improves children's wellbeing, and helps break the intergenerational cycle of poverty.`,
   },
   "what-we-do:journey": {
     page: "What We Do",
@@ -364,7 +406,12 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     label: "Why It Works band",
     eyebrow: "WHY IT WORKS",
     heading: "Integrated, and people-centred",
-    body: "The strength of the FXBVillage Model lies in its integrated and people-centred approach.",
+    prose: true,
+    body: `The strength of the FXBVillage Model lies in its integrated and people-centred approach.
+
+Instead of addressing one challenge in isolation, the model recognises that lasting change requires coordinated action across multiple sectors. By empowering families with knowledge, resources, and opportunities, the model creates a foundation for long-term resilience and sustainable development.
+
+This holistic approach not only improves immediate living conditions but also enables communities to continue progressing long after project interventions have ended.`,
   },
   /**
    * The band's words only. The cards under it are their own collection —
@@ -406,7 +453,10 @@ export const SECTIONS: Record<string, SectionDefinition> = {
     page: "Get Involved",
     label: "Four ways in band",
     heading: "Four ways in",
-    body: "For more than three decades, FXB Rwanda has partnered with local and international stakeholders to design and implement evidence-based programmes that improve the lives of vulnerable children, families and communities across Rwanda.",
+    prose: true,
+    body: `For more than three decades, FXB Rwanda has partnered with local and international stakeholders to design and implement evidence-based programmes that improve the lives of vulnerable children, families and communities across Rwanda.
+
+Through strong partnerships, we combine resources, expertise, innovation and local knowledge to create solutions that strengthen resilience and promote sustainable development. Together, we can build stronger communities and create a world fit for children.`,
   },
 
   /* ── Our Impact ─────────────────────────────────────────────────────────── */
@@ -553,6 +603,8 @@ export async function getSectionsForPanel() {
     computed: definition.computed ?? [],
     /** Whether this band has any copy of its own to edit at all. */
     itemsOnly: definition.itemsOnly ?? false,
+    /** Whether its introduction runs to more than one paragraph. */
+    prose: definition.prose ?? false,
     edited: edited[key] ?? {},
   }));
 }

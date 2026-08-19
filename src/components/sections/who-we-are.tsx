@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/ui/reveal";
 import { photo } from "@/lib/photos";
-import { getSection } from "@/cms/content/sections";
+import { getSection, paragraphs } from "@/cms/content/sections";
 
 /**
  * Who We Are — the quiet room.
@@ -48,6 +48,7 @@ const STORY_PHOTO = "fxbvillage-tlf-05";
 export async function WhoWeAre() {
   const story = photo(STORY_PHOTO);
   const copy = await getSection("home:who-we-are");
+  const [lead, ...rest] = paragraphs(copy.body);
 
   return (
     <section id="who-we-are" className="bg-white py-24 lg:py-32">
@@ -101,19 +102,23 @@ export async function WhoWeAre() {
             delay={280}
             className="flex flex-col items-start justify-center gap-7 lg:col-span-6 lg:col-start-7"
           >
-            <p className="max-w-[34ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[30px]">
-              {copy.body}
-            </p>
+            {/* The first paragraph is the claim and is set large; the rest
+                is the account of it. Both come out of one field — see
+                `paragraphs` for why a blank line rather than a second box. */}
+            {lead && (
+              <p className="max-w-[34ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[30px]">
+                {lead}
+              </p>
+            )}
 
-            <p className="max-w-[54ch] text-base leading-relaxed text-gray lg:text-[17px]">
-              FXB International came to Rwanda in 1995 to walk with vulnerable
-              children, widows and families on the road back to self-reliance.
-              The FXBVillage model followed in 2000, and in 2012 we became a
-              registered Rwandan NGO in our own right. Today we work across all
-              four provinces and the City of Kigali — a local organisation
-              carrying a global name, and the legacy of François-Xavier
-              Bagnoud, into its fourth decade.
-            </p>
+            {rest.map((paragraph, index) => (
+              <p
+                key={index}
+                className="max-w-[54ch] text-base leading-relaxed text-gray lg:text-[17px]"
+              >
+                {paragraph}
+              </p>
+            ))}
 
             <Link
               href="/who-we-are"

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSection } from "@/cms/content/sections";
+import { getSection, paragraphs } from "@/cms/content/sections";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
@@ -79,18 +79,14 @@ export default async function GetInvolvedPage() {
             </Reveal>
 
             <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
-              {waysCopy.body && (
-                <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
-                  {waysCopy.body}
+              {paragraphs(waysCopy.body).map((paragraph, index) => (
+                <p
+                  key={index}
+                  className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]"
+                >
+                  {paragraph}
                 </p>
-              )}
-              <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
-                Through strong partnerships, we combine resources, expertise,
-                innovation and local knowledge to create solutions that
-                strengthen resilience and promote sustainable development.
-                Together, we can build stronger communities and create a world
-                fit for children.
-              </p>
+              ))}
               <div className="mt-2 flex flex-wrap gap-4">
                 <Pill href="/what-we-do" variant="primary" size="lg">
                   Explore Our Work

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { SectionBand } from "@/components/layout/section-band";
-import { getSection } from "@/cms/content/sections";
+import { getSection, paragraphs } from "@/cms/content/sections";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
 import { sdgs } from "@/lib/sdg";
@@ -26,6 +26,7 @@ import { sdgs } from "@/lib/sdg";
  */
 export async function WhyItWorks() {
   const copy = await getSection("what-we-do:why-it-works");
+  const [lead, ...rest] = paragraphs(copy.body);
   return (
     <SectionBand section={copy} id="why-it-works" className="scroll-mt-36 bg-white py-24 lg:py-32">
       <Container>
@@ -43,25 +44,20 @@ export async function WhyItWorks() {
           </Reveal>
 
           <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
-            {copy.body && (
+            {lead && (
               <p className="max-w-[38ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]">
-                {copy.body}
+                {lead}
               </p>
             )}
 
-            <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
-              Instead of addressing one challenge in isolation, the model
-              recognises that lasting change requires coordinated action across
-              multiple sectors. By empowering families with knowledge,
-              resources, and opportunities, the model creates a foundation for
-              long-term resilience and sustainable development.
-            </p>
-
-            <p className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]">
-              This holistic approach not only improves immediate living
-              conditions but also enables communities to continue progressing
-              long after project interventions have ended.
-            </p>
+            {rest.map((paragraph, index) => (
+              <p
+                key={index}
+                className="max-w-[58ch] text-base leading-relaxed text-gray lg:text-[17px]"
+              >
+                {paragraph}
+              </p>
+            ))}
           </Reveal>
         </div>
 

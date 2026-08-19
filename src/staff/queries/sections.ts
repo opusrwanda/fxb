@@ -55,7 +55,11 @@ export async function saveSection(
    * put back on its own.
    */
   const value = (raw: string, original?: string) => {
-    const text = raw.trim();
+    // Line endings normalised first. A textarea posts CRLF on Windows, and a
+    // multi-paragraph default typed by nobody would otherwise differ from the
+    // shipped one by two invisible characters — stored as an override, badged
+    // as edited, and frozen against the code from then on.
+    const text = raw.replace(/\r\n/g, "\n").trim();
     return text === "" || text === original ? null : text;
   };
 

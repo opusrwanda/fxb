@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SectionBand } from "@/components/layout/section-band";
-import { getSection } from "@/cms/content/sections";
+import { getSection, paragraphs } from "@/cms/content/sections";
 import { Reveal } from "@/components/ui/reveal";
 
 /**
@@ -56,11 +56,7 @@ export async function ModelIntro() {
         </Reveal>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-3 lg:gap-10">
-          {[
-            "The FXBVillage model is a holistic and integrated approach designed to enable families to sustainably move out of poverty, by giving parents the means to protect and raise their children. Economic empowerment is its central driver of change.",
-            "However, economic support alone is not enough to ensure a lasting exit from poverty. The model therefore combines economic empowerment with access to basic services and the realisation of fundamental rights, while placing the improvement of children's and adults' quality of life at the heart of its action.",
-            "By acting simultaneously on economic, social, and human dimensions, the FXBVillage model fosters lasting family transformation, improves children's wellbeing, and helps break the intergenerational cycle of poverty.",
-          ].map((paragraph, index) => (
+          {paragraphs(copy.body).map((paragraph, index) => (
             <Reveal key={index} delay={60 + Math.min(index, 3) * 60}>
               <p className="text-base leading-relaxed text-gray lg:text-[17px]">
                 {paragraph}

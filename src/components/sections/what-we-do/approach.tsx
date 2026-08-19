@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
-import { getSection } from "@/cms/content/sections";
+import { getSection, paragraphs } from "@/cms/content/sections";
 import { SECTORS as shipped } from "@/lib/sectors";
 import { Reveal } from "@/components/ui/reveal";
 import type { Img } from "@/cms/content/image";
@@ -167,22 +167,14 @@ export async function Approach({ image }: { image?: Img | null }) {
             </Reveal>
 
             <Reveal delay={140} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
-              {challenge.body && (
-                <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
-                  {challenge.body}
+              {paragraphs(challenge.body).map((paragraph, index) => (
+                <p
+                  key={index}
+                  className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]"
+                >
+                  {paragraph}
                 </p>
-              )}
-
-              <p className="max-w-[58ch] text-base leading-relaxed text-white-94 lg:text-[17px]">
-                Poverty experienced by children, even for short periods, can
-                leave lasting marks throughout their lives. In the most severe
-                situations, some do not survive. Those who do may suffer from
-                early childhood onward, from malnutrition, insecurity, and
-                multiple forms of deprivation, with lasting effects on their
-                health and cognitive development. These consequences compromise
-                their potential in adulthood and weaken the well-being of future
-                generations.
-              </p>
+              ))}
             </Reveal>
           </div>
         </Container>
