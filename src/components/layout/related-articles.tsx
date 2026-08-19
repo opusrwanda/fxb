@@ -23,13 +23,20 @@ import { Reveal } from "@/components/ui/reveal";
  * choice, few enough that the column ends before the article does on anything
  * but the shortest piece — a sidebar taller than its article is a second
  * article competing with the first.
+ *
+ * NOT ONLY ARTICLES. The areas of intervention use it too, to put the other
+ * areas beside the one being read. Everything about the arrangement is the
+ * same question — what else is there, held in place while this scrolls past —
+ * so the only thing that had to give was the date, which an area does not
+ * have. Two sidebars that looked alike and behaved differently would be worse
+ * than one that takes an optional line.
  */
 
 export type RelatedItem = {
   href: string;
   title: string;
-  /** Already formatted for display. */
-  date: string;
+  /** Already formatted for display. Absent on anything undated. */
+  date?: string;
   image: Img | null;
   language?: string;
 };
@@ -104,9 +111,11 @@ export function RelatedArticles({
                   >
                     {item.title}
                   </span>
-                  <span className="mt-1 block text-[13px] text-gray-80">
-                    {item.date}
-                  </span>
+                  {item.date && (
+                    <span className="mt-1 block text-[13px] text-gray-80">
+                      {item.date}
+                    </span>
+                  )}
                 </span>
               </Link>
             </li>
