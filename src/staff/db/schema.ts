@@ -695,6 +695,23 @@ export type SiteSettingsData = {
    * than rendering the section empty.
    */
   values?: string[];
+  /**
+   * The lockup, in its two versions.
+   *
+   * Both optional and both fall back to the files in `public/img`, which is
+   * what the site has always drawn. The Brand Guiding Tool labels the shipped
+   * one "OLD VERSION (TO BE CHANGED LATER)" — it still carries the "Ending
+   * Poverty, Restoring Dignity" tagline the newer lockup drops — and replacing
+   * it was a developer and a deploy until this.
+   *
+   * TWO FIELDS, NOT ONE. The white version is not a colour setting: it is a
+   * different drawing, run on the transparent header, inside the blue rooms and
+   * in the footer. Deriving it from the colour file is what was done to ship,
+   * and a single upload would either put a coloured lockup on blue or a white
+   * one on white.
+   */
+  logoColourId?: number | null;
+  logoWhiteId?: number | null;
   socials: { platform: string; url: string }[];
   externalSystems: { label: string; url: string }[];
   /**

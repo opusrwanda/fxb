@@ -134,6 +134,11 @@ export default async function GlobalPage({
     height: "medium",
   }) as PromoBannerData;
 
+  /** Named once, because three pickers on this page want the same list. */
+  const images = mediaOptions.filter((option) =>
+    option.mimeType.startsWith("image/"),
+  );
+
   // A spare blank row, so adding a figure does not need a button that adds one.
   const figureCount = isImpact ? impact.figures.length + 1 : 0;
 
@@ -249,9 +254,7 @@ export default async function GlobalPage({
                         name={`figure-${index}-photo`}
                         value={figure?.photoId ?? null}
                         kind="image"
-                        options={mediaOptions.filter((option) =>
-                          option.mimeType.startsWith("image/"),
-                        )}
+                        options={images}
                       />
                     </div>
                   </fieldset>
@@ -301,9 +304,7 @@ export default async function GlobalPage({
                 name="imageId"
                 value={banner.imageId}
                 kind="image"
-                options={mediaOptions.filter((option) =>
-                  option.mimeType.startsWith("image/"),
-                )}
+                options={images}
               />
             </div>
 
@@ -363,6 +364,60 @@ export default async function GlobalPage({
           </>
         ) : (
           <>
+            <div className="flex flex-col gap-6">
+              <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                LOGO
+              </h2>
+              <p className="max-w-[62ch] text-[13px] leading-relaxed text-gray-80">
+                The lockup in the header, in the footer and on every page of the
+                site. Two files rather than one: the white version is a separate
+                drawing, not a colour setting, and it is what runs over a
+                photograph, inside the blue rooms and in the footer. Leave
+                either empty and the site keeps the one it ships with.
+              </p>
+
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="g-logoColourId"
+                  className="text-sm font-semibold text-blue"
+                >
+                  Logo — full colour
+                </label>
+                <p className="text-[13px] leading-relaxed text-gray-80">
+                  A PNG or SVG on a transparent background. Shown on white — the
+                  header once it has scrolled, and the panel&rsquo;s own pages.
+                </p>
+                <MediaPicker
+                  id="g-logoColourId"
+                  name="logoColourId"
+                  value={site?.logoColourId ?? null}
+                  kind="image"
+                  options={images}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="g-logoWhiteId"
+                  className="text-sm font-semibold text-blue"
+                >
+                  Logo — white
+                </label>
+                <p className="text-[13px] leading-relaxed text-gray-80">
+                  The same lockup drawn in white, on a transparent background.
+                  It sits over the hero photograph and on the blue footer, so a
+                  coloured file here will be unreadable.
+                </p>
+                <MediaPicker
+                  id="g-logoWhiteId"
+                  name="logoWhiteId"
+                  value={site?.logoWhiteId ?? null}
+                  kind="image"
+                  options={images}
+                />
+              </div>
+            </div>
+
             <div className="flex flex-col gap-6">
               <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 CONTACT

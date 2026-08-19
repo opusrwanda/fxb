@@ -104,7 +104,9 @@ export async function sendCampaign(
       ? formatEditionDate(campaign.sentAt)
       : formatEditionDate(new Date()),
     heroUrl: hero ?? null,
-    logoUrl: "/img/logo-colour.png",
+    // The same lockup the site draws, so a newsletter cannot go out under a
+    // logo FXB has stopped using. The shipped file until somebody uploads one.
+    logoUrl: details.logos.colour?.url ?? "/img/logo-colour.png",
     // Three at most — the template's band is three columns. Taken from the
     // same Impact figures the site prints, so a newsletter cannot quote a
     // number the website disagrees with.

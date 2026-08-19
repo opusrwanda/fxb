@@ -119,7 +119,12 @@ export function SiteFooter({ details }: { details: SiteDetails }) {
           {/* self-start, or the flex row stretches the lockup to the full
               column width and squashes it out of its 2.95:1 ratio. The column
               wrapper went with the endorsement line it was there to stack. */}
-          <Logo variant="white" alt={details.name} className="h-10 self-start" />
+          <Logo
+            variant="white"
+            logo={details.logos?.white}
+            alt={details.name}
+            className="h-10 self-start"
+          />
 
           {/* The external systems (Sugira Muryango, POMC) are deliberately not
               here — they are staff tools and the header's utility strip is

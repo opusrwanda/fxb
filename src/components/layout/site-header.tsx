@@ -274,7 +274,13 @@ export function SiteHeader({
             className="block transition-opacity duration-300 delay-[112ms] ease-(--ease-standard)"
             style={{ opacity: solid ? 0 : 1 }}
           >
-            <Logo variant="white" alt="" priority className="h-10 lg:h-14" />
+            <Logo
+              variant="white"
+              logo={details.logos?.white}
+              alt=""
+              priority
+              className="h-10 lg:h-14"
+            />
           </span>
           <span
             className="absolute inset-0 flex items-center transition-opacity duration-300 delay-[112ms] ease-(--ease-standard)"
@@ -283,6 +289,7 @@ export function SiteHeader({
           >
             <Logo
               variant={drawerOpen ? "white" : "colour"}
+              logo={drawerOpen ? details.logos?.white : details.logos?.colour}
               alt=""
               priority
               className="h-10 lg:h-14"

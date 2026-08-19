@@ -57,6 +57,12 @@ async function put(route: GlobalRoute, data: unknown) {
 const str = (form: FormData, name: string) =>
   String(form.get(name) ?? "").trim();
 
+/** A media row's id, or null where the picker was left empty. */
+const id = (form: FormData, name: string) => {
+  const raw = str(form, name);
+  return raw === "" ? null : Number(raw);
+};
+
 /** One value per line, blanks dropped. */
 const lines = (form: FormData, name: string) =>
   String(form.get(name) ?? "")
@@ -84,6 +90,15 @@ export async function saveSiteSettings(form: FormData) {
     values: lines(form, "values"),
     // A platform with no address is simply not a social link, so it drops out
     // rather than rendering an icon that goes nowhere.
+    /**
+     * The lockups, by library row.
+     *
+     * Null when the picker is empty, which is what puts the site back on the
+     * files in `public/img` — not an error state, and the only reason the pair
+     * could be shipped before anybody had a replacement to upload.
+     */
+    logoColourId: id(form, "logoColourId"),
+    logoWhiteId: id(form, "logoWhiteId"),
     socials: PLATFORMS.map((platform) => ({
       platform,
       url: str(form, `social-${platform}`),

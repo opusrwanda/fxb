@@ -1,9 +1,12 @@
 import { eq } from "drizzle-orm";
 
-import { db, globals } from "@/staff/db";
+import { inArray } from "drizzle-orm";
+
+import { db, globals, media } from "@/staff/db";
 import { DEFAULT_VALUES, type SiteSettingsData } from "@/staff/db/schema";
 import { brand } from "@/lib/site";
 import { cached } from "./cache";
+import { image, type Img } from "./image";
 
 /** The platforms the icon set covers, and how each is named to a screen reader. */
 const socialLabels: Record<string, string> = {
@@ -31,6 +34,14 @@ export type SiteDetails = typeof brand & {
   values: string[];
   socials: { label: string; href: string; icon: string }[];
   externalSystems: { label: string; href: string }[];
+  /**
+   * The lockup, or null where the shipped file still stands.
+   *
+   * Null is the answer, not a failure: `Logo` draws `public/img` when it is
+   * given nothing, which is what keeps the site looking exactly as it does
+   * until somebody uploads one.
+   */
+  logos: { colour: Img | null; white: Img | null };
   /** Offices other than the head office, in the order they were entered. */
   subOffices: { name: string; location: string; mapUrl?: string }[];
 };
@@ -54,6 +65,22 @@ export const getSiteDetails = cached(
       .limit(1);
 
     const data = row?.data as SiteSettingsData;
+
+    /**
+     * Both lockups in one query, and only when one has been chosen.
+     *
+     * `inArray` with an empty list is a query that cannot match anything, so
+     * the common case — nobody has uploaded a logo and the shipped files stand
+     * — does not go to the database at all.
+     */
+    const logoIds = [data.logoColourId, data.logoWhiteId].filter(
+      (id): id is number => typeof id === "number",
+    );
+    const rows = logoIds.length
+      ? await db.select().from(media).where(inArray(media.id, logoIds))
+      : [];
+    const logo = (id?: number | null) =>
+      image(rows.find((row) => row.id === id)) ?? null;
 
     return {
       ...brand,
@@ -85,6 +112,7 @@ export const getSiteDetails = cached(
         href: system.url,
       })),
       subOffices: data.subOffices ?? [],
+      logos: { colour: logo(data.logoColourId), white: logo(data.logoWhiteId) },
     };
   },
 );
