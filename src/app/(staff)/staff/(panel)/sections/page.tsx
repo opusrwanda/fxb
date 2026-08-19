@@ -234,7 +234,11 @@ export default async function SectionsPage({
           open={page === openPage}
           className="group mt-5 rounded-card border border-gray-15 first-of-type:mt-10"
         >
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition-colors duration-300 hover:bg-blue-08 [&::-webkit-details-marker]:hidden">
+          {/* The same corners as the box it opens — a square hover tint inside a
+              20px border shows four white notches at the top of the fold.
+              Squared off underneath once it is open, where the row meets the
+              hairline over the forms rather than the outside of the card. */}
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-card px-6 py-5 transition-colors duration-300 group-open:rounded-b-none hover:bg-blue-08 [&::-webkit-details-marker]:hidden">
             <span className="flex items-center gap-3">
               <ChevronRight
                 className="size-4 shrink-0 text-gray-80 transition-transform duration-300 group-open:rotate-90"
