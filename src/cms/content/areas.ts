@@ -3,6 +3,7 @@ import { asc, eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { areas, db, media } from "@/staff/db";
+import type { RichText } from "@/staff/db/schema";
 import iconSet from "@/lib/icons.json";
 import { areas as seeded } from "@/lib/areas";
 import { photo } from "@/lib/photos";
@@ -36,7 +37,18 @@ export type InterventionArea = {
   slug: string;
   label: string;
   blurb: string;
+  /**
+   * The area's own page.
+   *
+   * It was `/what-we-do#health` — an anchor on the page the card was already
+   * on, so following a pillar from the home page scrolled you to a card that
+   * said the same dozen words the pillar had. Every area has a page now.
+   */
   href: string;
+  /** The paragraph the page opens on, where one has been written. */
+  intro?: string;
+  /** The account of the area. Null where nobody has written one yet. */
+  body: RichText | null;
   focus: string[];
   /**
    * The drawing to paint in the ring, from wherever it came.
@@ -75,7 +87,9 @@ export const getAreas = cached(
       slug: area.slug,
       label: area.title,
       blurb: area.blurb ?? "",
-      href: `/what-we-do#${area.slug}`,
+      href: `/what-we-do/areas/${area.slug}`,
+      intro: area.intro ?? undefined,
+      body: area.body,
       focus: area.focus,
       // An uploaded file wins. Otherwise the set — and not cast blindly, since
       // an icon can be withdrawn from it after somebody has chosen it, and an
@@ -95,6 +109,18 @@ export async function getAreasIn(
 
 /** Everything the home page shows. The other areas are on What We Do only. */
 export const getCoreAreas = () => getAreasIn("core");
+
+/**
+ * One area, by slug.
+ *
+ * Read off the same cached list the cards are built from rather than queried
+ * on its own — there are a dozen of these and every page already holds them
+ * all, so a second query would be a round trip to find something already in
+ * hand, and it could not go out of step with what the cards say.
+ */
+export async function getArea(slug: string): Promise<InterventionArea | null> {
+  return (await getAreas()).find((area) => area.slug === slug) ?? null;
+}
 
 const SHIPPED = new Map(
   (iconSet as { id: string; src: string }[]).map((icon) => [icon.id, icon.src]),

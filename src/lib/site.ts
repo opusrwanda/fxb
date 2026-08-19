@@ -250,6 +250,10 @@ const WHITE_GROUND = [
   // reason: a job description is a document somebody reads, not a place on
   // the site. The listing above it still opens with the room.
   /^\/get-involved\/careers\/[^/]+$/,
+  // An area of intervention, for the same reason a programme is here: it opens
+  // on its own photograph, and a page banner above that would be two large
+  // pictures with the top one about nothing in particular.
+  /^\/what-we-do\/areas\/[^/]+$/,
 ];
 
 export function hasTransparentHeader(pathname?: string): boolean {

@@ -391,8 +391,18 @@ export const areas = pgTable("areas", {
   title: text("title").notNull(),
   /** The anchor on What We Do. Derived from the name, then left alone. */
   slug: varchar("slug", { length: 200 }).notNull().unique(),
-  /** The single line under the name. */
+  /** The single line under the name, on the card and the home page pillar. */
   blurb: text("blurb"),
+  /**
+   * The paragraph the area's own page opens on.
+   *
+   * Separate from `blurb`, which is a dozen words sized for a card. A page
+   * opening wants a sentence or two, and making one field do both jobs means
+   * either a card with a paragraph on it or a page that opens on a caption.
+   */
+  intro: text("intro"),
+  /** The account of the area, on its own page. */
+  body: jsonb("body").$type<RichText>(),
   /** core | other */
   category: varchar("category", { length: 20 }).notNull().default("core"),
   /** The bulleted focus areas on the card. */

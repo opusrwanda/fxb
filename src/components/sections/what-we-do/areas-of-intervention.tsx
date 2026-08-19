@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { MaskIcon } from "@/components/brand/icon";
 import { Container } from "@/components/layout/container";
 import { SectionBand } from "@/components/layout/section-band";
@@ -10,7 +12,7 @@ import { getAreas, type InterventionArea } from "@/cms/content/areas";
  * Areas of Intervention — a card per area.
  *
  * Each card carries its own anchor as well as the section's, because the home
- * page's pillars link straight to the individual areas (`/what-we-do#health`
+ * page's pillars link straight to the individual areas (`/what-we-do/areas/health`
  * and so on) rather than to the block.
  *
  * TWO GROUPS, NOT ONE LIST. The core areas are what the FXBVillage model is,
@@ -140,17 +142,29 @@ function AreaCards({
 
         return (
           <Reveal as="li" key={area.slug} delay={60 + Math.min(index, 3) * 60}>
-            {/* Deliberately not a link, and takes no pointer cursor: the areas
-                are explained here and nowhere else, so there is nothing to
-                click through to and a card that looked clickable would be a
-                promise the page cannot keep. */}
-            <article
+            {/* A link now, because there is somewhere to go. This card was
+                deliberately inert for as long as the areas were explained here
+                and nowhere else — a card that looks clickable and is not is a
+                promise the page cannot keep. Each area has its own page, so
+                the promise is one the page can now keep, and the arrow says so
+                before the pointer arrives. */}
+            <Link
+              href={area.href}
               id={area.slug}
-              className={`wedge flex h-full scroll-mt-32 flex-col gap-6 p-8 text-white lg:p-10 ${
-                green ? "bg-[var(--color-green-deep)]" : "bg-blue"
+              className={`wedge group relative flex h-full scroll-mt-32 flex-col gap-6 p-8 text-white transition-colors duration-500 lg:p-10 ${
+                green
+                  ? "bg-[var(--color-green-deep)] hover:bg-[var(--color-green-deep)]/90"
+                  : "bg-blue hover:bg-blue-90"
               }`}
             >
-              <div className="flex items-center gap-5">
+              {/* Pinned to the card rather than to the heading: as a sibling of
+                  a title that runs one line or two, the arrows sat at different
+                  heights across a row. */}
+              <span className="motion-transform wedge-nudge absolute top-8 right-8 z-10 flex size-9 items-center justify-center rounded-full bg-white/12 transition-[transform,translate,scale,rotate,background-color] duration-500 ease-(--ease-standard) group-hover:bg-green lg:top-10 lg:right-10">
+                <ArrowUpRight className="size-4 text-white" aria-hidden="true" />
+              </span>
+
+              <div className="flex items-center gap-5 pr-12">
                 {/* White on the colour rather than blue on a tint — the ring is
                     a hole in the card rather than a badge on it, which is what
                     a solid ground wants. */}
@@ -211,7 +225,7 @@ function AreaCards({
                   />
                 </div>
               )}
-            </article>
+            </Link>
           </Reveal>
         );
       })}

@@ -353,6 +353,19 @@ export const fields: Record<string, Field[]> = {
       help: "The sentence under the name, in about a dozen words — what the area covers. Shown on the card and under the pillar on the home page.",
     },
     {
+      name: "intro",
+      label: "Opening",
+      type: "textarea",
+      rows: 3,
+      help: "The paragraph the area's own page opens on, under the title. A sentence or two — longer than the line above, which has a card to fit on. Without one the page opens straight into the content below.",
+    },
+    {
+      name: "body",
+      label: "Page content",
+      type: "richtext",
+      help: "The full account of this area — what it covers, how FXB works on it, what it has changed. This is the area's own page; an area with nothing written here says so plainly rather than showing an empty one.",
+    },
+    {
       name: "focus",
       label: "Focus areas",
       type: "list",
@@ -364,7 +377,7 @@ export const fields: Record<string, Field[]> = {
       label: "Photograph",
       type: "upload",
       accept: "image",
-      help: "Landscape. It sits at the foot of the card and behind the pillar on the home page, so choose one that reads at both sizes. Without one the card simply ends after its list.",
+      help: "Landscape. It sits at the foot of the card, behind the pillar on the home page, and at the top of the area's own page — so choose one that reads at all three sizes. Without one the card simply ends after its list.",
     },
     {
       name: "iconId",
