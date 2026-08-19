@@ -23,15 +23,26 @@ import { desc, eq } from "drizzle-orm";
 
 const DIR = path.resolve(process.cwd(), "applications");
 
-/** What a CV may be. Deliberately narrow — this is not a general uploader. */
+/**
+ * PDF and nothing else.
+ *
+ * Word was accepted for a while and it cost more than it gave: a .docx opens
+ * differently on every machine that reads it, and the attachment is now the
+ * whole application rather than a CV — several documents a candidate has been
+ * asked to combine, which is a thing PDF does and Word does not.
+ */
 const CV_TYPES: Record<string, string> = {
   "application/pdf": ".pdf",
-  "application/msword": ".doc",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
 };
 
-/** 8MB. A CV that does not fit is a CV with photographs in it. */
-const MAX_CV = 8 * 1024 * 1024;
+/**
+ * 10MB, up from 8.
+ *
+ * One file now holds the CV, the covering letter, the certificates and the
+ * application form where the position has one, so the ceiling has to leave
+ * room for scans rather than for a two-page CV.
+ */
+const MAX_CV = 10 * 1024 * 1024;
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -51,7 +62,6 @@ export type ApplyInput = {
   name: string;
   email: string;
   phone: string;
-  message: string;
   cv: File | null;
 };
 
@@ -59,7 +69,6 @@ export async function createApplication(input: ApplyInput): Promise<ApplyResult>
   const name = input.name.trim();
   const email = input.email.trim();
   const phone = input.phone.trim();
-  const message = input.message.trim();
 
   if (!name) return { ok: false, error: "Please tell us your name." };
   if (!EMAIL.test(email)) {
@@ -67,12 +76,6 @@ export async function createApplication(input: ApplyInput): Promise<ApplyResult>
   }
   if (name.length > 200) return { ok: false, error: "That name is too long." };
   if (phone.length > 40) return { ok: false, error: "That phone number is too long." };
-  if (message.length > 5000) {
-    return {
-      ok: false,
-      error: "That covering note is too long. Please keep it under 5,000 characters.",
-    };
-  }
 
   // The opening has to exist and be published. Without this the id is just a
   // number in a form field, and the table would accept applications against
@@ -96,12 +99,16 @@ export async function createApplication(input: ApplyInput): Promise<ApplyResult>
   if (input.cv && input.cv.size > 0) {
     const extension = CV_TYPES[input.cv.type];
     if (!extension) {
-      return { ok: false, error: "Attach your CV as a PDF or a Word document." };
+      return {
+        ok: false,
+        error:
+          "Please attach your application as a single PDF. Combine everything you are sending into one file.",
+      };
     }
     if (input.cv.size > MAX_CV) {
       return {
         ok: false,
-        error: `That file is ${(input.cv.size / 1024 / 1024).toFixed(1)}MB. Please keep your CV under 8MB.`,
+        error: `That file is ${(input.cv.size / 1024 / 1024).toFixed(1)}MB. Please keep it under 10MB.`,
       };
     }
 
@@ -128,7 +135,10 @@ export async function createApplication(input: ApplyInput): Promise<ApplyResult>
         name,
         email,
         phone: phone || null,
-        message: message || null,
+        // Nothing writes this any more — the "Why you are applying" box is
+        // gone, because it asked a candidate to write their application twice.
+        // The column stays for the applications that arrived while it stood.
+        message: null,
         cvFilename,
         cvOriginalName,
         cvBytes,

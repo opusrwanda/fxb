@@ -1,0 +1,2 @@
+ALTER TABLE "opportunities" ADD COLUMN "form_id" integer;--> statement-breakpoint
+ALTER TABLE "opportunities" ADD CONSTRAINT "opportunities_form_id_media_id_fk" FOREIGN KEY ("form_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;

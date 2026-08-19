@@ -507,6 +507,13 @@ export const fields: Record<string, Field[]> = {
       help: "The full terms of reference or job description, if there is one.",
     },
     {
+      name: "formId",
+      label: "Application form",
+      type: "upload",
+      accept: "document",
+      help: "The form a candidate has to fill in and send back, where the position has one. It appears as a download button under the description, separately from the document above — that one is read, this one is completed.",
+    },
+    {
       name: "kind",
       label: "Kind",
       type: "select",

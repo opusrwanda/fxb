@@ -43,7 +43,6 @@ export async function POST(request: Request) {
     name: String(form.get("name") ?? ""),
     email: String(form.get("email") ?? ""),
     phone: String(form.get("phone") ?? ""),
-    message: String(form.get("message") ?? ""),
     cv: cv instanceof File ? cv : null,
   });
 
@@ -78,7 +77,6 @@ async function notify(
   const name = String(form.get("name") ?? "").trim();
   const email = String(form.get("email") ?? "").trim();
   const phone = String(form.get("phone") ?? "").trim();
-  const message = String(form.get("message") ?? "").trim();
 
   const lines = [
     `A new application for: ${title}`,
@@ -87,10 +85,9 @@ async function notify(
     `Email: ${email}`,
     phone ? `Phone: ${phone}` : null,
     "",
-    message ? "Covering note:" : "No covering note.",
-    message || null,
-    "",
-    `Recorded as application #${id}. The CV is attached and is also on file in the staff panel.`,
+    application.cvFilename
+      ? `Recorded as application #${id}. The application is attached as a single PDF and is also on file in the staff panel.`
+      : `Recorded as application #${id}. No document was attached — the candidate will need to be written to for it.`,
   ].filter((line) => line !== null);
 
   const attachments: { filename: string; content: Buffer }[] = [];

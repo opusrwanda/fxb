@@ -504,6 +504,15 @@ export const opportunities = pgTable("opportunities", {
   summary: text("summary"),
   body: jsonb("body").$type<RichText>(),
   documentId: integer("document_id").references(() => media.id, { onDelete: "set null" }),
+  /**
+   * The form FXB asks applicants to fill in and send back.
+   *
+   * Separate from `documentId`, which is the terms of reference — the thing a
+   * candidate reads. This is the thing they have to complete, and a vacancy can
+   * have one, the other, both or neither. Folding the two together would mean
+   * one download button whose label is right half the time.
+   */
+  formId: integer("form_id").references(() => media.id, { onDelete: "set null" }),
   status: varchar("status", { length: 20 }).notNull().default("draft").$type<Status>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

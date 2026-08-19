@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ChevronRight, Clock, ExternalLink, MapPin } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronRight,
+  Clock,
+  Download,
+  ExternalLink,
+  MapPin,
+} from "lucide-react";
 
 import { formatDate } from "@/cms/content/date";
 import { getOpening, getOpenings, hasClosed } from "@/cms/content/opportunities";
@@ -158,20 +165,40 @@ export default async function VacancyPage({
                 </Reveal>
               )}
 
-              {opening.document && (
-                <Reveal delay={240} className="mt-10">
-                  <Pill
-                    href={opening.document.url}
-                    variant="outline"
-                    size="lg"
-                    newTab
-                  >
-                    <ExternalLink className="mr-2 size-4" aria-hidden="true" />
-                    Read the full pack
-                    {opening.document.bytes
-                      ? ` (${formatBytes(opening.document.bytes)})`
-                      : ""}
-                  </Pill>
+              {/* The two documents are different errands and are labelled
+                  as such: the pack is read, the form is filled in and sent
+                  back. A vacancy can have one, the other, both or neither. */}
+              {(opening.document || opening.form) && (
+                <Reveal delay={240} className="mt-10 flex flex-wrap gap-4">
+                  {opening.document && (
+                    <Pill
+                      href={opening.document.url}
+                      variant="outline"
+                      size="lg"
+                      newTab
+                    >
+                      <ExternalLink className="mr-2 size-4" aria-hidden="true" />
+                      Read the full pack
+                      {opening.document.bytes
+                        ? ` (${formatBytes(opening.document.bytes)})`
+                        : ""}
+                    </Pill>
+                  )}
+
+                  {opening.form && (
+                    <Pill
+                      href={opening.form.url}
+                      variant="primary"
+                      size="lg"
+                      newTab
+                    >
+                      <Download className="mr-2 size-4" aria-hidden="true" />
+                      Download the application form
+                      {opening.form.bytes
+                        ? ` (${formatBytes(opening.form.bytes)})`
+                        : ""}
+                    </Pill>
+                  )}
                 </Reveal>
               )}
 

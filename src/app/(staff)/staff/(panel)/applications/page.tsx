@@ -21,7 +21,7 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
  *
  * A register, not an editor. Nobody types one of these and nobody corrects
  * one: it is the record of what a person sent on a particular day, and the
- * only actions on it are reading it, opening the CV and replying.
+ * only actions on it are reading it, opening the attachment and replying.
  *
  * Everything is on the page rather than behind a row — a covering note is a
  * paragraph, and hiding a paragraph behind a click to save vertical space
@@ -119,11 +119,11 @@ export default async function ApplicationsPage() {
                         className="inline-flex h-10 items-center gap-2 rounded-full bg-blue px-5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
                       >
                         <Download className="size-4" aria-hidden="true" />
-                        CV
+                        Application
                         {row.cvBytes ? ` (${formatBytes(row.cvBytes)})` : ""}
                       </a>
                     ) : (
-                      <span className="text-sm text-gray-80">No CV attached</span>
+                      <span className="text-sm text-gray-80">Nothing attached</span>
                     )}
 
                     {!row.notified && (

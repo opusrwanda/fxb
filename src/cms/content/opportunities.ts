@@ -3,6 +3,8 @@ import { asc, eq } from "drizzle-orm";
 import { db, media, opportunities } from "@/staff/db";
 import type { RichText } from "@/staff/db/schema";
 import { cached } from "./cache";
+import { alias } from "drizzle-orm/pg-core";
+
 import { file } from "./image";
 
 /** A vacancy or a procurement notice — the same shape, on two pages. */
@@ -22,17 +24,23 @@ export type Opening = {
   body: RichText | null;
   /** The full terms of reference or job description, if there is one. */
   document: { url: string; bytes: number | null } | null;
+  /** The form to fill in and send back, where the position has one. */
+  form: { url: string; bytes: number | null } | null;
 };
+
+/** The two documents join the same table twice, so one of them needs a name. */
+const applicationForm = alias(media, "application_form");
 
 const getAll = cached("opportunities", "opportunities", async (): Promise<Opening[]> => {
   const rows = await db
-    .select({ opening: opportunities, document: media })
+    .select({ opening: opportunities, document: media, form: applicationForm })
     .from(opportunities)
     .leftJoin(media, eq(opportunities.documentId, media.id))
+    .leftJoin(applicationForm, eq(opportunities.formId, applicationForm.id))
     .where(eq(opportunities.status, "published"))
     .orderBy(asc(opportunities.closesAt));
 
-  return rows.map(({ opening, document }) => ({
+  return rows.map(({ opening, document, form }) => ({
     id: opening.id,
     slug: opening.slug,
     title: opening.title,
@@ -43,6 +51,7 @@ const getAll = cached("opportunities", "opportunities", async (): Promise<Openin
     summary: opening.summary ?? undefined,
     body: opening.body,
     document: file(document),
+    form: file(form),
   }));
 });
 

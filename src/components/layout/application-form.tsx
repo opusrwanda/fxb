@@ -10,14 +10,23 @@ import { field } from "@/components/ui/field";
  * vacancy in full had nowhere to put this, so applying meant finding an email
  * address elsewhere on the site and hoping the subject line was enough.
  *
- * Only what an application needs: who you are, how to reach you, why you are
- * writing, and your CV. No account, no covering-letter builder, no
- * "how did you hear about us" — the shortlist is made from the CV.
+ * Only what an application needs: who you are, how to reach you, and your
+ * documents. No account, no covering-letter builder, no "how did you hear
+ * about us" — the shortlist is made from what is attached.
  *
- * The CV is optional in the form and required by nothing, because a person
- * applying from a phone in a district office may not have one to hand and a
- * message that says so is better than a form that will not submit. What
- * arrives without one still arrives.
+ * NO COVERING NOTE. There was a "Why you are applying" box, and it was asking
+ * a candidate to write their application twice: once in the documents they are
+ * attaching and once into a textarea in a sidebar. FXB reads the documents.
+ *
+ * ONE PDF, because the attachment is now the whole application — CV, cover
+ * letter, certificates, whatever the position asks for — and a form that takes
+ * one file is the only way to be sure none of it went missing. Combining them
+ * is a thing every phone and every office machine can do; chasing a candidate
+ * for the second half of their application is not.
+ *
+ * Still optional, and required by nothing: a person applying from a phone in a
+ * district office may not have it to hand, and an application that arrives
+ * without it still arrives.
  *
  * Posts multipart to /api/apply, which records the application before it tries
  * to email anyone — so the success message is true even when the mail server
@@ -134,32 +143,22 @@ export function ApplicationForm({
 
       <div className="flex flex-col gap-2">
         <label htmlFor="apply-cv" className="text-sm font-medium text-blue">
-          Your CV <span className="font-normal text-gray-80">(optional)</span>
+          Your application{" "}
+          <span className="font-normal text-gray-80">(optional)</span>
         </label>
         <p id="apply-cv-help" className="text-[13px] leading-relaxed text-gray-80">
-          A PDF or Word document, up to 8MB. If you cannot attach one now, say
-          so in your note below and we will write back for it.
+          A PDF, up to 10MB. Combine everything you are sending — CV, cover
+          letter, certificates, the application form where the position has one
+          — into a single PDF. If you cannot attach it now, write to us and we
+          will take it by email.
         </p>
         <input
           id="apply-cv"
           name="cv"
           type="file"
-          accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          accept=".pdf,application/pdf"
           aria-describedby="apply-cv-help"
           className={`${field} file:mr-4 file:rounded-full file:border-0 file:bg-blue file:px-5 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-90`}
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label htmlFor="apply-message" className="text-sm font-medium text-blue">
-          Why you are applying
-        </label>
-        <textarea
-          id="apply-message"
-          name="message"
-          rows={4}
-          maxLength={5000}
-          className={`${field} resize-y`}
         />
       </div>
 
