@@ -32,12 +32,14 @@ const input =
  * how somebody arrives here: they have just looked at a page and want to change
  * something they saw on it.
  *
- * And folded shut, for the same reason. There are ten pages and forty-odd
- * bands between them, which unfolded is several thousand pixels of form to
- * scroll past to reach the one line somebody came to fix. Closed, the page is
- * a list of the site's pages — which is the question being asked — and opening
- * one is a click. Saving reopens the page that was being edited and returns to
- * the form itself, so the fold never costs anybody their place.
+ * And folded shut, twice. There are ten pages and forty-odd bands between
+ * them, which unfolded is several thousand pixels of form to scroll past to
+ * reach the one line somebody came to fix — and What We Do alone is twelve of
+ * those bands, so opening the page was still most of the problem. So the bands
+ * fold too: closed, this page is a list of the site's pages, an opened page is
+ * a list of its bands, and reaching a form is two clicks. Saving reopens both
+ * folds and returns to the form itself, so neither ever costs anybody their
+ * place.
  *
  * `<details>`, so it works without JavaScript, survives a slow panel, and the
  * browser's own find-in-page can still reach inside a closed one.
@@ -259,26 +261,45 @@ export default async function SectionsPage({
           <div className="flex flex-col gap-5 border-t border-gray-15 p-6">
             {onPage
               .map((section) => (
-                <form
+                /* Shut, like the page holding it. Opening What We Do used to
+                   unroll twelve forms at once — several screens of fields to
+                   scroll past to reach the one band somebody came for, which is
+                   the problem the outer fold was added to solve, one level
+                   down. Closed, a page is a list of its bands, and opening one
+                   is a second click.
+
+                   A NAMED GROUP, because this sits inside another `group` and
+                   an unnamed one here would make every chevron on the page turn
+                   when the page itself opens. */
+                <details
                   key={section.key}
                   id={section.key}
-                  action={save}
-                  className="scroll-mt-8 rounded-card border border-gray-15 p-6"
+                  // The band just saved or put back — the same one the redirect
+                  // scrolls to, so it is open when the reader lands on it.
+                  open={section.key === (saved ?? reset)}
+                  className="group/band scroll-mt-8 rounded-card border border-gray-15"
                 >
-                  <input type="hidden" name="key" value={section.key} />
-
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="text-[15px] font-semibold text-blue">
-                      {section.label}
-                    </h3>
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-card px-6 py-5 transition-colors duration-300 group-open/band:rounded-b-none hover:bg-blue-08 [&::-webkit-details-marker]:hidden">
+                    <span className="flex items-center gap-3">
+                      <ChevronRight
+                        className="size-4 shrink-0 text-gray-80 transition-transform duration-300 group-open/band:rotate-90"
+                        aria-hidden="true"
+                      />
+                      <span className="text-[15px] font-semibold text-blue">
+                        {section.label}
+                      </span>
+                    </span>
                     {isEdited(section) && (
-                      <span className="rounded-full bg-blue-08 px-3 py-1 text-xs font-semibold text-blue">
+                      <span className="shrink-0 rounded-full bg-blue-08 px-3 py-1 text-xs font-semibold text-blue">
                         Edited
                       </span>
                     )}
-                  </div>
+                  </summary>
 
-                  <div className="mt-5 flex flex-col gap-5">
+                <form action={save} className="border-t border-gray-15 p-6">
+                  <input type="hidden" name="key" value={section.key} />
+
+                  <div className="flex flex-col gap-5">
                     <Field
                       id={`${section.key}-eyebrow`}
                       name="eyebrow"
@@ -371,6 +392,7 @@ export default async function SectionsPage({
                     </button>
                   </div>
                 </form>
+                </details>
               ))}
           </div>
         </details>
