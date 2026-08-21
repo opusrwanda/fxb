@@ -115,7 +115,7 @@ function cleanPath(raw: string): string | null {
  * The referring site, as a bare host, or null for "came here directly".
  *
  * Our own pages are null too: a visitor moving from the home page to a story
- * did not arrive from anywhere, and counting fxb.opus.rw as a referrer would
+ * did not arrive from anywhere, and counting fxbrwanda.org as a referrer would
  * put it at the top of the list every time and say nothing.
  */
 function referrerHost(referrer: string | null | undefined, self: string | null): string | null {
