@@ -28,8 +28,14 @@ import type { Status } from "../db/schema";
 export type Cell =
   | { kind: "title"; value: string }
   | { kind: "text"; value: string }
-  | { kind: "muted"; value: string }
+  /**
+   * `sort` is what the column orders by, where the words shown would order
+   * wrongly — "10 districts" comes before "2 districts" as text.
+   */
+  | { kind: "muted"; value: string; sort?: number }
   | { kind: "date"; value: string }
+  /** A file's size in bytes. Shown as KB or MB, sorted as the number it is. */
+  | { kind: "size"; value: number }
   | { kind: "status"; value: Status }
   | { kind: "pill"; value: string }
   | { kind: "thumb"; url: string | null; alt: string };
@@ -53,11 +59,19 @@ const PARTNER_CATEGORIES: Record<string, string> = {
   corporate: "Corporate",
 };
 
+/**
+ * When a row was last changed, as the list's last column.
+ *
+ * The whole timestamp and not just the day, so two files uploaded the same
+ * afternoon still sort into the order they arrived.
+ */
+const modified = (at: Date): Cell => ({ kind: "date", value: at.toISOString() });
+
 const listings: Record<string, () => Promise<Listing>> = {
   async news() {
     const rows = await db.select().from(news).orderBy(desc(news.date));
     return {
-      columns: ["Title", "Date", "Language", "Status"],
+      columns: ["Title", "Date", "Language", "Status", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
@@ -65,6 +79,7 @@ const listings: Record<string, () => Promise<Listing>> = {
           { kind: "date", value: row.date },
           { kind: "muted", value: row.language === "fr" ? "French" : "English" },
           { kind: "status", value: row.status },
+          modified(row.updatedAt),
         ],
       })),
     };
@@ -73,18 +88,20 @@ const listings: Record<string, () => Promise<Listing>> = {
   async milestones() {
     const rows = await db
       .select({ id: milestones.id, year: milestones.year, body: milestones.body,
-                order: milestones.order, filename: media.filename })
+                order: milestones.order, filename: media.filename,
+                updatedAt: milestones.updatedAt })
       .from(milestones)
       .leftJoin(media, eq(milestones.imageId, media.id))
       .orderBy(asc(milestones.order));
     return {
-      columns: ["Year", "What happened", "Photograph"],
+      columns: ["Year", "What happened", "Photograph", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
           { kind: "title" as const, value: row.year },
           { kind: "muted" as const, value: row.body.slice(0, 70) + (row.body.length > 70 ? "…" : "") },
           { kind: "muted" as const, value: row.filename ?? "Year panel" },
+          modified(row.updatedAt),
         ],
       })),
     };
@@ -93,13 +110,14 @@ const listings: Record<string, () => Promise<Listing>> = {
   async stories() {
     const rows = await db.select().from(stories).orderBy(desc(stories.date));
     return {
-      columns: ["Title", "Date", "Status"],
+      columns: ["Title", "Date", "Status", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
           { kind: "title", value: row.title },
           { kind: "date", value: row.date },
           { kind: "status", value: row.status },
+          modified(row.updatedAt),
         ],
       })),
     };
@@ -112,7 +130,7 @@ const listings: Record<string, () => Promise<Listing>> = {
       .orderBy(sql`${programmes.order} asc nulls last`, asc(programmes.name));
 
     return {
-      columns: ["Name", "Stage", "Districts", "Status"],
+      columns: ["Name", "Stage", "Districts", "Status", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
@@ -127,8 +145,10 @@ const listings: Record<string, () => Promise<Listing>> = {
             // a glance.
             kind: "muted",
             value: `${row.districts.length} district${row.districts.length === 1 ? "" : "s"}`,
+            sort: row.districts.length,
           },
           { kind: "status", value: row.status },
+          modified(row.updatedAt),
         ],
       })),
     };
@@ -141,7 +161,7 @@ const listings: Record<string, () => Promise<Listing>> = {
       .orderBy(desc(publications.date));
 
     return {
-      columns: ["Title", "Category", "Date", "Status"],
+      columns: ["Title", "Category", "Date", "Status", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
@@ -149,6 +169,7 @@ const listings: Record<string, () => Promise<Listing>> = {
           { kind: "pill", value: PUBLICATION_CATEGORIES[row.category] ?? row.category },
           { kind: "date", value: row.date },
           { kind: "status", value: row.status },
+          modified(row.updatedAt),
         ],
       })),
     };
@@ -161,12 +182,13 @@ const listings: Record<string, () => Promise<Listing>> = {
         title: areas.title,
         category: areas.category,
         order: areas.order,
+        updatedAt: areas.updatedAt,
       })
       .from(areas)
       .orderBy(asc(areas.category), asc(areas.order));
 
     return {
-      columns: ["Name", "Category", "Order"],
+      columns: ["Name", "Category", "Order", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
@@ -176,6 +198,7 @@ const listings: Record<string, () => Promise<Listing>> = {
             value: row.category === "core" ? "Core" : "Other",
           },
           { kind: "muted" as const, value: String(row.order) },
+          modified(row.updatedAt),
         ],
       })),
     };
@@ -184,13 +207,14 @@ const listings: Record<string, () => Promise<Listing>> = {
   async board() {
     const rows = await db.select().from(board).orderBy(asc(board.order));
     return {
-      columns: ["Name", "Role", "Order"],
+      columns: ["Name", "Role", "Order", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
           { kind: "title", value: row.name },
           { kind: "text", value: row.role },
           { kind: "muted", value: String(row.order) },
+          modified(row.updatedAt),
         ],
       })),
     };
@@ -206,7 +230,7 @@ const listings: Record<string, () => Promise<Listing>> = {
       .orderBy(asc(partners.category), asc(partners.order), asc(partners.name));
 
     return {
-      columns: ["Name", "Category", "Order", "Website"],
+      columns: ["Name", "Category", "Order", "Website", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
@@ -214,6 +238,7 @@ const listings: Record<string, () => Promise<Listing>> = {
           { kind: "pill", value: PARTNER_CATEGORIES[row.category] ?? row.category },
           { kind: "muted", value: String(row.order) },
           { kind: "muted", value: row.url ?? "—" },
+          modified(row.updatedAt),
         ],
       })),
     };
@@ -226,7 +251,7 @@ const listings: Record<string, () => Promise<Listing>> = {
       .orderBy(asc(opportunities.closesAt));
 
     return {
-      columns: ["Title", "Kind", "Closes", "Status"],
+      columns: ["Title", "Kind", "Closes", "Status", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
@@ -237,6 +262,7 @@ const listings: Record<string, () => Promise<Listing>> = {
           },
           { kind: "date", value: row.closesAt },
           { kind: "status", value: row.status },
+          modified(row.updatedAt),
         ],
       })),
     };
@@ -245,7 +271,7 @@ const listings: Record<string, () => Promise<Listing>> = {
   async media() {
     const rows = await db.select().from(media).orderBy(desc(media.createdAt));
     return {
-      columns: ["", "File", "Description", "Size"],
+      columns: ["", "File", "Description", "Dimensions", "Size", "Modified"],
       rows: rows.map((row) => ({
         id: row.id,
         cells: [
@@ -265,6 +291,8 @@ const listings: Record<string, () => Promise<Listing>> = {
                 ? `${row.width}×${row.height}`
                 : row.mimeType.replace("application/", ""),
           },
+          { kind: "size", value: row.filesize },
+          modified(row.updatedAt),
         ],
       })),
     };

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Loader2, Pencil, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Loader2, Pencil, Trash2, X } from "lucide-react";
 
 import type { Cell, Row } from "../queries/list";
 import { STATUS_PILLS } from "../auth/permissions";
@@ -49,6 +49,42 @@ export function ListTable({
   /** The rows a confirmation is open for, or null when none is. */
   const [confirming, setConfirming] = useState<number[] | null>(null);
   const [working, setWorking] = useState(false);
+
+  /**
+   * Which column the list is ordered by, or null for the order it arrived in.
+   *
+   * The arrival order is the collection's own — news by date, partners in the
+   * order the page shows them — and it is what a third click on a heading goes
+   * back to, so sorting is something that can be undone.
+   */
+  const [sort, setSort] = useState<{ column: number; down: boolean } | null>(null);
+
+  const ordered = useMemo(() => {
+    if (!sort) return rows;
+    const key = (row: Row) => sortKey(row.cells[sort.column]);
+    return [...rows].sort((a, b) => {
+      const x = key(a);
+      const y = key(b);
+      const order =
+        typeof x === "number" && typeof y === "number"
+          ? x - y
+          : // `numeric` so "Item 10" follows "Item 9" rather than "Item 1".
+            String(x).localeCompare(String(y), undefined, {
+              numeric: true,
+              sensitivity: "base",
+            });
+      return sort.down ? -order : order;
+    });
+  }, [rows, sort]);
+
+  const cycle = (column: number) =>
+    setSort((current) =>
+      current?.column !== column
+        ? { column, down: false }
+        : current.down
+          ? null
+          : { column, down: true },
+    );
 
   const canSelect = allowed.size > 0;
   const allSelected = canSelect && selected.size === allowed.size;
@@ -130,15 +166,43 @@ export function ListTable({
                   />
                 </th>
               )}
-              {columns.map((column, index) => (
-                <th
-                  key={index}
-                  scope="col"
-                  className="py-3 pr-6 text-[11px] font-semibold tracking-[0.14em] text-gray-80 uppercase"
-                >
-                  {column}
-                </th>
-              ))}
+              {columns.map((column, index) => {
+                // A column of thumbnails has nothing to order by.
+                const sortable = column !== "" && rows[0]?.cells[index]?.kind !== "thumb";
+                const active = sort?.column === index;
+
+                return (
+                  <th
+                    key={index}
+                    scope="col"
+                    aria-sort={
+                      active ? (sort.down ? "descending" : "ascending") : undefined
+                    }
+                    className="py-3 pr-6 text-[11px] font-semibold tracking-[0.14em] text-gray-80 uppercase"
+                  >
+                    {sortable ? (
+                      <button
+                        type="button"
+                        onClick={() => cycle(index)}
+                        title={`Sort by ${column.toLowerCase()}`}
+                        className={`inline-flex items-center gap-1.5 tracking-[0.14em] uppercase transition-colors duration-300 hover:text-blue ${
+                          active ? "text-blue" : ""
+                        }`}
+                      >
+                        {column}
+                        {active &&
+                          (sort.down ? (
+                            <ArrowDown className="size-3" aria-hidden="true" />
+                          ) : (
+                            <ArrowUp className="size-3" aria-hidden="true" />
+                          ))}
+                      </button>
+                    ) : (
+                      column
+                    )}
+                  </th>
+                );
+              })}
               <th scope="col" className="py-3">
                 <span className="sr-only">Actions</span>
               </th>
@@ -146,7 +210,7 @@ export function ListTable({
           </thead>
 
           <tbody>
-            {rows.map((row) => (
+            {ordered.map((row) => (
               <tr
                 key={row.id}
                 className={`group border-b border-gray-15 transition-colors duration-300 hover:bg-blue-08 ${
@@ -311,6 +375,21 @@ const formatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: "UTC",
 });
 
+/** What a cell is ordered by: its number where it has one, else its words. */
+function sortKey(cell: Cell | undefined): string | number {
+  if (!cell || cell.kind === "thumb") return "";
+  if (cell.kind === "size") return cell.value;
+  if (cell.kind === "muted" && cell.sort !== undefined) return cell.sort;
+  return cell.value;
+}
+
+/** 4_194_304 → "4.2 MB". Kilobytes below a megabyte, as a file manager shows. */
+function formatSize(bytes: number): string {
+  if (bytes < 1000) return `${bytes} B`;
+  if (bytes < 1_000_000) return `${Math.round(bytes / 1000)} KB`;
+  return `${(bytes / 1_000_000).toFixed(1)} MB`;
+}
+
 function CellValue({ cell }: { cell: Cell }) {
   switch (cell.kind) {
     case "title":
@@ -333,6 +412,13 @@ function CellValue({ cell }: { cell: Cell }) {
         <time dateTime={cell.value.slice(0, 10)} className="text-sm text-gray-80">
           {formatter.format(new Date(cell.value))}
         </time>
+      );
+
+    case "size":
+      return (
+        <span className="text-sm whitespace-nowrap text-gray-80 tabular-nums">
+          {formatSize(cell.value)}
+        </span>
       );
 
     case "pill":
