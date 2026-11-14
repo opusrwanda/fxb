@@ -13,10 +13,13 @@ import {
   clearPending,
   issueCode,
   otpAvailable,
+  pendingLogin,
+  resendWaitMs,
   pruneExpiredCodes,
 } from "@/staff/auth/otp";
 import { sendLoginCode } from "@/staff/mail/login-code";
 import { PasswordField } from "@/staff/ui/password-field";
+import { SubmitButton } from "@/staff/ui/submit-button";
 
 export const metadata: Metadata = { title: "Sign in" };
 
@@ -77,6 +80,20 @@ async function signIn(formData: FormData) {
   }
 
   await pruneExpiredCodes();
+
+  /**
+   * A code went to this person, from this browser, under a minute ago.
+   *
+   * Then this is the same sign-in being submitted again — a second click, or a
+   * return to the form because the next page was slow to arrive — and the code
+   * already in the inbox is still good. Sending another would void that one
+   * and put two emails where there should be one; pressed five times it was
+   * five. The cooldown is the same minute "Send another code" waits.
+   */
+  const inFlight = await pendingLogin();
+  if (inFlight && inFlight.userId === user.id && resendWaitMs(inFlight) > 0) {
+    redirect("/staff/login/verify");
+  }
 
   const code = await issueCode(user.id);
   const sent = await sendLoginCode(user.email, user.name, code);
@@ -168,12 +185,12 @@ export default async function LoginPage({
           />
           <PasswordField required />
 
-          <button
-            type="submit"
-            className="mt-2 inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
+          <SubmitButton
+            pendingLabel="Sending your code…"
+            className="mt-2 inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90 disabled:bg-blue-90"
           >
             Sign in
-          </button>
+          </SubmitButton>
         </form>
       </div>
     </div>

@@ -3,6 +3,17 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV !== "production";
 
 const nextConfig: NextConfig = {
+  /**
+   * Where the build is written. `.next` unless a deploy says otherwise.
+   *
+   * The server builds in the directory the running site is serving from, and
+   * `next build` empties that directory first — so for the minute a build took,
+   * the live site was reading files that were half there. On 14 November 2026
+   * that was somebody signing in: the code was emailed and the page to type it
+   * into could not be loaded. A deploy now builds into `.next-build` and swaps
+   * the two directories when it has finished.
+   */
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   // A stray lockfile in the home directory makes Next infer the wrong root.
   turbopack: {
     root: __dirname,

@@ -11,6 +11,7 @@ import {
 } from "@/staff/auth/otp";
 import { createSession, currentUser } from "@/staff/auth/session";
 import { sendLoginCode } from "@/staff/mail/login-code";
+import { SubmitButton } from "@/staff/ui/submit-button";
 
 export const metadata: Metadata = { title: "Enter your code" };
 
@@ -156,12 +157,12 @@ export default async function VerifyPage({
             />
           </label>
 
-          <button
-            type="submit"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
+          <SubmitButton
+            pendingLabel="Checking…"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90 disabled:bg-blue-90"
           >
             Sign in
-          </button>
+          </SubmitButton>
         </form>
 
         <div className="mt-8 flex flex-col gap-3 border-t border-gray-15 pt-6 text-sm">
