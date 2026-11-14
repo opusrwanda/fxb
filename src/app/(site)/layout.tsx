@@ -94,7 +94,16 @@ export default async function RootLayout({
 
         <SiteHeader
           details={details}
-          report={report && { title: report.title, slug: report.slug }}
+          // The team's own line where they have written one in Site details;
+          // otherwise the newest annual report, as it always was. Neither, and
+          // there is no strip.
+          announcement={
+            details.announcement ??
+            (report && {
+              text: `Read our ${report.title}`,
+              href: "/news-insights/publications#annual-reports",
+            })
+          }
           hasPromo={banner !== null}
           promoHeight={banner?.height}
         />

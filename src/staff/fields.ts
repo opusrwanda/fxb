@@ -324,7 +324,7 @@ export const fields: Record<string, Field[]> = {
       type: "select",
       sidebar: true,
       required: true,
-      help: "Newsletters appear on the Newsletters page. The newest Annual Report is announced in the banner at the top of every page.",
+      help: "Newsletters appear on the Newsletters page. The newest Annual Report is announced in the banner at the top of every page, unless Site details gives that banner its own text.",
       options: [
         { label: "Annual Report", value: "annual-report" },
         { label: "Project Report or Survey", value: "project-report" },

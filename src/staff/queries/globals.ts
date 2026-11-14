@@ -99,6 +99,8 @@ export async function saveSiteSettings(form: FormData) {
      */
     logoColourId: id(form, "logoColourId"),
     logoWhiteId: id(form, "logoWhiteId"),
+    announcementText: str(form, "announcementText"),
+    announcementHref: str(form, "announcementHref"),
     socials: PLATFORMS.map((platform) => ({
       platform,
       url: str(form, `social-${platform}`),

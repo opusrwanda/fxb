@@ -420,6 +420,28 @@ export default async function GlobalPage({
 
             <div className="flex flex-col gap-6">
               <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
+                ANNOUNCEMENT STRIP
+              </h2>
+              <p className="max-w-[62ch] text-[13px] leading-relaxed text-gray-80">
+                The thin line at the very top of every page. Left empty, it
+                announces the newest Annual Report by itself.
+              </p>
+              <Field
+                label="Text"
+                name="announcementText"
+                value={site?.announcementText}
+                help="One short line, e.g. Donate to our back-to-school appeal. Leave empty to go back to the Annual Report."
+              />
+              <Field
+                label="Link"
+                name="announcementHref"
+                value={site?.announcementHref}
+                help="Where the line goes when clicked. A page on this site, e.g. /get-involved/donate, or a full address starting with https://. Leave empty for a line that is not clickable."
+              />
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <h2 className="text-xs font-semibold tracking-[0.14em] text-gray-80">
                 CONTACT
               </h2>
               <Field label="Email address" name="email" type="email" value={site?.email} />

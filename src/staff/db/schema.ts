@@ -712,6 +712,16 @@ export type SiteSettingsData = {
    */
   logoColourId?: number | null;
   logoWhiteId?: number | null;
+  /**
+   * The line at the very top of every page, when the team writes its own.
+   *
+   * Both optional. With no text the strip does what it always did — announces
+   * the newest annual report — so a row saved before these existed, or a box
+   * somebody cleared, both mean "back to the report" rather than "no strip".
+   * The link is only read when there is text to carry it.
+   */
+  announcementText?: string;
+  announcementHref?: string;
   socials: { platform: string; url: string }[];
   externalSystems: { label: string; url: string }[];
   /**

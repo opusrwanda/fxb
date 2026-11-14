@@ -42,6 +42,11 @@ export type SiteDetails = typeof brand & {
    * until somebody uploads one.
    */
   logos: { colour: Img | null; white: Img | null };
+  /**
+   * The team's own line for the strip at the top of every page, or null where
+   * they have not written one and the newest annual report is announced.
+   */
+  announcement: { text: string; href: string } | null;
   /** Offices other than the head office, in the order they were entered. */
   subOffices: { name: string; location: string; mapUrl?: string }[];
 };
@@ -112,6 +117,13 @@ export const getSiteDetails = cached(
         href: system.url,
       })),
       subOffices: data.subOffices ?? [],
+      // Text with no link is still an announcement — it shows, unclickable.
+      announcement: data.announcementText?.trim()
+        ? {
+            text: data.announcementText.trim(),
+            href: data.announcementHref?.trim() ?? "",
+          }
+        : null,
       logos: { colour: logo(data.logoColourId), white: logo(data.logoWhiteId) },
     };
   },

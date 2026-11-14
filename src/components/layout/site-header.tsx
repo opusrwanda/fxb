@@ -32,14 +32,14 @@ import {
  */
 export function SiteHeader({
   details,
-  report,
+  announcement,
   hasPromo = false,
   promoHeight: promoSize,
 }: {
   /** The contact details and external systems, from the CMS. */
   details: SiteDetails;
-  /** The newest annual report, for the announcement. Null when there is none. */
-  report: { title: string; slug: string } | null;
+  /** The line for the strip above the header. Null when there is nothing to announce. */
+  announcement: { text: string; href: string } | null;
   /**
    * Whether a campaign strip is pinned above this bar.
    *
@@ -213,7 +213,7 @@ export function SiteHeader({
         ].join(" ")}
         aria-hidden={solid}
       >
-        <AnnualReportBanner report={report} />
+        <AnnualReportBanner announcement={announcement} />
 
         {/* Utility strip. Everything in it sits at the right-hand end, one step
             down in size from the primary nav so it reads as secondary to it. */}
