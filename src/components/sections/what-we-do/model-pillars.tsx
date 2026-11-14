@@ -101,7 +101,7 @@ export async function ModelPillars() {
   const photos = await getPhotos(PILLAR_PHOTOS);
 
   return (
-    <SectionBand section={copy} id="pillars" className="scroll-mt-36 bg-blue py-24 lg:py-32">
+    <SectionBand section={copy} id="pillars" scrim className="scroll-mt-36 bg-blue py-24 lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-5">
           <div className="flex items-center gap-4">

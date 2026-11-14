@@ -82,7 +82,7 @@ export function SectionHeading({
 }
 
 /**
- * A section, with the photograph behind it if one has been chosen.
+ * A section, with the picture behind it if one has been chosen.
  *
  * NOTHING CHANGES UNTIL SOMEBODY CHOOSES ONE. With no picture this renders the
  * plain `<section>` the site has always had, with whatever ground its own
@@ -90,22 +90,32 @@ export function SectionHeading({
  * including the white ones: the control exists everywhere and does nothing
  * until it is used.
  *
- * A scrim comes with the picture, not as an option. A photograph behind body
- * text is a contrast failure waiting for the wrong upload, and leaving that to
- * whoever picks the file means the first dark image makes a section unreadable.
- * So the text switches to its light tone and the picture is darkened enough to
- * carry it — the two are one decision.
+ * THE PICTURE IS SHOWN AS IT WAS MADE. It used to sit under a blue scrim at
+ * 75%, which was written for photographs under white type — but no band ever
+ * switched its type to white, so what the team got was their dark text on a
+ * darkened blue picture, and a graphic drawn for the page arrived as a blue
+ * smear of itself. FXB asked for the picture on white, untouched, with the
+ * words as they are. So the ground under it is white, whatever tint the band
+ * has without one, and keeping the artwork light enough to read over is the
+ * artist's job, said in the panel where the file is chosen.
+ *
+ * `scrim` is the exception and it is for a band whose type is white on the
+ * brand blue. There the picture replaces the only thing making the words
+ * legible, so the blue stays over it.
  */
 export function SectionBand({
   section,
   id,
   className = "",
+  scrim = false,
   children,
 }: {
   section: Section;
   id?: string;
   /** The ground and spacing the section has when it carries no photograph. */
   className?: string;
+  /** Keep the blue over a chosen picture. Only for bands set in white type. */
+  scrim?: boolean;
   children: React.ReactNode;
 }) {
   if (!section.image) {
@@ -118,6 +128,11 @@ export function SectionBand({
 
   return (
     <section id={id} className={`relative isolate overflow-hidden ${className}`}>
+      {/* White under the picture, so a graphic with transparent or pale areas
+          is seen on white rather than on the band's own tint. */}
+      {!scrim && (
+        <div className="absolute inset-0 -z-30 bg-white" aria-hidden="true" />
+      )}
       <Image
         src={section.image.url}
         // Decorative: a background carries no information the words do not.
@@ -128,12 +143,10 @@ export function SectionBand({
         sizes="100vw"
         className="-z-20 object-cover"
       />
-      <div className="absolute inset-0 -z-10 bg-blue/75" aria-hidden="true" />
+      {scrim && (
+        <div className="absolute inset-0 -z-10 bg-blue/75" aria-hidden="true" />
+      )}
       {children}
     </section>
   );
 }
-
-/** Does this section carry a chosen photograph? Decides the text's tone. */
-export const bandTone = (section: Section): "dark" | "light" =>
-  section.image ? "light" : "dark";

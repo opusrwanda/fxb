@@ -380,7 +380,10 @@ export default async function SectionsPage({
                         </label>
                         <p className="text-[13px] leading-relaxed text-gray-80">
                           Optional. Leave it empty and the section keeps the
-                          background it has now.
+                          background it has now. A picture is shown exactly
+                          as it is, on white, with the section&rsquo;s text
+                          over it in its usual colours — so choose a light
+                          graphic the words can still be read against.
                         </p>
                         <MediaPicker
                           id={`${section.key}-image`}
