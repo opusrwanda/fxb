@@ -5,7 +5,7 @@ import { getSection } from "@/cms/content/sections";
 import { Reveal } from "@/components/ui/reveal";
 import { PILLAR_ICONS } from "@/lib/fxbvillage-icons";
 import { pillars } from "@/lib/fxbvillage";
-import { getPhotos } from "@/cms/content/photos";
+import { getPhotos, getPhotosById } from "@/cms/content/photos";
 import { BrandIcon, type IconId } from "@/components/brand/icon";
 import { PillarStack } from "./pillar-stack";
 
@@ -70,8 +70,9 @@ export async function ModelPillars() {
    *
    * Same arrangement as the Areas cards: the length follows the panel once
    * anything has been edited there, and the photograph — which is not a thing
-   * anybody would want to type — comes from the array below by position. A
-   * sixth pillar added in the panel renders without one.
+   * anybody would want to type — comes from the array above by position
+   * unless one has been picked for that block in the panel. A sixth pillar
+   * added there renders without one until it is given its own.
    */
   const cards = (
     copy.items.length > 0
@@ -97,8 +98,21 @@ export async function ModelPillars() {
       body: point.body ?? "",
     })),
     photo: PILLAR_PHOTOS[index],
+    imageId: "imageId" in item ? item.imageId : undefined,
   }));
   const photos = await getPhotos(PILLAR_PHOTOS);
+
+  /**
+   * The photographs the team chose, which win over the ones above.
+   *
+   * The five filenames were the only pictures a pillar could have, so the
+   * panel let somebody upload a replacement and gave them nowhere to put it.
+   * Each block now has a picker; a block without a choice — or whose chosen
+   * picture has been deleted from the library — keeps the shipped one.
+   */
+  const chosen = await getPhotosById(
+    cards.flatMap((card) => (card.imageId ? [card.imageId] : [])),
+  );
 
   return (
     <SectionBand section={copy} id="pillars" scrim className="scroll-mt-36 bg-blue py-24 lg:py-32">
@@ -126,7 +140,9 @@ export async function ModelPillars() {
           moving when the section ends and never gets a moment of its own. */}
       <PillarStack className="pillar-stack mt-14 lg:mt-20">
         {cards.map((pillar, index) => {
-          const image = pillar.photo ? photos[pillar.photo] : undefined;
+          const image =
+            (pillar.imageId ? chosen[pillar.imageId] : null) ??
+            (pillar.photo ? photos[pillar.photo] : undefined);
 
           return (
             <li

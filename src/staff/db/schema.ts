@@ -645,6 +645,14 @@ export type SectionItem = {
    * short entries, some of which happen to carry a sentence.
    */
   points?: { title: string; body?: string }[];
+  /**
+   * A photograph for this block, as a row in `media`.
+   *
+   * Only where the section draws one per block — the pillars. Absent means the
+   * photograph the site ships with for that position, so a list edited before
+   * this field existed keeps every picture it had.
+   */
+  imageId?: number;
 };
 
 export const sections = pgTable("sections", {

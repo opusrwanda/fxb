@@ -164,6 +164,9 @@ export default async function SectionsPage({
             body: String(formData.get(`item-${index}-body`) ?? "").trim() || undefined,
             icon: String(formData.get(`item-${index}-icon`) ?? "").trim() || undefined,
             points: readPoints(String(formData.get(`item-${index}-points`) ?? "")),
+            // Absent rather than null where nothing is picked, so a list
+            // nobody has touched still compares equal to the shipped one.
+            imageId: Number(formData.get(`item-${index}-imageId`) ?? 0) || undefined,
           })).filter((item) => item.title !== "");
 
     await saveSection(key, {
@@ -417,6 +420,7 @@ export default async function SectionsPage({
                       sectionKey={section.key}
                       shipped={section.itemsShipped}
                       edited={section.edited.items}
+                      photos={section.itemPhotos ? images : null}
                     />
                   )}
 
@@ -654,13 +658,16 @@ function SectionItems({
   sectionKey,
   shipped,
   edited,
+  photos,
 }: {
   sectionKey: string;
   shipped: SectionItem[];
   edited?: SectionItem[];
+  /** The library's images where each block has its own photograph; else null. */
+  photos: PickerOption[] | null;
 }) {
   const current = edited ?? shipped;
-  const rows = [...current, { title: "", body: "", icon: "" }];
+  const rows: SectionItem[] = [...current, { title: "", body: "", icon: "" }];
 
   return (
     <div className="mt-8 border-t border-gray-15 pt-6">
@@ -764,6 +771,28 @@ function SectionItems({
                 ))}
               </select>
             </div>
+
+            {photos && (
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor={`${sectionKey}-item-${index}-imageId`}
+                  className="text-sm font-semibold text-blue"
+                >
+                  Photograph
+                </label>
+                <p className="text-[13px] leading-relaxed text-gray-80">
+                  The picture beside this block on the page. Leave it empty and
+                  the block keeps the photograph it has now.
+                </p>
+                <MediaPicker
+                  id={`${sectionKey}-item-${index}-imageId`}
+                  name={`item-${index}-imageId`}
+                  value={item.imageId ?? null}
+                  kind="image"
+                  options={photos}
+                />
+              </div>
+            )}
           </fieldset>
         ))}
       </div>

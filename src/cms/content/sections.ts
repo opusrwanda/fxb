@@ -74,6 +74,12 @@ export type SectionDefinition = SectionCopy & {
    */
   items?: SectionItem[];
   /**
+   * Each block is drawn with its own photograph, and the panel should offer a
+   * picker for it. Named so the picker appears only where the page will
+   * actually show the choice.
+   */
+  itemPhotos?: true;
+  /**
    * What the section illustrates itself with out of the box, as a path under
    * `/img` or a CDN URL. Choosing a picture in the panel replaces it.
    */
@@ -341,6 +347,7 @@ By acting simultaneously on economic, social, and human dimensions, the FXBVilla
     eyebrow: "THE PILLARS",
     heading: "Five pillars, delivered together",
     body: "The model integrates a set of mutually reinforcing pillars that work together to improve the overall well-being of families.",
+    itemPhotos: true,
     items: pillars.map((pillar) => ({
       title: pillar.title,
       body: pillar.lead,
@@ -701,6 +708,8 @@ export async function getSectionsForPanel() {
      * writes rows nothing reads.
      */
     itemsShipped: definition.items ?? null,
+    /** Whether each block carries its own photograph. */
+    itemPhotos: definition.itemPhotos ?? false,
     /** Which fields have no default to show because the page counts them. */
     computed: definition.computed ?? [],
     /** Which copy fields this band draws, so the panel offers only those. */

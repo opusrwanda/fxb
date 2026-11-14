@@ -31,3 +31,23 @@ export const getPhotos = cached(
     return Object.fromEntries(rows.map((row) => [row.filename, image(row)]));
   }
 );
+
+/**
+ * Photographs by library row, for the ones somebody chose in the panel.
+ *
+ * The lookup above is by filename because the pictures the site ships with are
+ * named in code. A picture picked in `/staff` is known by its row, and a row
+ * that has since been deleted is simply missing from the answer — the caller
+ * falls back to whatever it showed before.
+ */
+export const getPhotosById = cached(
+  "photos:by-id",
+  "media",
+  async (ids: number[]): Promise<Record<number, Img | null>> => {
+    if (ids.length === 0) return {};
+
+    const rows = await db.select().from(media).where(inArray(media.id, ids));
+
+    return Object.fromEntries(rows.map((row) => [row.id, image(row)]));
+  }
+);
