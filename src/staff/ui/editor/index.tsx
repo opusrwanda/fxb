@@ -18,7 +18,7 @@ import { AutoLinkNode, LinkNode } from "@lexical/link";
 import type { EditorState } from "lexical";
 
 import { ImageDragPlugin } from "./image-drag-plugin";
-import { ImageNode, VideoNode } from "./nodes";
+import { DocumentNode, ImageNode, VideoNode } from "./nodes";
 import { Toolbar } from "./toolbar";
 
 /**
@@ -102,6 +102,7 @@ const KNOWN = new Set([
   "autolink",
   "image",
   "video",
+  "document",
   "horizontalrule",
 ]);
 
@@ -243,6 +244,7 @@ export function RichTextEditor({
             AutoLinkNode,
             ImageNode,
             VideoNode,
+            DocumentNode,
             /**
              * The one that was missing, and what it cost.
              *

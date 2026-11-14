@@ -157,6 +157,15 @@ function toHtml(node: RichTextNode): string {
       return `<p style="margin:0 0 18px;font-family:${FONT};font-weight:600;font-size:14px;"><a href="${esc(url)}" style="color:${BLUE};text-decoration:none;">&#9658;&nbsp; ${esc(title)}</a></p>`;
     }
 
+    // A document, as a link to it. An email cannot attach what the article
+    // only points at, and a named link is what the video gets too.
+    case "document": {
+      const url = typeof node.url === "string" ? node.url : "";
+      if (!url) return "";
+      const title = (typeof node.title === "string" && node.title) || "Open the document";
+      return `<p style="margin:0 0 18px;font-family:${FONT};font-weight:600;font-size:14px;"><a href="${esc(absolute(url))}" style="color:${BLUE};text-decoration:underline;">${esc(title)} (PDF)</a></p>`;
+    }
+
     case "link":
     case "autolink": {
       const fields = (node.fields ?? {}) as { url?: string };

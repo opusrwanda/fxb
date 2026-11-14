@@ -46,12 +46,19 @@ import {
   Underline,
   Undo2,
   Video,
+  FileText,
 } from "lucide-react";
 
 import type { PickerOption } from "@/staff/ui/media-picker";
 import { ImageDialog } from "./image-dialog";
 import { VideoDialog } from "./video-dialog";
-import { $createImageNode, $createVideoNode, type VideoProvider } from "./nodes";
+import { DocumentDialog } from "./document-dialog";
+import {
+  $createDocumentNode,
+  $createImageNode,
+  $createVideoNode,
+  type VideoProvider,
+} from "./nodes";
 
 /**
  * The editor's controls.
@@ -100,6 +107,7 @@ export function Toolbar() {
   const [canRedo, setCanRedo] = useState(false);
   const [picking, setPicking] = useState(false);
   const [addingVideo, setAddingVideo] = useState(false);
+  const [addingDocument, setAddingDocument] = useState(false);
 
   const sync = useCallback(() => {
     const selection = $getSelection();
@@ -256,6 +264,20 @@ export function Toolbar() {
     });
   };
 
+  const insertDocument = (file: {
+    url: string;
+    title: string;
+    mediaId: number;
+  }) => {
+    setAddingDocument(false);
+    editor.update(() => {
+      // A block between blocks, for the reason the picture is.
+      $insertNodeToNearestRoot(
+        $createDocumentNode(file.url, file.title, file.mediaId),
+      );
+    });
+  };
+
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-gray-15 bg-blue-08 px-2 py-2">
       <Button
@@ -353,6 +375,9 @@ export function Toolbar() {
       <Button label="Add a video" onClick={() => setAddingVideo(true)}>
         <Video className="size-4" aria-hidden="true" />
       </Button>
+      <Button label="Add a document" onClick={() => setAddingDocument(true)}>
+        <FileText className="size-4" aria-hidden="true" />
+      </Button>
       {/*
         A dividing line, which the website has always drawn and the panel had
         no way to make. Migrated articles contain them — that is how this was
@@ -387,6 +412,12 @@ export function Toolbar() {
 
       {picking && (
         <ImageDialog onChoose={insertImage} onClose={() => setPicking(false)} />
+      )}
+      {addingDocument && (
+        <DocumentDialog
+          onChoose={insertDocument}
+          onClose={() => setAddingDocument(false)}
+        />
       )}
       {addingVideo && (
         <VideoDialog onAdd={insertVideo} onClose={() => setAddingVideo(false)} />

@@ -388,3 +388,128 @@ export function $createVideoNode(
 export function $isVideoNode(node: LexicalNode | null | undefined): node is VideoNode {
   return node instanceof VideoNode;
 }
+
+/* ── Document ─────────────────────────────────────────────────────────────── */
+
+/**
+ * A file to open, set in the article as a block of its own.
+ *
+ * A link could already point at a PDF, but only for somebody who had uploaded
+ * it on the Media page, copied its address and pasted it into a prompt — and it
+ * then read as three underlined words in a sentence, which is not how a report
+ * attached to a project looks to the person scanning for it. This is the file
+ * as a thing on the page: its name, what it is, and one place to click.
+ *
+ * `url` is stored rather than looked up from `mediaId` when the page renders,
+ * for the reason the picture's `src` is: the article has to draw without a
+ * second query per block. `mediaId` rides along so the row is findable later.
+ */
+export type SerializedDocumentNode = Spread<
+  { url: string; title: string; mediaId: number | null },
+  SerializedLexicalNode
+>;
+
+export class DocumentNode extends DecoratorNode<JSX.Element> {
+  __url: string;
+  __title: string;
+  __mediaId: number | null;
+
+  static getType(): string {
+    return "document";
+  }
+
+  static clone(node: DocumentNode): DocumentNode {
+    return new DocumentNode(node.__url, node.__title, node.__mediaId, node.__key);
+  }
+
+  constructor(url: string, title: string, mediaId: number | null, key?: NodeKey) {
+    super(key);
+    this.__url = url;
+    this.__title = title;
+    this.__mediaId = mediaId;
+  }
+
+  static importJSON(serialized: SerializedDocumentNode): DocumentNode {
+    return new DocumentNode(
+      serialized.url ?? "",
+      serialized.title ?? "",
+      serialized.mediaId ?? null,
+    );
+  }
+
+  exportJSON(): SerializedDocumentNode {
+    return {
+      type: "document",
+      version: 1,
+      url: this.__url,
+      title: this.__title,
+      mediaId: this.__mediaId,
+    };
+  }
+
+  createDOM(): HTMLElement {
+    const div = document.createElement("div");
+    div.className = "my-5";
+    return div;
+  }
+
+  updateDOM(): false {
+    return false;
+  }
+
+  isInline(): boolean {
+    return false;
+  }
+
+  /**
+   * A card, and not a link.
+   *
+   * The same reasoning as the video's: a real anchor inside a contenteditable
+   * navigates away from an unsaved article when somebody clicks it to select
+   * it. The writer needs to see that a document is here and what it will be
+   * called; the reader is the one who opens it.
+   */
+  decorate(): JSX.Element {
+    return (
+      <div className="flex items-center gap-4 rounded-card border border-gray-15 bg-blue-08 px-5 py-4">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-blue text-white">
+          <svg
+            viewBox="0 0 24 24"
+            className="size-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+            <path d="M14 2v5h6M8 13h8M8 17h8" />
+          </svg>
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[15px] font-medium text-blue">
+            {this.__title || "Document"}
+          </span>
+          <span className="block truncate text-sm text-gray">
+            PDF document — opens in a new tab on the published page
+          </span>
+        </span>
+      </div>
+    );
+  }
+}
+
+export function $createDocumentNode(
+  url: string,
+  title: string,
+  mediaId: number | null,
+): DocumentNode {
+  return new DocumentNode(url, title, mediaId);
+}
+
+export function $isDocumentNode(
+  node: LexicalNode | null | undefined,
+): node is DocumentNode {
+  return node instanceof DocumentNode;
+}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { JSX } from "react";
+import { ExternalLink, FileText } from "lucide-react";
 
 import type { RichText, RichTextNode } from "../db/schema";
 import { videoEmbed } from "./video";
@@ -266,6 +267,52 @@ function renderNode(node: RichTextNode, key: number): React.ReactNode {
             allowFullScreen
             className="size-full rounded-card border-0"
           />
+        </div>
+      );
+    }
+
+    /**
+     * A document, as the thing it is.
+     *
+     * A card with the file's name on it rather than a link in a sentence, so a
+     * report attached to a project is found by somebody scanning the page for
+     * it. A new tab, always: a PDF opened in place takes the reader out of the
+     * article with the browser's back button as the only way home.
+     *
+     * The classes ending in `!` are answering the prose container, which
+     * underlines and emboldens every anchor inside it — right for a link in a
+     * paragraph, wrong for a card.
+     */
+    case "document": {
+      const url = typeof node.url === "string" ? node.url : "";
+      if (!url) return null;
+      const title = (typeof node.title === "string" && node.title) || "Document";
+
+      return (
+        <div key={key}>
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="group flex max-w-[62ch] items-center gap-4 rounded-card border border-gray-15 bg-white px-5 py-4 no-underline! transition-colors duration-300 hover:border-blue"
+          >
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-08">
+              <FileText className="size-5 text-blue" aria-hidden="true" />
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col">
+              <span className="text-base leading-snug font-semibold text-blue underline-offset-4 group-hover:underline">
+                {title}
+              </span>
+              <span className="text-sm font-normal text-gray-80">
+                PDF document
+                <span className="sr-only"> (opens in a new tab)</span>
+              </span>
+            </span>
+            <ExternalLink
+              className="size-4 shrink-0 text-gray-80 transition-colors duration-300 group-hover:text-blue"
+              aria-hidden="true"
+            />
+          </a>
         </div>
       );
     }
