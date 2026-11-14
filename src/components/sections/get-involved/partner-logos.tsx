@@ -29,18 +29,40 @@ export async function PartnerLogos({
           as="li"
           key={partner.name}
           delay={Math.min(index, 3) * 60}
-          className="flex h-28 items-center justify-center rounded-card border border-gray-15 p-5 lg:h-32"
+          className="flex h-28 items-center justify-center rounded-card border border-gray-15 p-5 transition-colors duration-300 has-[a]:hover:border-blue lg:h-32"
         >
-          {partner.logo && (
-            <Image
-              src={partner.logo.url}
-              alt={partner.name}
-              width={partner.logo.width}
-              height={partner.logo.height}
-              sizes="(min-width: 1024px) 22vw, 44vw"
-              className="max-h-full w-auto max-w-full object-contain"
-            />
-          )}
+          {partner.logo &&
+            (() => {
+              const logo = (
+                <Image
+                  src={partner.logo.url}
+                  alt={partner.name}
+                  width={partner.logo.width}
+                  height={partner.logo.height}
+                  sizes="(min-width: 1024px) 22vw, 44vw"
+                  className="max-h-full w-auto max-w-full object-contain"
+                />
+              );
+              // A partner with a website links to it, in a new tab — the same
+              // rule as the line of logos on the home page.
+              const href =
+                partner.url && /^https?:\/\//i.test(partner.url.trim())
+                  ? partner.url.trim()
+                  : null;
+              return href ? (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="flex size-full items-center justify-center"
+                >
+                  {logo}
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              ) : (
+                logo
+              );
+            })()}
         </Reveal>
       ))}
     </ul>

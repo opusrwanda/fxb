@@ -67,7 +67,7 @@ export const getPartners = cached("partners", "partners", async (): Promise<Part
     name: partner.name,
     category: partner.category as PartnerCategory,
     logo: image(logo),
-    url: partner.url ?? undefined,
+    url: webAddress(partner.url),
   }));
 });
 
@@ -89,4 +89,19 @@ export async function getOrderedPartners(): Promise<Partner[]> {
   return partnerCategories.flatMap((category) =>
     all.filter((partner) => partner.category === category.id),
   );
+}
+
+/**
+ * A partner's website as somebody typed it, made into an address that works.
+ *
+ * "www.example.org" is what people type, and without a scheme a browser reads
+ * it as a page on this site. Given `https://` where it has none; anything that
+ * still does not look like a web address is dropped, so the logo stays a logo
+ * rather than becoming a link to nowhere.
+ */
+function webAddress(raw: string | null | undefined): string | undefined {
+  const text = raw?.trim();
+  if (!text) return undefined;
+  const url = /^https?:\/\//i.test(text) ? text : `https://${text}`;
+  return /^https?:\/\/[^\s/]+\.[^\s/]+/i.test(url) ? url : undefined;
 }

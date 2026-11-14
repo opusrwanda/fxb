@@ -120,23 +120,51 @@ function PartnerTile({
   partner: Partner;
   decorative: boolean;
 }) {
+  // Only a real web address becomes a link. The field is free text in the
+  // panel, and "www.example.org" typed without its scheme would otherwise be
+  // followed as a page on this site.
+  const href =
+    partner.url && /^https?:\/\//i.test(partner.url.trim())
+      ? partner.url.trim()
+      : null;
+
+  const tile =
+    "flex h-24 w-44 items-center justify-center rounded-card border border-gray-15 bg-white p-5 transition-colors duration-300 md:h-32 md:w-56 md:p-6";
+
+  const logo = partner.logo && (
+    <Image
+      src={partner.logo.url}
+      // The logos are trimmed flush to their own bounds and their aspect
+      // ratios run from 0.72 to 10.9, so each one is fitted to the tile
+      // rather than filling it.
+      alt={decorative || href ? "" : partner.name}
+      width={partner.logo.width}
+      height={partner.logo.height}
+      sizes="(min-width: 768px) 176px, 136px"
+      className="h-auto max-h-full w-auto max-w-full object-contain"
+    />
+  );
+
   return (
     <li className="shrink-0" {...(decorative ? { "aria-hidden": true } : {})}>
-      <div className="flex h-24 w-44 items-center justify-center rounded-card border border-gray-15 bg-white p-5 transition-colors duration-300 hover:border-blue-16 md:h-32 md:w-56 md:p-6">
-        {partner.logo && (
-          <Image
-            src={partner.logo.url}
-            // The logos are trimmed flush to their own bounds and their aspect
-            // ratios run from 0.72 to 10.9, so each one is fitted to the tile
-            // rather than filling it.
-            alt={decorative ? "" : partner.name}
-            width={partner.logo.width}
-            height={partner.logo.height}
-            sizes="(min-width: 768px) 176px, 136px"
-            className="h-auto max-h-full w-auto max-w-full object-contain"
-          />
-        )}
-      </div>
+      {href ? (
+        // A partner with a website is a way to it. A new tab, so the reader
+        // does not lose the page they were on to a ministry's home page.
+        <a
+          href={href}
+          target="_blank"
+          rel="noreferrer noopener"
+          // The repeated passes are hidden from a screen reader, and a link
+          // that is hidden but still takes the Tab key is a stop on nothing.
+          tabIndex={decorative ? -1 : undefined}
+          aria-label={decorative ? undefined : `${partner.name} (opens in a new tab)`}
+          className={`${tile} hover:border-blue`}
+        >
+          {logo}
+        </a>
+      ) : (
+        <div className={`${tile} hover:border-blue-16`}>{logo}</div>
+      )}
     </li>
   );
 }
