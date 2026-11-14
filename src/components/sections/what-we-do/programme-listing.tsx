@@ -21,7 +21,19 @@ import type { Programme, ProgrammeGroup } from "@/cms/content/programmes";
  * The whole card is the link, photograph included — a reader aiming at the
  * picture is aiming at the programme.
  */
-export function ProgrammeListing({ groups }: { groups: ProgrammeGroup[] }) {
+export function ProgrammeListing({
+  groups,
+  showPeriod = false,
+}: {
+  groups: ProgrammeGroup[];
+  /**
+   * Print the years each one ran, under its name.
+   *
+   * For the phased-out shelf, where when a project ran is the first thing a
+   * reader wants to know about it. A current project's card leaves it out.
+   */
+  showPeriod?: boolean;
+}) {
   return (
     <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
       {groups.map((group, index) => (
@@ -38,7 +50,7 @@ export function ProgrammeListing({ groups }: { groups: ProgrammeGroup[] }) {
           {group.children.length > 0 ? (
             <Group group={group} />
           ) : (
-            <Card project={group} />
+            <Card project={group} showPeriod={showPeriod} />
           )}
         </Reveal>
       ))}
@@ -106,7 +118,13 @@ function Group({ group }: { group: ProgrammeGroup }) {
   );
 }
 
-function Card({ project }: { project: Programme }) {
+function Card({
+  project,
+  showPeriod = false,
+}: {
+  project: Programme;
+  showPeriod?: boolean;
+}) {
   return (
     <Link
       href={`/what-we-do/programmes/${project.slug}`}
@@ -137,6 +155,10 @@ function Card({ project }: { project: Programme }) {
             />
           </span>
         </div>
+
+        {showPeriod && project.runs && (
+          <p className="-mt-2 text-sm text-gray-80">{project.runs}</p>
+        )}
 
         {/* The programme's own one-liner, where it has one. A card
                       with a name and a district count tells a reader where it

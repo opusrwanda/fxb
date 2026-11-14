@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { WhatWeDoNav } from "@/components/layout/what-we-do-nav";
 import { Pill } from "@/components/ui/pill";
 import { Reveal } from "@/components/ui/reveal";
+import { ProgrammeListing } from "@/components/sections/what-we-do/programme-listing";
 import { getReach } from "@/cms/content/impact";
 import { getPhasedOutProgrammes } from "@/cms/content/programmes";
 import { getSiteDetails } from "@/cms/content/settings";
@@ -49,34 +49,14 @@ export default async function PhasedOutProjectsPage() {
       <section className="bg-white pt-14 pb-24 lg:pt-16 lg:pb-32">
         <Container>
           {phasedOut.length > 0 ? (
-            <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-              {phasedOut.map((project, index) => (
-                <Reveal as="li" key={project.slug} delay={60 + Math.min(index, 3) * 60}>
-                  {project.image && (
-                    <div className="wedge relative aspect-4/3 overflow-hidden">
-                      <Image
-                        src={project.image.url}
-                        alt=""
-                        fill
-                        sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                  <h2 className="mt-6 text-xl font-bold tracking-[-0.02em] text-blue lg:text-2xl">
-                    {project.name}
-                  </h2>
-                  {project.runs && (
-                    <p className="mt-1.5 text-sm text-gray-80">
-                      {project.runs}
-                    </p>
-                  )}
-                  <p className="mt-3 text-[15px] leading-snug text-gray">
-                    {project.districts.join(", ")}
-                  </p>
-                </Reveal>
-              ))}
-            </ul>
+            // The same cards the current projects have, so a finished
+            // project opens to its own page too. These were a picture, a name
+            // and a line of districts with nothing to click — the page behind
+            // each one existed and nothing led to it.
+            <ProgrammeListing
+              groups={phasedOut.map((project) => ({ ...project, children: [] }))}
+              showPeriod
+            />
           ) : (
             <Reveal className="wedge flex flex-col items-start gap-7 bg-blue-08 p-9 lg:p-14">
               {/* No date on the count: the brief says 54 have been implemented
