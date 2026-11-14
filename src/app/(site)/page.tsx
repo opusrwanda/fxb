@@ -64,8 +64,10 @@ export default async function Home() {
         heading={storiesCopy.heading}
         body={storiesCopy.body}
       />
-      <Partners />
       <LatestNews />
+      {/* Partners close the page, directly above the footer — moved below the
+          news by request. */}
+      <Partners />
       {/* No signup section here. The footer below carries the real form on
           every page now, so a full band above it was asking the same question
           twice within one screen of itself. The section still stands on the
