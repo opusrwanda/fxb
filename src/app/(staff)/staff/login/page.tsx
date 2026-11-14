@@ -20,6 +20,7 @@ import {
 } from "@/staff/auth/otp";
 import { sendLoginCode } from "@/staff/mail/login-code";
 import { PasswordField } from "@/staff/ui/password-field";
+import { StaffLogo } from "@/staff/ui/staff-logo";
 import { SubmitButton } from "@/staff/ui/submit-button";
 
 export const metadata: Metadata = { title: "Sign in" };
@@ -122,12 +123,7 @@ export default async function LoginPage({
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-linear-to-b from-blue-08 to-white px-6 py-16">
       <div className="w-full max-w-[26rem]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/img/logo-colour.png"
-          alt="FXB Rwanda"
-          className="mb-10 h-12 w-auto"
-        />
+        <StaffLogo />
 
         <h1 className="text-3xl font-bold tracking-[-0.03em] text-blue">
           Sign in

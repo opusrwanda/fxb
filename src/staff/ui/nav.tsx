@@ -25,7 +25,14 @@ import type { StaffUser } from "../auth/session";
  * A logo that happens to be a link is a convention people who build admin
  * panels know and people who use them do not.
  */
-export function StaffNav({ user }: { user: StaffUser }) {
+export function StaffNav({
+  user,
+  logoUrl,
+}: {
+  user: StaffUser;
+  /** The white lockup in use on the site, or the shipped file. */
+  logoUrl: string;
+}) {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
@@ -42,7 +49,7 @@ export function StaffNav({ user }: { user: StaffUser }) {
         aria-label="FXB Rwanda staff panel — dashboard"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/img/logo-white.png" alt="" className="h-9 w-auto" />
+        <img src={logoUrl} alt="" className="h-9 w-auto" />
       </Link>
 
       <div className="flex flex-1 flex-col gap-7">

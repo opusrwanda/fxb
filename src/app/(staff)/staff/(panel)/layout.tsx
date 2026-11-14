@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { currentUser } from "@/staff/auth/session";
+import { getSiteDetails } from "@/cms/content/settings";
 import { StaffNav } from "@/staff/ui/nav";
 
 /**
@@ -19,6 +20,10 @@ export default async function PanelLayout({
   const user = await currentUser();
   if (!user) redirect("/staff/login");
 
+  // The sidebar's lockup follows Site details, like the website's own header.
+  const logoUrl =
+    (await getSiteDetails()).logos.white?.url ?? "/img/logo-white.png";
+
   return (
     <>
       <a
@@ -30,7 +35,7 @@ export default async function PanelLayout({
 
       <div className="flex min-h-svh">
         <aside className="sticky top-0 hidden h-svh w-64 shrink-0 lg:block">
-          <StaffNav user={user} />
+          <StaffNav user={user} logoUrl={logoUrl} />
         </aside>
 
         <main id="staff-main" className="min-w-0 flex-1 px-6 py-8 lg:px-12 lg:py-12">
