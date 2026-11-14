@@ -904,6 +904,15 @@ export type CampaignContent = {
   showStats?: boolean;
   /** "More From FXB Rwanda" — the two most recent news items. */
   showNews?: boolean;
+  /**
+   * Keep this edition off the website's Newsletters page.
+   *
+   * A sent edition is published there by default. This is for the ones that
+   * were never meant for it — a trial sent to two colleagues, a note to the
+   * list that is not a newsletter. Held here rather than in a column of its
+   * own because it is one flag on a document that is already JSON.
+   */
+  hideFromSite?: boolean;
 };
 
 export const campaigns = pgTable("campaigns", {

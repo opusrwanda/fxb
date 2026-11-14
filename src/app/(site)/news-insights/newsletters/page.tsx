@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { getSection } from "@/cms/content/sections";
 import Image from "next/image";
-import { ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ExternalLink, Mail } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SubNav, newsInsightsNav } from "@/components/layout/sub-nav";
@@ -13,6 +14,8 @@ import {
   formatPublicationDate,
   getPublicationsIn,
 } from "@/cms/content/publications";
+import { getEmailNewsletters } from "@/cms/content/email-newsletters";
+import { formatDate } from "@/cms/content/date";
 
 export const metadata: Metadata = {
   title: "Newsletters",
@@ -41,6 +44,39 @@ export default async function NewslettersPage() {
   const newsletters = await getPublicationsIn("newsletter");
   const newsletterCopy = await getSection("band:newsletter");
 
+  /**
+   * One shelf for both kinds of newsletter, newest first.
+   *
+   * The quarterly PDFs come from Publications; the emailed editions come from
+   * the mailing list once they have been sent. A reader does not care which
+   * machine produced an issue, so they are not two lists with two headings —
+   * the card says which it is by where it leads: a PDF opens in a tab, an
+   * emailed edition opens as a page.
+   */
+  const emailed = await getEmailNewsletters();
+  const shelf = [
+    ...newsletters.map((issue) => ({
+      kind: "pdf" as const,
+      key: `pdf-${issue.slug}`,
+      title: issue.title,
+      date: issue.date,
+      image: issue.cover,
+      href: issue.file?.url ?? "#",
+      meta: `${formatPublicationDate(issue.date)}${
+        issue.file?.bytes ? ` · PDF, ${formatBytes(issue.file.bytes)}` : ""
+      }`,
+    })),
+    ...emailed.map((edition) => ({
+      kind: "email" as const,
+      key: `email-${edition.id}`,
+      title: edition.title,
+      date: edition.date,
+      image: edition.image,
+      href: `/news-insights/newsletters/${edition.id}`,
+      meta: formatDate(edition.date),
+    })),
+  ].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+
   return (
     <>
       <PageHeader
@@ -54,55 +90,82 @@ export default async function NewslettersPage() {
       <SubNav items={newsInsightsNav} ariaLabel="News and Insights" />
 
       <section className="bg-white pt-14 pb-20 lg:pt-16 lg:pb-24">
-        {newsletters.length > 0 ? (
+        {shelf.length > 0 ? (
           <Container>
             <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {newsletters.map((issue, index) => (
-                <Reveal as="li" key={issue.slug} delay={Math.min(index, 3) * 60}>
-                  {/* Opened in a tab rather than forced down — see the note
-                      on the publications shelf. */}
-                  <a
-                    href={issue.file?.url ?? "#"}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-500 hover:border-blue"
-                  >
-                    {/* Landscape, though the cover is portrait — the same
+              {shelf.map((issue, index) => {
+                const card =
+                  "wedge group flex h-full flex-col overflow-hidden border border-gray-15 transition-colors duration-500 hover:border-blue";
+
+                const inner = (
+                  <>
+                    {/* Landscape, though a PDF's cover is portrait — the same
                         shape and the same reasoning as the publications shelf,
-                        which see. Four issues arrive every year and none ever
-                        leaves, so this is the shelf that grows fastest and has
-                        most to gain from a card half the height. */}
-                    {issue.cover && (
-                      <span className="relative block aspect-4/3 overflow-hidden bg-blue-08">
+                        which see. An edition with no picture keeps the frame,
+                        so a row of cards stays a row. */}
+                    <span className="relative flex aspect-4/3 items-center justify-center overflow-hidden bg-blue-08">
+                      {issue.image ? (
                         <Image
-                          src={issue.cover.url}
+                          src={issue.image.url}
                           alt=""
                           fill
                           sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                          className="motion-transform object-cover object-top transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04]"
+                          className={`motion-transform object-cover transition-transform duration-700 ease-(--ease-standard) group-hover:scale-[1.04] ${
+                            issue.kind === "pdf" ? "object-top" : ""
+                          }`}
                         />
-                      </span>
-                    )}
+                      ) : (
+                        <Mail className="size-8 text-blue" aria-hidden="true" />
+                      )}
+                    </span>
 
                     <span className="flex flex-1 flex-col gap-3 p-6">
                       <span className="flex-1 text-xl leading-snug font-semibold text-blue">
                         {issue.title}
                       </span>
-                      <span className="text-sm text-gray-80">
-                        {formatPublicationDate(issue.date)}
-                        {issue.file?.bytes
-                          ? ` · PDF, ${formatBytes(issue.file.bytes)}`
-                          : ""}
-                      </span>
+                      <span className="text-sm text-gray-80">{issue.meta}</span>
                       <span className="flex items-center gap-2 text-sm font-semibold text-blue">
-                        <ExternalLink className="size-4" aria-hidden="true" />
-                        Read
-                        <span className="sr-only"> (opens in a new tab)</span>
+                        {issue.kind === "pdf" ? (
+                          <>
+                            <ExternalLink className="size-4" aria-hidden="true" />
+                            Read
+                            <span className="sr-only"> (opens in a new tab)</span>
+                          </>
+                        ) : (
+                          <>
+                            Read
+                            <ArrowRight
+                              className="size-4 transition-transform duration-300 group-hover:translate-x-0.5"
+                              aria-hidden="true"
+                            />
+                          </>
+                        )}
                       </span>
                     </span>
-                  </a>
-                </Reveal>
-              ))}
+                  </>
+                );
+
+                return (
+                  <Reveal as="li" key={issue.key} delay={Math.min(index, 3) * 60}>
+                    {issue.kind === "pdf" ? (
+                      // Opened in a tab rather than forced down — see the note
+                      // on the publications shelf.
+                      <a
+                        href={issue.href}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className={card}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <Link href={issue.href} className={card}>
+                        {inner}
+                      </Link>
+                    )}
+                  </Reveal>
+                );
+              })}
             </ul>
           </Container>
         ) : (

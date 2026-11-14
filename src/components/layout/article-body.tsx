@@ -137,14 +137,18 @@ export function ArticleBody({
           />
 
           <div className="mt-12 lg:mt-16">
-            <Reveal delay={140}>
-              <p
-                className="max-w-[46ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]"
-                lang={language}
-              >
-                {excerpt}
-              </p>
-            </Reveal>
+            {/* An emailed newsletter may have no preview line, and an empty
+                standfirst is a gap with nothing in it. */}
+            {excerpt && (
+              <Reveal delay={140}>
+                <p
+                  className="max-w-[46ch] text-2xl leading-[1.4] font-medium text-blue lg:text-[28px]"
+                  lang={language}
+                >
+                  {excerpt}
+                </p>
+              </Reveal>
+            )}
 
             {/* Nothing where the migration panel was. An article whose body adds
               nothing to its standfirst is a short article, and it now reads as

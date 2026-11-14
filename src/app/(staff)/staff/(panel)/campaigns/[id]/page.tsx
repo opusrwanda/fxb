@@ -12,6 +12,7 @@ import { mailConfig } from "@/staff/mail/transport";
 import { CampaignBuilder } from "@/staff/ui/campaign-builder";
 import { MediaPicker } from "@/staff/ui/media-picker";
 import { RichTextEditor } from "@/staff/ui/editor";
+import { bust } from "@/cms/revalidate";
 
 export const metadata = { title: "Email newsletter" };
 
@@ -87,7 +88,11 @@ export default async function CampaignPage({
       preheader: String(formData.get("preheader") ?? "").trim() || null,
       edition: String(formData.get("edition") ?? "").trim() || null,
       heroId: Number(formData.get("heroId")) || null,
-      content: parseContent(String(formData.get("content") ?? "")),
+      content: {
+        ...(parseContent(String(formData.get("content") ?? "")) ?? {}),
+        // An unticked box posts nothing at all, so absence is the "hide".
+        hideFromSite: formData.get("onSite") !== "1",
+      },
       body: parseRichText(String(formData.get("body") ?? "")),
       updatedAt: new Date(),
     };
@@ -107,6 +112,9 @@ export default async function CampaignPage({
     }
 
     await db.update(campaigns).set(values).where(eq(campaigns.id, numericId));
+    // A sent edition is a page on the site, so rewording it here rewords it
+    // there.
+    bust("campaigns");
     redirect(`/staff/campaigns/${numericId}?saved=1`);
   }
 
@@ -131,6 +139,9 @@ export default async function CampaignPage({
     const report = await sendCampaign(numericId!, {
       limit: limitRaw ? Number(limitRaw) : undefined,
     });
+
+    // The first send is what puts the edition on the Newsletters page.
+    bust("campaigns");
 
     const summary = `${report.sent} sent${report.failed ? `, ${report.failed} failed` : ""}.${
       report.stopped ? ` ${report.stopped}` : ""
@@ -279,6 +290,26 @@ export default async function CampaignPage({
             <CampaignBuilder name="content" initial={campaign?.content ?? null} />
           </div>
         </details>
+
+        <label className="flex max-w-[62ch] items-start gap-3">
+          <input
+            type="checkbox"
+            name="onSite"
+            value="1"
+            defaultChecked={!campaign?.content?.hideFromSite}
+            className="mt-1 size-4 accent-blue"
+          />
+          <span className="flex flex-col gap-1">
+            <span className="text-sm font-semibold text-blue">
+              Show on the website
+            </span>
+            <span className="text-[13px] leading-relaxed text-gray-80">
+              Once it has been sent to the list, this newsletter also appears on
+              the website&rsquo;s Newsletters page with its thumbnail. Untick
+              for a trial, or for an email that is not meant to be public.
+            </span>
+          </span>
+        </label>
 
         <button
           type="submit"
