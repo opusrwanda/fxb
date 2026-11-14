@@ -227,7 +227,23 @@ export function Hero({
             used to set, with the tail of the `g` landing 5px inside the line
             below. One value at every size: display type wants tight leading,
             but never tighter than the face's own ink. */}
-        <h1 className="hero-rise max-w-[17ch] text-[36px] leading-[1.12] font-bold tracking-[-0.03em] text-balance text-white [animation-delay:90ms] sm:text-[52px] lg:text-[76px] xl:text-[88px]">
+        <h1
+          className={`hero-rise leading-[1.12] font-bold tracking-[-0.03em] text-balance text-white [animation-delay:90ms] ${
+            // A LONG HEADLINE IS SET SMALLER, ON A WIDER MEASURE.
+            //
+            // The display size was drawn for a headline of a few words — "Four
+            // times a year". The home page's is whatever the team writes, and
+            // when it became the vision — "Empowered and resilient communities
+            // shaping their own future", fifty-eight characters — it ran to
+            // four lines at 88px and took the whole first screen. Past forty
+            // characters the type steps down and the measure opens up, so the
+            // same sentence sits in three lines. By length rather than by
+            // page, so the next sentence somebody types is handled too.
+            headline.length > 40
+              ? "max-w-[25ch] text-[31px] sm:text-[44px] lg:text-[60px] xl:text-[68px]"
+              : "max-w-[17ch] text-[36px] sm:text-[52px] lg:text-[76px] xl:text-[88px]"
+          }`}
+        >
           {headline}
         </h1>
 
