@@ -285,7 +285,7 @@ function deniedLabel(key: string): string {
     {
       users: "Staff accounts",
       sections: "Page sections",
-      campaigns: "Email campaigns",
+      campaigns: "Email newsletters",
       subscribers: "Subscribers",
       messages: "Messages",
       settings: "Settings",

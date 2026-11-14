@@ -222,8 +222,10 @@ export const mailing: Entry[] = [
   {
     key: "campaigns",
     slug: "campaigns",
-    label: "Email campaigns",
-    singular: "campaign",
+    // The team's own word for it. "Email" keeps it apart from the quarterly
+    // PDFs under Publications, which the site also calls newsletters.
+    label: "Email newsletters",
+    singular: "email newsletter",
     description: "Write a newsletter and send it to the list.",
     icon: Send,
     group: "Mailing list",

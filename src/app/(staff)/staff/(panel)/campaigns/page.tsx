@@ -7,7 +7,7 @@ import { requireAdmin } from "@/staff/auth/guard";
 import { subscriberCounts } from "@/staff/mail/subscribers";
 import { mailConfig } from "@/staff/mail/transport";
 
-export const metadata = { title: "Email campaigns" };
+export const metadata = { title: "Email newsletters" };
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
@@ -40,7 +40,7 @@ export default async function CampaignsPage() {
             </span>
           </div>
           <h1 className="text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[38px]">
-            Email campaigns
+            Email newsletters
           </h1>
           <p className="max-w-[58ch] text-base leading-relaxed text-gray">
             Write a newsletter and send it to the {counts.subscribed}{" "}
@@ -53,7 +53,7 @@ export default async function CampaignsPage() {
           className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
         >
           <Plus className="size-4" aria-hidden="true" />
-          New campaign
+          New newsletter
         </Link>
       </header>
 
@@ -63,7 +63,7 @@ export default async function CampaignsPage() {
             <strong className="font-semibold text-blue">
               Email is not connected yet.
             </strong>{" "}
-            Campaigns can be written and previewed, but nothing can be sent until
+            Newsletters can be written and previewed, but nothing can be sent until
             the SMTP settings are added — see <code>docs/email.md</code>.
           </p>
         </div>
@@ -133,10 +133,10 @@ export default async function CampaignsPage() {
         ) : (
           <div className="rounded-[20px_20px_0_20px] border border-gray-15 bg-blue-08 p-10">
             <h2 className="text-xl font-bold tracking-[-0.02em] text-blue">
-              No campaigns yet
+              No newsletters yet
             </h2>
             <p className="mt-3 max-w-[52ch] text-base leading-relaxed text-gray">
-              A campaign is one email to the mailing list. Write it, send a test
+              A newsletter here is one email to the mailing list. Write it, send a test
               to yourself, then send it to everyone.
             </p>
             <Link
@@ -144,7 +144,7 @@ export default async function CampaignsPage() {
               className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
             >
               <Plus className="size-4" aria-hidden="true" />
-              New campaign
+              New newsletter
             </Link>
           </div>
         )}

@@ -62,7 +62,7 @@ export async function sendCampaign(
     .limit(1);
 
   if (!campaign) {
-    return { sent: 0, failed: 0, skipped: 0, errors: [], stopped: "No such campaign." };
+    return { sent: 0, failed: 0, skipped: 0, errors: [], stopped: "No such newsletter." };
   }
 
   const details = await getSiteDetails();

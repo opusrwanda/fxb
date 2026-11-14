@@ -13,7 +13,7 @@ import { CampaignBuilder } from "@/staff/ui/campaign-builder";
 import { MediaPicker } from "@/staff/ui/media-picker";
 import { RichTextEditor } from "@/staff/ui/editor";
 
-export const metadata = { title: "Campaign" };
+export const metadata = { title: "Email newsletter" };
 
 const input =
   "w-full rounded-card border border-gray-15 bg-white px-4 py-3 text-[15px] text-gray outline-none focus:border-blue";
@@ -152,11 +152,11 @@ export default async function CampaignPage({
         className="inline-flex items-center gap-2 text-sm font-medium text-gray-80 transition-colors duration-300 hover:text-blue"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
-        Email campaigns
+        Email newsletters
       </Link>
 
       <h1 className="mt-5 text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[38px]">
-        {creating ? "New campaign" : campaign!.subject}
+        {creating ? "New email newsletter" : campaign!.subject}
       </h1>
 
       {saved && <Note tone="ok">Saved.</Note>}
@@ -166,7 +166,7 @@ export default async function CampaignPage({
 
       {alreadySent && (
         <Note tone="bad">
-          This campaign has been sent. Editing it now changes only what is stored
+          This newsletter has been sent. Editing it now changes only what is stored
           here — the emails that went out cannot be changed.
         </Note>
       )}
@@ -284,7 +284,7 @@ export default async function CampaignPage({
           type="submit"
           className="inline-flex h-12 w-fit items-center justify-center rounded-full bg-blue px-8 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
         >
-          {creating ? "Create campaign" : "Save changes"}
+          {creating ? "Create newsletter" : "Save changes"}
         </button>
       </form>
 
@@ -299,7 +299,7 @@ export default async function CampaignPage({
               <strong className="font-semibold text-blue">
                 Email is not connected.
               </strong>{" "}
-              Add the SMTP settings and this campaign can be sent — see{" "}
+              Add the SMTP settings and this newsletter can be sent — see{" "}
               <code>docs/email.md</code>.
             </p>
           ) : (
@@ -348,7 +348,7 @@ export default async function CampaignPage({
               >
                 <p className="max-w-[58ch] text-[15px] leading-relaxed text-gray">
                   Sending cannot be undone. Everyone who has already received
-                  this campaign is skipped, so pressing it twice does not mail
+                  this newsletter is skipped, so pressing it twice does not mail
                   anybody twice.
                 </p>
 
