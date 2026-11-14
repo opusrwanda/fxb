@@ -48,11 +48,10 @@ export async function ModelIntro() {
           <h2 className="max-w-[20ch] text-3xl font-bold tracking-[-0.03em] text-blue lg:text-[42px] lg:leading-[1.08]">
             {copy.heading}
           </h2>
-          {copy.body && (
-            <p className="max-w-[62ch] text-base leading-relaxed text-gray lg:text-[17px]">
-              {copy.body}
-            </p>
-          )}
+          {/* No paragraph under the heading. The body is the three columns
+              below, and printing it here as well set the same words twice —
+              once as a narrow block with the right half of the band empty
+              beside it, then again across the full measure. */}
         </Reveal>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-3 lg:gap-10">
