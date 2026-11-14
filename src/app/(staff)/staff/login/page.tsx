@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 
@@ -192,6 +193,15 @@ export default async function LoginPage({
             Sign in
           </SubmitButton>
         </form>
+
+        <p className="mt-6 text-sm">
+          <Link
+            href="/staff/login/forgot"
+            className="font-semibold text-blue underline underline-offset-4 transition-colors duration-300 hover:text-green"
+          >
+            Forgot your password?
+          </Link>
+        </p>
       </div>
     </div>
   );

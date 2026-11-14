@@ -229,6 +229,32 @@ export async function changeOwnPassword(
 }
 
 /**
+ * Set a new password for somebody who followed a reset link.
+ *
+ * The link has already been checked by the caller — this only applies the
+ * rule every password here meets, and then signs the account out everywhere.
+ * Whoever knew the old password, on whatever device, is somebody the reset was
+ * quite possibly meant to lock out.
+ */
+export async function resetPassword(id: number, next: string): Promise<UserResult> {
+  if (next.length < MIN_PASSWORD) {
+    return {
+      ok: false,
+      error: `The new password needs at least ${MIN_PASSWORD} characters. Four ordinary words is a good one.`,
+    };
+  }
+
+  await db
+    .update(users)
+    .set({ passwordHash: await hashPassword(next), updatedAt: new Date() })
+    .where(eq(users.id, id));
+
+  await db.delete(sessions).where(eq(sessions.userId, id));
+
+  return { ok: true };
+}
+
+/**
  * True when there is only one account left.
  *
  * Deleting it would leave a panel nobody can sign in to, recoverable only with
