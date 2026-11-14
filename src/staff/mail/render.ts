@@ -193,6 +193,11 @@ function toText(node: RichTextNode): string {
       return `  - ${inner}\n`;
     case "horizontalrule":
       return "\n---\n\n";
+    // The file, as its name and where to find it — the text part has no card.
+    case "document":
+      return typeof node.url === "string" && node.url
+        ? `${(typeof node.title === "string" && node.title) || "Document"}: ${absolute(node.url)}\n\n`
+        : "";
     default:
       return inner;
   }
@@ -235,8 +240,12 @@ export function renderCampaign({
   logoUrl: string;
   content: CampaignContent | null;
   /**
-   * The rich-text body of a campaign written before the template existed.
-   * Rendered in place of the story modules so an old draft still sends.
+   * The text of the letter, written in the editor.
+   *
+   * Named for what it once was: the body of a campaign from before the
+   * template existed, drawn only when there were no story modules. It is the
+   * main thing now — the editor is on the campaign form — and it is set after
+   * the greeting with any story modules following it.
    */
   legacyBody?: RichText | null;
   /** The recipient's name, for the greeting. Blank becomes "our friend". */
@@ -463,14 +472,14 @@ ${
   )}
 
   ${
-    stories.length > 0
-      ? stories.map(storyModule).join("\n")
-      : legacyBody
-        ? block(
-            `<td class="mobile-padding" style="padding:24px 30px 28px;font-family:${FONT};font-size:15px;line-height:24px;color:${GRAY};">${(legacyBody.root?.children ?? []).map(toHtml).join("")}</td>`,
-          )
-        : ""
+    legacyBody
+      ? block(
+          `<td class="mobile-padding" style="padding:24px 30px 28px;font-family:${FONT};font-size:15px;line-height:24px;color:${GRAY};">${(legacyBody.root?.children ?? []).map(toHtml).join("")}</td>`,
+        )
+      : ""
   }
+
+  ${stories.map(storyModule).join("\n")}
 
   ${
     gallery.length > 0
@@ -594,6 +603,7 @@ ${
     `Dear ${firstName?.trim() || "our friend"},`,
     content?.intro ?? "",
     "",
+    legacyBody ? (legacyBody.root?.children ?? []).map(toText).join("") : "",
     ...stories.flatMap((story) =>
       [
         story.headline,
@@ -606,9 +616,6 @@ ${
         "",
       ].filter(Boolean),
     ),
-    stories.length === 0 && legacyBody
-      ? (legacyBody.root?.children ?? []).map(toText).join("")
-      : "",
     ...band.map((stat) => `${stat.figure} — ${stat.label}`),
     "",
     ...teasers.map((item) => `${item.headline}: ${item.url}`),

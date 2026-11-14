@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
-import { Download, Plus } from "lucide-react";
+import { redirect } from "next/navigation";
+import { Download, Plus, Upload } from "lucide-react";
 
 import {
   deleteSubscriber,
+  importSubscribers,
+  parseContacts,
   listSubscribers,
   setSubscriberStatus,
   subscribe,
@@ -37,9 +40,9 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
 export default async function SubscribersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ added?: string; error?: string }>;
+  searchParams: Promise<{ added?: string; error?: string; imported?: string }>;
 }) {
-  const { added, error } = await searchParams;
+  const { added, error, imported } = await searchParams;
 
   const user = await requireAccess("subscribers", "read");
 
@@ -72,6 +75,54 @@ export default async function SubscribersPage({
     });
     revalidatePath("/staff/subscribers");
     if (!result.ok) return;
+  }
+
+  /**
+   * A whole list at once — a file, a paste, or both.
+   *
+   * The result goes back in the address rather than being lost on the
+   * redirect: "412 added, 30 already on the list, 3 could not be read" is the
+   * only way somebody uploading a spreadsheet knows it did what they meant.
+   */
+  async function importList(formData: FormData) {
+    "use server";
+    await requireAdmin("subscribers");
+
+    const file = formData.get("file");
+    const uploaded =
+      file instanceof File && file.size > 0 ? await file.text() : "";
+    const pasted = String(formData.get("pasted") ?? "");
+
+    const say = (key: "imported" | "error", message: string) =>
+      redirect(`/staff/subscribers?${key}=${encodeURIComponent(message)}`);
+
+    // An Excel workbook is a zip, not text, and reading one as text finds no
+    // addresses — which would otherwise be reported as "nothing to import".
+    if (uploaded.startsWith("PK")) {
+      say(
+        "error",
+        "That is an Excel file. In Excel choose File, Save As, CSV — or copy the column of addresses and paste it into the box.",
+      );
+    }
+
+    const { contacts, invalid } = parseContacts(`${uploaded}\n${pasted}`);
+    if (contacts.length === 0) {
+      say("error", "No email addresses were found in that list.");
+    }
+
+    const { added, already } = await importSubscribers(contacts);
+    revalidatePath("/staff/subscribers");
+
+    say(
+      "imported",
+      [
+        `${added} added to the list`,
+        already ? `${already} ${already === 1 ? "was" : "were"} already on it` : "",
+        invalid ? `${invalid} ${invalid === 1 ? "line" : "lines"} had no valid email address` : "",
+      ]
+        .filter(Boolean)
+        .join(" · ") + ".",
+    );
   }
 
   async function unsubscribe(formData: FormData) {
@@ -144,12 +195,12 @@ export default async function SubscribersPage({
         </p>
       )}
 
-      {(added || error) && (
+      {(added || error || imported) && (
         <p
           role="status"
           className="mt-6 rounded-card border border-gray-15 bg-blue-08 px-5 py-4 text-[15px] text-gray"
         >
-          {error ?? "Added to the list."}
+          {error ?? imported ?? "Added to the list."}
         </p>
       )}
 
@@ -183,6 +234,62 @@ export default async function SubscribersPage({
           Add
         </button>
       </form>
+      )}
+
+      {full && (
+        <details className="group mt-6 rounded-[20px_20px_0_20px] border border-gray-15">
+          <summary className="flex cursor-pointer list-none items-center gap-3 px-6 py-5 text-[15px] font-semibold text-blue [&::-webkit-details-marker]:hidden">
+            <Upload className="size-4" aria-hidden="true" />
+            Add a whole list at once
+          </summary>
+
+          <form action={importList} className="flex flex-col gap-5 border-t border-gray-15 p-6">
+            <p className="max-w-[62ch] text-[13px] leading-relaxed text-gray-80">
+              One person per line: an email address, with their name beside it
+              if you have it. Only add people who have agreed to receive the
+              newsletter. Anyone already on the list is skipped, and anyone who
+              has unsubscribed stays unsubscribed.
+            </p>
+
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-semibold text-blue">
+                Upload a CSV file
+              </span>
+              <span className="text-[13px] leading-relaxed text-gray-80">
+                From Excel: File, Save As, CSV.
+              </span>
+              <input
+                name="file"
+                type="file"
+                accept=".csv,.txt,text/csv,text/plain"
+                className="text-[15px] text-gray file:mr-4 file:h-10 file:cursor-pointer file:rounded-full file:border file:border-solid file:border-blue file:bg-white file:px-5 file:text-sm file:font-semibold file:text-blue"
+              />
+            </label>
+
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-semibold text-blue">
+                Or paste the list
+              </span>
+              <span className="text-[13px] leading-relaxed text-gray-80">
+                Copied straight from a spreadsheet or an email works.
+              </span>
+              <textarea
+                name="pasted"
+                rows={6}
+                placeholder={"jane@example.org, Jane Uwase\npaul@example.org"}
+                className="rounded-card border border-gray-15 px-4 py-3 text-[15px] text-gray outline-none focus:border-blue"
+              />
+            </label>
+
+            <button
+              type="submit"
+              className="inline-flex h-11 w-fit items-center gap-2 rounded-full bg-blue px-6 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-blue-90"
+            >
+              <Upload className="size-4" aria-hidden="true" />
+              Add these people
+            </button>
+          </form>
+        </details>
       )}
 
       {full && (

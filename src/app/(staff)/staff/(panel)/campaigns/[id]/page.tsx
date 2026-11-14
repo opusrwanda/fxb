@@ -5,12 +5,13 @@ import { ArrowLeft, Send } from "lucide-react";
 
 import { campaigns, db } from "@/staff/db";
 import { requireAdmin } from "@/staff/auth/guard";
-import { getMediaOptions } from "@/staff/queries/document";
+import { getMediaOptions, parseRichText } from "@/staff/queries/document";
 import { campaignProgress, clearFailures, sendCampaign } from "@/staff/mail/send";
 import { subscriberCounts } from "@/staff/mail/subscribers";
 import { mailConfig } from "@/staff/mail/transport";
 import { CampaignBuilder } from "@/staff/ui/campaign-builder";
 import { MediaPicker } from "@/staff/ui/media-picker";
+import { RichTextEditor } from "@/staff/ui/editor";
 
 export const metadata = { title: "Campaign" };
 
@@ -63,6 +64,16 @@ export default async function CampaignPage({
     option.mimeType.startsWith("image/"),
   );
 
+  // Open the optional sections where an edition already uses them, so nothing
+  // somebody wrote is hidden behind a fold they have to know to open.
+  const hasModules = Boolean(
+    campaign?.content?.intro?.trim() ||
+      campaign?.content?.stories?.some(
+        (story) => story.headline || story.excerpt || story.imageUrl,
+      ) ||
+      campaign?.content?.galleryImages?.length,
+  );
+
   const configured = mailConfig() !== null;
   const alreadySent = campaign?.status === "sent";
 
@@ -77,6 +88,7 @@ export default async function CampaignPage({
       edition: String(formData.get("edition") ?? "").trim() || null,
       heroId: Number(formData.get("heroId")) || null,
       content: parseContent(String(formData.get("content") ?? "")),
+      body: parseRichText(String(formData.get("body") ?? "")),
       updatedAt: new Date(),
     };
 
@@ -162,8 +174,12 @@ export default async function CampaignPage({
       <form action={save} className="mt-8 flex flex-col gap-7">
         <div className="flex flex-col gap-2">
           <label htmlFor="subject" className="text-sm font-semibold text-blue">
-            Subject <span className="text-green">*</span>
+            Title <span className="text-green">*</span>
           </label>
+          <p className="text-[13px] leading-relaxed text-gray-80">
+            The headline at the top of the newsletter, and the subject line
+            people see in their inbox.
+          </p>
           <input
             id="subject"
             name="subject"
@@ -208,11 +224,11 @@ export default async function CampaignPage({
 
           <div className="flex flex-col gap-2">
             <span id="hero-label" className="text-sm font-semibold text-blue">
-              Photograph at the top
+              Thumbnail
             </span>
             <p className="text-[13px] leading-relaxed text-gray-80">
-              Runs the full width under the logo. Left empty, the letter opens
-              on the headline instead.
+              The photograph at the top, full width under the logo. Left empty,
+              the letter opens on the title instead.
             </p>
             <MediaPicker
               name="heroId"
@@ -225,15 +241,44 @@ export default async function CampaignPage({
           </div>
         </div>
 
+        {/* The letter itself, written the way a news item is. This is what
+            was agreed with FXB — a title, a thumbnail and the text editor — and
+            it is enough for an edition by itself. */}
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-semibold text-blue">The newsletter</span>
+          <span id="campaign-body-label" className="text-sm font-semibold text-blue">
+            Text
+          </span>
           <p className="text-[13px] leading-relaxed text-gray-80">
-            Built the way the template lays one out. Everything except a
-            story&rsquo;s headline is optional, and anything left empty is left
-            out of the email rather than sent as a blank frame.
+            The newsletter itself. It opens with &ldquo;Dear [name],&rdquo;,
+            filled in for each reader. Pictures show in the email; a video or a
+            document becomes a link to it.
           </p>
-          <CampaignBuilder name="content" initial={campaign?.content ?? null} />
+          <RichTextEditor
+            name="body"
+            initialJson={campaign?.body ? JSON.stringify(campaign.body) : ""}
+            ariaLabelledBy="campaign-body-label"
+          />
         </div>
+
+        {/* The template's modules, for an edition that wants them. Folded away
+            because none of it is needed to send a newsletter, and a form that
+            opens on forty optional fields reads as forty things to fill in. */}
+        <details className="group rounded-card border border-gray-15" open={hasModules}>
+          <summary className="cursor-pointer list-none px-6 py-5 text-sm font-semibold text-blue [&::-webkit-details-marker]:hidden">
+            More sections{" "}
+            <span className="font-normal text-gray-80">
+              (optional) — an introduction, story blocks with a photograph and
+              a button, a photo gallery
+            </span>
+          </summary>
+          <div className="flex flex-col gap-2 border-t border-gray-15 p-6">
+            <p className="text-[13px] leading-relaxed text-gray-80">
+              These follow the text above in the email. Anything left empty is
+              left out rather than sent as a blank frame.
+            </p>
+            <CampaignBuilder name="content" initial={campaign?.content ?? null} />
+          </div>
+        </details>
 
         <button
           type="submit"

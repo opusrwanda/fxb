@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { db, subscribers } from "../db";
 
@@ -167,4 +167,112 @@ export async function subscribersCsv(): Promise<string> {
       ].join(","),
     ),
   ].join("\n");
+}
+
+/**
+ * A pasted or uploaded list, read into addresses and names.
+ *
+ * Deliberately forgiving about shape, because the list arrives from wherever
+ * FXB has been keeping it: a spreadsheet saved as CSV, a column copied out of
+ * Excel (which pastes as tabs), a block of addresses from an email's To field.
+ * Each line is split on commas, semicolons and tabs; the cell that is an email
+ * address is the address, and the first other cell with anything in it is the
+ * name. A header row has no address in it and so drops out by itself.
+ *
+ * `invalid` counts the lines that had words but no usable address, so the
+ * person importing is told how many were left behind rather than finding out
+ * when a colleague asks why they never got the newsletter.
+ */
+export function parseContacts(raw: string): {
+  contacts: { email: string; name: string | null }[];
+  invalid: number;
+} {
+  const seen = new Map<string, string | null>();
+  let invalid = 0;
+
+  for (const line of raw.replace(/^\uFEFF/, "").split(/\r?\n/)) {
+    const cells = line
+      .split(/[,;\t]/)
+      .map((cell) => cell.trim().replace(/^["'<]+|["'>]+$/g, "").trim())
+      .filter(Boolean);
+    if (cells.length === 0) continue;
+
+    const address = cells.find((cell) => EMAIL.test(cell))?.toLowerCase();
+    if (!address) {
+      // "email" or "Name,Email" at the top of a sheet is not a bad address.
+      const header = cells.every((cell) =>
+        /^(e-?mail( address)?|(full |first |last )?names?|address|phone|organi[sz]ation)$/i.test(cell),
+      );
+      if (!header) invalid += 1;
+      continue;
+    }
+
+    const name = cells.find((cell) => !EMAIL.test(cell)) ?? null;
+    // The first time an address appears wins, but a later row may supply the
+    // name the first one lacked.
+    if (!seen.has(address) || (!seen.get(address) && name)) seen.set(address, name);
+  }
+
+  return {
+    contacts: [...seen].map(([email, name]) => ({ email, name })),
+    invalid,
+  };
+}
+
+/**
+ * Add a list of people at once.
+ *
+ * NOT `subscribe()` in a loop, and the difference matters. `subscribe` is what
+ * a person does for themselves, so it puts somebody who had unsubscribed back
+ * on the list — they have just asked for that. An import is somebody else
+ * adding them, and an old spreadsheet will contain people who have since
+ * unsubscribed. Those are left exactly as they are: the import only ever adds
+ * addresses the list has never seen.
+ *
+ * `consentAt` is left empty. That column records the moment a person ticked
+ * the box on the website, and an import is not that moment; `source: "import"`
+ * is the honest record of how they arrived.
+ */
+export async function importSubscribers(
+  contacts: { email: string; name: string | null }[],
+): Promise<{ added: number; already: number }> {
+  if (contacts.length === 0) return { added: 0, already: 0 };
+
+  let added = 0;
+  // In batches, so a list of several thousand is a handful of statements and
+  // not several thousand, and no single statement carries too many values.
+  for (let start = 0; start < contacts.length; start += 500) {
+    const batch = contacts.slice(start, start + 500);
+
+    const existing = await db
+      .select({ email: subscribers.email })
+      .from(subscribers)
+      .where(inArray(subscribers.email, batch.map((contact) => contact.email)));
+    const known = new Set(existing.map((row) => row.email));
+
+    const fresh = batch.filter((contact) => !known.has(contact.email));
+    if (fresh.length === 0) continue;
+
+    const inserted = await db
+      .insert(subscribers)
+      .values(
+        fresh.map((contact) => ({
+          email: contact.email,
+          name: contact.name?.slice(0, 200) || null,
+          status: "subscribed",
+          source: "import",
+          consentAt: null,
+          unsubscribeToken: randomBytes(24).toString("hex"),
+          updatedAt: new Date(),
+        })),
+      )
+      // Two imports running at once, or an address that signed up between the
+      // check above and this line.
+      .onConflictDoNothing()
+      .returning({ id: subscribers.id });
+
+    added += inserted.length;
+  }
+
+  return { added, already: contacts.length - added };
 }
